@@ -165,3 +165,18 @@ def test_critical_kinds() -> None:
     assert is_critical({"subject": "requirement", "fields": {"kind": "language_test"}})
     assert is_critical({"subject": "cost_item", "fields": {"kind": "tuition"}})
     assert not is_critical({"subject": "requirement", "fields": {"kind": "statement"}})
+
+
+def test_reserved_hosts_are_rejected_in_real_files() -> None:
+    with pytest.raises(SeedError, match="reserved"):
+        check_sources([_doc("x.example.org", "https://x.example.org/p")])
+
+
+def test_extra_domain_needs_two_labels() -> None:
+    with pytest.raises(SeedError, match="too broad"):
+        check_sources([_doc("uni.ac.uk", "https://www.ucas.com/x", extra=["com"])])
+
+
+def test_second_look_names_compare_case_and_space_insensitively() -> None:
+    with pytest.raises(SeedError, match="second look"):
+        check_second_look([_fact_doc("deadline", {"date": "2027-01-15"}, second=(" harman ", "2026-11-02"))])

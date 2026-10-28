@@ -9,10 +9,10 @@ from pathlib import Path
 import pytest
 
 from uniguide_worker.db import Connection
-from uniguide_worker.seed.loader import load
+from uniguide_worker.seed.loader import PLACEHOLDER_ROOT, SeedError, load
 
 TEMPLATE = """
-institution: {{name: "{name}", country: GB, official_domain: recheck.example.org}}
+institution: {{name: "{name}", country: GB, official_domain: recheck-test.ac.uk}}
 program: {{slug: "{slug}", title: MSc Recheck, level: master, delivery_mode: on_campus, duration_months: 12}}
 cycles:
   - label: 2027-autumn
@@ -22,7 +22,7 @@ cycles:
     facts:
       - subject: deadline
         fields: {{date: 2027-06-30, kind: application, owning_system: direct, original_text: "30 June 2027", applicant_category: international}}
-        source_url: https://recheck.example.org/apply
+        source_url: https://recheck-test.ac.uk/apply
         evidence_quote: "International applicants should apply by 30 June 2027."
         verified_by: Harman
         verified_at: {verified}
@@ -66,3 +66,10 @@ def test_reloading_after_a_recheck_refreshes_the_verified_date(
 
     assert report.facts_skipped == 1
     assert _verified_at(operator, name) == "2026-10-20"
+
+
+def test_hosted_publish_placeholders_is_refused_before_any_write(operator: Connection) -> None:
+    before = operator.execute("select count(*) as n from fact_versions").fetchone()
+    with pytest.raises(SeedError, match="local development only"):
+        load(operator, [PLACEHOLDER_ROOT], hosted=True, publish_placeholders=True)
+    assert operator.execute("select count(*) as n from fact_versions").fetchone() == before

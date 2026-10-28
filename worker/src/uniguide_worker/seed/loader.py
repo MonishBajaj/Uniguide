@@ -30,6 +30,7 @@ from ..validate.checks import CycleInfo
 SCHEMA = json.loads((Path(__file__).with_name("schema.json")).read_text())
 SEED_ROOT = REPO_ROOT / "data" / "seed" / "courses"
 PLACEHOLDER_ROOT = REPO_ROOT / "data" / "seed" / "placeholders"
+RESERVED_HOST_SUFFIXES = ("example.org", "example.com", "example.net", ".example", ".test", ".invalid", "localhost")
 PLACEHOLDER_OWNER = "PLACEHOLDER - illustrative data, not verified"
 
 
@@ -83,16 +84,28 @@ def check_sources(docs: list[tuple[Path, dict[str, Any]]]) -> None:
             problems.append(f"{path}: institution needs official_domain")
             continue
         allowed = [inst["official_domain"], *inst.get("extra_official_domains", [])]
+        for domain in allowed:
+            if "." not in domain.strip("."):
+                problems.append(f"{path}: official domain {domain!r} is too broad")
         for cycle in doc["cycles"]:
             for fact in cycle["facts"]:
                 url = fact["source_url"]
                 host = (urlsplit(url).hostname or "").lower()
-                if is_blocked(url):
+                if any(
+                    host == r.lstrip(".") or host.endswith(r if r.startswith(".") else "." + r)
+                    for r in RESERVED_HOST_SUFFIXES
+                ):
+                    problems.append(f"{path}: {host} is a reserved host, not a real source ({url})")
+                elif is_blocked(url):
                     problems.append(f"{path}: {host} is a blocked source ({url})")
                 elif not any(_host_matches(host, d) for d in allowed):
                     problems.append(f"{path}: {host} is not an official domain ({url})")
     if problems:
         raise SeedError("; ".join(problems))
+
+
+def _norm(name: object) -> str:
+    return str(name).strip().casefold()
 
 
 def is_critical(fact: dict[str, Any]) -> bool:
@@ -116,7 +129,7 @@ def check_second_look(docs: list[tuple[Path, dict[str, Any]]]) -> None:
                     continue
                 by, at = fact.get("second_checked_by"), fact.get("second_checked_at")
                 ok = bool(by and at) and (
-                    by != fact["verified_by"]
+                    _norm(by) != _norm(fact["verified_by"])
                     or date.fromisoformat(str(at)) > date.fromisoformat(str(fact["verified_at"]))
                 )
                 if not ok:
@@ -267,12 +280,12 @@ def _fact_fields(
 
 
 def load(conn: Connection, roots: Sequence[Path], *, hosted: bool, publish_placeholders: bool = False) -> SeedReport:
+    if hosted and publish_placeholders:
+        raise SeedError("--publish-placeholders is for local development only")
     docs = read_seed_files(*roots)
     check_placeholders(docs, hosted=hosted)
     check_sources(docs)
     check_second_look(docs)
-    if hosted and publish_placeholders:
-        raise SeedError("--publish-placeholders is for local development only")
 
     report = SeedReport()
     for path, doc in docs:
