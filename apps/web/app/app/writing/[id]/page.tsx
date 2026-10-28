@@ -3,6 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { label, shortDate } from "@/lib/format";
 import { getUser } from "@/lib/supabase/server";
+import { loadFaculty } from "@/lib/faculty";
+import { courseMaterial, namedInDraft, WHY_QUESTIONS, type MaterialItem } from "@/lib/why-helper";
 import { outlineFor } from "@/lib/writing/prompts";
 import { segment } from "@/lib/writing/segment";
 import type { RubricResult, ComparisonResult } from "@/lib/writing/review";
@@ -22,7 +24,7 @@ const CRITERION: Record<string, string> = {
 
 export default async function DocumentPage({ params }: PageProps<"/app/writing/[id]">) {
   const { id } = await params;
-  const { supabase } = await getUser();
+  const { supabase, user } = await getUser();
   const [{ data: doc }, { data: versions }, { data: reviews }, { data: allowance }] = await Promise.all([
     supabase.from("documents").select("*").eq("id", id).maybeSingle(),
     supabase.from("document_versions").select("id, body, word_count, created_at").eq("document_id", id).order("created_at", { ascending: false }),
@@ -34,6 +36,25 @@ export default async function DocumentPage({ params }: PageProps<"/app/writing/[
   const mine = (reviews ?? []).filter((r) => ids.has(r.version_id));
   const latest = versions?.[0];
   const outline = outlineFor(doc.kind, doc.word_limit);
+
+  // "Why this university": material from this course's stored facts and its researchers.
+  let material: MaterialItem[] = [];
+  let institution: string | null = null;
+  if (doc.kind === "why_this_university" && doc.application_id) {
+    const { data: app } = await supabase.from("applications").select("program_cycles(program_id)").eq("id", doc.application_id).maybeSingle();
+    const programId = app?.program_cycles?.program_id;
+    const [{ data: card }, { data: profile }] = await Promise.all([
+      programId ? supabase.from("program_cards").select("*").eq("id", programId).maybeSingle() : Promise.resolve({ data: null }),
+      supabase.from("profiles").select("research_interests").eq("user_id", user!.id).single(),
+    ]);
+    if (card) {
+      institution = card.institution_name;
+      const faculty = card.level === "master" || card.level === "doctorate" ? await loadFaculty(supabase, card, profile?.research_interests ?? null, 6) : [];
+      material = courseMaterial(card, faculty);
+    }
+  }
+  const named = namedInDraft(latest?.body ?? "", material);
+  const countable = material.filter((m) => m.terms.length);
 
   return (
     <div className="grid gap-8">
@@ -56,6 +77,44 @@ export default async function DocumentPage({ params }: PageProps<"/app/writing/[
         </ol>
         <p className="mt-3 text-sm text-muted"><Link href="/app/writing/stories" className="underline underline-offset-2">Your story bank</Link> holds the material for each part.</p>
       </details>
+
+      {material.length ? (
+        <section aria-labelledby="material" className="grid gap-4 rounded-2xl border border-border bg-surface p-6 text-sm">
+          <div>
+            <h2 id="material" className="text-lg font-semibold">Material from this course</h2>
+            <p className="text-muted">
+              Facts we hold about {institution}, from official pages and OpenAlex. Check each one on the official page,
+              and use only what connects to something you have really done. The words are yours to write.
+            </p>
+          </div>
+          {latest ? (
+            <p role="status" className={named.size ? "font-semibold" : "font-semibold text-unverified"}>
+              {named.size
+                ? `Your latest draft names ${named.size} of ${countable.length} specific things about this course.`
+                : "Your latest draft does not name anything specific to this course yet. Could a reader tell which university it was written for?"}
+            </p>
+          ) : null}
+          {(["Researchers", "Place", "Course"] as const).map((group) => {
+            const list = material.filter((m) => m.group === group);
+            return list.length ? (
+              <div key={group} className="grid gap-2">
+                <h3 className="font-semibold">{group}</h3>
+                <ul className="grid gap-1">
+                  {list.map((m) => (
+                    <li key={m.key}>
+                      <span aria-hidden="true" className={named.has(m.key) ? "text-verified" : "text-muted"}>{named.has(m.key) ? "✓ " : "· "}</span>
+                      <span className="font-semibold">{m.label}</span>
+                      {m.detail ? <span className="text-muted"> · {m.detail}</span> : null}
+                      {named.has(m.key) ? <span className="sr-only"> (named in your draft)</span> : null}
+                    </li>
+                  ))}
+                </ul>
+                <p className="text-muted italic">{WHY_QUESTIONS[group]}</p>
+              </div>
+            ) : null;
+          })}
+        </section>
+      ) : null}
 
       <Editor documentId={doc.id} initial={latest?.body ?? ""} wordLimit={doc.word_limit} />
 

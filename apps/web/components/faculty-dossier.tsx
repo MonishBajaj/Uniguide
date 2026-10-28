@@ -1,5 +1,5 @@
-import { embedQuery, ISCED_TO_OPENALEX } from "@/lib/embeddings";
 import type { ProgramCard } from "@/lib/catalog";
+import { loadFaculty } from "@/lib/faculty";
 import type { createClient } from "@/lib/supabase/server";
 
 type Supabase = Awaited<ReturnType<typeof createClient>>;
@@ -13,17 +13,8 @@ const QUESTIONS = [
 /** Facts about researchers and their recent work. The student writes the "why this university" sentences. */
 export async function FacultyDossier({ supabase, card, interests }: { supabase: Supabase; card: ProgramCard; interests: string | null }) {
   if (card.level !== "master" && card.level !== "doctorate") return null;
-  const embedding = interests ? await embedQuery(interests) : null;
-  const { data } = await supabase.rpc("match_faculty", {
-    p_institution_id: card.institution_id!,
-    p_query: interests ?? undefined,
-    p_fields: ISCED_TO_OPENALEX[(card.isced_f ?? "").slice(0, 2)] ?? undefined,
-    p_query_embedding: embedding ? JSON.stringify(embedding) : undefined,
-    p_limit: 8,
-  });
-  if (!data?.length) return null;
-  type Topic = { name: string; field: string };
-  type Work = { title: string; year: number; doi: string | null; openalex_id: string };
+  const data = await loadFaculty(supabase, card, interests);
+  if (!data.length) return null;
 
   return (
     <section aria-labelledby="faculty" className="mt-12">
@@ -36,9 +27,9 @@ export async function FacultyDossier({ supabase, card, interests }: { supabase: 
         {data.map((f) => (
           <li key={f.id} className="rounded-2xl border border-border bg-surface p-4 text-sm">
             <a href={f.openalex_id} target="_blank" rel="noreferrer" className="text-base font-semibold underline-offset-2 hover:underline">{f.name}</a>
-            <p className="mt-1 text-muted">{(f.topics as Topic[]).slice(0, 4).map((t) => t.name).join(" · ")}</p>
+            <p className="mt-1 text-muted">{f.topics.slice(0, 4).map((t) => t.name).join(" · ")}</p>
             <ul className="mt-2 grid gap-1">
-              {(f.recent_works as Work[]).slice(0, 3).map((w) => (
+              {f.recent_works.slice(0, 3).map((w) => (
                 <li key={w.openalex_id}>
                   {w.doi ? <a href={w.doi} target="_blank" rel="noreferrer" className="underline underline-offset-2">{w.title}</a> : w.title} ({w.year})
                 </li>

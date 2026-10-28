@@ -6,7 +6,7 @@ import { checkedAgo, describeEvent } from "@/lib/application-events";
 import { CURRENCIES } from "@/lib/fields";
 import { scoreNeeds, sentProgress } from "@/lib/score-sending";
 import { WAITLIST_STEPS } from "@/lib/waitlist";
-import { startContinuedInterest } from "../../writing/actions";
+import { startLinkedDocument } from "../../writing/actions";
 import { daysUntil, deadlineText, label, money, shortDate } from "@/lib/format";
 import { getUser } from "@/lib/supabase/server";
 import { CostForm } from "../cost-form";
@@ -31,7 +31,7 @@ export const metadata: Metadata = { title: "Application" };
 export default async function ApplicationPage({ params }: PageProps<"/app/tracker/[id]">) {
   const { id } = await params;
   const { supabase, user } = await getUser();
-  const [{ data: app }, { data: outcome }, { data: consent }, { data: events }, { data: scores }, { data: costs }, { data: profile }, { data: letter }] = await Promise.all([
+  const [{ data: app }, { data: outcome }, { data: consent }, { data: events }, { data: scores }, { data: costs }, { data: profile }, { data: linkedDocs }] = await Promise.all([
     supabase
       .from("applications")
       .select(
@@ -50,11 +50,13 @@ export default async function ApplicationPage({ params }: PageProps<"/app/tracke
     supabase.from("test_scores").select("id, exam, exam_version, total").order("taken_on", { ascending: false }),
     supabase.from("application_costs").select("id, kind, amount, currency, paid_on, note").eq("application_id", id).order("created_at"),
     supabase.from("profiles").select("budget_currency").eq("user_id", user!.id).single(),
-    supabase.from("documents").select("id, document_versions(word_count, created_at)").eq("application_id", id).eq("kind", "continued_interest").limit(1).maybeSingle(),
+    supabase.from("documents").select("id, kind, document_versions(word_count, created_at)").eq("application_id", id).in("kind", ["continued_interest", "why_this_university"]),
   ]);
   if (!app) notFound();
   const program = app.program_cycles?.programs;
   const items = [...app.checklist_items].sort((a, b) => a.sort - b.sort);
+  const letter = (linkedDocs ?? []).find((d) => d.kind === "continued_interest");
+  const whyDoc = (linkedDocs ?? []).find((d) => d.kind === "why_this_university");
   const needs = scoreNeeds(app.program_cycles?.requirements ?? []);
   const reports = [...app.score_reports].sort((a, b) => a.sent_on.localeCompare(b.sent_on));
   const progress = sentProgress(needs, reports.flatMap((r) => (r.test_scores ? [r.test_scores.exam] : [])));
@@ -70,6 +72,9 @@ export default async function ApplicationPage({ params }: PageProps<"/app/tracke
         <div className="mt-4 flex flex-wrap gap-2">
           {program ? <Link href={`/courses/${program.slug}`} className="btn btn-secondary btn-sm">Course facts and sources</Link> : null}
           <a href={`/app/tracker/calendar.ics?application=${app.id}`} className="btn btn-secondary btn-sm">Add to calendar (.ics)</a>
+          <form action={startLinkedDocument.bind(null, app.id, "why_this_university")}>
+            <button className="btn btn-secondary btn-sm">{whyDoc ? "Continue your \u201cWhy this university\u201d" : "Write your \u201cWhy this university\u201d"}</button>
+          </form>
         </div>
       </header>
 
@@ -253,7 +258,7 @@ export default async function ApplicationPage({ params }: PageProps<"/app/tracke
               {program?.official_url ? (
                 <a href={program.official_url} target="_blank" rel="noreferrer" className="btn btn-secondary btn-sm">Official course page</a>
               ) : null}
-              <form action={startContinuedInterest.bind(null, app.id)}>
+              <form action={startLinkedDocument.bind(null, app.id, "continued_interest")}>
                 <button className="btn btn-primary btn-sm">{letter ? "Continue your letter of continued interest" : "Start a letter of continued interest"}</button>
               </form>
               {letter?.document_versions.length ? (

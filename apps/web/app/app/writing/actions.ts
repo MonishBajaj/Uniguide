@@ -38,31 +38,40 @@ const Authorship = z.object({
   active_seconds: z.number().int().min(0),
 });
 
-/** Opens the student's letter of continued interest for a waitlisted application, creating it the first time. */
-export async function startContinuedInterest(applicationId: string) {
+/**
+ * Opens the student's document of this kind for an application, creating it the first time: a
+ * "why this university" statement for any application, a letter of continued interest only when
+ * the application is waitlisted.
+ */
+export async function startLinkedDocument(applicationId: string, kind: "why_this_university" | "continued_interest") {
   const { supabase, user } = await getUser();
   const { data: existing } = await supabase
     .from("documents")
     .select("id")
     .eq("application_id", applicationId)
-    .eq("kind", "continued_interest")
+    .eq("kind", kind)
     .limit(1)
     .maybeSingle();
   if (existing) redirect(`/app/writing/${existing.id}`);
   const { data: app } = await supabase
     .from("applications")
-    .select("decision, program_cycles(programs(title))")
+    .select("decision, program_cycles(programs(title, institutions(name)))")
     .eq("id", applicationId)
     .maybeSingle();
-  if (app?.decision !== "waitlisted") redirect(`/app/tracker/${applicationId}`);
+  if (!app || (kind === "continued_interest" && app.decision !== "waitlisted")) redirect(`/app/tracker/${applicationId}`);
+  const program = app.program_cycles?.programs;
+  const title =
+    kind === "continued_interest"
+      ? `Letter of continued interest: ${program?.title ?? "course"}`
+      : `Why ${program?.institutions?.name ?? "this university"}: ${program?.title ?? "course"}`;
   const { data, error } = await supabase
     .from("documents")
     .insert({
       user_id: user!.id,
       application_id: applicationId,
-      kind: "continued_interest",
-      title: `Letter of continued interest: ${app.program_cycles?.programs?.title ?? "course"}`.slice(0, 200),
-      word_limit: 300,
+      kind,
+      title: title.slice(0, 200),
+      word_limit: kind === "continued_interest" ? 300 : null,
     })
     .select("id")
     .single();
