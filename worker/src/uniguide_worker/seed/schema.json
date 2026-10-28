@@ -74,7 +74,7 @@
       "additionalProperties": false,
       "required": ["subject", "fields", "source_url", "evidence_quote", "verified_by", "verified_at"],
       "properties": {
-        "subject": { "enum": ["requirement", "deadline", "cost_item"] },
+        "subject": { "enum": ["requirement", "deadline", "cost_item", "fee_waiver"] },
         "fields": { "type": "object" },
         "source_url": { "type": "string", "pattern": "^https?://" },
         "evidence_quote": { "type": "string", "minLength": 8 },

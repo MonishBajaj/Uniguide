@@ -16,6 +16,7 @@ type SourceRef = { url: string; owner: string } | null;
 export type RequirementRow = Tables<"requirements"> & { sources: SourceRef };
 export type DeadlineRow = Tables<"deadlines"> & { sources: SourceRef };
 export type CostRow = Tables<"cost_items"> & { sources: SourceRef };
+export type FeeWaiverRow = Tables<"fee_waivers"> & { sources: SourceRef };
 export type CycleFacts = Pick<
   Tables<"program_cycles">,
   "id" | "program_id" | "label" | "intake_year" | "intake_term" | "starts_on"
@@ -23,11 +24,12 @@ export type CycleFacts = Pick<
   requirements: RequirementRow[];
   deadlines: DeadlineRow[];
   cost_items: CostRow[];
+  fee_waivers: FeeWaiverRow[];
 };
 export type ProgramCard = ViewRow<"program_cards">;
 
 const CYCLE_SELECT =
-  "id, program_id, label, intake_year, intake_term, starts_on, requirements(*, sources(url, owner)), deadlines(*, sources(url, owner)), cost_items(*, sources(url, owner))";
+  "id, program_id, label, intake_year, intake_term, starts_on, requirements(*, sources(url, owner)), deadlines(*, sources(url, owner)), cost_items(*, sources(url, owner)), fee_waivers(*, sources(url, owner))";
 
 /** The current cycle (latest intake) of each program, with every published fact and its source. */
 export async function loadCurrentCycles(supabase: Supabase, programIds: string[]): Promise<Map<string, CycleFacts>> {

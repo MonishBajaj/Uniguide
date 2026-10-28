@@ -145,7 +145,12 @@ def _seed_key(slug: str, cycle: str, fact: dict[str, Any]) -> str:
     return hashlib.sha256(payload.encode()).hexdigest()
 
 
-FACT_TABLES = {"requirement": "requirements", "deadline": "deadlines", "cost_item": "cost_items"}
+FACT_TABLES = {
+    "requirement": "requirements",
+    "deadline": "deadlines",
+    "cost_item": "cost_items",
+    "fee_waiver": "fee_waivers",
+}
 
 
 def _refresh_verified_at(conn: Connection, subject: str, fact_id: UUID, fact: dict[str, Any]) -> None:

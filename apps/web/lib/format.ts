@@ -2,6 +2,11 @@ export function money(amount: number, currency: string): string {
   return new Intl.NumberFormat("en", { style: "currency", currency, maximumFractionDigits: 0 }).format(amount);
 }
 
+/** An application fee waiver: a null amount means the whole fee is waived. */
+export function waiverAmount(amount: number | null, currency: string | null): string {
+  return amount === null || currency === null ? "Fee waived" : `${money(amount, currency)} off`;
+}
+
 /** A deadline as the institution states it: in its own time zone, at the precision it gives. */
 export function deadlineText(dueAt: string, timezone: string, precision: string): string {
   const date = new Date(dueAt);

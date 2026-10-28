@@ -73,3 +73,28 @@ def test_hosted_publish_placeholders_is_refused_before_any_write(operator: Conne
     with pytest.raises(SeedError, match="local development only"):
         load(operator, [PLACEHOLDER_ROOT], hosted=True, publish_placeholders=True)
     assert operator.execute("select count(*) as n from fact_versions").fetchone() == before
+
+
+WAIVER_TEMPLATE = (
+    TEMPLATE.split("      - subject: deadline")[0]
+    + """      - subject: fee_waiver
+        fields: {{kind: event, conditions: "Attend a campus visit"}}
+        source_url: https://recheck-test.ac.uk/fees
+        evidence_quote: "The application fee is waived for applicants who attend a campus visit."
+        verified_by: Harman
+        verified_at: 2026-10-20
+"""
+)
+
+
+def test_fee_waiver_seed_fact_loads(seed_dir: tuple[Path, str], operator: Connection) -> None:
+    root, name = seed_dir
+    (root / "x.yaml").write_text(WAIVER_TEMPLATE.format(name=name, slug=name.lower().replace(" ", "-")))
+    report = load(operator, [root], hosted=False)
+    assert report.facts_new == 1
+    row = operator.execute(
+        "select w.kind, w.amount, w.status::text as status from fee_waivers w join program_cycles c on c.id = w.cycle_id "
+        "join programs p on p.id = c.program_id join institutions i on i.id = p.institution_id where i.name = %s",
+        (name,),
+    ).fetchone()
+    assert row == {"kind": "event", "amount": None, "status": "verified"}

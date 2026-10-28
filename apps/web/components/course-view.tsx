@@ -9,7 +9,7 @@ import { ShortlistButton } from "@/components/shortlist-button";
 import { toProgramInput, type CycleFacts, type ProgramCard, type RequirementRow } from "@/lib/catalog";
 import { AUTH_DISABLED } from "@/lib/env";
 import { QUALIFICATIONS } from "@/lib/fields";
-import { countryName, deadlineText, label, money } from "@/lib/format";
+import { countryName, deadlineText, label, money, waiverAmount } from "@/lib/format";
 import { deadlineIsStale, feeIsStale } from "@/lib/freshness";
 import { SITE_URL } from "@/lib/env";
 import type { FxTable } from "@uniguide/matching";
@@ -134,6 +134,25 @@ export function CourseView(props: {
               </ul>
             )}
           </section>
+
+          {cycle.fee_waivers.length > 0 ? (
+            <section aria-labelledby="waivers" className="mt-12">
+              <h2 id="waivers" className="text-2xl font-semibold">Application fee waivers</h2>
+              <ul className="mt-4 grid gap-3">
+                {cycle.fee_waivers.map((w) => (
+                  <li key={w.id} className="rounded-2xl border border-border bg-surface p-4">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <p className="text-sm text-muted">{label(w.kind)}{w.applicant_category !== "all" ? `, ${label(w.applicant_category)} applicants` : ""}</p>
+                      <FactBadge status={w.status} />
+                    </div>
+                    <p className="mt-1 text-lg">{waiverAmount(w.amount, w.currency)}</p>
+                    {w.conditions ? <p className="text-sm text-muted">{w.conditions}</p> : null}
+                    <Evidence source={w.sources} quote={w.evidence_quote} verifiedAt={w.verified_at} />
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ) : null}
 
           <section aria-labelledby="requirements" className="mt-12">
             <h2 id="requirements" className="text-2xl font-semibold">Entry requirements</h2>

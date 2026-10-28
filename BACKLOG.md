@@ -21,6 +21,10 @@ Weeks 1–4 foundation; weeks 5–6 tracker, checklists, reminders, .ics, outcom
 | Admission model goes live | Needs at least two intakes of consented outcomes and a passing gate; runs weekly and stays hidden until then |
 | Hosted setup | Follow docs/SETUP.md: Supabase, Vercel, role passwords, Actions secrets |
 
+## Follow-ups
+
+- Extract fee waivers from official pages with the model. Today fee waivers arrive only through hand-verified seed files and admin review.
+
 ## Deferred to year 2
 
 - Scholarships and loans (8.x). No ethnicity / religion / health filters without separate explicit consent.
