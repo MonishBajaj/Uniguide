@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { checkedAgo } from "@/lib/application-events";
 import { daysUntil, deadlineText } from "@/lib/format";
+import { letterProgress, lettersNeeded } from "@/lib/recommendations";
 import { scoreNeeds, sentProgress } from "@/lib/score-sending";
 import { getUser } from "@/lib/supabase/server";
 import { setStatus } from "./actions";
@@ -22,7 +23,7 @@ export default async function TrackerPage({ searchParams }: PageProps<"/app/trac
   const { data } = await supabase
     .from("applications")
     .select(
-      "id, status, due_at, decision, portal_checked_at, program_cycles(label, requirements(kind, exam, test_policy), programs(slug, title, institutions(name, country))), checklist_items(done, deadlines(due_at, timezone, precision)), score_reports(test_scores(exam))",
+      "id, status, due_at, decision, portal_checked_at, program_cycles(label, requirements(kind, exam, test_policy, count_required), programs(slug, title, institutions(name, country))), checklist_items(done, deadlines(due_at, timezone, precision)), score_reports(test_scores(exam)), recommendation_requests(status)",
     )
     .order("due_at", { ascending: true, nullsFirst: false });
   const apps = (data ?? []).map((a) => ({
@@ -34,6 +35,7 @@ export default async function TrackerPage({ searchParams }: PageProps<"/app/trac
       .sort((x, y) => x.due_at.localeCompare(y.due_at))[0],
     done: a.checklist_items.filter((i) => i.done).length,
     total: a.checklist_items.length,
+    letters: letterProgress(a.recommendation_requests, lettersNeeded(a.program_cycles?.requirements ?? [])),
     scores: sentProgress(
       scoreNeeds(a.program_cycles?.requirements ?? []),
       a.score_reports.flatMap((r) => (r.test_scores ? [r.test_scores.exam] : [])),
@@ -50,6 +52,7 @@ export default async function TrackerPage({ searchParams }: PageProps<"/app/trac
         <div className="flex gap-2">
           <Link href="/app/tracker?view=board" aria-current={view === "board" ? "page" : undefined} className="btn btn-secondary btn-sm aria-[current=page]:bg-border">Board</Link>
           <Link href="/app/tracker?view=table" aria-current={view === "table" ? "page" : undefined} className="btn btn-secondary btn-sm aria-[current=page]:bg-border">Table</Link>
+          <Link href="/app/recommenders" className="btn btn-secondary btn-sm">Recommenders</Link>
           <Link href="/app/tracker/costs" className="btn btn-secondary btn-sm">Costs</Link>
           <a href="/app/tracker/calendar.ics" className="btn btn-secondary btn-sm">Add all deadlines to my calendar</a>
         </div>
@@ -75,6 +78,7 @@ export default async function TrackerPage({ searchParams }: PageProps<"/app/trac
                     <p>{a.next ? `Due ${deadlineText(a.next.due_at, a.next.timezone, a.next.precision)} (${daysUntil(a.next.due_at)} days)` : "No deadline known"}</p>
                     <p className="text-muted">{a.done} of {a.total} steps done</p>
                     {a.scores.needed ? <p className="text-muted">Scores sent: {a.scores.sent} of {a.scores.needed}</p> : null}
+                    {a.letters.needed ? <p className="text-muted">Letters submitted: {a.letters.submitted} of {a.letters.needed}</p> : null}
                     <form action={setStatus.bind(null, a.id)} className="grid grid-cols-[1fr_auto] gap-2">
                       <label className="sr-only" htmlFor={`s-${a.id}`}>Move to</label>
                       <select id={`s-${a.id}`} name="status" defaultValue={a.status} className="field py-1 text-sm">

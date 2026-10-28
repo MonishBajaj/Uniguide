@@ -13,7 +13,14 @@ import pytest
 
 from uniguide_worker.db import Connection, connect
 from uniguide_worker.mailer import Mailer
-from uniguide_worker.notify import days_until, local_date, send_parent_digests, send_reminders, week_start
+from uniguide_worker.notify import (
+    days_until,
+    local_date,
+    send_letter_nudges,
+    send_parent_digests,
+    send_reminders,
+    week_start,
+)
 
 LOCAL_NOTIFIER = "postgresql://notifier:notifier_local@127.0.0.1:54322/postgres"
 
@@ -170,3 +177,36 @@ def test_parent_gets_one_summary_a_week(notifier: Connection, operator: Connecti
     later = Mailer()
     send_parent_digests(notifier, later, "https://uniguide.example", now=datetime.now(UTC) + timedelta(days=7))
     assert [m for m in later.sent if m.to == parent["email"]] == []
+
+
+def test_letter_nudge_reaches_the_student_once(
+    notifier: Connection, operator: Connection, scenario: dict[str, Any]
+) -> None:
+    app = operator.execute("select id from applications where user_id = %s", (scenario["uid"],)).fetchone()
+    assert app
+    rec = operator.execute(
+        "insert into recommenders (user_id, name) values (%s, 'Dr Mehta') returning id", (scenario["uid"],)
+    ).fetchone()
+    assert rec
+    due = (datetime.now(UTC) + timedelta(days=14)).date()
+    operator.execute(
+        "insert into recommendation_requests (user_id, recommender_id, application_id, status, due_on) "
+        "values (%s, %s, %s, 'agreed', %s)",
+        (scenario["uid"], rec["id"], app["id"], due),
+    )
+    operator.commit()
+
+    mailer = Mailer()
+    send_letter_nudges(notifier, mailer, "https://uniguide.example")
+    mine = [m for m in mailer.sent if m.to == scenario["email"]]
+    assert [m.subject for m in mine] == ["Letter due in 14 days: Dr Mehta for MSc N"]
+    assert "has agreed to write" in mine[0].text and "/app/recommenders" in mine[0].text
+
+    again = Mailer()
+    send_letter_nudges(notifier, again, "https://uniguide.example")
+    assert [m for m in again.sent if m.to == scenario["email"]] == []
+
+    # Not due in 14 or 3 days: nothing.
+    later = Mailer()
+    send_letter_nudges(notifier, later, "https://uniguide.example", now=datetime.now(UTC) + timedelta(days=2))
+    assert [m for m in later.sent if m.to == scenario["email"]] == []

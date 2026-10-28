@@ -795,6 +795,66 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"recommendation_reminder_log": {
+                  Row: {
+                    "days_before": number,"request_id": string,"sent_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "days_before": number,"request_id": string,"sent_at"?: string
+                  }
+                  Update: {
+                    "days_before"?: number,"request_id"?: string,"sent_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "recommendation_reminder_log_request_id_fkey"
+      columns: ["request_id"]
+isOneToOne: false
+      referencedRelation: "recommendation_requests"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"recommendation_requests": {
+                  Row: {
+                    "application_id": string,"asked_on": string | null,"created_at": string,"due_on": string | null,"id": string,"note": string | null,"recommender_id": string,"status": string,"submitted_on": string | null,"updated_at": string,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "application_id": string,"asked_on"?: string | null,"created_at"?: string,"due_on"?: string | null,"id"?: string,"note"?: string | null,"recommender_id": string,"status"?: string,"submitted_on"?: string | null,"updated_at"?: string,"user_id": string
+                  }
+                  Update: {
+                    "application_id"?: string,"asked_on"?: string | null,"created_at"?: string,"due_on"?: string | null,"id"?: string,"note"?: string | null,"recommender_id"?: string,"status"?: string,"submitted_on"?: string | null,"updated_at"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "recommendation_requests_application_id_fkey"
+      columns: ["application_id"]
+isOneToOne: false
+      referencedRelation: "applications"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "recommendation_requests_recommender_id_fkey"
+      columns: ["recommender_id"]
+isOneToOne: false
+      referencedRelation: "recommenders"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"recommenders": {
+                  Row: {
+                    "created_at": string,"id": string,"name": string,"relationship": string | null,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"id"?: string,"name": string,"relationship"?: string | null,"user_id": string
+                  }
+                  Update: {
+                    "created_at"?: string,"id"?: string,"name"?: string,"relationship"?: string | null,"user_id"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
                 },"reminder_log": {
                   Row: {
                     "application_id": string,"days_before": number,"due_at": string,"id": string,"sent_at": string,"user_id": string
@@ -1133,6 +1193,9 @@ isOneToOne: false
                            },
 "owns_application_and_score":
 { Args: { "p_application": string,"p_score": string }; Returns: boolean
+                           },
+"owns_recommender_and_application":
+{ Args: { "p_application": string,"p_recommender": string }; Returns: boolean
                            },
 "parent_can_see":
 { Args: { "p_student": string }; Returns: boolean

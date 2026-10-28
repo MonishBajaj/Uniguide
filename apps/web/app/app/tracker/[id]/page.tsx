@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { COST_KINDS, totalsByCurrency, type CostKind } from "@/lib/application-costs";
 import { checkedAgo, describeEvent } from "@/lib/application-events";
 import { CURRENCIES } from "@/lib/fields";
+import { letterProgress, lettersNeeded, LETTER_STATUSES, type LetterStatus } from "@/lib/recommendations";
 import { scoreNeeds, sentProgress } from "@/lib/score-sending";
 import { WAITLIST_STEPS } from "@/lib/waitlist";
 import { startLinkedDocument } from "../../writing/actions";
@@ -35,7 +36,7 @@ export default async function ApplicationPage({ params }: PageProps<"/app/tracke
     supabase
       .from("applications")
       .select(
-        "*, program_cycles(label, requirements(kind, exam, test_policy), programs(slug, title, official_url, institutions(name))), checklist_items(*, deadlines(due_at, timezone, precision, status), requirements(status)), score_reports(id, sent_on, received_on, test_scores(exam, exam_version, total))",
+        "*, program_cycles(label, requirements(kind, exam, test_policy, count_required), programs(slug, title, official_url, institutions(name))), checklist_items(*, deadlines(due_at, timezone, precision, status), requirements(status)), score_reports(id, sent_on, received_on, test_scores(exam, exam_version, total)), recommendation_requests(id, status, due_on, recommenders(name))",
       )
       .eq("id", id)
       .maybeSingle(),
@@ -56,6 +57,7 @@ export default async function ApplicationPage({ params }: PageProps<"/app/tracke
   const program = app.program_cycles?.programs;
   const items = [...app.checklist_items].sort((a, b) => a.sort - b.sort);
   const letter = (linkedDocs ?? []).find((d) => d.kind === "continued_interest");
+  const letters = letterProgress(app.recommendation_requests, lettersNeeded(app.program_cycles?.requirements ?? []));
   const whyDoc = (linkedDocs ?? []).find((d) => d.kind === "why_this_university");
   const needs = scoreNeeds(app.program_cycles?.requirements ?? []);
   const reports = [...app.score_reports].sort((a, b) => a.sent_on.localeCompare(b.sent_on));
@@ -172,6 +174,28 @@ export default async function ApplicationPage({ params }: PageProps<"/app/tracke
             Add your test scores on your <Link href="/app/profile" className="underline underline-offset-2">profile</Link> to record sending them.
           </p>
         )}
+      </section>
+
+      <section aria-labelledby="letters" className="grid gap-3 rounded-2xl border border-border bg-surface p-6">
+        <div className="flex flex-wrap items-baseline justify-between gap-2">
+          <h2 id="letters" className="text-lg font-semibold">Recommendation letters</h2>
+          <Link href="/app/recommenders" className="text-sm underline underline-offset-2">Manage recommenders</Link>
+        </div>
+        <p className="text-sm text-muted">
+          {letters.needed != null ? `This course asks for ${letters.needed} letter${letters.needed === 1 ? "" : "s"}. ` : "The number of letters is not published yet; check the official page. "}
+          {app.recommendation_requests.length ? `${letters.submitted} submitted, ${letters.lined_up} agreed or submitted.` : ""}
+          {letters.short ? ` Ask ${letters.short} more ${letters.short === 1 ? "person" : "people"}.` : ""}
+        </p>
+        {app.recommendation_requests.length ? (
+          <ul className="grid gap-1 text-sm">
+            {app.recommendation_requests.map((q) => (
+              <li key={q.id}>
+                <span className="font-semibold">{q.recommenders?.name}</span>: {LETTER_STATUSES[q.status as LetterStatus] ?? q.status}
+                {q.due_on && q.status !== "submitted" ? <span className="text-muted"> · due {shortDate(q.due_on)}</span> : null}
+              </li>
+            ))}
+          </ul>
+        ) : null}
       </section>
 
       <section aria-labelledby="costs" className="grid gap-4 rounded-2xl border border-border bg-surface p-6">

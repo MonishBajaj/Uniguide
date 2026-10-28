@@ -26,6 +26,7 @@ class NotifyReport:
     reminders: int = 0
     updates: int = 0
     parent_digests: int = 0
+    letter_nudges: int = 0
     failures: int = 0
     dry_run: bool = False
     notes: list[str] = field(default_factory=list)
@@ -201,6 +202,57 @@ def send_parent_digests(conn: Connection, mailer: Mailer, site_url: str, now: da
             conn.execute(
                 "insert into parent_digest_log (parent_id, student_id, week_start) values (%s, %s, %s)",
                 (r["parent_id"], r["student_id"], week),
+            )
+            sent += 1
+    conn.commit()
+    return sent
+
+
+LETTER_NUDGE_DAYS = (14, 3)
+
+
+def send_letter_nudges(conn: Connection, mailer: Mailer, site_url: str, now: datetime | None = None) -> int:
+    """Reminds the student (never the recommender) to check in on a letter that is due soon."""
+    now = now or datetime.now(UTC)
+    recipients = {r["user_id"]: r for r in conn.execute("select * from public.notifier_recipients()")}
+    rows = conn.execute(
+        """
+        select q.id, q.user_id, q.status, q.due_on, r.name as recommender, p.title as program, i.name as institution
+        from recommendation_requests q
+        join recommenders r on r.id = q.recommender_id
+        join applications a on a.id = q.application_id
+        join program_cycles c on c.id = a.cycle_id
+        join programs p on p.id = c.program_id
+        join institutions i on i.id = p.institution_id
+        where q.status in ('asked', 'agreed') and q.due_on is not null and a.status <> 'withdrawn'
+        """
+    ).fetchall()
+    sent = 0
+    for row in rows:
+        recipient = recipients.get(row["user_id"])
+        days = (row["due_on"] - now.date()).days
+        if recipient is None or days not in LETTER_NUDGE_DAYS:
+            continue
+        if conn.execute(
+            "select 1 from recommendation_reminder_log where request_id = %s and days_before = %s", (row["id"], days)
+        ).fetchone():
+            continue
+        state = "has agreed to write" if row["status"] == "agreed" else "was asked for"
+        ok = mailer.send(
+            Message(
+                to=recipient["email"],
+                subject=f"Letter due in {days} days: {row['recommender']} for {row['program']}",
+                text=(
+                    f"{row['recommender']} {state} a letter for {row['program']} at {row['institution']}, "
+                    f"due in {days} days. A short, polite check-in now gives them time, and tell them how to submit "
+                    f"if the university's portal has not emailed them yet.\n\n"
+                    f"Update the status once it is in: {site_url}/app/recommenders"
+                ),
+            )
+        )
+        if ok:
+            conn.execute(
+                "insert into recommendation_reminder_log (request_id, days_before) values (%s, %s)", (row["id"], days)
             )
             sent += 1
     conn.commit()
