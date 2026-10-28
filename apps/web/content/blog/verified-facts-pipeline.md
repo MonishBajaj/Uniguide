@@ -1,6 +1,10 @@
-# Keeping an LLM away from the deadline: how Uniguide turns official pages into checked facts
+---
+title: "Keeping an LLM away from the deadline: how Uniguide turns official pages into checked facts"
+date: 2026-10-28
+description: "How Uniguide reads official university pages with a model, then checks every deadline, fee and requirement before a student sees it, and the evals that keep it honest."
+---
 
-*Draft engineering post. Numbers are from the October 2026 build.*
+*Numbers are from the October 2026 build.*
 
 Study-abroad students make expensive decisions on three kinds of fact: whether they qualify, what it costs, and when to apply. Chat assistants answer all three fluently and often wrongly. Uniguide's rule is that **facts come from Postgres, never from the model**. The model reads official pages and explains results; it never produces a deadline, a fee or a requirement that a student sees.
 

@@ -9,6 +9,7 @@ export function SiteFooter() {
           <li><Link href="/legal/privacy" className="hover:text-foreground">Privacy</Link></li>
           <li><Link href="/legal/terms" className="hover:text-foreground">Terms</Link></li>
           <li><Link href="/visas" className="hover:text-foreground">Visas</Link></li>
+          <li><Link href="/blog" className="hover:text-foreground">Blog</Link></li>
           <li><Link href="/requirements" className="hover:text-foreground">Data sources</Link></li>
         </ul>
       </div>
