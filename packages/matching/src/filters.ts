@@ -20,9 +20,10 @@ export function hardFilters(
   if (profile.targetCountries?.length && !profile.targetCountries.includes(program.country)) {
     exclusions.push({ rule: "country", reason: `Located in ${program.country}.`, factIds: [] });
   }
-  if (profile.targetFields?.length) {
-    const field = program.iscedF ?? "";
-    const matches = profile.targetFields.some((f) => field.startsWith(f) || (field !== "" && f.startsWith(field)));
+  // An unknown field does not exclude (it is not a verified fact); the field criterion scores it 0.
+  if (profile.targetFields?.length && program.iscedF) {
+    const field = program.iscedF;
+    const matches = profile.targetFields.some((f) => field.startsWith(f) || f.startsWith(field));
     if (!matches) exclusions.push({ rule: "field", reason: "Outside your fields of study.", factIds: [] });
   }
   if (profile.deliveryModes?.length && !profile.deliveryModes.includes(program.deliveryMode)) {

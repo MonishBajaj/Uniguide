@@ -21,6 +21,14 @@ describe("matchPrograms", () => {
     expect(results[0]!.fit.components.find((c) => c.criterion === "budget")!.value).toBe(0);
   });
 
+  it("keeps a program whose field is unknown, ranked below a known match", () => {
+    const known = ukMasters({ id: "known" });
+    const unknown = ukMasters({ id: "unknown", iscedF: null });
+    const { results } = matchPrograms([unknown, known], student(), ctx);
+    expect(results.map((r) => [r.programId, r.excluded])).toEqual([["known", false], ["unknown", false]]);
+    expect(results[1]!.fit.score!).toBeLessThan(results[0]!.fit.score!);
+  });
+
   it("explains every exclusion", () => {
     const program = ukMasters({ level: "bachelor", country: "AU" });
     const { results } = matchPrograms([program], student(), ctx);
