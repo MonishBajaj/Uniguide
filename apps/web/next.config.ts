@@ -1,9 +1,9 @@
 import type { NextConfig } from "next";
 
+// Almost every page reads the Supabase session cookie, so Cache Components (which requires every
+// request read to sit behind <Suspense>) is left off; pages render per request.
 const nextConfig: NextConfig = {
-  /* config options here */
-  cacheComponents: true,
-  partialPrefetching: true,
+  transpilePackages: ["@uniguide/matching", "@uniguide/db-types"],
   turbopack: {
     rules: {
       "*.css": {

@@ -50,6 +50,8 @@ export interface DeadlineFact extends Fact {
   /** ISO timestamp. For precision "date" this is local midnight at the start of the stated day. */
   dueAt: string;
   precision: "exact_time" | "date" | "month";
+  /** IANA zone the institution states; display dates in it, never in the server's zone. */
+  timezone?: string;
 }
 
 export interface CostFact extends Fact {
