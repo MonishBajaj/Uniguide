@@ -23,6 +23,7 @@ class ImportStats:
     institutions: int = 0
     programs: int = 0
     skipped: int = 0
+    fees: int = 0
     notes: list[str] = field(default_factory=list)
 
     def as_dict(self) -> dict[str, Any]:
@@ -30,6 +31,7 @@ class ImportStats:
             "institutions": self.institutions,
             "programs": self.programs,
             "skipped": self.skipped,
+            "fees": self.fees,
             "notes": self.notes,
         }
 
@@ -42,6 +44,7 @@ class InstitutionRecord:
     id_value: str
     city: str | None = None
     official_domain: str | None = None
+    region: str | None = None
 
 
 @dataclass(frozen=True)
@@ -80,15 +83,16 @@ def upsert_institution(conn: Connection, rec: InstitutionRecord, source_id: UUID
         raise ValueError(rec.id_column)
     row = conn.execute(
         f"""
-        insert into institutions (name, country, city, official_domain, {rec.id_column}, source_id, verification_method)
-        values (%s, %s, %s, %s, %s, %s, 'official_register')
+        insert into institutions (name, country, city, region, official_domain, {rec.id_column}, source_id,
+                                  verification_method)
+        values (%s, %s, %s, %s, %s, %s, %s, 'official_register')
         on conflict ({rec.id_column}) where {rec.id_column} is not null do update
-          set name = excluded.name, city = excluded.city,
+          set name = excluded.name, city = excluded.city, region = coalesce(excluded.region, institutions.region),
               official_domain = coalesce(excluded.official_domain, institutions.official_domain),
               source_id = excluded.source_id
         returning id
         """,
-        (rec.name, rec.country, rec.city, rec.official_domain, rec.id_value, source_id),
+        (rec.name, rec.country, rec.city, rec.region, rec.official_domain, rec.id_value, source_id),
     ).fetchone()
     assert row is not None
     return UUID(str(row["id"]))

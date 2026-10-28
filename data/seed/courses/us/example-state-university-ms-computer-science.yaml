@@ -3,6 +3,7 @@ placeholder: true
 institution:
   name: Example State University (placeholder)
   country: US
+  region: "IL"
   city: Springfield
   official_domain: example-state.example.org
 program:

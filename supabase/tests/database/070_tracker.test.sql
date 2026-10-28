@@ -74,6 +74,17 @@ select lives_ok(
   'admins can add official sources'
 );
 
+-- Opening intakes is admin-only, and only the newest real intake stays current.
+select tests.authenticate_as(:'a');
+select throws_ok(format($$ select public.add_program_cycle(%L, 2028::smallint, 'autumn') $$, :'program'), '42501', null, 'non-admins cannot open intakes');
+select tests.authenticate_as(:'admin');
+select public.add_program_cycle(:'program', 2028::smallint, 'autumn');
+select results_eq(
+  format($$ select label || ':' || is_current from public.program_cycles where program_id = %L order by label $$, :'program'),
+  array['2027-autumn:false', '2028-autumn:true'],
+  'the new intake becomes current'
+);
+
 -- Demand is aggregate and admin or worker only.
 select tests.authenticate_as(:'a');
 select throws_ok($$ select * from public.verification_demand() $$, '42501', null, 'students cannot read demand');

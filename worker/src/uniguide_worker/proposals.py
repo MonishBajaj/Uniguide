@@ -8,6 +8,7 @@ from typing import Any
 from zoneinfo import ZoneInfo
 
 from .extract.schema import PageExtraction
+from .timezones import zone_for
 from .validate.checks import (
     CycleInfo,
     Issue,
@@ -17,20 +18,6 @@ from .validate.checks import (
     check_score,
     check_timezone,
 )
-
-# Countries with a single civil time zone, used when a page gives a date but no zone.
-SINGLE_ZONE = {
-    "GB": "Europe/London",
-    "IE": "Europe/Dublin",
-    "DE": "Europe/Berlin",
-    "NL": "Europe/Amsterdam",
-    "FR": "Europe/Paris",
-    "NZ": "Pacific/Auckland",
-    "IN": "Asia/Kolkata",
-    "SG": "Asia/Singapore",
-    "JP": "Asia/Tokyo",
-    "KR": "Asia/Seoul",
-}
 
 
 @dataclass
@@ -72,20 +59,27 @@ def deadline_proposal(
     cycle: CycleInfo,
     page_text: str | None,
     extra: dict[str, Any],
+    region: str | None = None,
 ) -> Proposal:
     tz_issues = check_timezone(timezone)
     issues = check_quote(quote, page_text) + tz_issues
-    tz = timezone if timezone and not tz_issues else SINGLE_ZONE.get(country)
+    tz: str | None = timezone if timezone and not tz_issues else None
     if tz is None:
-        tz = "UTC"
-        issues.append(Issue("warning", "timezone_assumed", "No time zone stated; stored as UTC."))
+        tz, certain = zone_for(country, region)
+        if tz is None:
+            tz = "UTC"
+            issues.append(Issue("warning", "timezone_assumed", "No time zone stated; stored as UTC."))
+        elif not certain:
+            issues.append(Issue("warning", "timezone_assumed", f"No time zone stated; assumed {tz} for this state."))
     due_at, precision = to_due_at(day, at, tz)
     issues += check_deadline(due_at, cycle)
     proposed = {**extra, "due_at": due_at.isoformat(), "timezone": tz, "precision": precision}
     return Proposal("deadline", proposed, quote, issues)
 
 
-def from_extraction(extraction: PageExtraction, cycle: CycleInfo, country: str, page_text: str) -> list[Proposal]:
+def from_extraction(
+    extraction: PageExtraction, cycle: CycleInfo, country: str, page_text: str, region: str | None = None
+) -> list[Proposal]:
     proposals: list[Proposal] = []
 
     for lt in extraction.language_tests:
@@ -160,6 +154,7 @@ def from_extraction(extraction: PageExtraction, cycle: CycleInfo, country: str, 
                     "owning_system": dl.owning_system,
                     "original_text": dl.original_text,
                 },
+                region=region,
             )
         )
 

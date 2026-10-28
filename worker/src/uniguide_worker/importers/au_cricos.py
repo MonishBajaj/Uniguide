@@ -11,6 +11,10 @@ import hashlib
 import io
 from collections.abc import Iterable
 from dataclasses import dataclass
+from datetime import date
+from uuid import UUID
+
+from psycopg.types.json import Jsonb
 
 from ..db import Connection
 from ..fetch.fetcher import Fetcher
@@ -54,10 +58,25 @@ LANGUAGES = {"English": "en", "Korean": "ko", "Mandarin": "zh", "Chinese (NFD)":
 
 
 @dataclass(frozen=True)
+class Fee:
+    tuition: float
+    quote: str
+
+
+@dataclass(frozen=True)
 class Parsed:
     institutions: dict[str, InstitutionRecord]
     programs: list[tuple[str, ProgramRecord]]
     skipped: int
+    fees: dict[str, Fee]  # by program slug
+
+
+def _money(value: str) -> float | None:
+    cleaned = value.replace("$", "").replace(",", "").strip()
+    try:
+        return float(cleaned) if cleaned else None
+    except ValueError:
+        return None
 
 
 def _code(field: str) -> str:
@@ -83,9 +102,11 @@ def parse(institutions_csv: str, courses_csv: str) -> Parsed:
             id_value=code,
             city=city,
             official_domain=domain_of(row.get("Website")),
+            region=(row.get("Postal Address State") or "").strip().upper() or None,
         )
 
     programs: list[tuple[str, ProgramRecord]] = []
+    fees: dict[str, Fee] = {}
     skipped = 0
     for row in csv.DictReader(io.StringIO(courses_csv.lstrip("﻿"))):
         provider = row["CRICOS Provider Code"].strip()
@@ -112,11 +133,20 @@ def parse(institutions_csv: str, courses_csv: str) -> Parsed:
         months = round(int(weeks) * 12 / 52) if weeks.isdigit() and int(weeks) > 0 else None
         language = LANGUAGES.get(row.get("Course Language", "").strip(), "en")
         title = row["Course Name"].strip()
+        slug = slugify(institutions[provider].name, title, course_code)
+        tuition = _money(row.get("Tuition Fee", ""))
+        if tuition is not None and tuition > 0:
+            # The quote is the register's own cells, so a reviewer can find them in the export.
+            fees[slug] = Fee(
+                tuition,
+                f"CRICOS {course_code}: Tuition Fee {row['Tuition Fee'].strip()}; "
+                f"Estimated Total Course Cost {row.get('Estimated Total Course Cost', '').strip()}",
+            )
         programs.append(
             (
                 provider,
                 ProgramRecord(
-                    slug=slugify(institutions[provider].name, title, course_code),
+                    slug=slug,
                     title=title,
                     level=level,
                     isced_level=isced,
@@ -130,7 +160,7 @@ def parse(institutions_csv: str, courses_csv: str) -> Parsed:
                 ),
             )
         )
-    return Parsed(institutions, programs, skipped)
+    return Parsed(institutions, programs, skipped, fees)
 
 
 def run(
@@ -139,6 +169,7 @@ def run(
     *,
     limit: int | None = None,
     files: tuple[str, str] | None = None,
+    with_fees: bool = False,
 ) -> ImportStats:
     """Import from data.gov.au, or from local copies of (institutions.csv, courses.csv)."""
     if files:
@@ -165,10 +196,68 @@ def run(
         if provider not in institution_ids:
             institution_ids[provider] = upsert_institution(conn, parsed.institutions[provider], source_id)
             stats.institutions += 1
-        upsert_program(conn, institution_ids[provider], program, source_id)
+        program_id = upsert_program(conn, institution_ids[provider], program, source_id)
         stats.programs += 1
+        fee = parsed.fees.get(program.slug)
+        if with_fees and fee and propose_fee(conn, program_id, fee, source_id):
+            stats.fees += 1
     conn.commit()
     return stats
+
+
+def propose_fee(conn: Connection, program_id: UUID, fee: Fee, source_id: UUID) -> bool:
+    """Register tuition as an unverified fact on a register-data cycle. Idempotent per amount."""
+    year = date.today().year
+    cycle = conn.execute(
+        """
+        insert into program_cycles (program_id, label, intake_year, intake_term, is_current)
+        values (%s, %s, %s, 'any', true)
+        on conflict (program_id, label) do update set intake_year = excluded.intake_year
+        returning id
+        """,
+        (program_id, f"{year}-register", year),
+    ).fetchone()
+    assert cycle is not None
+    key = f"cricos:{fee.tuition}"
+    exists = conn.execute(
+        "select 1 from fact_versions where cycle_id = %s and proposed ->> '_register_key' = %s",
+        (cycle["id"], key),
+    ).fetchone()
+    if exists:
+        return False
+    current = conn.execute(
+        "select id from cost_items where cycle_id = %s and kind = 'tuition' and basis = 'total'", (cycle["id"],)
+    ).fetchone()
+    proposed = {
+        "kind": "tuition",
+        "basis": "total",
+        "low": fee.tuition,
+        "base": fee.tuition,
+        "high": fee.tuition,
+        "currency": "AUD",
+        "applicant_category": "international",
+        "details": "Indicative total tuition for the whole course, as listed on the CRICOS register.",
+        "_register_key": key,
+    }
+    version = conn.execute(
+        """
+        insert into fact_versions (subject, subject_id, cycle_id, proposed, evidence, evidence_quote, source_id,
+                                   extractor_version, created_by)
+        values ('cost_item', %s, %s, %s, %s, %s, %s, 'cricos-register', 'worker')
+        returning id
+        """,
+        (
+            current["id"] if current else None,
+            cycle["id"],
+            Jsonb(proposed),
+            Jsonb({"quote": fee.quote}),
+            fee.quote,
+            source_id,
+        ),
+    ).fetchone()
+    assert version is not None
+    conn.execute("select public.publish_extracted_version(%s)", (version["id"],))
+    return True
 
 
 def _download(fetcher: Fetcher, url: str) -> str:

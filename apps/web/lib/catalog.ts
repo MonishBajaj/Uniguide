@@ -16,7 +16,10 @@ type SourceRef = { url: string; owner: string } | null;
 export type RequirementRow = Tables<"requirements"> & { sources: SourceRef };
 export type DeadlineRow = Tables<"deadlines"> & { sources: SourceRef };
 export type CostRow = Tables<"cost_items"> & { sources: SourceRef };
-export type CycleFacts = Pick<Tables<"program_cycles">, "id" | "program_id" | "label" | "intake_year" | "starts_on"> & {
+export type CycleFacts = Pick<
+  Tables<"program_cycles">,
+  "id" | "program_id" | "label" | "intake_year" | "intake_term" | "starts_on"
+> & {
   requirements: RequirementRow[];
   deadlines: DeadlineRow[];
   cost_items: CostRow[];
@@ -24,7 +27,7 @@ export type CycleFacts = Pick<Tables<"program_cycles">, "id" | "program_id" | "l
 export type ProgramCard = ViewRow<"program_cards">;
 
 const CYCLE_SELECT =
-  "id, program_id, label, intake_year, starts_on, requirements(*, sources(url, owner)), deadlines(*, sources(url, owner)), cost_items(*, sources(url, owner))";
+  "id, program_id, label, intake_year, intake_term, starts_on, requirements(*, sources(url, owner)), deadlines(*, sources(url, owner)), cost_items(*, sources(url, owner))";
 
 /** The current cycle (latest intake) of each program, with every published fact and its source. */
 export async function loadCurrentCycles(supabase: Supabase, programIds: string[]): Promise<Map<string, CycleFacts>> {
@@ -42,6 +45,18 @@ export async function loadCurrentCycles(supabase: Supabase, programIds: string[]
     if (!cycles.has(cycle.program_id)) cycles.set(cycle.program_id, cycle);
   }
   return cycles;
+}
+
+/** One named intake of a program, for the per-intake pages. */
+export async function loadCycle(supabase: Supabase, programId: string, label: string): Promise<CycleFacts | null> {
+  const { data } = await supabase
+    .from("program_cycles")
+    .select(CYCLE_SELECT)
+    .eq("program_id", programId)
+    .eq("label", label)
+    .returns<CycleFacts[]>()
+    .maybeSingle();
+  return data;
 }
 
 export async function loadFx(supabase: Supabase): Promise<FxTable> {

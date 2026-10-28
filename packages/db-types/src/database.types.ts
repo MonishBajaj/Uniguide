@@ -299,14 +299,14 @@ isOneToOne: false
                   ]
                 },"institutions": {
                   Row: {
-                    "city": string | null,"country": string,"created_at": string,"cricos_provider_code": string | null,"id": string,"ipeds_unitid": string | null,"name": string,"official_domain": string | null,"other_ids": NonNullable<Json>,"ror_id": string | null,"source_id": string | null,"ukprn": string | null,"updated_at": string,"verification_method": Database["public"]['Enums']["verification_method"]
+                    "city": string | null,"country": string,"created_at": string,"cricos_provider_code": string | null,"id": string,"ipeds_unitid": string | null,"name": string,"official_domain": string | null,"other_ids": NonNullable<Json>,"region": string | null,"ror_id": string | null,"source_id": string | null,"ukprn": string | null,"updated_at": string,"verification_method": Database["public"]['Enums']["verification_method"]
                   }
                   ComputedFields: never
                   Insert: {
-                    "city"?: string | null,"country": string,"created_at"?: string,"cricos_provider_code"?: string | null,"id"?: string,"ipeds_unitid"?: string | null,"name": string,"official_domain"?: string | null,"other_ids"?: NonNullable<Json>,"ror_id"?: string | null,"source_id"?: string | null,"ukprn"?: string | null,"updated_at"?: string,"verification_method"?: Database["public"]['Enums']["verification_method"]
+                    "city"?: string | null,"country": string,"created_at"?: string,"cricos_provider_code"?: string | null,"id"?: string,"ipeds_unitid"?: string | null,"name": string,"official_domain"?: string | null,"other_ids"?: NonNullable<Json>,"region"?: string | null,"ror_id"?: string | null,"source_id"?: string | null,"ukprn"?: string | null,"updated_at"?: string,"verification_method"?: Database["public"]['Enums']["verification_method"]
                   }
                   Update: {
-                    "city"?: string | null,"country"?: string,"created_at"?: string,"cricos_provider_code"?: string | null,"id"?: string,"ipeds_unitid"?: string | null,"name"?: string,"official_domain"?: string | null,"other_ids"?: NonNullable<Json>,"ror_id"?: string | null,"source_id"?: string | null,"ukprn"?: string | null,"updated_at"?: string,"verification_method"?: Database["public"]['Enums']["verification_method"]
+                    "city"?: string | null,"country"?: string,"created_at"?: string,"cricos_provider_code"?: string | null,"id"?: string,"ipeds_unitid"?: string | null,"name"?: string,"official_domain"?: string | null,"other_ids"?: NonNullable<Json>,"region"?: string | null,"ror_id"?: string | null,"source_id"?: string | null,"ukprn"?: string | null,"updated_at"?: string,"verification_method"?: Database["public"]['Enums']["verification_method"]
                   }
                   Relationships: [
                     {
@@ -649,6 +649,9 @@ isOneToOne: false
           Functions: {
             "_apply_fact_version":
 { Args: { "p_method": Database["public"]['Enums']["verification_method"],"p_status": Database["public"]['Enums']["fact_status"],"p_verified_at": string,"p_verified_by": string,"p_version": Omit<Database["public"]['Tables']["fact_versions"]['Row'], Database["public"]['Tables']["fact_versions"]['ComputedFields']> }; Returns: string
+                           },
+"add_program_cycle":
+{ Args: { "p_intake_term": string,"p_intake_year": number,"p_program_id": string,"p_starts_on"?: string }; Returns: string
                            },
 "age_band_for":
 { Args: { "p_age": number }; Returns: Database["public"]['Enums']["age_band"]

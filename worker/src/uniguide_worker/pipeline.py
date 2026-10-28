@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import hashlib
 from dataclasses import dataclass, field
-from datetime import date
+from datetime import date, datetime
 from typing import Any
 from uuid import UUID
 
@@ -30,6 +30,7 @@ class CycleRow:
     program_id: UUID
     country: str
     institution_name: str
+    region: str | None
 
     @property
     def info(self) -> CycleInfo:
@@ -45,12 +46,14 @@ class PageReport:
     published: int = 0
     rejected: int = 0
     issues: list[str] = field(default_factory=list)
+    # Facts whose extracted value differs from what students currently see.
+    changes: list[str] = field(default_factory=list)
 
 
 def load_cycle(conn: Connection, cycle_id: UUID | str) -> CycleRow:
     row = conn.execute(
         """
-        select c.id, c.label, c.intake_year, c.starts_on, c.program_id, i.country, i.name as institution_name
+        select c.id, c.label, c.intake_year, c.starts_on, c.program_id, i.country, i.name as institution_name, i.region
         from program_cycles c
         join programs p on p.id = c.program_id
         join institutions i on i.id = p.institution_id
@@ -209,12 +212,14 @@ def extract_page(
     cycle_id: UUID | str,
     *,
     publish: bool = True,
+    result: FetchResult | None = None,
 ) -> PageReport:
     cycle = load_cycle(conn, cycle_id)
-    try:
-        result = fetcher.fetch(url)
-    except FetchRefused as exc:
-        return PageReport(url, "refused", str(exc))
+    if result is None:
+        try:
+            result = fetcher.fetch(url)
+        except FetchRefused as exc:
+            return PageReport(url, "refused", str(exc))
     if result.status >= 400 or not result.text:
         return PageReport(url, "failed", f"HTTP {result.status}")
     if already_processed(conn, url, result.content_hash):
@@ -234,7 +239,7 @@ def extract_page(
         rights_note="Official institution page; facts and short quotes only.",
         extractor_version=EXTRACTOR_VERSION,
     )
-    proposals = from_extraction(run.extraction, cycle.info, cycle.country, result.text)
+    proposals = from_extraction(run.extraction, cycle.info, cycle.country, result.text, cycle.region)
     cycle_issues = check_cycle(run.extraction.effective_intake_year, cycle.info)
     existing = facts_for_cycle(conn, cycle.id)
     previous = previous_cycle_facts(conn, cycle)
@@ -244,6 +249,14 @@ def extract_page(
         proposal.issues += cycle_issues
         proposal.issues += check_changed(proposal.proposed, previous.get(proposal.key()), CHANGE_KEYS)
         current = existing.get(proposal.key())
+        if current is not None and current["published"]:
+            changed = [
+                k
+                for k in [*CHANGE_KEYS, "due_at"]
+                if k in proposal.proposed and not _same(current.get(k), proposal.proposed[k])
+            ]
+            if changed:
+                report.changes.append(f"{proposal.subject} {', '.join(changed)}: {proposal.evidence_quote[:160]}")
         version_id = insert_version(
             conn,
             proposal,
@@ -261,3 +274,15 @@ def extract_page(
             report.published += 1
     conn.commit()
     return report
+
+
+def _same(old: Any, new: Any) -> bool:
+    """Compare a stored value with an extracted one (numbers as numbers, instants as instants)."""
+    if old is None or new is None:
+        return old is new
+    if isinstance(old, datetime):
+        return old == datetime.fromisoformat(str(new))
+    try:
+        return float(old) == float(new)
+    except (TypeError, ValueError):
+        return bool(old == new)

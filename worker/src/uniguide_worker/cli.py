@@ -13,6 +13,7 @@ from psycopg.types.json import Jsonb
 
 from .config import REPO_ROOT, get_settings
 from .db import Connection, connect, is_local
+from .fetch.fetcher import Fetcher
 
 app = typer.Typer(help="Uniguide ingestion, extraction and seed tools.", no_args_is_help=True)
 importer = typer.Typer(help="Import official registers (Listed tier).", no_args_is_help=True)
@@ -69,6 +70,7 @@ def import_au_cricos(
     limit: Annotated[int | None, typer.Option(help="Import at most this many courses.")] = None,
     institutions_file: Annotated[Path | None, typer.Option(help="Local cricos-institutions.csv")] = None,
     courses_file: Annotated[Path | None, typer.Option(help="Local cricos-courses.csv")] = None,
+    with_fees: Annotated[bool, typer.Option(help="Also propose register tuition as unverified facts.")] = False,
 ) -> None:
     """Australia: CRICOS register from data.gov.au."""
     from .fetch.fetcher import Fetcher
@@ -76,7 +78,11 @@ def import_au_cricos(
 
     files = (str(institutions_file), str(courses_file)) if institutions_file and courses_file else None
     fetcher = None if files else Fetcher(get_settings().user_agent)
-    _report(_with_run("import:au_cricos", lambda conn: au_cricos.run(conn, fetcher, limit=limit, files=files)))
+    _report(
+        _with_run(
+            "import:au_cricos", lambda conn: au_cricos.run(conn, fetcher, limit=limit, files=files, with_fees=with_fees)
+        )
+    )
 
 
 @importer.command("us-scorecard")
@@ -118,6 +124,18 @@ def import_uk_discover_uni(
     )
 
 
+@importer.command("ror-match")
+def import_ror_match(
+    country: Annotated[str | None, typer.Option(help="Two-letter country code.")] = None,
+    limit: Annotated[int, typer.Option(help="Institutions to look up.")] = 200,
+) -> None:
+    """Attach ROR identifiers using ROR's affiliation matcher (accepts only its chosen match)."""
+    from .importers import ror
+
+    ua = get_settings().user_agent
+    _report(_with_run("import:ror_match", lambda conn: ror.run(conn, user_agent=ua, country=country, limit=limit)))
+
+
 @importer.command("de-hochschulkompass")
 def import_de_hochschulkompass() -> None:
     """Germany: Hochschulkompass (waits for an HRK partner export)."""
@@ -144,6 +162,26 @@ def extract(
 
     fetcher = Fetcher(get_settings().user_agent)
     _report(_with_run("extract", lambda conn: extract_page(conn, fetcher, Extractor(), url, cycle, publish=publish)))
+
+
+@app.command("extract-program")
+def extract_program_cmd(slug: Annotated[str, typer.Argument(help="Course slug.")]) -> None:
+    """Read every registered official page of one course and queue what they state."""
+    from .extract.extractor import Extractor
+    from .monitor import extract_program
+
+    fetcher = Fetcher(get_settings().user_agent)
+    _report(_with_run("extract-program", lambda conn: extract_program(conn, fetcher, Extractor(), slug)))
+
+
+@app.command("monitor")
+def monitor_cmd(limit: Annotated[int, typer.Option(help="Pages to re-check this run.")] = 50) -> None:
+    """Weekly in season: re-check pages by demand, re-extract changed ones, tell watchers."""
+    from .extract.extractor import Extractor
+    from .monitor import monitor
+
+    fetcher = Fetcher(get_settings().user_agent)
+    _report(_with_run("monitor", lambda conn: monitor(conn, fetcher, Extractor(), limit=limit)))
 
 
 @seed.command("load")

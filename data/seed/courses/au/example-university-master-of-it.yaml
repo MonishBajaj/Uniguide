@@ -3,6 +3,7 @@ placeholder: true
 institution:
   name: Example Coast University (placeholder)
   country: AU
+  region: "NSW"
   city: Coastville
   official_domain: examplecoast.example.org
 program:

@@ -114,3 +114,11 @@ def test_stated_time_and_zone_give_an_exact_deadline() -> None:
     deadline = next(p for p in from_extraction(ex, CYCLE, "IE", PAGE) if p.subject == "deadline")
     assert deadline.proposed["due_at"] == "2027-06-30T17:15:00+01:00"
     assert deadline.proposed["precision"] == "exact_time"
+
+
+def test_region_gives_the_zone_when_the_page_does_not() -> None:
+    ca = next(p for p in from_extraction(extraction(), CYCLE, "CA", PAGE, "BC") if p.subject == "deadline")
+    assert ca.proposed["timezone"] == "America/Vancouver" and ca.issues == []
+    tx = next(p for p in from_extraction(extraction(), CYCLE, "US", PAGE, "TX") if p.subject == "deadline")
+    assert tx.proposed["timezone"] == "America/Chicago"
+    assert [i.code for i in tx.issues] == ["timezone_assumed"]  # Texas spans two zones

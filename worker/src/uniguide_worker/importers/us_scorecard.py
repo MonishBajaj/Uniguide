@@ -32,6 +32,41 @@ API = "https://api.data.gov/ed/collegescorecard/v1/schools.json"
 RIGHTS = "College Scorecard, U.S. Department of Education; public domain."
 FIELDS = "id,school.name,school.city,school.state,school.school_url,latest.programs.cip_4_digit"
 
+# CIP 2020 two-digit series -> ISCED-F 2013 broad field, only where the mapping is one-to-one.
+# Series that straddle several ISCED fields are left unmapped (field matching then scores 0).
+CIP_TO_ISCED_F = {
+    "01": "08",
+    "03": "05",
+    "04": "07",
+    "05": "03",
+    "09": "03",
+    "10": "02",
+    "11": "06",
+    "13": "01",
+    "14": "07",
+    "15": "07",
+    "16": "02",
+    "22": "04",
+    "23": "02",
+    "24": "00",
+    "26": "05",
+    "27": "05",
+    "38": "02",
+    "39": "02",
+    "40": "05",
+    "42": "03",
+    "43": "10",
+    "45": "03",
+    "46": "07",
+    "47": "07",
+    "48": "07",
+    "49": "10",
+    "50": "02",
+    "51": "09",
+    "52": "04",
+    "54": "02",
+}
+
 # Scorecard credential level -> (program level, ISCED 2011 level). Certificates and
 # first-professional degrees are out of scope for now.
 CREDENTIALS: dict[int, tuple[str, int]] = {3: ("bachelor", 6), 5: ("master", 7), 6: ("doctorate", 8)}
@@ -47,6 +82,7 @@ def parse_school(school: dict[str, Any]) -> tuple[InstitutionRecord, list[Progra
         id_value=unitid,
         city=school.get("school.city"),
         official_domain=domain_of(school.get("school.school_url")),
+        region=school.get("school.state"),
     )
     programs: list[ProgramRecord] = []
     for entry in school.get("latest.programs.cip_4_digit") or []:
@@ -63,7 +99,7 @@ def parse_school(school: dict[str, Any]) -> tuple[InstitutionRecord, list[Progra
                 title=f"{credential.get('title') or program_level.title()}: {title}",
                 level=program_level,
                 isced_level=isced,
-                isced_f=None,
+                isced_f=CIP_TO_ISCED_F.get(code[:2]),
                 cip=None,  # Scorecard gives 4-digit CIP; programs.cip holds the 6-digit form
                 field_label=title,
                 track=None,
