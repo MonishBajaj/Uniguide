@@ -136,6 +136,28 @@ def import_ror_match(
     _report(_with_run("import:ror_match", lambda conn: ror.run(conn, user_agent=ua, country=country, limit=limit)))
 
 
+@importer.command("openalex-faculty")
+def import_openalex_faculty(
+    program: Annotated[str, typer.Option(help="Course slug; researchers at its institution in its field.")],
+    limit: Annotated[int, typer.Option(help="Researchers to keep.")] = 40,
+) -> None:
+    """Research-degree faculty from OpenAlex (needs the institution's ROR id; OPENALEX_API_KEY recommended)."""
+    from .importers import openalex
+
+    settings = get_settings()
+
+    def work(conn: Connection) -> object:
+        row = conn.execute("select institution_id, isced_f from programs where slug = %s", (program,)).fetchone()
+        if row is None:
+            raise typer.BadParameter(f"No course {program}")
+        return openalex.run(
+            conn, institution_id=str(row["institution_id"]), contact=settings.crawler_contact,
+            isced_f=row["isced_f"], limit=limit,
+        )  # fmt: skip
+
+    _report(_with_run("import:openalex_faculty", work))
+
+
 @importer.command("de-hochschulkompass")
 def import_de_hochschulkompass() -> None:
     """Germany: Hochschulkompass (waits for an HRK partner export)."""

@@ -103,6 +103,10 @@ export function ProfileForm({ profile }: { profile: Tables<"profiles"> }) {
             </label>
           ))}
         </div>
+        <label className="mt-4 grid gap-2 text-sm font-semibold">
+          Research interests (for research degrees)
+          <textarea name="research_interests" rows={3} maxLength={2000} defaultValue={profile.research_interests ?? ""} placeholder="For example: optimisation under uncertainty for hospital scheduling" className="field font-normal" />
+        </label>
         <label className="mt-4 grid max-w-xs gap-2 text-sm font-semibold">
           Preferred format
           <select name="preferred_delivery" defaultValue={prefs.preferredDelivery ?? ""} className="field font-normal">

@@ -17,5 +17,8 @@ export async function loadCourseExtras(programId: string) {
     user ? supabase.from("admins").select("user_id").eq("user_id", user.id).maybeSingle() : Promise.resolve({ data: null }),
   ]);
   const sources = admin.data ? (await supabase.from("program_sources").select("*").eq("program_id", programId).order("kind")).data ?? [] : [];
-  return { supabase, user, cycles: cycles ?? [], admin: admin.data ? { sources } : null };
+  const interests = user
+    ? (await supabase.from("profiles").select("research_interests").eq("user_id", user.id).maybeSingle()).data?.research_interests ?? null
+    : null;
+  return { supabase, user, cycles: cycles ?? [], admin: admin.data ? { sources } : null, interests };
 }

@@ -36,7 +36,9 @@ def watched(operator: Connection) -> Iterator[dict[str, Any]]:
         """,
         (f"watch-{tag}@example.com",),
     ).fetchone()
-    inst = operator.execute("insert into institutions (name, country) values ('Monitor U', 'GB') returning id").fetchone()
+    inst = operator.execute(
+        "insert into institutions (name, country) values ('Monitor U', 'GB') returning id"
+    ).fetchone()
     assert user and inst
     prog = operator.execute(
         "insert into programs (institution_id, slug, title, level, published) values (%s, %s, 'MSc M', 'master', true) returning id",
@@ -65,7 +67,9 @@ def source_row(conn: Connection, source_id: Any) -> dict[str, Any]:
     return row
 
 
-def test_unchanged_page_is_skipped_and_change_notifies(worker: Connection, operator: Connection, watched: dict[str, Any]) -> None:
+def test_unchanged_page_is_skipped_and_change_notifies(
+    worker: Connection, operator: Connection, watched: dict[str, Any]
+) -> None:
     report = MonitorReport()
     first = Extractor(client=FakeAnthropic(FakeResponse(extraction())))  # type: ignore[arg-type]
     check_source(worker, PageFetcher(PAGE), first, source_row(worker, watched["source"]), report)  # type: ignore[arg-type]

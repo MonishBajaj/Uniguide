@@ -289,6 +289,38 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"faculty_profiles": {
+                  Row: {
+                    "cited_by_count": number | null,"embedding": string | null,"fetched_at": string,"fields": (string)[],"id": string,"institution_id": string,"name": string,"openalex_id": string,"orcid": string | null,"recent_works": NonNullable<Json>,"research_text": string,"search_tsv": unknown,"source_id": string | null,"topics": NonNullable<Json>,"works_count": number | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "cited_by_count"?: number | null,"embedding"?: string | null,"fetched_at"?: string,"fields"?: (string)[],"id"?: string,"institution_id": string,"name": string,"openalex_id": string,"orcid"?: string | null,"recent_works"?: NonNullable<Json>,"research_text"?: string,"search_tsv"?: never,"source_id"?: string | null,"topics"?: NonNullable<Json>,"works_count"?: number | null
+                  }
+                  Update: {
+                    "cited_by_count"?: number | null,"embedding"?: string | null,"fetched_at"?: string,"fields"?: (string)[],"id"?: string,"institution_id"?: string,"name"?: string,"openalex_id"?: string,"orcid"?: string | null,"recent_works"?: NonNullable<Json>,"research_text"?: string,"search_tsv"?: never,"source_id"?: string | null,"topics"?: NonNullable<Json>,"works_count"?: number | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "faculty_profiles_institution_id_fkey"
+      columns: ["institution_id"]
+isOneToOne: false
+      referencedRelation: "institutions"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "faculty_profiles_institution_id_fkey"
+      columns: ["institution_id"]
+isOneToOne: false
+      referencedRelation: "program_cards"
+      referencedColumns: ["institution_id"]
+    },{
+      foreignKeyName: "faculty_profiles_source_id_fkey"
+      columns: ["source_id"]
+isOneToOne: false
+      referencedRelation: "sources"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"fetch_log": {
                   Row: {
                     "bytes": number | null,"content_hash": string | null,"fetched_at": string,"host": string,"http_status": number | null,"id": number,"not_modified": boolean,"robots_allowed": boolean,"run_id": string | null,"url": string
@@ -765,6 +797,11 @@ isOneToOne: false
                            },
 "is_operator":
 { Args: Record<PropertyKey, never>; Returns: boolean
+                           },
+"match_faculty":
+{ Args: { "p_fields"?: (string)[],"p_institution_id": string,"p_limit"?: number,"p_query"?: string,"p_query_embedding"?: string }; Returns: {
+              "cited_by_count": number,"id": string,"name": string,"openalex_id": string,"orcid": string,"recent_works": Json,"score": number,"topics": Json
+            }[]
                            },
 "notifier_recipients":
 { Args: Record<PropertyKey, never>; Returns: {

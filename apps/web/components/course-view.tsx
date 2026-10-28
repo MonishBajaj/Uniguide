@@ -3,6 +3,7 @@ import { costScenarios } from "@uniguide/matching";
 import { trackProgram } from "@/app/app/tracker/actions";
 import { addCycle, addSource, removeSource } from "@/app/courses/actions";
 import { Evidence, FactBadge, TierBadge } from "@/components/facts";
+import { CourseQuestion } from "@/components/course-question";
 import { ReportForm } from "@/components/report-form";
 import { ShortlistButton } from "@/components/shortlist-button";
 import { toProgramInput, type CycleFacts, type ProgramCard, type RequirementRow } from "@/lib/catalog";
@@ -193,6 +194,8 @@ export function CourseView(props: {
       )}
 
       {props.children}
+
+      {signedIn && cycle ? <CourseQuestion programId={card.id!} /> : null}
 
       <section aria-labelledby="report" className="mt-12 rounded-2xl bg-surface p-6">
         <h2 id="report" className="text-lg font-semibold">Something out of date?</h2>

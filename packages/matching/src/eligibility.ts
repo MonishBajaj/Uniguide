@@ -165,6 +165,9 @@ function checkAdmissionsTest(req: RequirementFact, profile: StudentProfile, at: 
   if (policy === "unknown" || policy === "conflicting") {
     return check("admissions_test", "needs_clarification", `${label} policy is ${policy === "conflicting" ? "contradictory across official pages" : "not yet known"}.`, [req]);
   }
+  if (policy === "waived_conditional") {
+    return check("admissions_test", "needs_clarification", `${label} is waived only under conditions; check whether they apply to you.`, [req]);
+  }
   if (policy !== "required") {
     return guardStatus(check("admissions_test", "meets", `${label} is ${policy.replace("_", " ")}.`, [req]), [req]);
   }

@@ -31,6 +31,7 @@ const Profile = z.object({
   weights: z.object({ field: z.number(), budget: z.number(), location: z.number(), delivery: z.number() }),
   reminders_enabled: z.boolean(),
   reminder_days: z.array(z.coerce.number().int().min(1).max(90)).max(6),
+  research_interests: z.preprocess((v) => (v ? String(v).trim() : null), z.string().max(2000).nullable()),
 });
 
 export async function saveProfile(_prev: FormState, form: FormData): Promise<FormState> {
@@ -53,6 +54,7 @@ export async function saveProfile(_prev: FormState, form: FormData): Promise<For
     weights: { field: weight("field"), budget: weight("budget"), location: weight("location"), delivery: weight("delivery") },
     reminders_enabled: form.get("reminders_enabled") === "on",
     reminder_days: form.getAll("reminder_days"),
+    research_interests: form.get("research_interests"),
   });
   if (!parsed.success) return { ok: false, message: "Some values are not valid. Check numbers are numbers." };
   if (parsed.data.grade_value != null && !parsed.data.grade_scale) {
@@ -227,4 +229,15 @@ export async function applyCvItems(_prev: FormState, form: FormData): Promise<Fo
   }
   revalidatePath("/app/profile");
   return { ok: true, message: "Saved the items you kept." };
+}
+
+export async function setAiConsent(on: boolean) {
+  const { supabase, user } = await getUser();
+  if (!user) return;
+  if (on) {
+    await supabase.from("consents").insert({ user_id: user.id, kind: "ai_processing", policy_version: POLICY_VERSION, method: "checkbox" });
+  } else {
+    await supabase.from("consents").update({ withdrawn_at: new Date().toISOString() }).eq("kind", "ai_processing").is("withdrawn_at", null);
+  }
+  revalidatePath("/app", "layout");
 }

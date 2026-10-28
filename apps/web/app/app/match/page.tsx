@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { createHash } from "node:crypto";
-import { DEFAULT_WEIGHTS, matchPrograms, type Exclusion, type Weights } from "@uniguide/matching";
-import type { Enums } from "@uniguide/db-types";
+import { matchPrograms, type Exclusion } from "@uniguide/matching";
+import { ExplainButton } from "@/components/explain-button";
 import { ProgramCard } from "@/components/program-card";
-import { loadCurrentCycles, loadFx, toProgramInput, toStudentProfile } from "@/lib/catalog";
 import { daysUntil, deadlineText, money } from "@/lib/format";
 import { asJson } from "@/lib/json";
+import { loadMatchInputs } from "@/lib/match-data";
 import { getUser } from "@/lib/supabase/server";
 
 export const metadata: Metadata = { title: "My matches" };
@@ -29,11 +29,8 @@ const RULES: Record<Exclusion["rule"], string> = {
 
 export default async function MatchPage() {
   const { supabase, user } = await getUser();
-  const [{ data: profile }, { data: scores }] = await Promise.all([
-    supabase.from("profiles").select("*").eq("user_id", user!.id).single(),
-    supabase.from("test_scores").select("*"),
-  ]);
-  if (!profile || profile.target_levels.length === 0) {
+  const inputs = await loadMatchInputs(supabase, user!.id);
+  if (!inputs) {
     return (
       <div className="rounded-2xl bg-surface p-8">
         <h1 className="text-2xl font-semibold">Tell us what you want to study first</h1>
@@ -42,23 +39,8 @@ export default async function MatchPage() {
       </div>
     );
   }
-
-  const { data: cards } = await supabase.rpc("search_programs", {
-    p_levels: profile.target_levels as Enums<"program_level">[],
-    p_countries: profile.target_countries.length ? profile.target_countries : undefined,
-    p_limit: 200,
-  });
-  const candidates = cards ?? [];
-  const cycles = await loadCurrentCycles(supabase, candidates.map((c) => c.id!));
-  const fx = await loadFx(supabase);
-  const student = toStudentProfile(profile, scores ?? []);
-  const weights: Weights = { ...DEFAULT_WEIGHTS, ...((profile.preferences as { weights?: Partial<Weights> })?.weights ?? {}) };
-  const { results, algorithmVersion } = matchPrograms(
-    candidates.map((card) => toProgramInput(card, cycles.get(card.id!))),
-    student,
-    { now: new Date(), fx },
-    weights,
-  );
+  const { candidates, cycles, student, weights, fx, programs } = inputs;
+  const { results, algorithmVersion } = matchPrograms(programs, student, { now: new Date(), fx }, weights);
 
   // Record the run so results can be reproduced: inputs, catalog state and algorithm version.
   const factIds = [...cycles.values()]
@@ -94,6 +76,7 @@ export default async function MatchPage() {
     <div className="grid gap-10">
       <header>
         <h1 className="text-4xl font-semibold">Your matches</h1>
+        <p className="mt-2 text-sm"><Link href="/app/match/what-if" className="underline underline-offset-2">Try what if: change your grades, budget or scores and see what moves</Link></p>
         <p className="mt-2 max-w-[680px] text-muted">
           {feasible.length} courses fit your limits, ordered by suitability to your preferences. Suitability is not your
           chance of admission. {excluded.length} courses were set aside; the reasons are below.
@@ -149,6 +132,7 @@ export default async function MatchPage() {
                     ))}
                   </ul>
                 </details>
+                <ExplainButton programId={r.programId} />
               </ProgramCard>
             );
           })}

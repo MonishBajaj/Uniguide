@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { label } from "@/lib/format";
 import { getUser } from "@/lib/supabase/server";
-import { deleteTestScore } from "./actions";
+import Link from "next/link";
+import { deleteTestScore, setAiConsent } from "./actions";
 import { CvReader, ProfileForm, TestScoreForm } from "./forms";
 
 export const metadata: Metadata = { title: "Profile" };
@@ -21,6 +22,19 @@ export default async function ProfilePage() {
         <h1 className="text-4xl font-semibold">Your profile</h1>
         <p className="mt-2 text-muted">Used to check requirements and rank courses. Nothing here is shared with universities.</p>
       </header>
+
+      <section aria-labelledby="ai" className="grid gap-3 rounded-2xl bg-surface p-6 text-sm">
+        <h2 id="ai" className="text-lg font-semibold">AI features</h2>
+        <p className="text-muted">
+          The CV reader, setup chat, course questions and result explanations send the text involved to Anthropic&apos;s
+          Claude, which may keep it for up to 30 days. Facts about courses never come from the AI.
+        </p>
+        <form action={setAiConsent.bind(null, !consent)} className="flex flex-wrap items-center gap-3">
+          <span className="font-semibold">{consent ? "On" : "Off"}</span>
+          <button className="btn btn-secondary btn-sm">{consent ? "Turn off" : "Turn on"}</button>
+          {consent ? <Link href="/app/onboarding" className="underline underline-offset-2">Set up your profile by chatting</Link> : null}
+        </form>
+      </section>
 
       <section aria-labelledby="cv" className="grid gap-4 rounded-2xl bg-surface p-6">
         <h2 id="cv" className="text-lg font-semibold">Fill in faster from your CV</h2>

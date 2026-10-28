@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { CourseView } from "@/components/course-view";
+import { FacultyDossier } from "@/components/faculty-dossier";
 import { loadCycle, loadFx } from "@/lib/catalog";
 import { loadCard, loadCourseExtras } from "../data";
 
@@ -21,8 +22,12 @@ export default async function CourseCyclePage({ params }: PageProps<"/courses/[s
   const { slug, cycle: label } = await params;
   const card = await loadCard(slug);
   if (!card || !/^\d{4}-[a-z0-9_]+$/.test(label)) notFound();
-  const { supabase, user, cycles, admin } = await loadCourseExtras(card.id!);
+  const { supabase, user, cycles, admin, interests } = await loadCourseExtras(card.id!);
   const cycle = await loadCycle(supabase, card.id!, label);
   if (!cycle) notFound();
-  return <CourseView card={card} cycle={cycle} cycles={cycles} fx={await loadFx(supabase)} signedIn={Boolean(user)} admin={admin} />;
+  return (
+    <CourseView card={card} cycle={cycle} cycles={cycles} fx={await loadFx(supabase)} signedIn={Boolean(user)} admin={admin}>
+      <FacultyDossier supabase={supabase} card={card} interests={interests} />
+    </CourseView>
+  );
 }

@@ -1,0 +1,23 @@
+{
+  "note": "Course Q&A grounding cases with recorded model answers. Extend toward the 150 questions in the plan.",
+  "facts": [
+    { "id": "F1", "text": "Application deadline (international): 30 June 2027" },
+    { "id": "F2", "text": "Requirement (international): IELTS Academic minimum 6.5" },
+    { "id": "F3", "text": "Requirement: GRE not accepted" },
+    { "id": "F4", "text": "Tuition (international): £31,500 per year (2027-28)" }
+  ],
+  "cases": [
+    { "question": "When is the deadline?", "expect_answered": true,
+      "recorded": { "answered": true, "sentences": [{ "text": "International applications close on 30 June 2027.", "fact_ids": ["F1"] }] } },
+    { "question": "Do I need the GRE?", "expect_answered": true,
+      "recorded": { "answered": true, "sentences": [{ "text": "No, this course does not accept the GRE.", "fact_ids": ["F3"] }] } },
+    { "question": "What IELTS do I need?", "expect_answered": true,
+      "recorded": { "answered": true, "sentences": [{ "text": "You need IELTS Academic 6.5 overall.", "fact_ids": ["F2"] }, { "text": "This requirement is verified.", "fact_ids": ["F2"] }] } },
+    { "question": "Is there a scholarship?", "expect_answered": false,
+      "recorded": { "answered": true, "sentences": [{ "text": "There is a £5,000 scholarship for Indian students.", "fact_ids": [] }] } },
+    { "question": "How much is tuition?", "expect_answered": true,
+      "recorded": { "answered": true, "sentences": [{ "text": "Tuition is £31,500 per year for international students.", "fact_ids": ["F4"] }, { "text": "Living costs are around £1,200 a month.", "fact_ids": ["F9"] }] } },
+    { "question": "What is the acceptance rate?", "expect_answered": false,
+      "recorded": { "answered": false, "sentences": [{ "text": "The published facts do not include an acceptance rate.", "fact_ids": [] }] } }
+  ]
+}
