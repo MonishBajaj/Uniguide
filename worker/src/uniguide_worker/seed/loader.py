@@ -95,6 +95,36 @@ def check_sources(docs: list[tuple[Path, dict[str, Any]]]) -> None:
         raise SeedError("; ".join(problems))
 
 
+def is_critical(fact: dict[str, Any]) -> bool:
+    kind = fact["fields"].get("kind")
+    return (
+        fact["subject"] == "deadline"
+        or (fact["subject"] == "requirement" and kind in {"entry_qualification", "language_test"})
+        or (fact["subject"] == "cost_item" and kind == "tuition")
+    )
+
+
+def check_second_look(docs: list[tuple[Path, dict[str, Any]]]) -> None:
+    """Critical facts need a second look: another person, or the same person on a later day."""
+    problems: list[str] = []
+    for path, doc in docs:
+        if doc.get("placeholder"):
+            continue
+        for cycle in doc["cycles"]:
+            for fact in cycle["facts"]:
+                if not is_critical(fact):
+                    continue
+                by, at = fact.get("second_checked_by"), fact.get("second_checked_at")
+                ok = bool(by and at) and (
+                    by != fact["verified_by"]
+                    or date.fromisoformat(str(at)) > date.fromisoformat(str(fact["verified_at"]))
+                )
+                if not ok:
+                    problems.append(f"{path}: {fact['subject']} in {cycle['label']} needs a second look")
+    if problems:
+        raise SeedError("; ".join(problems))
+
+
 def _seed_key(slug: str, cycle: str, fact: dict[str, Any]) -> str:
     payload = json.dumps(
         [slug, cycle, fact["subject"], fact["fields"], fact["source_url"]], sort_keys=True, default=str
@@ -227,6 +257,7 @@ def load(conn: Connection, roots: Sequence[Path], *, hosted: bool, publish_place
     docs = read_seed_files(*roots)
     check_placeholders(docs, hosted=hosted)
     check_sources(docs)
+    check_second_look(docs)
     if hosted and publish_placeholders:
         raise SeedError("--publish-placeholders is for local development only")
 

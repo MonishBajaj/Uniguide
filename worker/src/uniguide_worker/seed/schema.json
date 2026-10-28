@@ -80,6 +80,8 @@
         "evidence_quote": { "type": "string", "minLength": 8 },
         "verified_by": { "type": "string", "minLength": 1 },
         "verified_at": { "type": "string", "format": "date" },
+        "second_checked_by": { "type": "string", "minLength": 1 },
+        "second_checked_at": { "type": "string", "format": "date" },
         "status": { "enum": ["verified", "conflicting"], "default": "verified" }
       }
     }

@@ -17,7 +17,7 @@ something to display. They never load into a hosted database: the loader refuses
    not verified for this cycle: leave it out.
 4. Record `source_url`, `verified_by` (your name) and `verified_at` (today).
 5. If two official pages disagree, add both with `status: conflicting`.
-6. Critical facts (deadlines, eligibility, tuition) need a second look before loading.
+6. Critical facts (deadlines, entry qualification and language test requirements, tuition) need a second look before loading: add `second_checked_by` and `second_checked_at`. A different person passes; the same person must check on a later day.
 
 Budget about 10 minutes per course per week in season. Re-check any deadline not verified in
 the last 30 days.

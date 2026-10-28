@@ -256,12 +256,21 @@ def seed_check(
     hosted: Annotated[bool, typer.Option(help="Check only real courses, as a hosted load would.")] = False,
 ) -> None:
     """Validate seed files without touching a database (used in CI)."""
-    from .seed.loader import PLACEHOLDER_ROOT, SEED_ROOT, SeedError, check_placeholders, check_sources, read_seed_files
+    from .seed.loader import (
+        PLACEHOLDER_ROOT,
+        SEED_ROOT,
+        SeedError,
+        check_placeholders,
+        check_second_look,
+        check_sources,
+        read_seed_files,
+    )
 
     try:
         check_placeholders(read_seed_files(SEED_ROOT), hosted=True)
         docs = read_seed_files(SEED_ROOT) if hosted else read_seed_files(SEED_ROOT, PLACEHOLDER_ROOT)
         check_sources(docs)
+        check_second_look(docs)
     except SeedError as exc:
         typer.echo(str(exc), err=True)
         raise typer.Exit(1) from exc

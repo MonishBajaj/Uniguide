@@ -9,7 +9,9 @@ from uniguide_worker.seed.loader import (
     SEED_ROOT,
     SeedError,
     check_placeholders,
+    check_second_look,
     check_sources,
+    is_critical,
     read_seed_files,
 )
 
@@ -112,3 +114,54 @@ def test_lookalike_domains_do_not_pass() -> None:
 def test_placeholders_are_skipped_by_the_source_check() -> None:
     path, doc = _doc(None, "https://x.example.org/p")
     check_sources([(path, {**doc, "placeholder": True})])
+
+
+def _fact_doc(
+    subject: str,
+    fields: dict[str, Any],
+    verified: tuple[str, str] = ("Harman", "2026-11-02"),
+    second: tuple[str, str] | None = None,
+) -> tuple[Path, dict[str, Any]]:
+    fact: dict[str, Any] = {
+        "subject": subject,
+        "fields": fields,
+        "source_url": "https://uni.ac.uk/x",
+        "verified_by": verified[0],
+        "verified_at": verified[1],
+    }
+    if second:
+        fact["second_checked_by"], fact["second_checked_at"] = second
+    doc = {
+        "institution": {"name": "X", "country": "GB"},
+        "program": {"slug": "x"},
+        "cycles": [{"label": "c", "facts": [fact]}],
+    }
+    return Path("courses/gb/x.yaml"), doc
+
+
+def test_critical_fact_without_second_look_is_rejected() -> None:
+    with pytest.raises(SeedError, match="second look"):
+        check_second_look([_fact_doc("deadline", {"date": "2027-01-15"})])
+
+
+def test_second_look_by_another_person_passes() -> None:
+    check_second_look([_fact_doc("deadline", {"date": "2027-01-15"}, second=("Asha", "2026-11-02"))])
+
+
+def test_same_person_same_day_is_not_a_second_look() -> None:
+    with pytest.raises(SeedError, match="second look"):
+        check_second_look([_fact_doc("deadline", {"date": "2027-01-15"}, second=("Harman", "2026-11-02"))])
+
+
+def test_same_person_on_a_later_day_passes() -> None:
+    check_second_look([_fact_doc("deadline", {"date": "2027-01-15"}, second=("Harman", "2026-11-03"))])
+
+
+def test_non_critical_facts_need_no_second_look() -> None:
+    check_second_look([_fact_doc("cost_item", {"kind": "living"})])
+
+
+def test_critical_kinds() -> None:
+    assert is_critical({"subject": "requirement", "fields": {"kind": "language_test"}})
+    assert is_critical({"subject": "cost_item", "fields": {"kind": "tuition"}})
+    assert not is_critical({"subject": "requirement", "fields": {"kind": "statement"}})
