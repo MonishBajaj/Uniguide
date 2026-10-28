@@ -2,7 +2,7 @@
 
 Source: the Feature Bible (100 features), `BACKLOG.md`, and what the running app contains (checked October 2026). IDs match the Bible; `X` rows are work from the backlog or this session that the Bible does not number.
 
-**Totals (103 rows):** 24 built · 16 partly built · 43 to build · 6 need an owner decision · 4 deferred to year 2 · 10 cut on purpose.
+**Totals (103 rows):** 26 built · 15 partly built · 42 to build · 6 need an owner decision · 4 deferred to year 2 · 10 cut on purpose.
 
 Status key: **Built** works today · **Partial** exists, listed gap remains · **To build** not started · **Decision** the owner must settle first · **Deferred** year 2 · **Cut** decided against (BACKLOG). Size: S about 2 days, M about a week, L two weeks or more. Priority: P0 needed for a real launch, P1 next, P2 later, P3 only if time allows.
 
@@ -97,7 +97,7 @@ The student app works end to end behind sign-in, but the catalogue holds six pla
 | P0 | X3 | Hand-label 200 official pages for the extraction eval | Decision | M | Blocked: each eval case stores a full `page.html`, but `docs/DATA_SOURCES.md` says "never page copies". Owner picks: private fixture store (recommended), labels and URLs only, or synthetic pages. |
 | P0 | X4 | Hosted setup: Supabase, Vercel Pro, role passwords, Actions secrets | Partial | M | `docs/SETUP.md` warns against `AUTH_DISABLED` on hosted sites. Missing: the setup itself (needs the owner's accounts). |
 | P0 | X5 | Run Playwright in CI with `AUTH_DISABLED=false` | Built | S | The e2e suite signs in through the login page. CI already runs with sign-in on; locally, Playwright's own server now forces `AUTH_DISABLED=false`, and a `globalSetup` stops the run when a demo-mode server is reused. |
-| P1 | 14.1 | Email lifecycle | Partial | M | Reminders and change emails built. Missing: welcome series, weekly digest, re-engagement. |
+| P1 | 14.1 | Email lifecycle | Built | M | Reminders and change emails plus welcome series, Monday digest and re-engagement from the worker, with `email_preferences` and `/unsubscribe/[token]`. |
 | P1 | 2.6 | English proficiency guide | Built | M | `/english-tests`: each exam and version with the courses that accept it and their published minimums; no score conversion between tests. |
 | P1 | 3.10 | Country comparison tool | Built | M | `/compare/countries`: up to four countries side by side, verified facts only, "Not yet verified" otherwise. |
 | P1 | 3.11 | Global deadline calendar | Built | M | `/deadlines`: upcoming application deadlines by month in each institution's time zone, with country, level and intake filters. |
@@ -106,7 +106,7 @@ The student app works end to end behind sign-in, but the catalogue holds six pla
 | P1 | 9.1 | Visa guides | Built | M | `/visas` lists sourced visa steps in order, filtered by where the student lives, with official links. Entering and verifying the steps per country is data work. |
 | P1 | 9.2 | Visa financial requirement calculator | Built | M | `/visas/funds`: verified proof of funds amount plus the course's first year tuition, by region, with the reason shown when it cannot be totalled. Needs verified rules entered per country. |
 | P1 | 9.4 | Post-graduation pathways | Built | M | `/visas` shows sourced post-study work months and part-time work hours per country. Needs rules entered and verified. |
-| P1 | X6 | Payments (Stripe USD 15–29, Razorpay INR 999–1,999) and entitlements | To build | L | Backend and webhooks are A; the paywall UI is B (X10). |
+| P1 | X6 | Payments (Stripe USD 15–29, Razorpay INR 999–1,999) and entitlements | Built | L | Backend: `entitlements`, `record_payment` (token-guarded), `my_entitlement()` returns `season_pass`, writing reviews free during a pass, `POST /api/checkout` and signature-checked Stripe and Razorpay webhooks. Needs provider keys and a hosted setup; the paywall UI is X10 (Developer B). |
 | P2 | 1.3 | Profile comparison insights | To build | M | Compare a profile to published admit data. Needs verified `program_stats`; optional bands already exist. |
 | P2 | 10.2 | Airport to campus guide | To build | S | Per-university data. |
 | P2 | 10.3 | Banking and money setup guide | To build | S | Per-country content with sources. |

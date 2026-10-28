@@ -10,7 +10,7 @@ Weeks 1–4 foundation; weeks 5–6 tracker, checklists, reminders, .ics, outcom
 
 | Item | Notes |
 |---|---|
-| **Payments** (Stripe season pass USD 15–29, Razorpay INR 999–1,999) | Not built, by the owner's decision. Writing review credits exist (`credit_ledger`) and are earned through accepted reports or granted by an admin; a payment provider would add a third source |
+| **Payments: provider setup** (Stripe season pass USD 19, Razorpay INR 1,499) | Built and tested locally (see docs/SETUP.md, Payments); needs provider accounts, keys and a webhook endpoint. The original note: not built, by the owner's decision. Writing review credits exist (`credit_ledger`) and are earned through accepted reports or granted by an admin; a payment provider would add a third source |
 | Replace placeholder seed courses with 50 hand-verified real ones | real courses go in `data/seed/courses`; clearly marked placeholders on example.org live in `data/seed/placeholders`; the loader refuses them in a hosted database |
 | Hand-label 200 official pages for the extraction eval | Fixture format in `worker/evals` |
 | Replace placeholder human scores in the writing eval with two raters | `apps/web/lib/writing/eval` |
