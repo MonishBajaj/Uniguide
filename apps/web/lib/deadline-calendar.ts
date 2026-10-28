@@ -1,4 +1,7 @@
 export type CalendarDeadline = {
+  id: string;
+  applicantCategory: string;
+  round: string | null;
   programSlug: string;
   programTitle: string;
   institution: string;

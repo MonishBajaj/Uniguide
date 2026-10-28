@@ -21,7 +21,7 @@ export default async function Deadlines({ searchParams }: PageProps<"/deadlines"
   let query = supabase
     .from("deadlines")
     .select(
-      "due_at, timezone, precision, kind, status, program_cycles!inner(label, programs!inner(slug, title, level, institutions!inner(name, country)))",
+      "id, due_at, timezone, precision, kind, status, applicant_category, round, program_cycles!inner(label, programs!inner(slug, title, level, institutions!inner(name, country)))",
     )
     .eq("kind", "application")
     .gte("due_at", new Date().toISOString())
@@ -33,6 +33,9 @@ export default async function Deadlines({ searchParams }: PageProps<"/deadlines"
   const { data, error } = await query;
 
   const rows: CalendarDeadline[] = (data ?? []).map((d) => ({
+    id: d.id,
+    applicantCategory: d.applicant_category,
+    round: d.round,
     programSlug: d.program_cycles.programs.slug,
     programTitle: d.program_cycles.programs.title,
     institution: d.program_cycles.programs.institutions.name,
@@ -81,10 +84,17 @@ export default async function Deadlines({ searchParams }: PageProps<"/deadlines"
               <h2 id={`m-${m.month}`} className="text-2xl font-semibold">{m.label}</h2>
               <ul className="mt-4 grid gap-3">
                 {m.items.map((i) => (
-                  <li key={`${i.programSlug}-${i.dueAt}`} className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border bg-surface p-4">
+                  <li key={i.id} className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border bg-surface p-4">
                     <div>
                       <Link href={`/courses/${i.programSlug}`} className="font-semibold underline-offset-2 hover:underline">{i.programTitle}</Link>
                       <p className="text-sm text-muted">{i.institution} · {countryName(i.country)} · {label(i.level)}</p>
+                      {i.applicantCategory !== "all" || i.round ? (
+                        <p className="text-sm text-muted">
+                          {i.applicantCategory !== "all" ? `${label(i.applicantCategory)} applicants` : ""}
+                          {i.applicantCategory !== "all" && i.round ? ", " : ""}
+                          {i.round ?? ""}
+                        </p>
+                      ) : null}
                     </div>
                     <div className="text-right">
                       <p>{deadlineText(i.dueAt, i.timezone, i.precision)}</p>
