@@ -277,6 +277,24 @@ def seed_check(
     typer.echo(f"{len(docs)} seed files valid ({sum(bool(d.get('placeholder')) for _, d in docs)} placeholders)")
 
 
+@seed.command("status")
+def seed_status_cmd(
+    stale_days: Annotated[int, typer.Option(help="Re-check deadlines not verified in this many days.")] = 30,
+) -> None:
+    """Report real course coverage by country and deadlines due for re-checking."""
+    from datetime import date
+
+    from .seed.loader import SEED_ROOT, read_seed_files
+    from .seed.status import seed_status
+
+    status = seed_status(read_seed_files(SEED_ROOT), date.today(), stale_days=stale_days)
+    typer.echo(f"Real courses: {status.total} of {status.target}")
+    for country, count in status.by_country.items():
+        typer.echo(f"  {country}: {count}")
+    for fact in status.stale:
+        typer.echo(f"Stale: {fact.path} · {fact.slug} · {fact.cycle} · verified {fact.verified_at}")
+
+
 @app.command()
 def notify() -> None:
     """Send due deadline reminders and update emails (connects as the notifier role)."""
