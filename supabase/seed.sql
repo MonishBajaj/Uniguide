@@ -51,3 +51,8 @@ alter role notifier with login password 'notifier_local';
 
 -- Local password for the analyst role (hosted: see docs/SETUP.md).
 alter role analyst with login password 'analyst_local';
+
+-- Local payment webhook token: the web app sends PAYMENT_WEBHOOK_TOKEN=local-webhook-token (see .env.example).
+insert into public.payment_config (webhook_token_hash)
+values (encode(extensions.digest('local-webhook-token', 'sha256'), 'hex'))
+on conflict (id) do nothing;

@@ -299,6 +299,20 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"entitlements": {
+                  Row: {
+                    "amount": number,"created_at": string,"currency": string,"ends_at": string,"external_id": string,"id": string,"kind": string,"provider": string,"refunded_at": string | null,"starts_at": string,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "amount": number,"created_at"?: string,"currency": string,"ends_at": string,"external_id": string,"id"?: string,"kind": string,"provider": string,"refunded_at"?: string | null,"starts_at"?: string,"user_id": string
+                  }
+                  Update: {
+                    "amount"?: number,"created_at"?: string,"currency"?: string,"ends_at"?: string,"external_id"?: string,"id"?: string,"kind"?: string,"provider"?: string,"refunded_at"?: string | null,"starts_at"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
                 },"fact_reports": {
                   Row: {
                     "created_at": string,"evidence_url": string | null,"fact_id": string | null,"id": string,"message": string,"program_id": string,"resolved_at": string | null,"resolved_by": string | null,"status": string,"subject": Database["public"]['Enums']["fact_subject"] | null,"user_id": string
@@ -625,6 +639,20 @@ isOneToOne: false
                   }
                   Update: {
                     "confirmed_at"?: string | null,"created_at"?: string,"expires_at"?: string,"id"?: string,"parent_email"?: string,"token_hash"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"payment_config": {
+                  Row: {
+                    "id": boolean,"pass_months": number,"webhook_token_hash": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "id"?: boolean,"pass_months"?: number,"webhook_token_hash": string
+                  }
+                  Update: {
+                    "id"?: boolean,"pass_months"?: number,"webhook_token_hash"?: string
                   }
                   Relationships: [
                     
@@ -1086,8 +1114,14 @@ isOneToOne: false
 "recompute_coverage":
 { Args: { "p_program_id": string }; Returns: Database["public"]['Enums']["coverage_tier"]
                            },
+"record_payment":
+{ Args: { "p_amount": number,"p_currency": string,"p_external_id": string,"p_provider": string,"p_token": string,"p_user_id": string }; Returns: string
+                           },
 "record_writing_review":
 { Args: { "p_ai_run_id"?: string,"p_compared_version_id"?: string,"p_kind": string,"p_model": string,"p_prompt_version": string,"p_result": Json,"p_version_id": string }; Returns: string
+                           },
+"refund_payment":
+{ Args: { "p_entitlement": string }; Returns: undefined
                            },
 "reject_fact_version":
 { Args: { "p_reason": string,"p_version_id": string }; Returns: undefined
