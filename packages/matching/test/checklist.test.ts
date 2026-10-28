@@ -53,4 +53,22 @@ describe("buildChecklist", () => {
     expect(items.map((i) => i.title)).toEqual(["Funding deadline"]);
     expect(items[0]!.dueAt).toBe("2027-01-15T00:00:00Z");
   });
+
+  it("keeps visa-stage and informational country rules off the application checklist", () => {
+    const rule = (kind: string, title: string, region: string | null = null) => ({ id: title, kind, title, region });
+    const rules = [
+      rule("aps_certificate", "APS certificate"),
+      rule("visa_step", "Book visa appointment"),
+      rule("post_study_work", "Graduate route: 24 months"),
+      rule("work_hours", "Part time work: 20 hours"),
+      rule("proof_of_funds", "Funds for London", "london"),
+      rule("proof_of_funds", "Funds for the country"),
+    ];
+    const titles = buildChecklist([], [deadline("2027-01-15T05:00:00Z")], ["all"], NOW, undefined, rules).map((i) => i.title);
+    expect(titles).toContain("APS certificate");
+    expect(titles).toContain("Funds for the country");
+    for (const left of ["Book visa appointment", "Graduate route: 24 months", "Part time work: 20 hours", "Funds for London"]) {
+      expect(titles).not.toContain(left);
+    }
+  });
 });

@@ -20,5 +20,6 @@ export function toCountryRule(row: Tables<"country_rules">): CountryRule {
     region: row.region,
     step: row.step,
     evidenceQuote: row.evidence_quote,
+    verifiedAt: row.verified_at,
   };
 }

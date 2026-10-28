@@ -25,7 +25,7 @@ export async function ensureApplication(supabase: Supabase, userId: string, prog
 
   const { data: profile } = await supabase.from("profiles").select("residence_country").eq("user_id", userId).single();
   const residence = profile?.residence_country ?? "";
-  const { data: rules } = await supabase.from("country_rules").select("id, kind, title, details, link, applies_to").eq("destination", card.country!);
+  const { data: rules } = await supabase.from("country_rules").select("id, kind, title, details, link, applies_to, region").eq("destination", card.country!);
   const countryRules = (rules ?? []).filter((r) => r.applies_to.length === 0 || r.applies_to.includes(residence));
   const program = toProgramInput(card, cycle);
   const deadlines = cycle.deadlines.map((d) => ({

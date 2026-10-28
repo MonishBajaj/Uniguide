@@ -37,6 +37,12 @@ describe("requiredFunds", () => {
     expect(requiredFunds(rules, "GB", "elsewhere", tuition)).toMatchObject({ ok: true, rule: { id: "rest" } });
   });
 
+  it("uses the most recently verified rule when two qualify", () => {
+    const rules = [funds({ id: "old", amount: 900, verifiedAt: "2025-09-01" }), funds({ id: "new", amount: 1000, verifiedAt: "2026-09-01" })];
+    expect(requiredFunds(rules, "GB", null, tuition)).toMatchObject({ ok: true, rule: { id: "new" } });
+    expect(requiredFunds([...rules].reverse(), "GB", null, tuition)).toMatchObject({ ok: true, rule: { id: "new" } });
+  });
+
   it("needs a region when only regional rules exist", () => {
     expect(requiredFunds([funds({ region: "london" })], "GB", null, tuition)).toEqual({ ok: false, reason: "region_required" });
   });
@@ -76,5 +82,29 @@ describe("firstYearTuition", () => {
     expect(firstYearTuition(ukMasters({ costs: [] }))).toBeNull();
     const noCredits = ukMasters({ requiredCredits: null, costs: [cost({ kind: "tuition", basis: "per_credit", base: 1000, currency: "GBP" })] });
     expect(firstYearTuition(noCredits)).toBeNull();
+  });
+
+  it("with verifiedOnly, uses a verified international fee and never a home or unverified one", () => {
+    const program = ukMasters({
+      costs: [
+        cost({ kind: "tuition", basis: "per_year", base: 9535, applicantCategory: "uk_home" }),
+        cost({ kind: "tuition", basis: "per_year", base: 30000, applicantCategory: "international", status: "unverified" }),
+        cost({ kind: "tuition", basis: "per_year", base: 26000, applicantCategory: "international" }),
+      ],
+    });
+    expect(firstYearTuition(program, { verifiedOnly: true })).toMatchObject({ amount: 26000 });
+    expect(firstYearTuition(ukMasters({ costs: [cost({ kind: "tuition", basis: "per_year", base: 9535, applicantCategory: "uk_home" })] }), { verifiedOnly: true })).toBeNull();
+  });
+
+  it("never exceeds what the whole course costs", () => {
+    const shortTerm = ukMasters({ durationMonths: 6, costs: [cost({ kind: "tuition", basis: "per_term", base: 10000 })] });
+    expect(firstYearTuition(shortTerm)).toMatchObject({ amount: 10000 });
+    const nineMonths = ukMasters({ durationMonths: 9, costs: [cost({ kind: "tuition", basis: "per_year", base: 30000 })] });
+    expect(firstYearTuition(nineMonths)).toMatchObject({ amount: 22500 });
+  });
+
+  it("charges a one-off fee in full in year one", () => {
+    const oneOff = ukMasters({ durationMonths: 24, costs: [cost({ kind: "tuition", basis: "one_off", base: 8000 })] });
+    expect(firstYearTuition(oneOff)).toMatchObject({ amount: 8000 });
   });
 });

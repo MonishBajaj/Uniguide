@@ -14,9 +14,9 @@ export function requiredFunds(
   region: string | null,
   firstYearTuition: { amount: number; currency: string } | null,
 ): FundsResult {
-  const verified = rules.filter(
-    (r) => r.destination === destination && r.kind === "proof_of_funds" && r.status === "verified" && r.amount != null && r.currency && r.period,
-  );
+  const verified = rules
+    .filter((r) => r.destination === destination && r.kind === "proof_of_funds" && r.status === "verified" && r.amount != null && r.currency && r.period)
+    .sort((a, b) => (b.verifiedAt ?? "").localeCompare(a.verifiedAt ?? ""));
   const wanted = region?.trim().toLowerCase() ?? null;
   const regional = wanted ? verified.find((r) => r.region?.toLowerCase() === wanted) : undefined;
   const rule = regional ?? verified.find((r) => !r.region);

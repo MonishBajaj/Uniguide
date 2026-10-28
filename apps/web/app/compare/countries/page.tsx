@@ -35,10 +35,8 @@ export default async function CompareCountries({ searchParams }: PageProps<"/com
   ]);
   const cycles = await loadCurrentCycles(supabase, (cards ?? []).map((c) => c.id!));
   const tuition = (cards ?? []).flatMap((card) => {
-    const cycle = cycles.get(card.id!);
-    // Only verified tuition counts toward a range; unverified figures are not averaged in.
-    const verified = cycle ? { ...cycle, cost_items: cycle.cost_items.filter((c) => c.status === "verified") } : undefined;
-    const t = firstYearTuition(toProgramInput(card, verified));
+    // Only a verified international fee counts toward a range; home or unverified figures are not averaged in.
+    const t = firstYearTuition(toProgramInput(card, cycles.get(card.id!)), { verifiedOnly: true });
     return t ? [{ country: card.country!, amount: t.amount, currency: t.currency }] : [];
   });
   const columns = compareCountries(codes, (ruleRows ?? []).map(toCountryRule), tuition);

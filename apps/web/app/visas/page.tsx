@@ -104,6 +104,7 @@ export default async function VisasPage({ searchParams }: PageProps<"/visas">) {
                     {list.filter((r) => r.kind === "post_study_work" || r.kind === "work_hours").map((r) => (
                       <li key={r.id} className="grid gap-1">
                         {r.link ? <a href={r.link} target="_blank" rel="noreferrer" className="font-semibold underline underline-offset-2">{r.title}</a> : <span className="font-semibold">{r.title}</span>}
+                        {r.applies_to.length ? <span className="text-muted">For applicants from {r.applies_to.map(countryName).join(", ")}</span> : null}
                         <span>
                           {r.kind === "work_hours" && r.hours_per_week ? `Up to ${r.hours_per_week} hours a week during study` : null}
                           {r.kind === "post_study_work" && r.months ? `${r.months} months after graduating` : null}
@@ -125,6 +126,7 @@ export default async function VisasPage({ searchParams }: PageProps<"/visas">) {
                     {steps.map((s) => (
                       <li key={s.id} className="grid gap-1">
                         {s.link ? <a href={s.link} target="_blank" rel="noreferrer" className="font-semibold underline underline-offset-2">{s.title}</a> : <span className="font-semibold">{s.title}</span>}
+                        {s.appliesTo?.length ? <span className="text-muted">For applicants from {s.appliesTo.map(countryName).join(", ")}</span> : null}
                         {s.details ? <span className="text-muted">{s.details}</span> : null}
                         {s.evidenceQuote ? <q className="text-muted italic">{s.evidenceQuote}</q> : null}
                         <span><FactBadge status={s.status ?? "unknown"} /></span>
