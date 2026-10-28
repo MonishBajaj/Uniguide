@@ -5,6 +5,8 @@ import { FactBadge } from "@/components/facts";
 import { loadCycleById, loadFx, toProgramInput } from "@/lib/catalog";
 import { label, money, shortDate } from "@/lib/format";
 import { getUser } from "@/lib/supabase/server";
+import { firstReply, daysToReply, replyText, REACTIONS, tallyGutChecks, type GutCheck as Check, type Reaction } from "@/lib/decision-day";
+import { GutCheck } from "./gut-check";
 import { DecisionMatrix } from "./matrix";
 
 export const metadata: Metadata = { title: "Compare offers" };
@@ -25,7 +27,7 @@ export default async function OffersPage() {
       .in("decision", ["admitted", "waitlisted"])
       .order("created_at"),
     supabase.from("profiles").select("budget_amount, budget_currency").eq("user_id", user!.id).single(),
-    supabase.from("decision_matrices").select("criteria, scores").maybeSingle(),
+    supabase.from("decision_matrices").select("criteria, scores, gut_checks").maybeSingle(),
     loadFx(supabase),
   ]);
   const offers = apps ?? [];
@@ -47,6 +49,9 @@ export default async function OffersPage() {
     return { app, card, cost };
   });
   const admitted = rows.filter((r) => r.app.decision === "admitted");
+  const titleOf = (r: (typeof rows)[number]) => r.card?.title ?? "Course";
+  const first = firstReply(admitted.map((r) => ({ title: titleOf(r), due: r.app.deposit_due_at })));
+  const tally = tallyGutChecks((matrix?.gut_checks as Check[] | undefined) ?? []);
   const budget = profile?.budget_amount && profile.budget_currency ? { amount: Number(profile.budget_amount), currency: profile.budget_currency } : null;
 
   return (
@@ -58,6 +63,16 @@ export default async function OffersPage() {
           in your offer. Record decisions and funding on each application in the <Link href="/app/tracker" className="underline underline-offset-2">tracker</Link>.
         </p>
       </header>
+
+      {first ? (
+        <section aria-labelledby="decision-day" className="grid gap-1 rounded-2xl border border-accent/40 bg-surface p-6">
+          <h2 id="decision-day" className="text-sm font-semibold tracking-wide text-muted uppercase">Decision day</h2>
+          <p className="text-2xl font-semibold">
+            {first.days === 0 ? "Your first reply is due today" : `Your first reply is due in ${first.days} day${first.days === 1 ? "" : "s"}`}
+          </p>
+          <p className="text-muted">{first.title}, by {shortDate(first.due)}. Check the date in your offer letter.</p>
+        </section>
+      ) : null}
 
       {rows.length === 0 ? (
         <p className="rounded-2xl border border-border bg-surface p-6 text-muted">
@@ -106,6 +121,7 @@ export default async function OffersPage() {
                       <div>
                         <dt className="text-muted">Reply or deposit due</dt>
                         <dd className="font-semibold">{shortDate(app.deposit_due_at)}</dd>
+                        <dd className="text-muted">{replyText(daysToReply(app.deposit_due_at))}</dd>
                       </div>
                     ) : null}
                     <div className="flex flex-wrap gap-1">
@@ -136,6 +152,28 @@ export default async function OffersPage() {
               Your own weights and scores, private to you. Cost is shown above from published facts; use these rows for
               the things only you can judge.
             </p>
+          </div>
+          <div className="grid gap-3 border-b border-border pb-6">
+            <h3 className="text-lg font-semibold">Gut check</h3>
+            <p className="max-w-2xl text-sm text-muted">
+              Flip a coin between your offers and notice your first reaction. Relief or disappointment tells you what you
+              already want; it is a feeling to weigh, not a way to decide.
+            </p>
+            {admitted.length > 1 ? (
+              <GutCheck offers={admitted.map((r) => ({ id: r.app.id, title: titleOf(r) }))} />
+            ) : (
+              <p className="text-sm">You need at least two offers to compare.</p>
+            )}
+            {tally.size ? (
+              <ul className="grid gap-1 text-sm">
+                {admitted.filter((r) => tally.has(r.app.id)).map((r) => (
+                  <li key={r.app.id}>
+                    <span className="font-semibold">{titleOf(r)}</span>:{" "}
+                    {(Object.keys(REACTIONS) as Reaction[]).filter((k) => tally.get(r.app.id)![k]).map((k) => `${REACTIONS[k].toLowerCase()} ${tally.get(r.app.id)![k]}×`).join(", ")}
+                  </li>
+                ))}
+              </ul>
+            ) : null}
           </div>
           <DecisionMatrix
             offers={rows.map(({ app, card }) => ({ id: app.id, title: card?.title ?? "Course" }))}

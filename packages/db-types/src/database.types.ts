@@ -287,14 +287,14 @@ isOneToOne: false
                   ]
                 },"decision_matrices": {
                   Row: {
-                    "criteria": NonNullable<Json>,"scores": NonNullable<Json>,"updated_at": string,"user_id": string
+                    "criteria": NonNullable<Json>,"gut_checks": NonNullable<Json>,"scores": NonNullable<Json>,"updated_at": string,"user_id": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "criteria"?: NonNullable<Json>,"scores"?: NonNullable<Json>,"updated_at"?: string,"user_id": string
+                    "criteria"?: NonNullable<Json>,"gut_checks"?: NonNullable<Json>,"scores"?: NonNullable<Json>,"updated_at"?: string,"user_id": string
                   }
                   Update: {
-                    "criteria"?: NonNullable<Json>,"scores"?: NonNullable<Json>,"updated_at"?: string,"user_id"?: string
+                    "criteria"?: NonNullable<Json>,"gut_checks"?: NonNullable<Json>,"scores"?: NonNullable<Json>,"updated_at"?: string,"user_id"?: string
                   }
                   Relationships: [
                     
