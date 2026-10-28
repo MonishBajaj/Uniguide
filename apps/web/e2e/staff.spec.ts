@@ -4,6 +4,14 @@ import { resetStudent, signIn, sql, STUDENT } from "./helpers";
 const VERIFIER = "00000000-0000-4000-a000-000000000003";
 
 test("a verifier reviews only their country's courses", async ({ browser }) => {
+  // Each run approves one German proposal; re-propose one when none is left, so the test can be rerun.
+  sql(`insert into fact_versions (subject, subject_id, cycle_id, proposed, evidence_quote, source_id, created_by)
+       select v.subject, v.subject_id, v.cycle_id, v.proposed, v.evidence_quote, v.source_id, v.created_by
+       from fact_versions v join program_cycles c on c.id = v.cycle_id join programs p on p.id = c.program_id
+       where p.slug = 'tu-beispielstadt-msc-informatik' and v.validation = '[]'
+         and not exists (select 1 from fact_versions w join program_cycles c2 on c2.id = w.cycle_id join programs p2 on p2.id = c2.program_id
+                         where p2.slug = 'tu-beispielstadt-msc-informatik' and w.review_state = 'pending' and w.validation = '[]')
+       limit 1`);
   const page = await signIn(browser, "verifier@uniguide.local");
   await page.goto("/admin/review");
   await expect(page.getByText("You review courses in DE")).toBeVisible();

@@ -24,7 +24,7 @@ export function ProfileForm({ profile }: { profile: Tables<"profiles"> }) {
 
   return (
     <form action={action} className="grid gap-6 rounded-2xl border border-border bg-surface p-6">
-      <fieldset className="grid gap-4 sm:grid-cols-2">
+      <fieldset id="qualification" className="grid scroll-mt-24 gap-4 sm:grid-cols-2">
         <legend className="mb-2 text-lg font-semibold">Your most recent qualification</legend>
         <label className="grid gap-2 text-sm font-semibold sm:col-span-2">
           Qualification
@@ -65,7 +65,7 @@ export function ProfileForm({ profile }: { profile: Tables<"profiles"> }) {
         <p className="text-sm text-muted sm:col-span-2">We keep your grade and credits on their own scales and never convert them.</p>
       </fieldset>
 
-      <fieldset className="grid gap-4 sm:grid-cols-2">
+      <fieldset id="budget" className="grid scroll-mt-24 gap-4 sm:grid-cols-2">
         <legend className="mb-2 text-lg font-semibold">Budget for the whole course</legend>
         <label className="grid gap-2 text-sm font-semibold">
           Amount
@@ -81,7 +81,7 @@ export function ProfileForm({ profile }: { profile: Tables<"profiles"> }) {
         <p className="text-sm text-muted sm:col-span-2">Include tuition, fees and living costs. Courses well over this are set aside, with the reason shown.</p>
       </fieldset>
 
-      <fieldset>
+      <fieldset id="targets" className="scroll-mt-24">
         <legend className="mb-2 text-lg font-semibold">What and where</legend>
         <p className="mb-2 text-sm font-semibold">Levels</p>
         <div className="flex flex-wrap gap-2">
@@ -120,7 +120,7 @@ export function ProfileForm({ profile }: { profile: Tables<"profiles"> }) {
             </label>
           ))}
         </div>
-        <label className="mt-4 grid gap-2 text-sm font-semibold">
+        <label id="research" className="mt-4 grid scroll-mt-24 gap-2 text-sm font-semibold">
           Research interests (for research degrees)
           <textarea name="research_interests" rows={3} maxLength={2000} defaultValue={profile.research_interests ?? ""} placeholder="For example: optimisation under uncertainty for hospital scheduling" className="field font-normal" />
         </label>
