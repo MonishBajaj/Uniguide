@@ -1,5 +1,6 @@
 import shutil
 from pathlib import Path
+from typing import Any
 
 import pytest
 
@@ -72,8 +73,8 @@ def test_read_seed_files_reads_several_roots() -> None:
     assert len(both) == len(read_seed_files(SEED_ROOT)) + len(read_seed_files(PLACEHOLDER_ROOT))
 
 
-def _doc(official_domain: str | None, url: str, extra: list[str] | None = None) -> tuple[Path, dict]:
-    inst: dict = {"name": "X University", "country": "GB"}
+def _doc(official_domain: str | None, url: str, extra: list[str] | None = None) -> tuple[Path, dict[str, Any]]:
+    inst: dict[str, Any] = {"name": "X University", "country": "GB"}
     if official_domain:
         inst["official_domain"] = official_domain
     if extra:
