@@ -27,6 +27,13 @@ Everything from the Feature Bible that is not in the current scope. **Nothing le
 | Consultancy dashboard for small agencies | 16.4 | Months 6–12 | After ~1k weekly actives |
 | Hierarchical admission model | 13.1 | After one full cycle | Brier score + calibration; never trained on GradCafe |
 | Hochschulkompass importer | — | When HRK grants access | Stub raises `AccessPendingError` |
+| ROR importer for institution identifiers | — | Weeks 5–6 | `institutions.ror_id` exists |
+| Tuition published by registers (CRICOS fees) as reviewable fact versions | — | Weeks 5–6 | Currently the importer skips fees rather than publishing them unreviewed |
+| ASCED and CIP to ISCED-F field crosswalks | — | Weeks 5–6 | CRICOS maps only one-to-one broad fields; Scorecard fields are unmapped, so field matching scores them 0 |
+| "Report outdated info" as an in-app form with credits for correct reports | — | Weeks 5–6 | Now a mailto link |
+| Scheduled worker (weekly re-fetch in season, change diff alerts) | 3.9 | Weeks 5–6 | Fetcher already does conditional GET and content hashes |
+| Conversational onboarding (3–4 turn chat updating the profile by tool calls) | 1.1 | Weeks 7–12 | The CV reader uses one structured-output call with field-by-field confirmation |
+| Playwright end-to-end suite in CI | — | Weeks 5–6 | Flows were verified by hand-run Playwright scripts |
 | Visa interview coach (truthful preparation only, official links) | — | Phase 3 at earliest | Concealment content deleted |
 
 ## Deferred to year 2
