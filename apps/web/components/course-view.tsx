@@ -8,6 +8,9 @@ import { ReportForm } from "@/components/report-form";
 import { ProgramCard as SimilarCard } from "@/components/program-card";
 import { ShortlistButton } from "@/components/shortlist-button";
 import { toProgramInput, type CycleFacts, type ProgramCard, type RequirementRow } from "@/lib/catalog";
+import { CampusLiving } from "@/components/campus-living";
+import { FundingAndWork } from "@/components/funding-and-work";
+import type { InstitutionFact } from "@/lib/institution-facts";
 import { AUTH_DISABLED } from "@/lib/env";
 import { QUALIFICATIONS } from "@/lib/fields";
 import { countryName, deadlineText, label, money, waiverAmount } from "@/lib/format";
@@ -51,6 +54,8 @@ export function CourseView(props: {
   signedIn: boolean;
   admin: { sources: Tables<"program_sources">[] } | null;
   similar?: ProgramCard[];
+  facts?: InstitutionFact[];
+  workRules?: Parameters<typeof FundingAndWork>[0]["workRules"];
   children?: React.ReactNode;
 }) {
   const { card, cycle, cycles, fx, signedIn, admin } = props;
@@ -215,6 +220,11 @@ export function CourseView(props: {
         </>
       )}
 
+      <FundingAndWork facts={props.facts ?? []} workRules={props.workRules ?? []} />
+      <CampusLiving facts={props.facts ?? []} />
+      {(props.facts ?? []).some((f) => ["airport", "arrival_support", "course_registration"].includes(f.kind)) ? (
+        <p className="mt-8 text-sm"><Link href={`/courses/${card.slug}/arrival`} className="underline underline-offset-2">Arriving and registering: the guide</Link></p>
+      ) : null}
       {props.similar?.length ? (
         <section aria-labelledby="similar" className="mt-12">
           <h2 id="similar" className="text-2xl font-semibold">Similar courses</h2>

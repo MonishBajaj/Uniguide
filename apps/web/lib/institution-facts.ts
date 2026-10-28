@@ -1,4 +1,5 @@
 import type { Tables } from "@uniguide/db-types";
+import { money } from "./format";
 
 export type InstitutionFact = {
   id: string;
@@ -39,5 +40,18 @@ const ARRIVAL_ORDER = ["airport", "arrival_support", "course_registration"];
 
 /** The arrival guide's sections, in reading order, without the empty ones. */
 export function arrivalSections(facts: InstitutionFact[]): { kind: string; facts: InstitutionFact[] }[] {
-  return ARRIVAL_ORDER.map((kind) => ({ kind, facts: facts.filter((f) => f.kind === kind) })).filter((s) => s.facts.length > 0);
+  return groupByKind(facts, ARRIVAL_ORDER);
+}
+
+const PERIOD: Record<string, string> = { per_month: " a month", per_term: " a term", per_year: " a year", one_off: " one off" };
+
+/** The amount as published, with its own period. Never converted between periods or currencies. */
+export function describeAmount(f: InstitutionFact): string | null {
+  if (f.amount === null || f.currency === null) return null;
+  return `${money(f.amount, f.currency)}${PERIOD[f.period ?? ""] ?? ""}`;
+}
+
+/** Facts grouped by kind in the given order, without empty groups. */
+export function groupByKind(facts: InstitutionFact[], order: string[]): { kind: string; facts: InstitutionFact[] }[] {
+  return order.map((kind) => ({ kind, facts: facts.filter((f) => f.kind === kind) })).filter((g) => g.facts.length > 0);
 }

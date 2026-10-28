@@ -1,6 +1,9 @@
 import "server-only";
 import { cache } from "react";
+import { factsFor, toInstitutionFact } from "@/lib/institution-facts";
 import { createClient } from "@/lib/supabase/server";
+
+const FACT_KINDS = ["assistantship", "on_campus_work", "housing_on_campus", "housing_off_campus", "transit_pass", "parking", "health_insurance", "airport", "arrival_support", "course_registration"] as const;
 
 export const loadCard = cache(async (slug: string) => {
   const supabase = await createClient();
@@ -17,7 +20,7 @@ async function loadSimilarCards(supabase: Awaited<ReturnType<typeof createClient
   return ids.flatMap((id) => cards?.find((c) => c.id === id) ?? []);
 }
 
-export async function loadCourseExtras(programId: string) {
+export async function loadCourseExtras(programId: string, institutionId: string, country: string) {
   const supabase = await createClient();
   const { data: auth } = await supabase.auth.getUser();
   const user = auth.user;
@@ -30,5 +33,13 @@ export async function loadCourseExtras(programId: string) {
     ? (await supabase.from("profiles").select("research_interests").eq("user_id", user.id).maybeSingle()).data?.research_interests ?? null
     : null;
   const similar = await loadSimilarCards(supabase, programId);
-  return { supabase, user, cycles: cycles ?? [], admin: admin.data ? { sources } : null, interests, similar };
+  const [{ data: factRows }, { data: workRows }] = await Promise.all([
+    supabase.from("institution_facts").select("*").eq("institution_id", institutionId).order("created_at"),
+    supabase.from("country_rules").select("*").eq("destination", country).eq("kind", "work_hours").order("verified_at", { ascending: false, nullsFirst: false }),
+  ]);
+  const facts = factsFor((factRows ?? []).map(toInstitutionFact), programId, [...FACT_KINDS]);
+  const workRules = (workRows ?? []).filter((r) => r.applies_to.length === 0).slice(0, 1).map((r) => ({
+    id: r.id, title: r.title, hoursPerWeek: r.hours_per_week, status: r.status, evidenceQuote: r.evidence_quote, link: r.link,
+  }));
+  return { supabase, user, cycles: cycles ?? [], admin: admin.data ? { sources } : null, interests, similar, facts, workRules };
 }
