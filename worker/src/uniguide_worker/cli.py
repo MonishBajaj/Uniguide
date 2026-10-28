@@ -11,7 +11,7 @@ from typing import Annotated, Any
 import typer
 from psycopg.types.json import Jsonb
 
-from .config import REPO_ROOT, get_settings
+from .config import get_settings
 from .db import Connection, connect, is_local
 from .fetch.fetcher import Fetcher
 
@@ -224,20 +224,27 @@ def monitor_cmd(limit: Annotated[int, typer.Option(help="Pages to re-check this 
 
 @seed.command("load")
 def seed_load(
-    root: Annotated[Path, typer.Option(help="Folder of course YAML files.")] = REPO_ROOT / "data" / "seed" / "courses",
     publish_placeholders: Annotated[
         bool, typer.Option(help="Local development only: show placeholder courses as unverified.")
     ] = False,
 ) -> None:
-    """Load hand-verified courses (connects as the operator, OPERATOR_DATABASE_URL)."""
-    from .seed.loader import SeedError, load
+    """Load hand-verified courses from data/seed/courses (connects as the operator, OPERATOR_DATABASE_URL).
+
+    With --publish-placeholders, the fictional courses in data/seed/placeholders load too (local only).
+    """
+    from .seed.loader import PLACEHOLDER_ROOT, SEED_ROOT, SeedError, load
 
     url = get_settings().operator_database_url
     if not url:
         raise typer.BadParameter("Set OPERATOR_DATABASE_URL (see .env.example)")
     try:
         with connect(url) as conn:
-            report = load(conn, root, hosted=not is_local(url), publish_placeholders=publish_placeholders)
+            report = load(
+                conn,
+                [SEED_ROOT, PLACEHOLDER_ROOT] if publish_placeholders else [SEED_ROOT],
+                hosted=not is_local(url),
+                publish_placeholders=publish_placeholders,
+            )
     except SeedError as exc:
         typer.echo(str(exc), err=True)
         raise typer.Exit(1) from exc
@@ -246,15 +253,14 @@ def seed_load(
 
 @seed.command("check")
 def seed_check(
-    root: Annotated[Path, typer.Option()] = REPO_ROOT / "data" / "seed" / "courses",
-    hosted: Annotated[bool, typer.Option(help="Fail on placeholder files, as a hosted load would.")] = False,
+    hosted: Annotated[bool, typer.Option(help="Check only real courses, as a hosted load would.")] = False,
 ) -> None:
     """Validate seed files without touching a database (used in CI)."""
-    from .seed.loader import SeedError, check_placeholders, read_seed_files
+    from .seed.loader import PLACEHOLDER_ROOT, SEED_ROOT, SeedError, check_placeholders, read_seed_files
 
     try:
-        docs = read_seed_files(root)
-        check_placeholders(docs, hosted=hosted)
+        check_placeholders(read_seed_files(SEED_ROOT), hosted=True)
+        docs = read_seed_files(SEED_ROOT) if hosted else read_seed_files(SEED_ROOT, PLACEHOLDER_ROOT)
     except SeedError as exc:
         typer.echo(str(exc), err=True)
         raise typer.Exit(1) from exc

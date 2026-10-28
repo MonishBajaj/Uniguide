@@ -3,7 +3,8 @@
 One YAML file per hand-verified course, under `courses/<country>/`. The format is defined by
 `worker/src/uniguide_worker/seed/schema.json` and checked in CI (`uniguide-worker seed check`).
 
-The files here now are **placeholders**: fictional institutions on reserved `example.org`
+Real, verified courses go in `courses/<country>/`. The **placeholders** live apart, in
+`placeholders/<country>/`: fictional institutions on reserved `example.org`
 domains, marked `placeholder: true`. They exist to show the format and give the local app
 something to display. They never load into a hosted database: the loader refuses.
 
@@ -34,6 +35,6 @@ the last 30 days.
 ```bash
 cd worker
 uv run uniguide-worker seed check                          # validate files
-uv run uniguide-worker seed load                           # local: placeholders stay hidden
-uv run uniguide-worker seed load --publish-placeholders    # local demo: show them as unverified
+uv run uniguide-worker seed load                           # real courses only (hosted or local)
+uv run uniguide-worker seed load --publish-placeholders    # local demo: also load the placeholders, shown as unverified
 ```

@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+from collections.abc import Sequence
 from dataclasses import dataclass, field
 from datetime import date, time
 from pathlib import Path
@@ -19,11 +20,14 @@ import jsonschema
 import yaml
 from psycopg.types.json import Jsonb
 
+from ..config import REPO_ROOT
 from ..db import Connection
 from ..proposals import deadline_proposal
 from ..validate.checks import CycleInfo
 
 SCHEMA = json.loads((Path(__file__).with_name("schema.json")).read_text())
+SEED_ROOT = REPO_ROOT / "data" / "seed" / "courses"
+PLACEHOLDER_ROOT = REPO_ROOT / "data" / "seed" / "placeholders"
 PLACEHOLDER_OWNER = "PLACEHOLDER - illustrative data, not verified"
 
 
@@ -40,17 +44,17 @@ class SeedReport:
     errors: list[str] = field(default_factory=list)
 
 
-def read_seed_files(root: Path) -> list[tuple[Path, dict[str, Any]]]:
-    files = sorted(root.rglob("*.yaml")) + sorted(root.rglob("*.yml"))
+def read_seed_files(*roots: Path) -> list[tuple[Path, dict[str, Any]]]:
     out = []
-    for path in files:
-        # YAML turns bare dates into date objects; validate and load the JSON-shaped document.
-        doc = json.loads(json.dumps(yaml.safe_load(path.read_text(encoding="utf-8")), default=str))
-        try:
-            jsonschema.validate(doc, SCHEMA, format_checker=jsonschema.FormatChecker())
-        except jsonschema.ValidationError as exc:
-            raise SeedError(f"{path}: {exc.message} at {'/'.join(map(str, exc.absolute_path))}") from exc
-        out.append((path, doc))
+    for root in roots:
+        for path in sorted(root.rglob("*.yaml")) + sorted(root.rglob("*.yml")):
+            # YAML turns bare dates into date objects; validate and load the JSON-shaped document.
+            doc = json.loads(json.dumps(yaml.safe_load(path.read_text(encoding="utf-8")), default=str))
+            try:
+                jsonschema.validate(doc, SCHEMA, format_checker=jsonschema.FormatChecker())
+            except jsonschema.ValidationError as exc:
+                raise SeedError(f"{path}: {exc.message} at {'/'.join(map(str, exc.absolute_path))}") from exc
+            out.append((path, doc))
     return out
 
 
@@ -189,8 +193,8 @@ def _fact_fields(
     return proposal.proposed, [f"{i.code}: {i.message}" for i in proposal.issues if i.level == "error"]
 
 
-def load(conn: Connection, root: Path, *, hosted: bool, publish_placeholders: bool = False) -> SeedReport:
-    docs = read_seed_files(root)
+def load(conn: Connection, roots: Sequence[Path], *, hosted: bool, publish_placeholders: bool = False) -> SeedReport:
+    docs = read_seed_files(*roots)
     check_placeholders(docs, hosted=hosted)
     if hosted and publish_placeholders:
         raise SeedError("--publish-placeholders is for local development only")

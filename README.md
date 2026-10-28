@@ -25,7 +25,7 @@ Payments are not built: writing reviews after the first free one use credits, wh
 | `packages/db-types` | TypeScript types generated from the database |
 | `supabase` | SQL migrations, RLS policies, RPCs, pgTAP tests, local seed |
 | `worker` | Python: register importers, official-page extraction (Claude Haiku 5.5), monitor, reminders, research, seed loader, evals |
-| `data/seed` | Hand-verified course files (placeholders for now) and shared test fixtures |
+| `data/seed` | Hand-verified course files in `courses/`, fictional ones in `placeholders/` and shared test fixtures |
 | `docs` | [Setup](docs/SETUP.md), [architecture](docs/ARCHITECTURE.md), [data sources](docs/DATA_SOURCES.md) |
 | `BACKLOG.md` | What is left, what is deferred or cut, and open legal items |
 

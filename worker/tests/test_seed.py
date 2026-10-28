@@ -1,11 +1,11 @@
+import shutil
 from pathlib import Path
 
 import pytest
 
-from uniguide_worker.config import REPO_ROOT
-from uniguide_worker.seed.loader import SeedError, check_placeholders, read_seed_files
+from uniguide_worker.seed.loader import PLACEHOLDER_ROOT, SEED_ROOT, SeedError, check_placeholders, read_seed_files
 
-SEEDS = REPO_ROOT / "data" / "seed" / "courses"
+SEEDS = PLACEHOLDER_ROOT
 
 
 def test_repository_seed_files_are_valid() -> None:
@@ -48,3 +48,18 @@ cycles:
     )
     with pytest.raises(SeedError, match="evidence_quote"):
         read_seed_files(tmp_path)
+
+
+def test_real_folder_rejects_placeholder_files(tmp_path: Path) -> None:
+    shutil.copy(next(PLACEHOLDER_ROOT.rglob("*.yaml")), tmp_path / "x.yaml")
+    with pytest.raises(SeedError, match="placeholder"):
+        check_placeholders(read_seed_files(tmp_path), hosted=True)
+
+
+def test_repository_real_folder_holds_no_placeholders() -> None:
+    check_placeholders(read_seed_files(SEED_ROOT), hosted=True)
+
+
+def test_read_seed_files_reads_several_roots() -> None:
+    both = read_seed_files(SEED_ROOT, PLACEHOLDER_ROOT)
+    assert len(both) == len(read_seed_files(SEED_ROOT)) + len(read_seed_files(PLACEHOLDER_ROOT))
