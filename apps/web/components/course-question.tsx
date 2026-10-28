@@ -9,7 +9,7 @@ export function CourseQuestion({ programId }: { programId: string }) {
   const [result, setResult] = useState<AskResult | null>(null);
   const [pending, start] = useTransition();
   return (
-    <section aria-labelledby="ask" className="mt-12 rounded-2xl bg-surface p-6">
+    <section aria-labelledby="ask" className="mt-12 rounded-2xl border border-border bg-surface p-6">
       <h2 id="ask" className="text-lg font-semibold">Ask about this course</h2>
       <p className="mt-1 text-sm text-muted">Answers use only the facts on this page and link each one to its source.</p>
       <form

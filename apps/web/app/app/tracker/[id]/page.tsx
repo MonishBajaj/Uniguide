@@ -38,7 +38,7 @@ export default async function ApplicationPage({ params }: PageProps<"/app/tracke
         </div>
       </header>
 
-      <section aria-labelledby="checklist" className="grid gap-3 rounded-2xl bg-surface p-6">
+      <section aria-labelledby="checklist" className="grid gap-3 rounded-2xl border border-border bg-surface p-6">
         <h2 id="checklist" className="text-lg font-semibold">Checklist</h2>
         <ul className="grid gap-2">
           {items.map((item) => {
@@ -78,7 +78,7 @@ export default async function ApplicationPage({ params }: PageProps<"/app/tracke
         </form>
       </section>
 
-      <section aria-labelledby="notes" className="grid gap-3 rounded-2xl bg-surface p-6">
+      <section aria-labelledby="notes" className="grid gap-3 rounded-2xl border border-border bg-surface p-6">
         <h2 id="notes" className="text-lg font-semibold">Notes</h2>
         <form action={saveNotes.bind(null, app.id)} className="grid gap-2">
           <label className="sr-only" htmlFor="notes-text">Notes</label>
@@ -87,7 +87,7 @@ export default async function ApplicationPage({ params }: PageProps<"/app/tracke
         </form>
       </section>
 
-      <section aria-labelledby="decision" className="grid gap-4 rounded-2xl bg-surface p-6">
+      <section aria-labelledby="decision" className="grid gap-4 rounded-2xl border border-border bg-surface p-6">
         <h2 id="decision" className="text-lg font-semibold">Decision</h2>
         <form action={recordDecision.bind(null, app.id)} className="grid gap-3 sm:grid-cols-2">
           <label className="grid gap-2 text-sm font-semibold">

@@ -54,7 +54,7 @@ export function Evidence({
       {quote ? (
         <details className="mt-1">
           <summary className="cursor-pointer">Quote from the page</summary>
-          <blockquote className="mt-1 rounded-lg bg-surface px-3 py-2 text-foreground">{quote}</blockquote>
+          <blockquote className="mt-1 rounded-lg border border-border bg-surface px-3 py-2 text-foreground">{quote}</blockquote>
         </details>
       ) : null}
     </div>

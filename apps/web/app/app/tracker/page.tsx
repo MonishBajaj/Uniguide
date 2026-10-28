@@ -49,7 +49,7 @@ export default async function TrackerPage({ searchParams }: PageProps<"/app/trac
       </header>
 
       {apps.length === 0 ? (
-        <div className="rounded-2xl bg-surface p-8">
+        <div className="rounded-2xl border border-border bg-surface p-8">
           <h2 className="text-xl font-semibold">No applications yet</h2>
           <p className="mt-2 text-muted">Shortlist a course and its card appears here with a checklist built from its requirements.</p>
           <Link href="/app/match" className="btn btn-primary mt-6">See my matches</Link>
@@ -59,7 +59,7 @@ export default async function TrackerPage({ searchParams }: PageProps<"/app/trac
           {COLUMNS.map((col) => {
             const items = apps.filter((a) => a.status === col.status);
             return (
-              <section key={col.status} aria-labelledby={`col-${col.status}`} className="grid content-start gap-3 rounded-2xl bg-surface p-3">
+              <section key={col.status} aria-labelledby={`col-${col.status}`} className="grid content-start gap-3 rounded-2xl border border-border bg-surface p-3">
                 <h2 id={`col-${col.status}`} className="px-1 text-sm font-semibold">{col.label} ({items.length})</h2>
                 {items.map((a) => (
                   <article key={a.id} className="grid gap-2 rounded-xl bg-background p-3 text-sm">
@@ -83,7 +83,7 @@ export default async function TrackerPage({ searchParams }: PageProps<"/app/trac
       ) : (
         <div className="overflow-x-auto rounded-2xl border border-border">
           <table className="w-full min-w-[720px] text-left text-sm">
-            <thead className="bg-surface">
+            <thead className="bg-surface-2">
               <tr>
                 <th scope="col" className="p-3">Course</th>
                 <th scope="col" className="p-3">Status</th>

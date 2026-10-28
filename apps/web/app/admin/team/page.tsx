@@ -22,7 +22,7 @@ export default async function TeamPage({ searchParams }: PageProps<"/admin/team"
     <div className="mx-auto grid max-w-5xl gap-10 px-6 py-12">
       <header>
         <h1 className="text-4xl font-semibold">Verifiers and organisations</h1>
-        {message ? <p role="status" className="mt-3 rounded-lg bg-surface p-3 text-sm">{message}</p> : null}
+        {message ? <p role="status" className="mt-3 rounded-lg border border-border bg-surface p-3 text-sm">{message}</p> : null}
       </header>
 
       <section aria-labelledby="verifiers" className="grid gap-4">
@@ -30,7 +30,7 @@ export default async function TeamPage({ searchParams }: PageProps<"/admin/team"
         <p className="max-w-2xl text-sm text-muted">Verifiers review proposed facts for courses in their countries only. Their tally counts courses with at least one fact they verified.</p>
         <div className="overflow-x-auto rounded-2xl border border-border">
           <table className="w-full min-w-[640px] text-left text-sm">
-            <thead className="bg-surface">
+            <thead className="bg-surface-2">
               <tr>
                 <th scope="col" className="p-3">Verifier</th>
                 <th scope="col" className="p-3">Countries</th>
@@ -60,7 +60,7 @@ export default async function TeamPage({ searchParams }: PageProps<"/admin/team"
             </tbody>
           </table>
         </div>
-        <form action={addVerifier} className="grid gap-3 rounded-2xl bg-surface p-6 sm:grid-cols-3">
+        <form action={addVerifier} className="grid gap-3 rounded-2xl border border-border bg-surface p-6 sm:grid-cols-3">
           <label className="grid gap-1 text-sm">Account email<input name="email" type="email" required className="field" /></label>
           <label className="grid gap-1 text-sm">Name shown on reviews<input name="name" required maxLength={120} className="field" /></label>
           <label className="grid gap-1 text-sm">Countries (comma separated)<input name="countries" required placeholder="DE, AT" className="field" /></label>
@@ -75,7 +75,7 @@ export default async function TeamPage({ searchParams }: PageProps<"/admin/team"
         </p>
         <ul className="grid gap-3">
           {(orgs ?? []).map((o) => (
-            <li key={o.id} className="grid gap-3 rounded-2xl bg-surface p-6">
+            <li key={o.id} className="grid gap-3 rounded-2xl border border-border bg-surface p-6">
               <div className="flex flex-wrap items-baseline justify-between gap-2">
                 <h3 className="text-lg font-semibold">{o.name}{o.country ? ` · ${o.country}` : ""}</h3>
                 <span className="text-sm">Invite code <code className="rounded bg-background px-2 py-1 font-mono">{o.invite_code}</code></span>
@@ -96,7 +96,7 @@ export default async function TeamPage({ searchParams }: PageProps<"/admin/team"
             </li>
           ))}
         </ul>
-        <form action={addOrganization} className="grid gap-3 rounded-2xl bg-surface p-6 sm:grid-cols-3">
+        <form action={addOrganization} className="grid gap-3 rounded-2xl border border-border bg-surface p-6 sm:grid-cols-3">
           <label className="grid gap-1 text-sm">Name<input name="name" required maxLength={160} className="field" /></label>
           <label className="grid gap-1 text-sm">Country (two letters)<input name="country" maxLength={2} className="field" /></label>
           <label className="grid gap-1 text-sm">Website<input name="website" type="url" className="field" /></label>

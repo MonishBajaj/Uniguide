@@ -51,7 +51,7 @@ export default async function VisasPage() {
         <h2 id="by-country" className="text-2xl font-semibold">Official pages by destination</h2>
         <div className="grid gap-4 md:grid-cols-2">
           {[...byCountry.entries()].map(([country, list]) => (
-            <article key={country} className="grid content-start gap-3 rounded-2xl bg-surface p-6">
+            <article key={country} className="grid content-start gap-3 rounded-2xl border border-border bg-surface p-6">
               <h3 className="text-lg font-semibold">{countryName(country)}</h3>
               <ul className="grid gap-3 text-sm">
                 {list.map((r) => (
@@ -82,7 +82,7 @@ export default async function VisasPage() {
         </p>
         <div className="grid gap-4 sm:grid-cols-2">
           {PREP.map((p) => (
-            <div key={p.title} className="rounded-2xl bg-surface p-6">
+            <div key={p.title} className="rounded-2xl border border-border bg-surface p-6">
               <h3 className="font-semibold">{p.title}</h3>
               <p className="mt-2 text-sm text-muted">{p.body}</p>
             </div>

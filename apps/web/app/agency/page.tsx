@@ -45,11 +45,11 @@ export default async function AgencyPage() {
         </p>
       </header>
       {students.length === 0 ? (
-        <p className="rounded-2xl bg-surface p-6 text-muted">No students are sharing yet.</p>
+        <p className="rounded-2xl border border-border bg-surface p-6 text-muted">No students are sharing yet.</p>
       ) : (
         <div className="overflow-x-auto rounded-2xl border border-border">
           <table className="w-full min-w-[720px] text-left text-sm">
-            <thead className="bg-surface">
+            <thead className="bg-surface-2">
               <tr>
                 <th scope="col" className="p-3">Student</th>
                 <th scope="col" className="p-3">Applications</th>

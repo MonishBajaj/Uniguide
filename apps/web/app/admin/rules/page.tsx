@@ -29,7 +29,7 @@ export default async function RulesAdmin() {
         <h2 id="rules" className="text-2xl font-semibold">Country rules</h2>
         <ul className="grid gap-2">
           {(rules ?? []).map((r) => ({ ...r, url: r.sources?.url ?? r.link })).map((r) => (
-            <li key={r.id} className="flex flex-wrap items-start justify-between gap-3 rounded-xl bg-surface p-4 text-sm">
+            <li key={r.id} className="flex flex-wrap items-start justify-between gap-3 rounded-xl border border-border bg-surface p-4 text-sm">
               <div className="grid gap-1">
                 <span className="font-semibold">{countryName(r.destination)}: {r.title}</span>
                 <span className="text-muted">{r.kind}{r.applies_to.length ? ` · for ${r.applies_to.join(", ")}` : " · everyone"}</span>
@@ -45,7 +45,7 @@ export default async function RulesAdmin() {
             </li>
           ))}
         </ul>
-        <form action={addRule} className="grid gap-3 rounded-2xl bg-surface p-6 sm:grid-cols-2">
+        <form action={addRule} className="grid gap-3 rounded-2xl border border-border bg-surface p-6 sm:grid-cols-2">
           <h3 className="font-semibold sm:col-span-2">Add a rule</h3>
           <label className="grid gap-1 text-sm">Destination (two letters)<input name="destination" required maxLength={2} className="field" /></label>
           <label className="grid gap-1 text-sm">Kind
@@ -70,7 +70,7 @@ export default async function RulesAdmin() {
         <p className="max-w-2xl text-sm text-muted">Only rates an institution publishes for a specific course. They feed the optional reach, target and likely bands.</p>
         <ul className="grid gap-2">
           {(stats ?? []).map((s) => (
-            <li key={s.id} className="flex flex-wrap items-start justify-between gap-3 rounded-xl bg-surface p-4 text-sm">
+            <li key={s.id} className="flex flex-wrap items-start justify-between gap-3 rounded-xl border border-border bg-surface p-4 text-sm">
               <div className="grid gap-1">
                 <span className="font-semibold">{s.programs?.title} · {s.cycle_label} · {Math.round(Number(s.admit_rate) * 1000) / 10}%</span>
                 {s.evidence_quote ? <q className="text-muted italic">{s.evidence_quote}</q> : null}
@@ -85,7 +85,7 @@ export default async function RulesAdmin() {
             </li>
           ))}
         </ul>
-        <form action={addStat} className="grid gap-3 rounded-2xl bg-surface p-6 sm:grid-cols-2">
+        <form action={addStat} className="grid gap-3 rounded-2xl border border-border bg-surface p-6 sm:grid-cols-2">
           <h3 className="font-semibold sm:col-span-2">Add an admit rate</h3>
           <label className="grid gap-1 text-sm">Course slug<input name="slug" required className="field" /></label>
           <label className="grid gap-1 text-sm">Intake (for example 2026-autumn)<input name="cycle" required pattern="\d{4}-[a-z]+" className="field" /></label>

@@ -44,7 +44,7 @@ export default async function ParentPage() {
           <section key={link.student_id} aria-labelledby={`s-${link.student_id}`} className="grid gap-6">
             <h2 id={`s-${link.student_id}`} className="text-2xl font-semibold">{link.student_name}</h2>
 
-            <dl className="grid gap-3 rounded-2xl bg-surface p-6 text-sm sm:grid-cols-3">
+            <dl className="grid gap-3 rounded-2xl border border-border bg-surface p-6 text-sm sm:grid-cols-3">
               <div><dt className="text-muted">Shortlisted courses</dt><dd className="text-lg font-semibold">{listed.length}</dd></div>
               <div><dt className="text-muted">Checklist</dt><dd className="text-lg font-semibold">{items.length ? `${items.filter((i) => i.done).length} of ${items.length} done` : "Nothing yet"}</dd></div>
               <div>
@@ -63,7 +63,7 @@ export default async function ParentPage() {
                 const program = a.program_cycles?.programs;
                 const sorted = [...a.checklist_items].sort((x, y) => x.sort - y.sort);
                 return (
-                  <article key={a.id} className="grid gap-2 rounded-2xl bg-surface p-6">
+                  <article key={a.id} className="grid gap-2 rounded-2xl border border-border bg-surface p-6">
                     <div className="flex flex-wrap items-baseline justify-between gap-2">
                       <h4 className="font-semibold">{program?.title}</h4>
                       <span className="text-sm text-muted">{label(a.decision ?? a.status)}</span>

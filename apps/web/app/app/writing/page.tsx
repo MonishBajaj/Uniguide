@@ -31,7 +31,7 @@ export default async function WritingPage() {
         {allowance?.free_review ? "Your first full review is free." : `Credits: ${allowance?.balance ?? 0}. A review or a comparison uses 1 credit.`}
       </p>
       {(docs ?? []).length === 0 ? (
-        <div className="rounded-2xl bg-surface p-8">
+        <div className="rounded-2xl border border-border bg-surface p-8">
           <h2 className="text-xl font-semibold">Start with your stories</h2>
           <p className="mt-2 text-muted">Answer a few questions in the story bank first; your best material is usually there, not in a blank page.</p>
           <div className="mt-6 flex gap-3">
@@ -44,7 +44,7 @@ export default async function WritingPage() {
           {docs!.map((d) => {
             const latest = [...d.document_versions].sort((a, b) => b.created_at.localeCompare(a.created_at))[0];
             return (
-              <li key={d.id} className="rounded-2xl bg-surface p-5">
+              <li key={d.id} className="rounded-2xl border border-border bg-surface p-5">
                 <p className="text-sm text-muted">{label(d.kind)}</p>
                 <Link href={`/app/writing/${d.id}`} className="text-lg font-semibold underline-offset-2 hover:underline">{d.title}</Link>
                 <p className="mt-1 text-sm text-muted">

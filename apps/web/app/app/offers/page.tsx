@@ -60,7 +60,7 @@ export default async function OffersPage() {
       </header>
 
       {rows.length === 0 ? (
-        <p className="rounded-2xl bg-surface p-6 text-muted">
+        <p className="rounded-2xl border border-border bg-surface p-6 text-muted">
           No offers yet. When you hear back, open the application in your tracker and record the result; admitted and
           waitlisted courses appear here.
         </p>
@@ -69,7 +69,7 @@ export default async function OffersPage() {
           <h2 id="cost" className="text-2xl font-semibold">True cost to finish</h2>
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             {rows.map(({ app, card, cost }) => (
-              <article key={app.id} className="grid content-start gap-3 rounded-2xl bg-surface p-6">
+              <article key={app.id} className="grid content-start gap-3 rounded-2xl border border-border bg-surface p-6">
                 <div>
                   <p className="text-xs font-semibold tracking-wide text-muted uppercase">{label(app.decision)}</p>
                   <h3 className="text-lg font-semibold">
@@ -129,7 +129,7 @@ export default async function OffersPage() {
       )}
 
       {admitted.length > 0 || rows.length > 1 ? (
-        <section aria-labelledby="matrix" className="grid gap-4 rounded-2xl bg-surface p-6">
+        <section aria-labelledby="matrix" className="grid gap-4 rounded-2xl border border-border bg-surface p-6">
           <div>
             <h2 id="matrix" className="text-2xl font-semibold">Decision matrix</h2>
             <p className="max-w-2xl text-sm text-muted">

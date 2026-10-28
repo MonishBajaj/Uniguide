@@ -31,11 +31,11 @@ export function OnboardingChat() {
       <section aria-label="Conversation" className="grid content-start gap-3">
         <ol className="grid gap-3" aria-live="polite">
           {messages.map((m, i) => (
-            <li key={i} className={`max-w-[85%] rounded-2xl p-3 text-sm ${m.role === "student" ? "justify-self-end bg-accent text-accent-foreground" : "bg-surface"}`}>
+            <li key={i} className={`max-w-[85%] rounded-2xl p-3 text-sm ${m.role === "student" ? "justify-self-end bg-accent text-accent-foreground" : "border border-border bg-surface"}`}>
               {m.text}
             </li>
           ))}
-          {pending ? <li className="rounded-2xl bg-surface p-3 text-sm text-muted">Thinking…</li> : null}
+          {pending ? <li className="rounded-2xl border border-border bg-surface p-3 text-sm text-muted">Thinking…</li> : null}
         </ol>
         <form action={send} className="flex gap-2">
           <label htmlFor="msg" className="sr-only">Your answer</label>
@@ -43,7 +43,7 @@ export function OnboardingChat() {
           <button disabled={pending} className="btn btn-primary">Send</button>
         </form>
       </section>
-      <aside aria-label="Suggested profile changes" className="grid content-start gap-3 rounded-2xl bg-surface p-4 text-sm">
+      <aside aria-label="Suggested profile changes" className="grid content-start gap-3 rounded-2xl border border-border bg-surface p-4 text-sm">
         <h2 className="font-semibold">Suggestions to confirm</h2>
         {proposals.length === 0 ? <p className="text-muted">As you answer, suggested profile fields appear here with the words they came from.</p> : null}
         {proposals.map((p, i) => (

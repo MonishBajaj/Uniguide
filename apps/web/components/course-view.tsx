@@ -95,7 +95,7 @@ export function CourseView(props: {
       {cycles.filter((c) => c.intake_term !== "any").length > 1 ? (
         <nav aria-label="Intakes" className="mt-6 flex flex-wrap gap-2 text-sm">
           {cycles.filter((c) => c.intake_term !== "any").map((c) => (
-            <Link key={c.label} href={`/courses/${card.slug}/${c.label}`} aria-current={c.label === cycle?.label ? "page" : undefined} className="rounded-full bg-surface px-3 py-1 aria-[current=page]:bg-accent aria-[current=page]:text-accent-foreground">
+            <Link key={c.label} href={`/courses/${card.slug}/${c.label}`} aria-current={c.label === cycle?.label ? "page" : undefined} className="rounded-full border border-border bg-surface px-3 py-1 aria-[current=page]:border-accent aria-[current=page]:bg-accent aria-[current=page]:text-accent-foreground">
               {c.label.replace("-", " ")}
             </Link>
           ))}
@@ -103,7 +103,7 @@ export function CourseView(props: {
       ) : null}
 
       {!cycle ? (
-        <section className="mt-12 rounded-2xl bg-surface p-6">
+        <section className="mt-12 rounded-2xl border border-border bg-surface p-6">
           <h2 className="text-xl font-semibold">Requirements not yet collected</h2>
           <p className="mt-2 text-muted">This course is listed from an official register. Its entry requirements, fees and deadlines have not been collected yet. Shortlisting it moves it up our checking queue.</p>
         </section>
@@ -118,7 +118,7 @@ export function CourseView(props: {
             {cycle.deadlines.length === 0 ? <p className="mt-3 text-muted">Not yet known.</p> : (
               <ul className="mt-4 grid gap-3">
                 {cycle.deadlines.map((d) => (
-                  <li key={d.id} className="rounded-2xl bg-surface p-4">
+                  <li key={d.id} className="rounded-2xl border border-border bg-surface p-4">
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <p className="font-semibold">{label(d.kind)}{d.round ? ` (${d.round})` : ""}{d.applicant_category !== "all" ? `, ${label(d.applicant_category)} applicants` : ""}</p>
                       <span className="flex flex-wrap gap-2">
@@ -140,7 +140,7 @@ export function CourseView(props: {
             {cycle.requirements.length === 0 ? <p className="mt-3 text-muted">Not yet known.</p> : (
               <ul className="mt-4 grid gap-3">
                 {cycle.requirements.map((r) => (
-                  <li key={r.id} className="rounded-2xl bg-surface p-4">
+                  <li key={r.id} className="rounded-2xl border border-border bg-surface p-4">
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <p className="text-sm text-muted">{label(r.kind)}{r.applicant_category !== "all" ? `, ${label(r.applicant_category)} applicants` : ""}</p>
                       <FactBadge status={r.status} />
@@ -160,7 +160,7 @@ export function CourseView(props: {
                 {cost.currency && cost.lines.length ? (
                   <dl className="mt-4 grid grid-cols-3 gap-3 text-center">
                     {(["low", "base", "high"] as const).map((k) => (
-                      <div key={k} className="rounded-2xl bg-surface p-4">
+                      <div key={k} className="rounded-2xl border border-border bg-surface p-4">
                         <dt className="text-sm text-muted">{k === "base" ? "Base case" : k === "low" ? "Low" : "High"}</dt>
                         <dd className="mt-1 text-xl font-semibold">{money(cost[k], cost.currency!)}</dd>
                       </div>
@@ -171,7 +171,7 @@ export function CourseView(props: {
                 {cost.assumptions.map((a) => <p key={a} className="mt-1 text-sm text-muted">{a}</p>)}
                 <ul className="mt-4 grid gap-3">
                   {cycle.cost_items.map((c) => (
-                    <li key={c.id} className="rounded-2xl bg-surface p-4">
+                    <li key={c.id} className="rounded-2xl border border-border bg-surface p-4">
                       <div className="flex flex-wrap items-center justify-between gap-2">
                         <p className="font-semibold">{label(c.kind)}{c.applicant_category !== "all" ? `, ${label(c.applicant_category)}` : ""}</p>
                         <span className="flex flex-wrap gap-2">
@@ -198,7 +198,7 @@ export function CourseView(props: {
 
       {signedIn && cycle ? <CourseQuestion programId={card.id!} /> : null}
 
-      <section aria-labelledby="report" className="mt-12 rounded-2xl bg-surface p-6">
+      <section aria-labelledby="report" className="mt-12 rounded-2xl border border-border bg-surface p-6">
         <h2 id="report" className="text-lg font-semibold">Something out of date?</h2>
         <p className="mt-1 mb-4 text-sm text-muted">Confirm every fact on the official page before you apply. If it says something different, tell us.</p>
         {signedIn ? <ReportForm programId={card.id!} facts={facts} /> : AUTH_DISABLED ? (
@@ -213,7 +213,7 @@ export function CourseView(props: {
           <h2 id="admin" className="text-lg font-semibold">Admin: official pages and intakes</h2>
           <ul className="grid gap-2 text-sm">
             {admin.sources.filter((s) => s.active).map((s) => (
-              <li key={s.id} className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-surface p-3">
+              <li key={s.id} className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-border bg-surface p-3">
                 <span><span className="font-semibold">{label(s.kind)}</span> <a href={s.url} className="break-all underline underline-offset-2">{s.url}</a>
                   <span className="block text-muted">Last checked {s.last_checked_at?.slice(0, 10) ?? "never"}{s.last_changed_at ? `, changed ${s.last_changed_at.slice(0, 10)}` : ""}</span></span>
                 <form action={removeSource.bind(null, s.id, card.slug!)}><button className="btn btn-secondary btn-sm">Remove</button></form>

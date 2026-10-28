@@ -16,7 +16,7 @@ export default async function NewDocument({ searchParams }: PageProps<"/app/writ
           {error === "consent" ? "A parent or guardian needs to confirm your account first." : "Check the form and try again."}
         </p>
       ) : null}
-      <form action={createDocument} className="mt-8 grid gap-4 rounded-2xl bg-surface p-6">
+      <form action={createDocument} className="mt-8 grid gap-4 rounded-2xl border border-border bg-surface p-6">
         <label className="grid gap-2 text-sm font-semibold">
           Type
           <select name="kind" className="field font-normal">

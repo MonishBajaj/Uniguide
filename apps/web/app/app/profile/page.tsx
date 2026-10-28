@@ -23,7 +23,7 @@ export default async function ProfilePage() {
         <p className="mt-2 text-muted">Used to check requirements and rank courses. Nothing here is shared with universities, or with anyone else unless you choose to.</p>
       </header>
 
-      <section aria-labelledby="ai" className="grid gap-3 rounded-2xl bg-surface p-6 text-sm">
+      <section aria-labelledby="ai" className="grid gap-3 rounded-2xl border border-border bg-surface p-6 text-sm">
         <h2 id="ai" className="text-lg font-semibold">AI features</h2>
         <p className="text-muted">
           The CV reader, setup chat, course questions and result explanations send the text involved to Anthropic&apos;s
@@ -36,14 +36,14 @@ export default async function ProfilePage() {
         </form>
       </section>
 
-      <section aria-labelledby="cv" className="grid gap-4 rounded-2xl bg-surface p-6">
+      <section aria-labelledby="cv" className="grid gap-4 rounded-2xl border border-border bg-surface p-6">
         <h2 id="cv" className="text-lg font-semibold">Fill in faster from your CV</h2>
         <CvReader hasConsent={Boolean(consent)} />
       </section>
 
       <ProfileForm profile={profile} />
 
-      <section aria-labelledby="scores" className="grid gap-4 rounded-2xl bg-surface p-6">
+      <section aria-labelledby="scores" className="grid gap-4 rounded-2xl border border-border bg-surface p-6">
         <h2 id="scores" className="text-lg font-semibold">Test scores</h2>
         {(scores ?? []).length === 0 ? (
           <p className="text-sm text-muted">No scores yet. Add language tests and admissions tests with their date and version.</p>
@@ -69,7 +69,7 @@ export default async function ProfilePage() {
         <TestScoreForm />
       </section>
 
-      <section aria-labelledby="sharing" className="grid gap-2 rounded-2xl bg-surface p-6 text-sm">
+      <section aria-labelledby="sharing" className="grid gap-2 rounded-2xl border border-border bg-surface p-6 text-sm">
         <h2 id="sharing" className="text-lg font-semibold">Working with a consultancy?</h2>
         <p className="text-muted">You decide whether a counselor can see your plans, and you can stop at any time.</p>
         <Link href="/app/sharing" className="justify-self-start underline underline-offset-2">Manage sharing</Link>

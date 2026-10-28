@@ -23,7 +23,7 @@ export function ProfileForm({ profile }: { profile: Tables<"profiles"> }) {
   const weight = (k: string) => Math.round((prefs.weights?.[k] ?? 0.5) * 10);
 
   return (
-    <form action={action} className="grid gap-6 rounded-2xl bg-surface p-6">
+    <form action={action} className="grid gap-6 rounded-2xl border border-border bg-surface p-6">
       <fieldset className="grid gap-4 sm:grid-cols-2">
         <legend className="mb-2 text-lg font-semibold">Your most recent qualification</legend>
         <label className="grid gap-2 text-sm font-semibold sm:col-span-2">

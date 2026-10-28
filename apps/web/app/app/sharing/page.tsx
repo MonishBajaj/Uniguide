@@ -24,9 +24,9 @@ export default async function SharingPage({ searchParams }: PageProps<"/app/shar
           time and their access ends at once.
         </p>
       </header>
-      {message ? <p role="status" className="rounded-lg bg-surface p-3 text-sm">{message}</p> : null}
+      {message ? <p role="status" className="rounded-lg border border-border bg-surface p-3 text-sm">{message}</p> : null}
 
-      <form action={grantShare} className="grid gap-4 rounded-2xl bg-surface p-6">
+      <form action={grantShare} className="grid gap-4 rounded-2xl border border-border bg-surface p-6">
         <label className="grid gap-2 text-sm font-semibold">
           Invite code from your consultancy
           <input name="code" required maxLength={40} autoComplete="off" className="field font-normal" />
@@ -47,7 +47,7 @@ export default async function SharingPage({ searchParams }: PageProps<"/app/shar
         {(shares ?? []).length === 0 ? <p className="text-muted">Nobody. Your plans are private to you.</p> : null}
         <ul className="grid gap-2">
           {(shares ?? []).map((s) => (
-            <li key={s.id} className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-surface p-4 text-sm">
+            <li key={s.id} className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-surface p-4 text-sm">
               <span>
                 <span className="font-semibold">{s.organizations?.name}</span>
                 <span className="block text-muted">

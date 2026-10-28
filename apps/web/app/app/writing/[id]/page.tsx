@@ -41,10 +41,10 @@ export default async function DocumentPage({ params }: PageProps<"/app/writing/[
         <Link href="/app/writing" className="text-sm text-muted underline underline-offset-2">Writing</Link>
         <h1 className="mt-2 text-4xl font-semibold">{doc.title}</h1>
         <p className="mt-1 text-muted">{label(doc.kind)}{doc.word_limit ? ` · limit ${doc.word_limit} words` : ""}</p>
-        {doc.question ? <blockquote className="mt-4 rounded-2xl bg-surface p-4 text-sm">{doc.question}</blockquote> : null}
+        {doc.question ? <blockquote className="mt-4 rounded-2xl border border-border bg-surface p-4 text-sm">{doc.question}</blockquote> : null}
       </header>
 
-      <details className="rounded-2xl bg-surface p-4">
+      <details className="rounded-2xl border border-border bg-surface p-4">
         <summary className="cursor-pointer font-semibold">Outline: what each part should answer</summary>
         <ol className="mt-3 grid gap-3 text-sm">
           {outline.map((s) => (
@@ -71,7 +71,7 @@ export default async function DocumentPage({ params }: PageProps<"/app/writing/[
           if (r.kind === "comparison") {
             const c = r.result as unknown as ComparisonResult;
             return (
-              <article key={r.id} className="rounded-2xl bg-surface p-5 text-sm">
+              <article key={r.id} className="rounded-2xl border border-border bg-surface p-5 text-sm">
                 <p className="text-muted">Comparison of your last two drafts · {shortDate(r.created_at)}</p>
                 <ul className="mt-3 grid gap-2">
                   {c.criteria.map((x) => (
@@ -87,7 +87,7 @@ export default async function DocumentPage({ params }: PageProps<"/app/writing/[
           }
           const res = r.result as unknown as RubricResult & { lint?: unknown[] };
           return (
-            <article key={r.id} className="grid gap-3 rounded-2xl bg-surface p-5 text-sm">
+            <article key={r.id} className="grid gap-3 rounded-2xl border border-border bg-surface p-5 text-sm">
               <p className="text-muted">Draft of {shortDate(r.document_versions?.created_at ?? r.created_at)} · reviewed {shortDate(r.created_at)}</p>
               <ul className="grid gap-3">
                 {res.criteria.map((c) => (
@@ -108,7 +108,7 @@ export default async function DocumentPage({ params }: PageProps<"/app/writing/[
         })}
       </section>
 
-      <section aria-labelledby="history" className="grid gap-3 rounded-2xl bg-surface p-5 text-sm">
+      <section aria-labelledby="history" className="grid gap-3 rounded-2xl border border-border bg-surface p-5 text-sm">
         <h2 id="history" className="text-lg font-semibold">Drafts and authorship record</h2>
         <ul className="grid gap-1">
           {(versions ?? []).map((v) => <li key={v.id}>{shortDate(v.created_at)} · {v.word_count} words</li>)}

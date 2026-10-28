@@ -68,29 +68,23 @@ export default async function Home({ searchParams }: PageProps<"/">) {
 
   return (
     <>
-      <section className="mx-auto grid max-w-5xl gap-12 px-6 pt-16 pb-24 lg:grid-cols-[1fr_440px] lg:items-start">
-        <div>
-          <h1 className="hero-heading max-w-[680px] text-5xl font-semibold sm:text-6xl">
-            Course requirements and deadlines,
-            <br />
-            with the source beside every fact
-          </h1>
-          <p className="mt-6 max-w-[680px] text-lg text-muted">
-            Find courses abroad at any level, from foundation to PhD. See which entry requirements you meet, what it
-            will really cost, and when to apply, each linked to the official page.
+      <section className="mx-auto max-w-5xl px-6 pt-24 pb-24 text-center">
+        <h1 className="hero-heading mx-auto max-w-[680px] text-4xl font-semibold sm:text-5xl lg:text-6xl">
+          Course requirements and deadlines, with the source beside every fact
+        </h1>
+        <p className="mx-auto mt-6 max-w-[680px] text-lg text-muted">
+          Find courses abroad at any level, from foundation to PhD. See which entry requirements you meet, what it
+          will really cost, and when to apply, each linked to the official page.
+        </p>
+        <a href="#join" className="btn btn-primary mt-8">Join the waitlist</a>
+        {count ? (
+          <p className="mt-6 text-sm text-muted">
+            <Link href="/courses" className="font-semibold text-foreground underline underline-offset-2">
+              {count.toLocaleString("en")} courses
+            </Link>{" "}
+            already listed from official registers.
           </p>
-          {count ? (
-            <p className="mt-6 text-sm text-muted">
-              <Link href="/courses" className="font-semibold text-foreground underline underline-offset-2">
-                {count.toLocaleString("en")} courses
-              </Link>{" "}
-              already listed from official registers.
-            </p>
-          ) : null}
-        </div>
-        <div id="join">
-          <WaitlistForm utm={utm} />
-        </div>
+        ) : null}
       </section>
 
       <section aria-labelledby="how" className="mx-auto max-w-5xl px-6 py-24">
@@ -98,7 +92,7 @@ export default async function Home({ searchParams }: PageProps<"/">) {
           <h2 id="how" className="text-3xl font-semibold">How it works</h2>
           <ol className="mt-8 grid gap-6 md:grid-cols-3">
             {STEPS.map((step, i) => (
-              <li key={step.title} className="rounded-2xl bg-surface p-6">
+              <li key={step.title} className="rounded-2xl border border-border bg-surface p-6">
                 <span className="font-mono text-sm text-muted">0{i + 1}</span>
                 <h3 className="mt-2 text-xl font-semibold">{step.title}</h3>
                 <p className="mt-2 text-muted">{step.body}</p>
@@ -117,7 +111,7 @@ export default async function Home({ searchParams }: PageProps<"/">) {
           <h2 id="promises" className="text-3xl font-semibold">What we will not do</h2>
           <ul className="mt-8 grid gap-6 md:grid-cols-3">
             {PROMISES.map((p) => (
-              <li key={p.title} className="rounded-2xl bg-surface p-6">
+              <li key={p.title} className="rounded-2xl border border-border bg-surface p-6">
                 <h3 className="text-xl font-semibold">{p.title}</h3>
                 <p className="mt-2 text-muted">{p.body}</p>
               </li>
@@ -130,7 +124,7 @@ export default async function Home({ searchParams }: PageProps<"/">) {
         <h2 id="faq" className="text-3xl font-semibold">Questions</h2>
         <div className="mt-8 grid gap-3">
           {FAQ.map((item) => (
-            <details key={item.q} className="rounded-2xl bg-surface p-6">
+            <details key={item.q} className="rounded-2xl border border-border bg-surface p-6">
               <summary className="cursor-pointer text-lg font-semibold">{item.q}</summary>
               <p className="mt-3 text-muted">{item.a}</p>
             </details>
@@ -138,10 +132,10 @@ export default async function Home({ searchParams }: PageProps<"/">) {
         </div>
       </section>
 
-      <section className="mx-auto max-w-3xl px-6 py-24 text-center">
-        <h2 className="text-3xl font-semibold">Applying in the 2027 cycle?</h2>
-        <p className="mt-3 text-muted">Join the waitlist and tell us where you are headed. It decides which countries we check first.</p>
-        <a href="#join" className="btn btn-primary mt-6">Join the waitlist</a>
+      <section id="join" aria-labelledby="join-heading" className="mx-auto max-w-xl px-6 py-24">
+        <h2 id="join-heading" className="text-center text-3xl font-semibold">Applying in the 2027 cycle?</h2>
+        <p className="mx-auto mt-3 mb-8 max-w-[680px] text-center text-muted">Join the waitlist and tell us where you are headed. It decides which countries we check first.</p>
+        <WaitlistForm utm={utm} />
       </section>
     </>
   );

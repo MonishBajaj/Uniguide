@@ -31,7 +31,7 @@ export default async function AgencyStudent({ params }: PageProps<"/agency/[stud
         <p className="mt-1 text-sm text-muted">Shared with you. Read only.</p>
       </header>
 
-      <section aria-labelledby="profile" className="grid gap-3 rounded-2xl bg-surface p-6 text-sm sm:grid-cols-2">
+      <section aria-labelledby="profile" className="grid gap-3 rounded-2xl border border-border bg-surface p-6 text-sm sm:grid-cols-2">
         <h2 id="profile" className="text-lg font-semibold sm:col-span-2">Profile</h2>
         <p><span className="text-muted">Lives in</span> {countryName(profile.residence_country)}</p>
         <p><span className="text-muted">Grade</span> {profile.grade_value ?? profile.grade_text ?? "Not given"} {profile.grade_scale ? `(${GRADE_SCALES[profile.grade_scale] ?? profile.grade_scale})` : ""}</p>
@@ -53,7 +53,7 @@ export default async function AgencyStudent({ params }: PageProps<"/agency/[stud
           const program = a.program_cycles?.programs;
           const items = [...a.checklist_items].sort((x, y) => x.sort - y.sort);
           return (
-            <article key={a.id} className="grid gap-2 rounded-2xl bg-surface p-6">
+            <article key={a.id} className="grid gap-2 rounded-2xl border border-border bg-surface p-6">
               <div className="flex flex-wrap items-baseline justify-between gap-2">
                 <h3 className="text-lg font-semibold">{program?.title}</h3>
                 <span className="text-sm text-muted">{label(a.decision ?? a.status)}</span>

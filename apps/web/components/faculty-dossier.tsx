@@ -34,7 +34,7 @@ export async function FacultyDossier({ supabase, card, interests }: { supabase: 
       </p>
       <ul className="mt-4 grid gap-3">
         {data.map((f) => (
-          <li key={f.id} className="rounded-2xl bg-surface p-4 text-sm">
+          <li key={f.id} className="rounded-2xl border border-border bg-surface p-4 text-sm">
             <a href={f.openalex_id} target="_blank" rel="noreferrer" className="text-base font-semibold underline-offset-2 hover:underline">{f.name}</a>
             <p className="mt-1 text-muted">{(f.topics as Topic[]).slice(0, 4).map((t) => t.name).join(" · ")}</p>
             <ul className="mt-2 grid gap-1">
@@ -47,7 +47,7 @@ export async function FacultyDossier({ supabase, card, interests }: { supabase: 
           </li>
         ))}
       </ul>
-      <div className="mt-4 rounded-2xl bg-surface p-4 text-sm">
+      <div className="mt-4 rounded-2xl border border-border bg-surface p-4 text-sm">
         <p className="font-semibold">Questions for your &ldquo;why this university&rdquo; answer</p>
         <ul className="mt-2 list-disc pl-5 text-muted">{QUESTIONS.map((q) => <li key={q}>{q}</li>)}</ul>
       </div>

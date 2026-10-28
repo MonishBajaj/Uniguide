@@ -38,7 +38,7 @@ export function WhatIf({ programs, student, weights, fx, names }: { programs: Pr
 
   return (
     <div className="grid gap-6 lg:grid-cols-[300px_1fr]">
-      <form className="grid content-start gap-4 rounded-2xl bg-surface p-5 text-sm" onSubmit={(e) => e.preventDefault()}>
+      <form className="grid content-start gap-4 rounded-2xl border border-border bg-surface p-5 text-sm" onSubmit={(e) => e.preventDefault()}>
         <label className="grid gap-2 font-semibold">
           Grade ({student.gradeScale ?? "no scale set"})
           <input type="number" step="0.1" value={grade ?? ""} onChange={(e) => setGrade(e.target.value === "" ? null : Number(e.target.value))} className="field font-normal" disabled={!student.gradeScale} />
@@ -55,13 +55,13 @@ export function WhatIf({ programs, student, weights, fx, names }: { programs: Pr
       </form>
       <div className="grid content-start gap-4">
         {gained.length ? (
-          <section aria-labelledby="gained" className="rounded-2xl bg-surface p-5 text-sm">
+          <section aria-labelledby="gained" className="rounded-2xl border border-border bg-surface p-5 text-sm">
             <h2 id="gained" className="font-semibold text-verified">Would open up ({gained.length})</h2>
             <ul className="mt-2 grid gap-1">{gained.slice(0, 20).map((id) => <li key={id}><Link href={`/courses/${names[id]!.slug}`} className="underline underline-offset-2">{names[id]!.title}</Link>, {names[id]!.institution}</li>)}</ul>
           </section>
         ) : null}
         {lost.length ? (
-          <section aria-labelledby="lost" className="rounded-2xl bg-surface p-5 text-sm">
+          <section aria-labelledby="lost" className="rounded-2xl border border-border bg-surface p-5 text-sm">
             <h2 id="lost" className="font-semibold text-conflicting">Would drop out ({lost.length})</h2>
             <ul className="mt-2 grid gap-1">
               {lost.slice(0, 20).map((id) => (
@@ -70,8 +70,8 @@ export function WhatIf({ programs, student, weights, fx, names }: { programs: Pr
             </ul>
           </section>
         ) : null}
-        {!gained.length && !lost.length ? <p className="rounded-2xl bg-surface p-5 text-sm text-muted">No course moves in or out with these numbers.</p> : null}
-        <section aria-labelledby="top" className="rounded-2xl bg-surface p-5 text-sm">
+        {!gained.length && !lost.length ? <p className="rounded-2xl border border-border bg-surface p-5 text-sm text-muted">No course moves in or out with these numbers.</p> : null}
+        <section aria-labelledby="top" className="rounded-2xl border border-border bg-surface p-5 text-sm">
           <h2 id="top" className="font-semibold">Top courses with these numbers</h2>
           <ol className="mt-2 grid gap-1">
             {after.filter((r) => !r.excluded).slice(0, 10).map((r) => {

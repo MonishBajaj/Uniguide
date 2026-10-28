@@ -32,7 +32,7 @@ export default async function MatchPage() {
   const inputs = await loadMatchInputs(supabase, user!.id);
   if (!inputs) {
     return (
-      <div className="rounded-2xl bg-surface p-8">
+      <div className="rounded-2xl border border-border bg-surface p-8">
         <h1 className="text-2xl font-semibold">Tell us what you want to study first</h1>
         <p className="mt-2 text-muted">Choose at least the level you want, and ideally countries, subject and budget.</p>
         <Link href="/app/profile" className="btn btn-primary mt-6">Complete your profile</Link>
@@ -99,7 +99,7 @@ export default async function MatchPage() {
       </header>
 
       {feasible.length === 0 ? (
-        <div className="rounded-2xl bg-surface p-8">
+        <div className="rounded-2xl border border-border bg-surface p-8">
           <h2 className="text-xl font-semibold">Nothing fits all your limits yet</h2>
           <p className="mt-2 text-muted">Look at why courses were set aside below, or widen your countries or budget.</p>
         </div>
@@ -179,7 +179,7 @@ export default async function MatchPage() {
           <h2 id="excluded" className="text-2xl font-semibold">Set aside, and why</h2>
           <div className="mt-4 grid gap-3">
             {[...groups.entries()].map(([rule, items]) => (
-              <details key={rule} className="rounded-2xl bg-surface p-4">
+              <details key={rule} className="rounded-2xl border border-border bg-surface p-4">
                 <summary className="cursor-pointer font-semibold">{RULES[rule]} ({items.length})</summary>
                 <ul className="mt-3 grid gap-2 text-sm">
                   {items.slice(0, 50).map((r) => {

@@ -11,7 +11,7 @@ export default async function WhatIfPage() {
   const inputs = await loadMatchInputs(supabase, user!.id);
   if (!inputs) {
     return (
-      <div className="rounded-2xl bg-surface p-8">
+      <div className="rounded-2xl border border-border bg-surface p-8">
         <h1 className="text-2xl font-semibold">Complete your profile first</h1>
         <Link href="/app/profile" className="btn btn-primary mt-6">Go to your profile</Link>
       </div>

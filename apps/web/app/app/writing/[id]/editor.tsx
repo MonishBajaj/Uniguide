@@ -69,7 +69,7 @@ export function Editor({ documentId, initial, wordLimit }: { documentId: string;
           {state ? <span role="status" className={state.ok ? "text-verified" : "text-conflicting"}>{state.message}</span> : null}
         </div>
       </form>
-      <aside aria-label="Writing checks" className="grid content-start gap-3 rounded-2xl bg-surface p-4 text-sm">
+      <aside aria-label="Writing checks" className="grid content-start gap-3 rounded-2xl border border-border bg-surface p-4 text-sm">
         <h2 className="font-semibold">Checks as you write</h2>
         <p className="text-muted">
           {Math.round(report.specificity * 100)}% of sentences contain a name, number or course.

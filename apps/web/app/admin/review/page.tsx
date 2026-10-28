@@ -85,7 +85,7 @@ export default async function ReviewQueue() {
       ) : null}
 
       {wanted.length ? (
-        <section aria-labelledby="wanted" className="mt-8 rounded-2xl bg-surface p-6">
+        <section aria-labelledby="wanted" className="mt-8 rounded-2xl border border-border bg-surface p-6">
           <h2 id="wanted" className="text-lg font-semibold">Most wanted</h2>
           <p className="text-sm text-muted">Courses students shortlisted that still have facts waiting.</p>
           <ul className="mt-3 grid gap-1 text-sm">
@@ -103,7 +103,7 @@ export default async function ReviewQueue() {
         <section aria-labelledby="reports" className="mt-8 grid gap-3">
           <h2 id="reports" className="text-2xl font-semibold">Reports from students ({reports!.length})</h2>
           {reports!.map((r) => (
-            <div key={r.id} className="rounded-2xl bg-surface p-4 text-sm">
+            <div key={r.id} className="rounded-2xl border border-border bg-surface p-4 text-sm">
               <p className="text-muted">{shortDate(r.created_at)} · {r.subject ? label(r.subject) : "general"} ·{" "}
                 {r.programs ? <Link href={`/courses/${r.programs.slug}`} className="underline underline-offset-2">{r.programs.title}</Link> : null}
               </p>
@@ -119,7 +119,7 @@ export default async function ReviewQueue() {
       ) : null}
 
       {(versions ?? []).length === 0 ? (
-        <div className="mt-8 rounded-2xl bg-surface p-8">
+        <div className="mt-8 rounded-2xl border border-border bg-surface p-8">
           <h2 className="text-xl font-semibold">Queue is empty</h2>
           <p className="mt-2 text-muted">New extractions from the worker and seed files appear here.</p>
         </div>
@@ -129,7 +129,7 @@ export default async function ReviewQueue() {
             const program = v.program_cycles?.programs;
             const errors = v.validation.filter((i) => i.level === "error");
             return (
-              <li key={v.id} className="rounded-2xl bg-surface p-6">
+              <li key={v.id} className="rounded-2xl border border-border bg-surface p-6">
                 <div className="flex flex-wrap items-center justify-between gap-2 text-sm text-muted">
                   <span>
                     {label(v.subject)} · {v.subject_id ? "update to an existing fact" : "new fact"} · from {v.created_by} ·{" "}

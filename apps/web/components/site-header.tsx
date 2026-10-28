@@ -38,12 +38,12 @@ export async function SiteHeader() {
     <header className="sticky top-3 z-40 flex justify-center px-4 pt-3">
       <nav
         aria-label="Main"
-        className="flex max-w-full items-center gap-4 rounded-2xl bg-background/80 px-4 py-2 backdrop-blur-md"
+        className="flex max-w-full items-center gap-4 rounded-2xl border border-border bg-surface/80 px-4 py-2 backdrop-blur-md"
       >
         <Link href="/" className="text-base font-semibold whitespace-nowrap">
           Uniguide
         </Link>
-        <div className="min-w-0 overflow-x-auto">
+        <div className="min-w-0 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           <NavLinks links={links} />
         </div>
         {DEMO_SWITCHER ? (

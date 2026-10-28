@@ -29,14 +29,14 @@ export default async function RequirementsTable() {
         link for sources and quotes.
       </p>
       {(cards ?? []).length === 0 ? (
-        <div className="mt-8 rounded-2xl bg-surface p-8">
+        <div className="mt-8 rounded-2xl border border-border bg-surface p-8">
           <h2 className="text-xl font-semibold">The first courses are being verified</h2>
           <p className="mt-2 text-muted">The table fills in as courses are checked. <Link href="/courses" className="underline underline-offset-2">Browse listed courses</Link> meanwhile.</p>
         </div>
       ) : (
         <div className="mt-8 overflow-x-auto rounded-2xl border border-border">
           <table className="w-full min-w-[800px] text-left text-sm">
-            <thead className="bg-surface">
+            <thead className="bg-surface-2">
               <tr>
                 <th scope="col" className="p-3">Course</th>
                 <th scope="col" className="p-3">Country</th>

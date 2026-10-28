@@ -33,14 +33,14 @@ export default async function NotificationsPage() {
         ) : null}
       </header>
       {(data ?? []).length === 0 ? (
-        <div className="rounded-2xl bg-surface p-8">
+        <div className="rounded-2xl border border-border bg-surface p-8">
           <h2 className="text-xl font-semibold">Nothing new</h2>
           <p className="mt-2 text-muted">When an official page changes a fact on a course you shortlisted, you will see it here and by email.</p>
         </div>
       ) : (
         <ul className="grid gap-3">
           {data!.map((n) => (
-            <li key={n.id} className="rounded-2xl bg-surface p-4">
+            <li key={n.id} className="rounded-2xl border border-border bg-surface p-4">
               <p className="flex flex-wrap items-center gap-2 text-sm text-muted">
                 {!n.read_at ? <span className="rounded-full bg-accent px-2 py-0.5 text-xs font-semibold text-accent-foreground">New</span> : null}
                 {shortDate(n.created_at)}

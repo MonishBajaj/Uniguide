@@ -47,7 +47,7 @@ export default async function Courses({ searchParams }: PageProps<"/courses">) {
         extracted from official pages, or verified by a person.
       </p>
 
-      <form className="mt-8 grid gap-3 rounded-2xl bg-surface p-4 sm:grid-cols-[1fr_180px_200px_auto]" role="search">
+      <form className="mt-8 grid gap-3 rounded-2xl border border-border bg-surface p-4 sm:grid-cols-[1fr_180px_200px_auto]" role="search">
         <label className="sr-only" htmlFor="q">Search</label>
         <input id="q" name="q" defaultValue={q} placeholder="Subject, course or university" className="field" />
         <label className="sr-only" htmlFor="level">Level</label>
@@ -66,7 +66,7 @@ export default async function Courses({ searchParams }: PageProps<"/courses">) {
       {error ? (
         <p role="alert" className="mt-8 text-conflicting">Search failed. Please try again.</p>
       ) : results.length === 0 ? (
-        <div className="mt-8 rounded-2xl bg-surface p-8">
+        <div className="mt-8 rounded-2xl border border-border bg-surface p-8">
           <h2 className="text-xl font-semibold">No courses match yet</h2>
           <p className="mt-2 text-muted">
             Try a broader subject or another country. We add countries in waves based on demand;{" "}

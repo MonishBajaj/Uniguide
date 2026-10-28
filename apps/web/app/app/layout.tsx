@@ -12,7 +12,7 @@ export default async function AppLayout({ children }: LayoutProps<"/app">) {
   return (
     <div className="mx-auto max-w-5xl px-6 py-12">
       {profile?.consent_state === "pending_parental" ? (
-        <div role="status" className="mb-8 rounded-2xl bg-surface p-4 text-sm">
+        <div role="status" className="mb-8 rounded-2xl border border-border bg-surface p-4 text-sm">
           A parent or guardian needs to confirm your account before we save grades, scores or a shortlist.{" "}
           <Link href="/consent" className="font-semibold underline underline-offset-2">Send them a request</Link>
         </div>
