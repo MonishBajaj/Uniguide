@@ -103,6 +103,13 @@ class DeliveryMode(StrEnum):
     HYBRID = "hybrid"
 
 
+class DocumentKind(StrEnum):
+    STATEMENT_OF_PURPOSE = "statement_of_purpose"
+    PERSONAL_STATEMENT = "personal_statement"
+    WHY_THIS_UNIVERSITY = "why_this_university"
+    OTHER = "other"
+
+
 class ExamKind(StrEnum):
     IELTS_ACADEMIC = "ielts_academic"
     IELTS_UKVI = "ielts_ukvi"

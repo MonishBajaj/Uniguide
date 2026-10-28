@@ -19,6 +19,7 @@ export async function SiteHeader() {
           { href: "/app/match", label: "My matches" },
           { href: "/app/shortlist", label: "Shortlist" },
           { href: "/app/tracker", label: "Tracker" },
+          { href: "/app/writing", label: "Writing" },
           { href: "/app/profile", label: "Profile" },
           { href: "/app/notifications", label: unread ? `Updates (${unread})` : "Updates" },
         ]

@@ -1,0 +1,41 @@
+{
+  "note": "Synthetic drafts. The human scores below are PLACEHOLDERS written to exercise the harness; replace them with two independent human raters' rubric scores (30 to 100 statements) before treating the metrics as real.",
+  "drafts": [
+    {
+      "id": "specific",
+      "text": "In March 2025 our district clinic in Nashik lost two days of appointments when its booking spreadsheet corrupted. I rebuilt the system in Django over six weeks, and waiting times fell from 40 to 12 minutes.\n\nThat project showed me how little I know about scheduling under uncertainty. Professor Ruth Misener's work on optimisation under uncertainty is the reason I am applying to Imperial's MSc in Computing.\n\nAfter the course I want to return to public health systems in Maharashtra and build tools that survive bad data.",
+      "human": [[5, 5, 4, 4, 4], [4, 5, 4, 4, 4]]
+    },
+    {
+      "id": "generic",
+      "text": "Ever since I was a child I have been passionate about computers. I am a hardworking and dedicated student who wants to make a difference in the world.\n\nYour prestigious university has world-class faculty and state-of-the-art facilities. I believe it would be the perfect place for me to pursue my dreams.\n\nI am confident that I am the ideal candidate for this program.",
+      "human": [[1, 1, 1, 1, 2], [2, 1, 1, 1, 2]]
+    },
+    {
+      "id": "mixed",
+      "text": "I have worked for two years as a data analyst at a retail company. I built dashboards and automated many reports, which saved the team time.\n\nI want to learn machine learning properly because our forecasting models often failed during festival seasons. I am interested in the course because it covers statistics and programming.\n\nIn the future I hope to become a data scientist.",
+      "human": [[3, 3, 2, 3, 3], [3, 3, 2, 2, 3]]
+    },
+    {
+      "id": "reflective",
+      "text": "My first research project failed. I spent four months training a model to detect crop disease from phone photos, and it scored 91 percent in the lab and 54 percent in the field.\n\nThe gap taught me that data collection, not architecture, was my real problem. I redesigned the protocol with farmers in Dharwad and the field accuracy rose to 78 percent.\n\nI want to study how to build datasets that represent the people who use the model.",
+      "human": [[4, 5, 2, 5, 4], [4, 4, 2, 5, 4]]
+    }
+  ],
+  "recorded": {
+    "specific": [[5, 5, 4, 3, 4], [5, 5, 4, 4, 4], [5, 4, 4, 4, 4]],
+    "generic": [[1, 1, 1, 1, 2], [1, 1, 2, 1, 2], [1, 1, 1, 1, 2]],
+    "mixed": [[3, 3, 2, 2, 3], [3, 2, 2, 2, 3], [3, 3, 2, 3, 3]],
+    "reflective": [[4, 5, 2, 5, 4], [4, 5, 2, 4, 4], [4, 5, 3, 5, 4]]
+  },
+  "comparisons": [
+    { "pair": ["generic", "specific"], "forward": "second", "backward": "first" },
+    { "pair": ["mixed", "reflective"], "forward": "second", "backward": "first" },
+    { "pair": ["mixed", "specific"], "forward": "second", "backward": "first" },
+    { "pair": ["generic", "mixed"], "forward": "second", "backward": "second" }
+  ],
+  "recorded_feedback": [
+    "S2 says waiting times fell from 40 to 12 minutes; which part of the rebuild caused most of that?",
+    "Try opening with \"My fascination with healthcare began in a crowded rural clinic\" instead."
+  ]
+}
