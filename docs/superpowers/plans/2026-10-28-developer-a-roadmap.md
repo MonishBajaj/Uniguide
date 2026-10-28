@@ -1,6 +1,15 @@
 # Developer A roadmap: data and platform
 
-**Source:** `docs/FEATURES.md` (the 36 rows owned by Developer A). This roadmap sequences them. Each milestone gets its own task-level plan when it starts; Milestone 1's is `2026-10-28-developer-a-m1-launch-readiness.md`.
+**Source:** `docs/FEATURES.md` (the 36 rows owned by Developer A). This roadmap sequences them; each milestone has its own task-level plan in this folder:
+
+| Milestone | Plan | Status |
+|---|---|---|
+| M1 Launch readiness | `2026-10-28-developer-a-m1-launch-readiness.md` | Code done (branch `feat/a-m1-launch-readiness`). Left: X1 the 50 courses, X2 importer runs, X4 hosted setup (need the owner's accounts, keys and data); X3 waits on a decision. Deferred minors are Task 1 of M2. |
+| M2 Course-level data | `2026-10-28-developer-a-m2-course-level-data.md` | Planned |
+| M3 Country-level data | `2026-10-28-developer-a-m3-country-level-data.md` | Planned |
+| M4 Payments and email | `2026-10-28-developer-a-m4-payments-and-email.md` | Planned (assumes price, pass length and refund policy; see its header) |
+| M5 Depth (P2) | `2026-10-28-developer-a-m5-depth.md` | Planned |
+| M6 Decision-gated (P3) | `2026-10-28-developer-a-m6-decision-gated.md` | Gated on owner decisions listed in the plan |
 
 **Ground rules (every milestone):** only official sources; every new table has RLS and pgTAP tests; migrations use timestamps starting `202611`; run `pnpm db:types` after schema changes; plain commit messages with no Claude co-author line; one branch per feature row (`feat/<id>-<name>`).
 
