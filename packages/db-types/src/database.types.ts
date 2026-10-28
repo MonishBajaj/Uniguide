@@ -517,6 +517,20 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"lifecycle_log": {
+                  Row: {
+                    "kind": string,"period_key": string,"sent_at": string,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "kind": string,"period_key": string,"sent_at"?: string,"user_id": string
+                  }
+                  Update: {
+                    "kind"?: string,"period_key"?: string,"sent_at"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
                 },"match_runs": {
                   Row: {
                     "algorithm_version": string,"catalog_hash": string,"created_at": string,"id": string,"profile_snapshot": NonNullable<Json>,"results": NonNullable<Json>,"user_id": string,"weights": NonNullable<Json>
@@ -1096,6 +1110,11 @@ isOneToOne: false
                            },
 "my_entitlement":
 { Args: Record<PropertyKey, never>; Returns: string
+                           },
+"notifier_lifecycle_recipients":
+{ Args: Record<PropertyKey, never>; Returns: {
+              "created_at": string,"digest": boolean,"email": string,"has_shortlist": boolean,"last_sign_in_at": string,"tips": boolean,"unsubscribe_token": string,"user_id": string
+            }[]
                            },
 "notifier_recipients":
 { Args: Record<PropertyKey, never>; Returns: {

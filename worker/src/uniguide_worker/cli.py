@@ -296,21 +296,28 @@ def seed_status_cmd(
 
 
 @app.command()
-def notify() -> None:
-    """Send due deadline reminders and update emails (connects as the notifier role)."""
+def notify(
+    only: Annotated[str | None, typer.Option(help="Run only 'reminders' or 'lifecycle'.")] = None,
+) -> None:
+    """Send deadline reminders, update emails and lifecycle emails (connects as the notifier role)."""
+    from .lifecycle import send_lifecycle
     from .mailer import Mailer
     from .notify import send_reminders
 
+    if only not in (None, "reminders", "lifecycle"):
+        raise typer.BadParameter("--only must be 'reminders' or 'lifecycle'")
     settings = get_settings()
     if not settings.notifier_database_url:
         raise typer.BadParameter("Set NOTIFIER_DATABASE_URL (see .env.example)")
     mailer = Mailer.from_env()
     with connect(settings.notifier_database_url) as conn:
-        report = send_reminders(conn, mailer, settings.site_url)
+        if only in (None, "reminders"):
+            _report(send_reminders(conn, mailer, settings.site_url))
+        if only in (None, "lifecycle"):
+            _report(send_lifecycle(conn, mailer, settings.site_url))
     if mailer.dry_run:
         for m in mailer.sent:
             typer.echo(f"[dry run] to {m.to}: {m.subject}")
-    _report(report)
 
 
 def _analyst_conn() -> Connection:
