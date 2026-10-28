@@ -16,6 +16,9 @@ export async function signIn(browser: Browser, email: string): Promise<Page> {
     throw e;
   });
   await page.goto("/login");
+  if (new URL(page.url()).pathname === "/") {
+    throw new Error("Sign-in is switched off: the dev server has AUTH_DISABLED=true. Stop it and rerun, or set AUTH_DISABLED=false.");
+  }
   await page.fill("input[name=email]", email);
   await page.fill("input[name=password]", "password123");
   await page.click('button:has-text("Sign in")');

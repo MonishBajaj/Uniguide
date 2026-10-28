@@ -96,7 +96,7 @@ The student app works end to end behind sign-in, but the catalogue holds six pla
 | P0 | X2 | Confirm importers against live responses (Scorecard, Discover Uni, OpenAlex) | To build | M | Needs API keys. |
 | P0 | X3 | Hand-label 200 official pages for the extraction eval | To build | M | Fixture format in `worker/evals`. |
 | P0 | X4 | Hosted setup: Supabase, Vercel Pro, role passwords, Actions secrets | To build | M | Follow `docs/SETUP.md`. |
-| P0 | X5 | Run Playwright in CI with `AUTH_DISABLED=false` | To build | S | The e2e suite signs in through the login page. |
+| P0 | X5 | Run Playwright in CI with `AUTH_DISABLED=false` | To build | S | The e2e suite signs in through the login page. CI already runs with sign-in on; locally, Playwright's own server now forces `AUTH_DISABLED=false` and a reused demo-mode server fails with a clear message. |
 | P1 | 14.1 | Email lifecycle | Partial | M | Reminders and change emails built. Missing: welcome series, weekly digest, re-engagement. |
 | P1 | 2.6 | English proficiency guide | To build | M | Which test, per-course minimums, waivers. Requirement rows already hold the data. |
 | P1 | 3.10 | Country comparison tool | To build | M | Side-by-side countries. Data from `country_rules` plus new sourced rows. |

@@ -18,6 +18,8 @@ export default defineConfig({
     // sending it, which production rightly refuses to do. The CI web job checks the production build.
     command: `pnpm dev --port ${port}`,
     url: `http://localhost:${port}`,
+    // A server Playwright starts always has real sign-in; the specs sign in through /login.
+    env: { AUTH_DISABLED: "false" },
     reuseExistingServer: !process.env.CI,
     timeout: 180_000,
   },
