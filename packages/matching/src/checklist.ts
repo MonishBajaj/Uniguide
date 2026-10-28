@@ -11,6 +11,18 @@ export interface CountryRule {
   title: string;
   details?: string | null;
   link?: string | null;
+  // Fields below come from the typed country_rules columns; the checklist does not need them.
+  destination?: string;
+  appliesTo?: string[];
+  status?: "verified" | "unverified" | "conflicting" | "unknown";
+  amount?: number | null;
+  currency?: string | null;
+  period?: "per_month" | "per_year" | "total" | null;
+  months?: number | null;
+  hoursPerWeek?: number | null;
+  region?: string | null;
+  step?: number | null;
+  evidenceQuote?: string | null;
 }
 
 export interface ChecklistItem {

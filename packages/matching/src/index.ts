@@ -8,5 +8,6 @@ export { budgetHeadroom, DEFAULT_WEIGHTS, fitScore } from "./score";
 export { matchPrograms } from "./match";
 export { ALGORITHM_VERSION } from "./version";
 export { buildChecklist, type ChecklistDeadline, type ChecklistItem, type CountryRule } from "./checklist";
+export { rulesFor } from "./country-rules";
 export { admissionBand, type AdmitStats, type Band } from "./bands";
 export { admissionEstimate, type AdmissionEstimate, type AdmissionModelParams } from "./admission";
