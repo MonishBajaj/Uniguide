@@ -1,0 +1,56 @@
+[project]
+name = "uniguide-worker"
+version = "0.1.0"
+description = "Uniguide ingestion, extraction and eval worker"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "anthropic>=2.3.0",
+    "httpx>=0.28.1",
+    "jsonschema>=4.26.0",
+    "protego>=0.7.0",
+    "psycopg[binary]>=3.3.6",
+    "pydantic>=2.14.1",
+    "pyyaml>=6.0.3",
+    "selectolax>=1.0.2",
+    "typer>=0.27.3",
+]
+
+[project.scripts]
+uniguide-worker = "uniguide_worker.cli:app"
+
+[build-system]
+requires = ["uv_build>=0.11.32,<0.12.0"]
+build-backend = "uv_build"
+
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM", "RUF"]
+
+[tool.mypy]
+python_version = "3.13"
+strict = true
+plugins = ["pydantic.mypy"]
+mypy_path = "src"
+
+[[tool.mypy.overrides]]
+module = ["protego.*", "selectolax.*", "yaml.*", "jsonschema.*"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests", "evals"]
+markers = ["live: calls external services (Anthropic API, real websites); skipped unless -m live"]
+addopts = "-m 'not live'"
+
+[dependency-groups]
+dev = [
+    "mypy>=2.4.0",
+    "pytest>=9.2.0",
+    "pytest-httpserver>=1.2.0",
+    "ruff>=0.17.3",
+    "types-jsonschema>=4.26.0.20261006",
+    "types-pyyaml>=6.0.12.20260906",
+]

@@ -1,0 +1,24 @@
+{
+  "name": "uniguide",
+  "private": true,
+  "packageManager": "pnpm@10.28.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "pnpm --filter web dev",
+    "build": "pnpm --filter web build",
+    "lint": "pnpm -r lint",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r test",
+    "db:start": "supabase start -x studio,imgproxy,edge-runtime,logflare,vector,realtime,storage-api,supavisor,postgres-meta",
+    "db:stop": "supabase stop",
+    "db:reset": "supabase db reset",
+    "db:test": "supabase test db",
+    "db:types": "supabase gen types typescript --local --schema public > packages/db-types/src/database.types.ts && uv run --project worker python worker/scripts/gen_enums.py",
+    "db:types:check": "pnpm db:types && git diff --exit-code -- packages/db-types worker/src/uniguide_worker/db_enums.py"
+  },
+  "devDependencies": {
+    "supabase": "2.122.0"
+  }
+}
