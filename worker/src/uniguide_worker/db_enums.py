@@ -140,6 +140,7 @@ class FactSubject(StrEnum):
     REQUIREMENT = "requirement"
     DEADLINE = "deadline"
     COST_ITEM = "cost_item"
+    FEE_WAIVER = "fee_waiver"
 
 
 class NotificationKind(StrEnum):
