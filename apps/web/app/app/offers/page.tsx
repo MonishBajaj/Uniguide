@@ -6,6 +6,7 @@ import { loadCycleById, loadFx, toProgramInput } from "@/lib/catalog";
 import { label, money, shortDate } from "@/lib/format";
 import { getUser } from "@/lib/supabase/server";
 import { firstReply, daysToReply, replyText, REACTIONS, tallyGutChecks, type GutCheck as Check, type Reaction } from "@/lib/decision-day";
+import { Term } from "@/components/term";
 import { GutCheck } from "./gut-check";
 import { DecisionMatrix } from "./matrix";
 
@@ -60,7 +61,7 @@ export default async function OffersPage() {
         <h1 className="text-4xl font-semibold">Compare your offers</h1>
         <p className="max-w-2xl text-muted">
           The full cost of finishing each course, from the published fees and living costs, minus only the funding written
-          in your offer. Record decisions and funding on each application in the <Link href="/app/tracker" className="underline underline-offset-2">tracker</Link>.
+          in your offer. A <Term id="conditional_offer">conditional offer</Term> counts here too; check its conditions. Record decisions and funding on each application in the <Link href="/app/tracker" className="underline underline-offset-2">tracker</Link>.
         </p>
       </header>
 
@@ -119,7 +120,7 @@ export default async function OffersPage() {
                     ) : null}
                     {app.deposit_due_at ? (
                       <div>
-                        <dt className="text-muted">Reply or deposit due</dt>
+                        <dt className="text-muted">Reply or <Term id="deposit">deposit</Term> due</dt>
                         <dd className="font-semibold">{shortDate(app.deposit_due_at)}</dd>
                         <dd className="text-muted">{replyText(daysToReply(app.deposit_due_at))}</dd>
                       </div>

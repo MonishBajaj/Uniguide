@@ -12,6 +12,7 @@ import { startLinkedDocument, startSupplemental } from "../../writing/actions";
 import { daysUntil, deadlineText, label, money, shortDate } from "@/lib/format";
 import { getUser } from "@/lib/supabase/server";
 import { CostForm } from "../cost-form";
+import { Term } from "@/components/term";
 import { ShareCard } from "./share-card";
 import {
   addItem,
@@ -220,7 +221,7 @@ export default async function ApplicationPage({ params }: PageProps<"/app/tracke
       <section id="supplemental" aria-labelledby="supplemental-title" className="grid gap-3 rounded-2xl border border-border bg-surface p-6">
         <h2 id="supplemental-title" className="text-lg font-semibold">Supplemental essays</h2>
         <p className="text-sm text-muted">
-          Short answers to this university&apos;s own questions. Paste each question exactly; the coach works out what kind of
+          Short answers to this university&apos;s own questions (<Term id="supplemental">supplemental essays</Term>). Paste each question exactly; the coach works out what kind of
           question it is and asks you strategy questions. It never writes the answer.
         </p>
         {supplementals.length ? (
@@ -322,7 +323,7 @@ export default async function ApplicationPage({ params }: PageProps<"/app/tracke
 
         {app.decision === "waitlisted" ? (
           <div className="grid gap-3 border-t border-border pt-4">
-            <h3 className="font-semibold">You&apos;re on the waitlist: what to do now</h3>
+            <h3 className="font-semibold">You&apos;re on the <Term id="waitlist">waitlist</Term>: what to do now</h3>
             <ol className="grid gap-2 text-sm">
               {WAITLIST_STEPS.map((step, i) => (
                 <li key={step.id} className="grid grid-cols-[24px_1fr] gap-2">
