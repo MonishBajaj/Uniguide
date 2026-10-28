@@ -14,6 +14,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${SITE_URL}/`, changeFrequency: "weekly", priority: 1 },
     { url: `${SITE_URL}/courses`, changeFrequency: "daily" },
     { url: `${SITE_URL}/requirements`, changeFrequency: "daily" },
+    { url: `${SITE_URL}/deadlines`, changeFrequency: "daily" },
     { url: `${SITE_URL}/visas`, changeFrequency: "monthly" },
   ];
   for (const p of data ?? []) {
