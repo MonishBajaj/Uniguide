@@ -569,6 +569,20 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"parent_links": {
+                  Row: {
+                    "created_at": string,"parent_id": string,"revoked_at": string | null,"student_id": string,"student_name": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"parent_id": string,"revoked_at"?: string | null,"student_id": string,"student_name": string
+                  }
+                  Update: {
+                    "created_at"?: string,"parent_id"?: string,"revoked_at"?: string | null,"student_id"?: string,"student_name"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
                 },"parental_consent_requests": {
                   Row: {
                     "confirmed_at": string | null,"created_at": string,"expires_at": string,"id": string,"parent_email": string,"token_hash": string,"user_id": string
@@ -1010,6 +1024,9 @@ isOneToOne: false
 { Args: { "p_code": string }; Returns: {
               "country": string,"id": string,"name": string,"website": string
             }[]
+                           },
+"parent_can_see":
+{ Args: { "p_student": string }; Returns: boolean
                            },
 "parental_consent_age":
 { Args: { "p_country": string }; Returns: number

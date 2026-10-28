@@ -1,6 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
-import { SUPABASE_KEY, SUPABASE_URL } from "@/lib/env";
+import { AUTH_DISABLED, SUPABASE_KEY, SUPABASE_URL } from "@/lib/env";
 
 /** Refreshes the Supabase session cookie and keeps signed-out visitors out of /app and /admin. */
 export async function proxy(request: NextRequest) {
@@ -18,10 +18,11 @@ export async function proxy(request: NextRequest) {
   const { data } = await supabase.auth.getUser();
 
   const path = request.nextUrl.pathname;
-  if (!data.user && (path.startsWith("/app") || path.startsWith("/admin") || path.startsWith("/agency"))) {
+  if (!data.user && ["/app", "/admin", "/agency", "/parent"].some((p) => path.startsWith(p))) {
     const url = request.nextUrl.clone();
-    url.pathname = "/login";
-    url.search = `?next=${encodeURIComponent(path)}`;
+    // With sign-in switched off the guest goes home, where the navbar offers the mode switch.
+    url.pathname = AUTH_DISABLED ? "/" : "/login";
+    url.search = AUTH_DISABLED ? "" : `?next=${encodeURIComponent(path)}`;
     return NextResponse.redirect(url);
   }
   return response;

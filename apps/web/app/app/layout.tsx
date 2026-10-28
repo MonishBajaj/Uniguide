@@ -1,10 +1,12 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { getRoles } from "@/lib/roles";
 import { getUser } from "@/lib/supabase/server";
 
 export default async function AppLayout({ children }: LayoutProps<"/app">) {
   const { supabase, user } = await getUser();
   if (!user) redirect("/login");
+  if ((await getRoles(supabase, user.id)).parentOf.length) redirect("/parent");
   const { data: profile } = await supabase.from("profiles").select("consent_state").eq("user_id", user.id).single();
 
   return (

@@ -7,6 +7,7 @@ import { CourseQuestion } from "@/components/course-question";
 import { ReportForm } from "@/components/report-form";
 import { ShortlistButton } from "@/components/shortlist-button";
 import { toProgramInput, type CycleFacts, type ProgramCard, type RequirementRow } from "@/lib/catalog";
+import { AUTH_DISABLED } from "@/lib/env";
 import { QUALIFICATIONS } from "@/lib/fields";
 import { countryName, deadlineText, label, money } from "@/lib/format";
 import { deadlineIsStale, feeIsStale } from "@/lib/freshness";
@@ -200,7 +201,9 @@ export function CourseView(props: {
       <section aria-labelledby="report" className="mt-12 rounded-2xl bg-surface p-6">
         <h2 id="report" className="text-lg font-semibold">Something out of date?</h2>
         <p className="mt-1 mb-4 text-sm text-muted">Confirm every fact on the official page before you apply. If it says something different, tell us.</p>
-        {signedIn ? <ReportForm programId={card.id!} facts={facts} /> : (
+        {signedIn ? <ReportForm programId={card.id!} facts={facts} /> : AUTH_DISABLED ? (
+          <p className="text-sm text-muted">Switch to User mode in the navbar to report outdated information.</p>
+        ) : (
           <Link href={`/login?next=/courses/${card.slug}`} className="btn btn-secondary btn-sm">Sign in to report outdated information</Link>
         )}
       </section>

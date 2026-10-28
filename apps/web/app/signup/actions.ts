@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { ageFromBirthMonth } from "@/lib/age";
 import { isCountryCode } from "@/lib/countries";
-import { POLICY_VERSION, SITE_URL } from "@/lib/env";
+import { AUTH_DISABLED, POLICY_VERSION, SITE_URL } from "@/lib/env";
 import { createClient } from "@/lib/supabase/server";
 
 export type SignupState = { message: string; done?: boolean } | null;
@@ -22,6 +22,7 @@ const Form = z.object({
 });
 
 export async function signUp(_prev: SignupState, form: FormData): Promise<SignupState> {
+  if (AUTH_DISABLED) return { message: "Sign-up is turned off." };
   const cookieStore = await cookies();
   if (cookieStore.get(UNDER_13_COOKIE)) return { message: UNDER_13 };
 

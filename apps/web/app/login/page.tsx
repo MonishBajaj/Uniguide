@@ -1,10 +1,13 @@
 import type { Metadata } from "next";
 import { safeNext } from "@/lib/age";
+import { redirect } from "next/navigation";
+import { AUTH_DISABLED } from "@/lib/env";
 import { LoginForm } from "./login-form";
 
 export const metadata: Metadata = { title: "Sign in", robots: { index: false } };
 
 export default async function LoginPage({ searchParams }: PageProps<"/login">) {
+  if (AUTH_DISABLED) redirect("/");
   const next = safeNext((await searchParams).next);
   return (
     <div className="mx-auto max-w-md px-6 py-16">

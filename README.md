@@ -64,6 +64,8 @@ Local accounts from `supabase/seed.sql`, all with password `password123`:
 | `verifier@uniguide.local` | Verifier for Germany |
 | `counselor@uniguide.local` | Counselor at "Example Consultancy (local)", invite code `local-agency` |
 
+Sign-in and sign-up are switched off while `AUTH_DISABLED=true` in `apps/web/.env.local`; the navbar then switches between Guest, User (`student@uniguide.local`) and Parent (`parent@uniguide.local`, linked read-only to the student). Set it to `false` to use real sign-in, and before running the Playwright suite. It only works against a local Supabase.
+
 Optional: import official registers (`uv run uniguide-worker import au-cricos`, `import nl-duo`, see `--help`), and set `ANTHROPIC_API_KEY` for extraction and the AI features.
 
 ## Tests

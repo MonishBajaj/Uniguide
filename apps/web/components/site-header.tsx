@@ -1,6 +1,9 @@
 import Link from "next/link";
+import { DEMO_SWITCHER } from "@/lib/env";
+import { modeOf } from "@/lib/demo-mode";
 import { getRoles } from "@/lib/roles";
 import { getUser } from "@/lib/supabase/server";
+import { ModeSwitcher } from "./mode-switcher";
 import { NavLinks } from "./nav-links";
 
 export async function SiteHeader() {
@@ -9,11 +12,13 @@ export async function SiteHeader() {
     ? (await supabase.from("notifications").select("id", { count: "exact", head: true }).is("read_at", null)).count ?? 0
     : 0;
   const roles = await getRoles(supabase, user?.id);
+  const mode = modeOf(Boolean(user), roles.parentOf.length > 0);
 
   const links = [
     { href: "/courses", label: "Courses" },
     { href: "/requirements", label: "Requirements table" },
-    ...(user
+    ...(mode === "parent" ? [{ href: "/parent", label: "My child" }] : []),
+    ...(user && mode !== "parent"
       ? [
           { href: "/app/match", label: "My matches" },
           { href: "/app/shortlist", label: "Shortlist" },
@@ -33,13 +38,17 @@ export async function SiteHeader() {
     <header className="sticky top-3 z-40 flex justify-center px-4 pt-3">
       <nav
         aria-label="Main"
-        className="flex max-w-full items-center gap-4 overflow-x-auto rounded-2xl border border-border bg-background/80 px-4 py-2 backdrop-blur-md"
+        className="flex max-w-full items-center gap-4 rounded-2xl bg-background/80 px-4 py-2 backdrop-blur-md"
       >
         <Link href="/" className="text-base font-semibold whitespace-nowrap">
           Uniguide
         </Link>
-        <NavLinks links={links} />
-        {user ? (
+        <div className="min-w-0 overflow-x-auto">
+          <NavLinks links={links} />
+        </div>
+        {DEMO_SWITCHER ? (
+          <ModeSwitcher mode={mode} />
+        ) : user ? (
           <form action="/auth/signout" method="post">
             <button className="btn btn-secondary btn-sm whitespace-nowrap">Sign out</button>
           </form>
