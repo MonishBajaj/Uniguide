@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { checkedAgo } from "@/lib/application-events";
 import { daysUntil, deadlineText } from "@/lib/format";
 import { getUser } from "@/lib/supabase/server";
 import { setStatus } from "./actions";
@@ -20,7 +21,7 @@ export default async function TrackerPage({ searchParams }: PageProps<"/app/trac
   const { data } = await supabase
     .from("applications")
     .select(
-      "id, status, due_at, decision, program_cycles(label, programs(slug, title, institutions(name, country))), checklist_items(done, deadlines(due_at, timezone, precision))",
+      "id, status, due_at, decision, portal_checked_at, program_cycles(label, programs(slug, title, institutions(name, country))), checklist_items(done, deadlines(due_at, timezone, precision))",
     )
     .order("due_at", { ascending: true, nullsFirst: false });
   const apps = (data ?? []).map((a) => ({
@@ -90,6 +91,7 @@ export default async function TrackerPage({ searchParams }: PageProps<"/app/trac
                 <th scope="col" className="p-3">Next deadline</th>
                 <th scope="col" className="p-3">Checklist</th>
                 <th scope="col" className="p-3">Decision</th>
+                <th scope="col" className="p-3">Portal checked</th>
               </tr>
             </thead>
             <tbody>
@@ -103,6 +105,7 @@ export default async function TrackerPage({ searchParams }: PageProps<"/app/trac
                   <td className="p-3">{a.next ? deadlineText(a.next.due_at, a.next.timezone, a.next.precision) : "Not known"}</td>
                   <td className="p-3">{a.done} / {a.total}</td>
                   <td className="p-3">{a.decision ?? ""}</td>
+                  <td className="p-3">{checkedAgo(a.portal_checked_at)}</td>
                 </tr>
               ))}
             </tbody>

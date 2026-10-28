@@ -1,17 +1,18 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { checkedAgo, describeEvent } from "@/lib/application-events";
 import { CURRENCIES } from "@/lib/fields";
 import { daysUntil, deadlineText, label, shortDate } from "@/lib/format";
 import { getUser } from "@/lib/supabase/server";
-import { addItem, deleteApplication, recordDecision, saveNotes, shareOutcome, toggleItem, withdrawOutcome } from "../actions";
+import { addItem, deleteApplication, logPortal, recordDecision, saveNotes, shareOutcome, toggleItem, withdrawOutcome } from "../actions";
 
 export const metadata: Metadata = { title: "Application" };
 
 export default async function ApplicationPage({ params }: PageProps<"/app/tracker/[id]">) {
   const { id } = await params;
   const { supabase } = await getUser();
-  const [{ data: app }, { data: outcome }, { data: consent }] = await Promise.all([
+  const [{ data: app }, { data: outcome }, { data: consent }, { data: events }] = await Promise.all([
     supabase
       .from("applications")
       .select(
@@ -21,6 +22,12 @@ export default async function ApplicationPage({ params }: PageProps<"/app/tracke
       .maybeSingle(),
     supabase.from("outcomes").select("id").eq("application_id", id).maybeSingle(),
     supabase.from("consents").select("id").eq("kind", "outcomes_research").is("withdrawn_at", null).limit(1).maybeSingle(),
+    supabase
+      .from("application_events")
+      .select("id, kind, from_value, to_value, note, created_at")
+      .eq("application_id", id)
+      .order("created_at", { ascending: false })
+      .limit(50),
   ]);
   if (!app) notFound();
   const program = app.program_cycles?.programs;
@@ -141,6 +148,31 @@ export default async function ApplicationPage({ params }: PageProps<"/app/tracke
             </form>
           )
         ) : null}
+      </section>
+
+      <section aria-labelledby="portal" className="grid gap-4 rounded-2xl border border-border bg-surface p-6">
+        <div>
+          <h2 id="portal" className="text-lg font-semibold">Portal and history</h2>
+          <p className="text-sm text-muted">Portal last checked {checkedAgo(app.portal_checked_at)}.</p>
+        </div>
+        <form action={logPortal.bind(null, app.id, "portal_check")} className="flex flex-wrap gap-2">
+          <label className="sr-only" htmlFor="portal-note">What the portal says (optional)</label>
+          <input id="portal-note" name="note" maxLength={1000} placeholder="What the portal says (optional)" className="field max-w-md" />
+          <button className="btn btn-primary">I checked the portal today</button>
+        </form>
+        <form action={logPortal.bind(null, app.id, "note")} className="flex flex-wrap gap-2">
+          <label className="sr-only" htmlFor="history-note">Add a note to the history</label>
+          <input id="history-note" name="note" required maxLength={1000} placeholder="Add a note, for example an email you sent" className="field max-w-md" />
+          <button className="btn btn-secondary">Add note</button>
+        </form>
+        <ol className="grid gap-2 text-sm">
+          {(events ?? []).map((e) => (
+            <li key={e.id} className="grid grid-cols-[110px_1fr] gap-3 border-t border-border pt-2">
+              <time dateTime={e.created_at} className="text-muted">{shortDate(e.created_at)}</time>
+              <span>{describeEvent(e)}</span>
+            </li>
+          ))}
+        </ol>
       </section>
 
       <form action={deleteApplication.bind(null, app.id)}>

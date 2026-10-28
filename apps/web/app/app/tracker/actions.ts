@@ -116,3 +116,13 @@ export async function deleteApplication(applicationId: string) {
   revalidatePath("/app/tracker");
   redirect("/app/tracker");
 }
+
+/** "Checked the portal today" (with an optional note) or a plain note, added to the application's history. */
+export async function logPortal(applicationId: string, kind: "portal_check" | "note", form: FormData) {
+  const note = String(form.get("note") ?? "").trim().slice(0, 1000);
+  if (kind === "note" && !note) return;
+  const { supabase, user } = await getUser();
+  if (!user) return;
+  await supabase.from("application_events").insert({ application_id: applicationId, user_id: user.id, kind, note: note || null });
+  revalidatePath("/app/tracker", "layout");
+}

@@ -67,16 +67,36 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
-                },"applications": {
+                },"application_events": {
                   Row: {
-                    "awarded_aid": number | null,"awarded_aid_currency": string | null,"created_at": string,"cycle_id": string,"decided_at": string | null,"decision": Database["public"]['Enums']["decision"] | null,"deposit_due_at": string | null,"due_at": string | null,"id": string,"notes": string | null,"status": Database["public"]['Enums']["application_status"],"updated_at": string,"user_id": string
+                    "application_id": string,"created_at": string,"from_value": string | null,"id": string,"kind": string,"note": string | null,"to_value": string | null,"user_id": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "awarded_aid"?: number | null,"awarded_aid_currency"?: string | null,"created_at"?: string,"cycle_id": string,"decided_at"?: string | null,"decision"?: Database["public"]['Enums']["decision"] | null,"deposit_due_at"?: string | null,"due_at"?: string | null,"id"?: string,"notes"?: string | null,"status"?: Database["public"]['Enums']["application_status"],"updated_at"?: string,"user_id": string
+                    "application_id": string,"created_at"?: string,"from_value"?: string | null,"id"?: string,"kind": string,"note"?: string | null,"to_value"?: string | null,"user_id": string
                   }
                   Update: {
-                    "awarded_aid"?: number | null,"awarded_aid_currency"?: string | null,"created_at"?: string,"cycle_id"?: string,"decided_at"?: string | null,"decision"?: Database["public"]['Enums']["decision"] | null,"deposit_due_at"?: string | null,"due_at"?: string | null,"id"?: string,"notes"?: string | null,"status"?: Database["public"]['Enums']["application_status"],"updated_at"?: string,"user_id"?: string
+                    "application_id"?: string,"created_at"?: string,"from_value"?: string | null,"id"?: string,"kind"?: string,"note"?: string | null,"to_value"?: string | null,"user_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "application_events_application_id_fkey"
+      columns: ["application_id"]
+isOneToOne: false
+      referencedRelation: "applications"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"applications": {
+                  Row: {
+                    "awarded_aid": number | null,"awarded_aid_currency": string | null,"created_at": string,"cycle_id": string,"decided_at": string | null,"decision": Database["public"]['Enums']["decision"] | null,"deposit_due_at": string | null,"due_at": string | null,"id": string,"notes": string | null,"portal_checked_at": string | null,"status": Database["public"]['Enums']["application_status"],"updated_at": string,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "awarded_aid"?: number | null,"awarded_aid_currency"?: string | null,"created_at"?: string,"cycle_id": string,"decided_at"?: string | null,"decision"?: Database["public"]['Enums']["decision"] | null,"deposit_due_at"?: string | null,"due_at"?: string | null,"id"?: string,"notes"?: string | null,"portal_checked_at"?: string | null,"status"?: Database["public"]['Enums']["application_status"],"updated_at"?: string,"user_id": string
+                  }
+                  Update: {
+                    "awarded_aid"?: number | null,"awarded_aid_currency"?: string | null,"created_at"?: string,"cycle_id"?: string,"decided_at"?: string | null,"decision"?: Database["public"]['Enums']["decision"] | null,"deposit_due_at"?: string | null,"due_at"?: string | null,"id"?: string,"notes"?: string | null,"portal_checked_at"?: string | null,"status"?: Database["public"]['Enums']["application_status"],"updated_at"?: string,"user_id"?: string
                   }
                   Relationships: [
                     {
