@@ -29,7 +29,7 @@ export async function SiteHeader() {
           { href: "/app/notifications", label: unread ? `Updates (${unread})` : "Updates" },
         ]
       : []),
-    ...(roles.admin || roles.verifier ? [{ href: "/admin/review", label: "Review queue" }] : []),
+    ...(roles.admin || roles.verifier ? [{ href: "/admin/review", label: "Review queue" }, { href: "/admin/institution-facts", label: "Facts" }] : []),
     ...(roles.admin ? [{ href: "/admin/rules", label: "Rules" }, { href: "/admin/team", label: "Team" }] : []),
     ...(roles.orgs.length ? [{ href: "/agency", label: "Students" }] : []),
   ];

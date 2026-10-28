@@ -497,6 +497,50 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
+                },"institution_facts": {
+                  Row: {
+                    "amount": number | null,"created_at": string,"currency": string | null,"details": string | null,"evidence_quote": string,"hours_per_week": number | null,"id": string,"institution_id": string,"kind": string,"link": string | null,"period": string | null,"program_id": string | null,"published": boolean,"source_id": string | null,"status": Database["public"]['Enums']["fact_status"],"title": string,"verified_at": string | null,"verified_by": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "amount"?: number | null,"created_at"?: string,"currency"?: string | null,"details"?: string | null,"evidence_quote": string,"hours_per_week"?: number | null,"id"?: string,"institution_id": string,"kind": string,"link"?: string | null,"period"?: string | null,"program_id"?: string | null,"published"?: boolean,"source_id"?: string | null,"status"?: Database["public"]['Enums']["fact_status"],"title": string,"verified_at"?: string | null,"verified_by"?: string | null
+                  }
+                  Update: {
+                    "amount"?: number | null,"created_at"?: string,"currency"?: string | null,"details"?: string | null,"evidence_quote"?: string,"hours_per_week"?: number | null,"id"?: string,"institution_id"?: string,"kind"?: string,"link"?: string | null,"period"?: string | null,"program_id"?: string | null,"published"?: boolean,"source_id"?: string | null,"status"?: Database["public"]['Enums']["fact_status"],"title"?: string,"verified_at"?: string | null,"verified_by"?: string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "institution_facts_institution_id_fkey"
+      columns: ["institution_id"]
+isOneToOne: false
+      referencedRelation: "institutions"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "institution_facts_institution_id_fkey"
+      columns: ["institution_id"]
+isOneToOne: false
+      referencedRelation: "program_cards"
+      referencedColumns: ["institution_id"]
+    },{
+      foreignKeyName: "institution_facts_program_id_fkey"
+      columns: ["program_id"]
+isOneToOne: false
+      referencedRelation: "program_cards"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "institution_facts_program_id_fkey"
+      columns: ["program_id"]
+isOneToOne: false
+      referencedRelation: "programs"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "institution_facts_source_id_fkey"
+      columns: ["source_id"]
+isOneToOne: false
+      referencedRelation: "sources"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"institutions": {
                   Row: {
                     "city": string | null,"country": string,"created_at": string,"cricos_provider_code": string | null,"id": string,"ipeds_unitid": string | null,"name": string,"official_domain": string | null,"other_ids": NonNullable<Json>,"region": string | null,"ror_id": string | null,"source_id": string | null,"ukprn": string | null,"updated_at": string,"verification_method": Database["public"]['Enums']["verification_method"]
@@ -1041,8 +1085,14 @@ isOneToOne: false
 "_apply_fact_version":
 { Args: { "p_method": Database["public"]['Enums']["verification_method"],"p_status": Database["public"]['Enums']["fact_status"],"p_verified_at": string,"p_verified_by": string,"p_version": Omit<Database["public"]['Tables']["fact_versions"]['Row'], Database["public"]['Tables']["fact_versions"]['ComputedFields']> }; Returns: string
                            },
+"_can_edit_institution":
+{ Args: { "p_institution": string }; Returns: boolean
+                           },
 "add_country_rule":
 { Args: { "p_amount"?: number,"p_applies_to"?: (string)[],"p_currency"?: string,"p_destination": string,"p_details"?: string,"p_hours_per_week"?: number,"p_kind": string,"p_link"?: string,"p_months"?: number,"p_period"?: string,"p_quote": string,"p_region"?: string,"p_source_url": string,"p_step"?: number,"p_title": string }; Returns: string
+                           },
+"add_institution_fact":
+{ Args: { "p_amount"?: number,"p_currency"?: string,"p_details"?: string,"p_hours_per_week"?: number,"p_institution": string,"p_kind": string,"p_link"?: string,"p_period"?: string,"p_program"?: string,"p_quote": string,"p_source_url": string,"p_title": string }; Returns: string
                            },
 "add_org_member":
 { Args: { "p_email": string,"p_org": string,"p_role"?: string }; Returns: string
@@ -1252,6 +1302,9 @@ isOneToOne: false
                            },
 "verify_country_rule":
 { Args: { "p_rule_id": string }; Returns: undefined
+                           },
+"verify_institution_fact":
+{ Args: { "p_id": string }; Returns: undefined
                            },
 "verify_program_stat":
 { Args: { "p_stat_id": string }; Returns: undefined
