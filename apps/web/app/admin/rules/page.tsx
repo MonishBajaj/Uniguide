@@ -53,6 +53,9 @@ export default async function RulesAdmin() {
               <option value="aps_certificate">Academic document check (for example APS)</option>
               <option value="proof_of_funds">Proof of funds</option>
               <option value="visa_info">Official visa page</option>
+              <option value="visa_step">Visa step</option>
+              <option value="post_study_work">Work after graduation</option>
+              <option value="work_hours">Part time work hours</option>
               <option value="other">Other</option>
             </select>
           </label>
@@ -61,6 +64,23 @@ export default async function RulesAdmin() {
           <label className="grid gap-1 text-sm">Official page<input name="source" type="url" required className="field" /></label>
           <label className="grid gap-1 text-sm sm:col-span-2">What students should do<textarea name="details" rows={2} maxLength={1000} className="field" /></label>
           <label className="grid gap-1 text-sm sm:col-span-2">Verbatim quote from the page<textarea name="quote" required rows={2} maxLength={1000} className="field" /></label>
+          <fieldset className="grid gap-3 rounded-lg border border-border p-3 sm:col-span-2 sm:grid-cols-3">
+            <legend className="px-1 text-sm text-muted">Numbers the page states (only what applies to this kind)</legend>
+            <label className="grid gap-1 text-sm">Amount<input name="amount" type="number" min="0" step="any" className="field" /></label>
+            <label className="grid gap-1 text-sm">Currency (for example GBP)<input name="currency" maxLength={3} className="field" /></label>
+            <label className="grid gap-1 text-sm">Period
+              <select name="period" className="field">
+                <option value="">None</option>
+                <option value="per_month">Per month</option>
+                <option value="per_year">Per year</option>
+                <option value="total">Total</option>
+              </select>
+            </label>
+            <label className="grid gap-1 text-sm">Months (months of funds, or months allowed to work)<input name="months" type="number" min="1" max="120" className="field" /></label>
+            <label className="grid gap-1 text-sm">Hours per week<input name="hours_per_week" type="number" min="1" max="80" className="field" /></label>
+            <label className="grid gap-1 text-sm">Step number (visa steps)<input name="step" type="number" min="0" className="field" /></label>
+            <label className="grid gap-1 text-sm sm:col-span-3">Region (for example london; empty for the whole country)<input name="region" maxLength={60} className="field" /></label>
+          </fieldset>
           <button className="btn btn-primary justify-self-start">Add rule</button>
         </form>
       </section>

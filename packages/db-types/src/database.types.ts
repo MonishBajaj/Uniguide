@@ -181,14 +181,14 @@ isOneToOne: false
                   ]
                 },"country_rules": {
                   Row: {
-                    "applies_to": (string)[],"created_at": string,"destination": string,"details": string | null,"evidence_quote": string | null,"id": string,"kind": string,"link": string | null,"published": boolean,"source_id": string | null,"status": Database["public"]['Enums']["fact_status"],"title": string,"verified_at": string | null,"verified_by": string | null
+                    "amount": number | null,"applies_to": (string)[],"created_at": string,"currency": string | null,"destination": string,"details": string | null,"evidence_quote": string | null,"hours_per_week": number | null,"id": string,"kind": string,"link": string | null,"months": number | null,"period": string | null,"published": boolean,"region": string | null,"source_id": string | null,"status": Database["public"]['Enums']["fact_status"],"step": number | null,"title": string,"verified_at": string | null,"verified_by": string | null
                   }
                   ComputedFields: never
                   Insert: {
-                    "applies_to"?: (string)[],"created_at"?: string,"destination": string,"details"?: string | null,"evidence_quote"?: string | null,"id"?: string,"kind": string,"link"?: string | null,"published"?: boolean,"source_id"?: string | null,"status"?: Database["public"]['Enums']["fact_status"],"title": string,"verified_at"?: string | null,"verified_by"?: string | null
+                    "amount"?: number | null,"applies_to"?: (string)[],"created_at"?: string,"currency"?: string | null,"destination": string,"details"?: string | null,"evidence_quote"?: string | null,"hours_per_week"?: number | null,"id"?: string,"kind": string,"link"?: string | null,"months"?: number | null,"period"?: string | null,"published"?: boolean,"region"?: string | null,"source_id"?: string | null,"status"?: Database["public"]['Enums']["fact_status"],"step"?: number | null,"title": string,"verified_at"?: string | null,"verified_by"?: string | null
                   }
                   Update: {
-                    "applies_to"?: (string)[],"created_at"?: string,"destination"?: string,"details"?: string | null,"evidence_quote"?: string | null,"id"?: string,"kind"?: string,"link"?: string | null,"published"?: boolean,"source_id"?: string | null,"status"?: Database["public"]['Enums']["fact_status"],"title"?: string,"verified_at"?: string | null,"verified_by"?: string | null
+                    "amount"?: number | null,"applies_to"?: (string)[],"created_at"?: string,"currency"?: string | null,"destination"?: string,"details"?: string | null,"evidence_quote"?: string | null,"hours_per_week"?: number | null,"id"?: string,"kind"?: string,"link"?: string | null,"months"?: number | null,"period"?: string | null,"published"?: boolean,"region"?: string | null,"source_id"?: string | null,"status"?: Database["public"]['Enums']["fact_status"],"step"?: number | null,"title"?: string,"verified_at"?: string | null,"verified_by"?: string | null
                   }
                   Relationships: [
                     {
@@ -986,7 +986,7 @@ isOneToOne: false
 { Args: { "p_method": Database["public"]['Enums']["verification_method"],"p_status": Database["public"]['Enums']["fact_status"],"p_verified_at": string,"p_verified_by": string,"p_version": Omit<Database["public"]['Tables']["fact_versions"]['Row'], Database["public"]['Tables']["fact_versions"]['ComputedFields']> }; Returns: string
                            },
 "add_country_rule":
-{ Args: { "p_applies_to"?: (string)[],"p_destination": string,"p_details"?: string,"p_kind": string,"p_link"?: string,"p_quote": string,"p_source_url": string,"p_title": string }; Returns: string
+{ Args: { "p_amount"?: number,"p_applies_to"?: (string)[],"p_currency"?: string,"p_destination": string,"p_details"?: string,"p_hours_per_week"?: number,"p_kind": string,"p_link"?: string,"p_months"?: number,"p_period"?: string,"p_quote": string,"p_region"?: string,"p_source_url": string,"p_step"?: number,"p_title": string }; Returns: string
                            },
 "add_org_member":
 { Args: { "p_email": string,"p_org": string,"p_role"?: string }; Returns: string
