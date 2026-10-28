@@ -144,3 +144,30 @@ export function baseInCurrency(cost: CostScenarios, currency: string): number | 
   if (cost.currency === currency) return cost.base;
   return cost.converted?.currency === currency ? cost.converted.amount : null;
 }
+
+/**
+ * What the first year of tuition costs, on the course's own cost basis, in the tuition currency.
+ * Null when there is no mandatory tuition fact or the basis needs a figure the course does not publish.
+ */
+export function firstYearTuition(program: ProgramInput): { amount: number; currency: string; assumption?: string } | null {
+  const tuition = program.costs.find((c) => c.mandatory && c.kind === "tuition");
+  if (!tuition) return null;
+  const months = program.durationMonths ?? null;
+  const { currency, base } = tuition;
+  switch (tuition.basis) {
+    case "per_year":
+      return { amount: base, currency };
+    case "per_term":
+      return { amount: base * TERMS_PER_YEAR, currency, assumption: `Per-term fees assume ${TERMS_PER_YEAR} terms a year.` };
+    case "per_month":
+      return { amount: base * Math.min(12, months ?? 12), currency };
+    case "per_credit": {
+      if (program.requiredCredits == null || months == null || months <= 0) return null;
+      const creditsPerYear = program.requiredCredits / (months / 12);
+      return { amount: base * Math.min(creditsPerYear, program.requiredCredits), currency, assumption: "Credits are assumed to be spread evenly over the course." };
+    }
+    case "total":
+    case "one_off":
+      return { amount: months != null && months > 12 ? (base * 12) / months : base, currency, assumption: months != null && months > 12 ? "The total fee is assumed to be spread evenly over the course." : undefined };
+  }
+}

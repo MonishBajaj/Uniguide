@@ -1,7 +1,8 @@
 export * from "./types";
 export { applicantCategories } from "./applicant";
 export { closesAt, countdownTo, nextDeadline } from "./deadlines";
-export { baseInCurrency, convert, costScenarios } from "./cost";
+export { baseInCurrency, convert, costScenarios, firstYearTuition } from "./cost";
+export { requiredFunds, type FundsResult } from "./visa-funds";
 export { checkEligibility } from "./eligibility";
 export { hardFilters } from "./filters";
 export { budgetHeadroom, DEFAULT_WEIGHTS, fitScore } from "./score";
