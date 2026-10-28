@@ -8,6 +8,7 @@ import { scoreNeeds, sentProgress } from "@/lib/score-sending";
 import { daysUntil, deadlineText, label, money, shortDate } from "@/lib/format";
 import { getUser } from "@/lib/supabase/server";
 import { CostForm } from "../cost-form";
+import { ShareCard } from "./share-card";
 import {
   addItem,
   deleteApplication,
@@ -231,6 +232,14 @@ export default async function ApplicationPage({ params }: PageProps<"/app/tracke
           </label>
           <button className="btn btn-secondary self-end justify-self-start">Save decision</button>
         </form>
+
+        {app.decision === "admitted" ? (
+          <div className="grid gap-2 border-t border-border pt-4">
+            <h3 className="font-semibold">Congratulations! Share the news</h3>
+            <p className="text-sm text-muted">A card with the course, university and intake. It never shows your grades, scores or funding.</p>
+            <ShareCard applicationId={app.id} />
+          </div>
+        ) : null}
 
         {app.decision ? (
           outcome ? (
