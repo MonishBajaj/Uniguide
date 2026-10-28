@@ -24,6 +24,7 @@ export default async function NewDocument({ searchParams }: PageProps<"/app/writ
             <option value="personal_statement">Personal statement</option>
             <option value="why_this_university">Why this university</option>
             <option value="continued_interest">Letter of continued interest (waitlist)</option>
+            <option value="supplemental">Supplemental essay (needs the school&apos;s question)</option>
             <option value="other">Other essay</option>
           </select>
         </label>

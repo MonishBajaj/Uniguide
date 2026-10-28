@@ -4,7 +4,7 @@ Source: the Feature Bible (100 features), `BACKLOG.md`, and what the running app
 
 **Totals (103 rows):** 16 built · 15 partly built · 53 to build · 5 need an owner decision · 4 deferred to year 2 · 10 cut on purpose.
 
-**Developer B progress (developer-b, October 2026):** 13 more rows built, and 3.3 and 3.4 finished except for A's data. Totals now: 29 built · 9 partly built · 45 to build · 5 need a decision · 5 deferred (14.4 added) · 10 cut. X10 and 13.2 wait on payments.
+**Developer B progress (developer-b, October 2026):** 14 more rows built, and 3.3 and 3.4 finished except for A's data. Totals now: 30 built · 9 partly built · 44 to build · 5 need a decision · 5 deferred (14.4 added) · 10 cut. X10 and 13.2 wait on payments.
 
 Status key: **Built** works today · **Partial** exists, listed gap remains · **To build** not started · **Decision** the owner must settle first · **Deferred** year 2 · **Cut** decided against (BACKLOG). Size: S about 2 days, M about a week, L two weeks or more. Priority: P0 needed for a real launch, P1 next, P2 later, P3 only if time allows.
 
@@ -150,7 +150,7 @@ The student app works end to end behind sign-in, but the catalogue holds six pla
 | P1 | 17.2 | Blog and content hub | To build | S | One draft exists in `docs/blog`. No `/blog` route yet. |
 | P1 | 4.8 | Waitlist assistant | Built | S | Built on developer-b: waitlist steps and a letter of continued interest in the writing coach. |
 | P1 | 5.5 | Why this university helper | Built | S | Built on developer-b: course material beside the draft, with a check of what it names. |
-| P1 | 5.6 | Supplemental essay assistant | To build | M | Prompts and strategy per school; reuses the review engine. |
+| P1 | 5.6 | Supplemental essay assistant | Built | M | Built on developer-b: several per application, each with the school's question; the coach sorts the question into a type and asks strategy questions. |
 | P1 | 6.1 | Recommendation letter tracker | Built | M | Built on developer-b: recommenders, letter status and due dates, nudges to the student. |
 | P1 | 6.2 | CV builder | Built | M | Built on developer-b: own entries, questions under weak points, printable layouts. |
 | P1 | 7.7 | Decision-day timer | Built | S | Built on developer-b: reply-date countdown and a coin-flip gut check. |

@@ -7,7 +7,7 @@ import { enforceCoaching } from "./guard";
 import type { Sentence } from "./segment";
 
 export const REVIEW_MODEL = "claude-sonnet-5-5";
-export const REVIEW_PROMPT_VERSION = "sop-review-2026-12-01";
+export const REVIEW_PROMPT_VERSION = "sop-review-2026-12-02";
 // USD per million tokens (Oct 2026 list price).
 const INPUT_PRICE = 2;
 const OUTPUT_PRICE = 10;
@@ -77,6 +77,8 @@ async function call<T>(api: Anthropic, schema: z.ZodType<T>, user: string) {
 const KIND_NOTES: Record<string, string> = {
   continued_interest:
     "This is a letter of continued interest for a waitlisted application. Judge it on whether it gives information that is new since the application, with dates, and states the student's commitment plainly. Flag claims of being a first choice so the student checks they are true, and flag repetition of the original application.",
+  supplemental:
+    "This is a short supplemental essay answering one school's own question, quoted below. Judge it first on whether it answers every part of that question, within the word limit. Short answers should spend their words on one concrete example rather than a summary of the whole application; flag sentences that could be pasted into an answer for a different school or a different question.",
 };
 
 export type Run<T> = Awaited<ReturnType<typeof call<T>>> & { inputHash: string };

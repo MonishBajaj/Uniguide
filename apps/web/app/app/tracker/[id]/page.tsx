@@ -8,7 +8,7 @@ import { letterProgress, lettersNeeded, LETTER_STATUSES, type LetterStatus } fro
 import { scoreNeeds, sentProgress } from "@/lib/score-sending";
 import { WAITLIST_STEPS } from "@/lib/waitlist";
 import { setAcceptedOffer } from "../../departure/actions";
-import { startLinkedDocument } from "../../writing/actions";
+import { startLinkedDocument, startSupplemental } from "../../writing/actions";
 import { daysUntil, deadlineText, label, money, shortDate } from "@/lib/format";
 import { getUser } from "@/lib/supabase/server";
 import { CostForm } from "../cost-form";
@@ -52,7 +52,12 @@ export default async function ApplicationPage({ params }: PageProps<"/app/tracke
     supabase.from("test_scores").select("id, exam, exam_version, total").order("taken_on", { ascending: false }),
     supabase.from("application_costs").select("id, kind, amount, currency, paid_on, note").eq("application_id", id).order("created_at"),
     supabase.from("profiles").select("budget_currency").eq("user_id", user!.id).single(),
-    supabase.from("documents").select("id, kind, document_versions(word_count, created_at)").eq("application_id", id).in("kind", ["continued_interest", "why_this_university"]),
+    supabase
+      .from("documents")
+      .select("id, kind, question, word_limit, created_at, document_versions(word_count, created_at)")
+      .eq("application_id", id)
+      .in("kind", ["continued_interest", "why_this_university", "supplemental"])
+      .order("created_at"),
   ]);
   if (!app) notFound();
   const program = app.program_cycles?.programs;
@@ -60,6 +65,7 @@ export default async function ApplicationPage({ params }: PageProps<"/app/tracke
   const letter = (linkedDocs ?? []).find((d) => d.kind === "continued_interest");
   const letters = letterProgress(app.recommendation_requests, lettersNeeded(app.program_cycles?.requirements ?? []));
   const whyDoc = (linkedDocs ?? []).find((d) => d.kind === "why_this_university");
+  const supplementals = (linkedDocs ?? []).filter((d) => d.kind === "supplemental");
   const needs = scoreNeeds(app.program_cycles?.requirements ?? []);
   const reports = [...app.score_reports].sort((a, b) => a.sent_on.localeCompare(b.sent_on));
   const progress = sentProgress(needs, reports.flatMap((r) => (r.test_scores ? [r.test_scores.exam] : [])));
@@ -197,6 +203,42 @@ export default async function ApplicationPage({ params }: PageProps<"/app/tracke
             ))}
           </ul>
         ) : null}
+      </section>
+
+      <section id="supplemental" aria-labelledby="supplemental-title" className="grid gap-3 rounded-2xl border border-border bg-surface p-6">
+        <h2 id="supplemental-title" className="text-lg font-semibold">Supplemental essays</h2>
+        <p className="text-sm text-muted">
+          Short answers to this university&apos;s own questions. Paste each question exactly; the coach works out what kind of
+          question it is and asks you strategy questions. It never writes the answer.
+        </p>
+        {supplementals.length ? (
+          <ul className="grid gap-2 text-sm">
+            {supplementals.map((d) => {
+              const last = [...d.document_versions].sort((a, b) => b.created_at.localeCompare(a.created_at))[0];
+              return (
+                <li key={d.id} className="rounded-lg bg-background p-3">
+                  <Link href={`/app/writing/${d.id}`} className="font-semibold underline-offset-2 hover:underline">{d.question}</Link>
+                  <p className="text-muted">
+                    {last ? `${last.word_count}${d.word_limit ? ` of ${d.word_limit}` : ""} words, saved ${shortDate(last.created_at)}` : "Not started"}
+                  </p>
+                </li>
+              );
+            })}
+          </ul>
+        ) : null}
+        <form action={startSupplemental.bind(null, app.id)} className="grid gap-3">
+          <label className="grid gap-2 text-sm font-semibold">
+            The question
+            <textarea name="question" required rows={2} maxLength={2000} className="field font-normal" />
+          </label>
+          <div className="flex flex-wrap items-end gap-3">
+            <label className="grid gap-2 text-sm font-semibold">
+              Word limit (if given)
+              <input name="word_limit" type="number" min={50} max={5000} className="field font-normal" style={{ width: "10rem" }} />
+            </label>
+            <button className="btn btn-secondary btn-sm">Add a supplemental essay</button>
+          </div>
+        </form>
       </section>
 
       <section aria-labelledby="costs" className="grid gap-4 rounded-2xl border border-border bg-surface p-6">

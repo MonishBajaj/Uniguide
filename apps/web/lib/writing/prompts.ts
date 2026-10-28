@@ -1,3 +1,5 @@
+import { classifyPrompt, PROMPT_TYPES } from "./supplemental";
+
 /** Story mining: questions that surface material only this student has. Answers stay private notes. */
 export const STORY_QUESTIONS: { id: string; group: string; question: string; hint: string }[] = [
   { id: "first_problem", group: "Where it started", question: "What is the first problem in this field you remember wanting to solve?", hint: "A specific moment, place and year beats 'since childhood'." },
@@ -54,7 +56,7 @@ export const OUTLINES: Record<string, OutlineSection[]> = {
   ],
 };
 
-export function outlineFor(kind: string, wordLimit: number | null) {
-  const sections = OUTLINES[kind] ?? OUTLINES.other!;
+export function outlineFor(kind: string, wordLimit: number | null, question: string | null = null) {
+  const sections = kind === "supplemental" && question ? PROMPT_TYPES[classifyPrompt(question)].outline : (OUTLINES[kind] ?? OUTLINES.other!);
   return sections.map((s) => ({ ...s, words: wordLimit ? Math.round(s.share * wordLimit) : null }));
 }

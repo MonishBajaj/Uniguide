@@ -16,6 +16,12 @@ describe("writing prompts", () => {
     expect(outline[0]!.questions.join(" ")).toMatch(/only if it is true/);
   });
 
+  it("a supplemental essay's outline follows the type of the school's question", () => {
+    const outline = outlineFor("supplemental", 200, "Why Stanford?");
+    expect(outline.map((s) => [s.id, s.words])).toEqual([["specifics", 120], ["link", 80]]);
+    expect(outlineFor("supplemental", null, "Tell us about a setback.").map((s) => s.id)).toEqual(["situation", "action", "change"]);
+  });
+
   it("guidance only asks questions and states rules; it never promises an outcome", () => {
     const text = [...WAITLIST_STEPS.map((s) => s.body), ...OUTLINES.continued_interest!.flatMap((s) => s.questions)].join(" ");
     expect(text).not.toMatch(/guarantee|will get you in|increase your chances/i);

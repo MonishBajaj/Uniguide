@@ -109,6 +109,7 @@ class DocumentKind(StrEnum):
     WHY_THIS_UNIVERSITY = "why_this_university"
     OTHER = "other"
     CONTINUED_INTEREST = "continued_interest"
+    SUPPLEMENTAL = "supplemental"
 
 
 class ExamKind(StrEnum):

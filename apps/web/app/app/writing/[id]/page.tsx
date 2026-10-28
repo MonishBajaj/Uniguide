@@ -5,7 +5,8 @@ import { label, shortDate } from "@/lib/format";
 import { getUser } from "@/lib/supabase/server";
 import { loadFaculty } from "@/lib/faculty";
 import { courseMaterial, namedInDraft, WHY_QUESTIONS, type MaterialItem } from "@/lib/why-helper";
-import { outlineFor } from "@/lib/writing/prompts";
+import { outlineFor, STORY_QUESTIONS } from "@/lib/writing/prompts";
+import { classifyPrompt, PROMPT_TYPES } from "@/lib/writing/supplemental";
 import { segment } from "@/lib/writing/segment";
 import type { RubricResult, ComparisonResult } from "@/lib/writing/review";
 import { deleteDocument } from "../actions";
@@ -35,12 +36,14 @@ export default async function DocumentPage({ params }: PageProps<"/app/writing/[
   const ids = new Set((versions ?? []).map((v) => v.id));
   const mine = (reviews ?? []).filter((r) => ids.has(r.version_id));
   const latest = versions?.[0];
-  const outline = outlineFor(doc.kind, doc.word_limit);
+  const outline = outlineFor(doc.kind, doc.word_limit, doc.question);
+  const promptType = doc.kind === "supplemental" && doc.question ? classifyPrompt(doc.question) : null;
+  const guide = promptType ? PROMPT_TYPES[promptType] : null;
 
   // "Why this university": material from this course's stored facts and its researchers.
   let material: MaterialItem[] = [];
   let institution: string | null = null;
-  if (doc.kind === "why_this_university" && doc.application_id) {
+  if ((doc.kind === "why_this_university" || promptType === "why_us") && doc.application_id) {
     const { data: app } = await supabase.from("applications").select("program_cycles(program_id)").eq("id", doc.application_id).maybeSingle();
     const programId = app?.program_cycles?.program_id;
     const [{ data: card }, { data: profile }] = await Promise.all([
@@ -77,6 +80,30 @@ export default async function DocumentPage({ params }: PageProps<"/app/writing/[
         </ol>
         <p className="mt-3 text-sm text-muted"><Link href="/app/writing/stories" className="underline underline-offset-2">Your story bank</Link> holds the material for each part.</p>
       </details>
+
+      {guide ? (
+        <section aria-labelledby="strategy" className="grid gap-3 rounded-2xl border border-border bg-surface p-6 text-sm">
+          <div>
+            <h2 id="strategy" className="text-lg font-semibold">How to approach this question</h2>
+            <p className="text-muted">
+              {guide.about
+                ? <>This looks like a question about <span className="font-semibold text-foreground">{guide.about}</span>. If it is really asking something else, follow the question, not this guess.</>
+                : "We could not tell what kind of question this is, so these are general. Work from the question itself."}
+            </p>
+          </div>
+          <ul className="grid list-disc gap-1 pl-5">{guide.strategy.map((q) => <li key={q}>{q}</li>)}</ul>
+          <div className="grid gap-1">
+            <h3 className="font-semibold">From your story bank</h3>
+            <ul className="grid gap-1 text-muted">
+              {guide.stories.map((sid) => {
+                const q = STORY_QUESTIONS.find((s) => s.id === sid)!;
+                return <li key={sid}>{q.question}</li>;
+              })}
+            </ul>
+            <Link href="/app/writing/stories" className="justify-self-start underline underline-offset-2">Answer these in your story bank</Link>
+          </div>
+        </section>
+      ) : null}
 
       {material.length ? (
         <section aria-labelledby="material" className="grid gap-4 rounded-2xl border border-border bg-surface p-6 text-sm">
