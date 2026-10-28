@@ -1,0 +1,70 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  web:
+    name: Web and matching (lint, types, tests, build)
+    runs-on: ubuntu-latest
+    env:
+      NEXT_PUBLIC_SUPABASE_URL: http://127.0.0.1:54321
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ci-placeholder
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm -r typecheck
+      - run: pnpm --filter web lint
+      - run: pnpm -r test
+      - run: pnpm build
+
+  worker:
+    name: Worker (ruff, mypy, pytest, offline evals, seed files)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: worker
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - run: uv sync --frozen
+      - run: uv run ruff check .
+      - run: uv run ruff format --check .
+      - run: uv run mypy src tests scripts evals
+      # Database tests skip here; the db job runs them against a real stack.
+      - run: uv run pytest
+      - run: uv run uniguide-worker seed check
+
+  db:
+    name: Database (migrations, RLS tests, type drift, worker integration)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - uses: astral-sh/setup-uv@v5
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec supabase db start
+      - run: pnpm db:test
+      - name: Generated types match the migrations
+        run: |
+          pnpm exec supabase gen types typescript --local --schema public > packages/db-types/src/database.types.ts
+          (cd worker && uv sync --frozen && uv run python scripts/gen_enums.py --check)
+          git diff --exit-code -- packages/db-types
+      - name: Worker against the database
+        working-directory: worker
+        run: uv run pytest tests/test_pipeline_db.py -v

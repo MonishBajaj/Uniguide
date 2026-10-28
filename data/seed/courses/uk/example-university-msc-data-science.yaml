@@ -1,0 +1,55 @@
+# PLACEHOLDER: fictional institution and figures, for format and local development only.
+placeholder: true
+institution:
+  name: University of Exampleton (placeholder)
+  country: GB
+  city: Exampleton
+  official_domain: exampleton.example.org
+program:
+  slug: exampleton-msc-data-science
+  title: MSc Data Science
+  level: master
+  isced_level: 7
+  isced_f: "0688"
+  field_label: Data Science
+  delivery_mode: on_campus
+  duration_months: 12
+  credit_system: uk_cats
+  required_credits: 180
+  official_url: https://exampleton.example.org/pg/msc-data-science
+cycles:
+  - label: 2027-autumn
+    intake_year: 2027
+    intake_term: autumn
+    starts_on: 2027-09-20
+    facts:
+      - subject: requirement
+        fields: { kind: entry_qualification, applicant_category: all, qualification: bachelor_any, min_grade_text: "2:1 (upper second-class honours)", grade_scale: uk_class }
+        source_url: https://exampleton.example.org/pg/msc-data-science
+        evidence_quote: "A UK 2:1 honours degree, or its international equivalent, in a quantitative subject."
+        verified_by: placeholder
+        verified_at: 2026-10-28
+      - subject: requirement
+        fields: { kind: language_test, applicant_category: international, exam: ielts_academic, min_total: 6.5, min_sections: { writing: 6.0, reading: 6.0, listening: 5.5, speaking: 5.5 } }
+        source_url: https://exampleton.example.org/international/english
+        evidence_quote: "IELTS Academic 6.5 overall, with at least 6.0 in writing and reading and 5.5 in listening and speaking."
+        verified_by: placeholder
+        verified_at: 2026-10-28
+      - subject: deadline
+        fields: { date: 2027-06-30, kind: application, owning_system: direct, original_text: "30 June 2027 (international applicants)", applicant_category: international }
+        source_url: https://exampleton.example.org/pg/msc-data-science
+        evidence_quote: "International applicants should apply by 30 June 2027."
+        verified_by: placeholder
+        verified_at: 2026-10-28
+      - subject: cost_item
+        fields: { kind: tuition, basis: per_year, base: 31500, currency: GBP, fee_year: "2027-28", applicant_category: international }
+        source_url: https://exampleton.example.org/fees/2027-28
+        evidence_quote: "MSc Data Science, overseas fee 2027-28: £31,500."
+        verified_by: placeholder
+        verified_at: 2026-10-28
+      - subject: cost_item
+        fields: { kind: living, basis: per_month, low: 1100, base: 1300, high: 1500, currency: GBP }
+        source_url: https://exampleton.example.org/international/living-costs
+        evidence_quote: "Plan for living costs of around £1,100 to £1,500 a month."
+        verified_by: placeholder
+        verified_at: 2026-10-28

@@ -1,0 +1,16 @@
+{
+  "effective_intake": "September 2026 entry",
+  "effective_intake_year": 2026,
+  "language_tests": [],
+  "entry_qualifications": [],
+  "admissions_tests": [],
+  "deadlines": [
+    {"applicant_category": "all", "round": null, "kind": "application", "owning_system": "direct",
+     "date": "2026-06-30", "time": null, "timezone": null, "original_text": "30 June 2026",
+     "quote": "Applications for September 2026 entry close on 30 June 2026."}
+  ],
+  "costs": [
+    {"applicant_category": "international", "kind": "tuition", "basis": "per_year", "amount": 24500,
+     "amount_high": null, "currency": "GBP", "fee_year": "2026-27", "quote": "2026-27 tuition fee (overseas): £24,500."}
+  ]
+}

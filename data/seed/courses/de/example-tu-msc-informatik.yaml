@@ -1,0 +1,56 @@
+# PLACEHOLDER: fictional institution and figures, for format and local development only.
+placeholder: true
+institution:
+  name: Technische Universität Beispielstadt (placeholder)
+  country: DE
+  city: Beispielstadt
+  official_domain: tu-beispiel.example.org
+program:
+  slug: tu-beispielstadt-msc-informatik
+  title: M.Sc. Informatik
+  level: master
+  isced_level: 7
+  isced_f: "0613"
+  field_label: Informatik (Computer Science)
+  delivery_mode: on_campus
+  duration_months: 24
+  required_credits: 120
+  credit_system: ects
+  languages_of_instruction: [de, en]
+  official_url: https://tu-beispiel.example.org/studium/msc-informatik
+cycles:
+  - label: 2027-winter
+    intake_year: 2027
+    intake_term: winter
+    starts_on: 2027-10-01
+    facts:
+      - subject: requirement
+        fields: { kind: entry_qualification, applicant_category: all, qualification: bachelor_any, details: "Bachelor in Informatik or related, at least 180 ECTS" }
+        source_url: https://tu-beispiel.example.org/studium/msc-informatik/zulassung
+        evidence_quote: "Voraussetzung ist ein Bachelorabschluss in Informatik oder einem verwandten Fach mit mindestens 180 ECTS."
+        verified_by: placeholder
+        verified_at: 2026-10-28
+      - subject: requirement
+        fields: { kind: language_test, applicant_category: international, exam: testdaf, min_total: 16 }
+        source_url: https://tu-beispiel.example.org/studium/sprachnachweis
+        evidence_quote: "Deutschkenntnisse: TestDaF mit mindestens 16 Punkten (TDN 4 in allen Teilen)."
+        verified_by: placeholder
+        verified_at: 2026-10-28
+      - subject: deadline
+        fields: { date: 2027-05-31, kind: application, owning_system: uni_assist, original_text: "31. Mai 2027 (uni-assist, internationale Bewerbende)", applicant_category: international }
+        source_url: https://tu-beispiel.example.org/studium/bewerbung
+        evidence_quote: "Internationale Bewerbende bewerben sich bis zum 31. Mai 2027 über uni-assist."
+        verified_by: placeholder
+        verified_at: 2026-10-28
+      - subject: cost_item
+        fields: { kind: tuition, basis: per_term, base: 0, currency: EUR, fee_year: "WiSe 2027/28" }
+        source_url: https://tu-beispiel.example.org/studium/gebuehren
+        evidence_quote: "Es werden keine Studiengebühren erhoben."
+        verified_by: placeholder
+        verified_at: 2026-10-28
+      - subject: cost_item
+        fields: { kind: fees, basis: per_term, base: 350, currency: EUR, fee_year: "WiSe 2027/28", details: "Semesterbeitrag" }
+        source_url: https://tu-beispiel.example.org/studium/gebuehren
+        evidence_quote: "Der Semesterbeitrag beträgt 350 Euro pro Semester."
+        verified_by: placeholder
+        verified_at: 2026-10-28

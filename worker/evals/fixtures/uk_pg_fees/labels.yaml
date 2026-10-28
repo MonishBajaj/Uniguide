@@ -1,0 +1,9 @@
+cycle: {label: 2027-autumn, intake_year: 2027, starts_on: 2027-09-27}
+country: GB
+deadlines:
+  - {date: 2027-03-31, kind: application}
+  - {date: 2027-07-31, kind: application}
+fees:
+  - {kind: tuition, basis: per_year, base: 14200, currency: GBP}
+  - {kind: tuition, basis: per_year, base: 36900, currency: GBP}
+  - {kind: application_fee, basis: one_off, base: 75, currency: GBP}

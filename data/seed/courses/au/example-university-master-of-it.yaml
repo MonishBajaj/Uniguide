@@ -1,0 +1,48 @@
+# PLACEHOLDER: fictional institution and figures, for format and local development only.
+placeholder: true
+institution:
+  name: Example Coast University (placeholder)
+  country: AU
+  city: Coastville
+  official_domain: examplecoast.example.org
+program:
+  slug: example-coast-master-of-information-technology
+  title: Master of Information Technology
+  level: master
+  isced_level: 7
+  isced_f: "06"
+  field_label: Information Technology
+  track: coursework
+  delivery_mode: on_campus
+  duration_months: 24
+  official_url: https://examplecoast.example.org/study/mit
+cycles:
+  - label: 2027-semester_1
+    intake_year: 2027
+    intake_term: semester_1
+    starts_on: 2027-02-22
+    facts:
+      - subject: requirement
+        fields: { kind: entry_qualification, applicant_category: all, qualification: bachelor_any, details: "Bachelor's degree in any discipline" }
+        source_url: https://examplecoast.example.org/study/mit
+        evidence_quote: "Entry requires a recognised bachelor's degree in any discipline."
+        verified_by: placeholder
+        verified_at: 2026-10-28
+      - subject: requirement
+        fields: { kind: language_test, applicant_category: international, exam: pte_academic, min_total: 58, min_sections: { writing: 50 } }
+        source_url: https://examplecoast.example.org/study/english
+        evidence_quote: "PTE Academic: overall 58 with no communicative skill below 50."
+        verified_by: placeholder
+        verified_at: 2026-10-28
+      - subject: deadline
+        fields: { date: 2026-12-11, kind: application, owning_system: direct, original_text: "11 December 2026 for Semester 1, 2027", applicant_category: international }
+        source_url: https://examplecoast.example.org/study/dates
+        evidence_quote: "International applications for Semester 1, 2027 close on 11 December 2026."
+        verified_by: placeholder
+        verified_at: 2026-10-28
+      - subject: cost_item
+        fields: { kind: tuition, basis: per_year, base: 48500, currency: AUD, fee_year: "2027", applicant_category: international }
+        source_url: https://examplecoast.example.org/study/fees
+        evidence_quote: "2027 indicative annual fee (international): A$48,500."
+        verified_by: placeholder
+        verified_at: 2026-10-28

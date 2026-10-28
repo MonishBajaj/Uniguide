@@ -1,0 +1,28 @@
+{
+  "effective_intake": "Fall 2027 entry",
+  "effective_intake_year": 2027,
+  "language_tests": [
+    {"applicant_category": "international", "exam": "toefl_ibt", "exam_version": "2026-01", "min_total": 5.0,
+     "min_sections": [], "quote": "For tests taken on or after January 21, 2026, the minimum is a band score of 5.0"},
+    {"applicant_category": "international", "exam": "toefl_ibt", "exam_version": "legacy", "min_total": 100,
+     "min_sections": [], "quote": "for earlier tests, a total of 100."}
+  ],
+  "entry_qualifications": [],
+  "admissions_tests": [
+    {"applicant_category": "all", "exam": "gre", "test_policy": "not_accepted", "min_total": null,
+     "quote": "GRE scores are not required and will not be reviewed."}
+  ],
+  "deadlines": [
+    {"applicant_category": "all", "round": "Priority", "kind": "priority", "owning_system": "direct",
+     "date": "2026-12-01", "time": null, "timezone": null, "original_text": "December 1, 2026",
+     "quote": "Priority deadline (for fellowship and assistantship consideration): December 1, 2026"},
+    {"applicant_category": "all", "round": "Final", "kind": "application", "owning_system": "direct",
+     "date": "2027-01-15", "time": "23:59", "timezone": "America/Los_Angeles",
+     "original_text": "January 15, 2027 at 11:59 p.m. Pacific Time",
+     "quote": "Final deadline: January 15, 2027 at 11:59 p.m. Pacific Time"}
+  ],
+  "costs": [
+    {"applicant_category": "all", "kind": "tuition", "basis": "per_credit", "amount": 2150, "amount_high": null,
+     "currency": "USD", "fee_year": "2027-2028", "quote": "Tuition for the 2027-2028 academic year is $2,150 per unit."}
+  ]
+}

@@ -1,0 +1,47 @@
+# PLACEHOLDER: fictional institution and figures, for format and local development only.
+placeholder: true
+institution:
+  name: Example Lakes University (placeholder)
+  country: CA
+  city: Lakeside
+  official_domain: examplelakes.example.org
+program:
+  slug: example-lakes-bsc-computer-science
+  title: BSc Honours Computer Science
+  level: bachelor
+  isced_level: 6
+  isced_f: "0613"
+  field_label: Computer Science
+  delivery_mode: on_campus
+  duration_months: 48
+  official_url: https://examplelakes.example.org/ug/computer-science
+cycles:
+  - label: 2027-fall
+    intake_year: 2027
+    intake_term: fall
+    starts_on: 2027-09-07
+    facts:
+      - subject: requirement
+        fields: { kind: entry_qualification, applicant_category: international, qualification: cbse, min_grade_numeric: 85, grade_scale: percent, min_grade_text: "85% overall in Class XII", is_desirable: false }
+        source_url: https://examplelakes.example.org/ug/international/india
+        evidence_quote: "CBSE: a minimum overall average of 85% in Class XII, including Mathematics."
+        verified_by: placeholder
+        verified_at: 2026-10-28
+      - subject: requirement
+        fields: { kind: language_test, applicant_category: international, exam: ielts_academic, min_total: 6.5, min_sections: { writing: 6.0 } }
+        source_url: https://examplelakes.example.org/ug/international/english
+        evidence_quote: "IELTS Academic overall 6.5 with no band below 6.0 in writing."
+        verified_by: placeholder
+        verified_at: 2026-10-28
+      - subject: deadline
+        fields: { date: 2027-01-15, kind: application, owning_system: ouac, original_text: "January 15 (OUAC)" }
+        source_url: https://examplelakes.example.org/ug/apply
+        evidence_quote: "Apply through OUAC by January 15 for Fall 2027 admission."
+        verified_by: placeholder
+        verified_at: 2026-10-28
+      - subject: cost_item
+        fields: { kind: tuition, basis: per_year, base: 42000, currency: CAD, fee_year: "2027-28", applicant_category: international }
+        source_url: https://examplelakes.example.org/fees
+        evidence_quote: "International undergraduate tuition, Computer Science, 2027-28: $42,000 CAD per year."
+        verified_by: placeholder
+        verified_at: 2026-10-28

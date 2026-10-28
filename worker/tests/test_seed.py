@@ -1,0 +1,50 @@
+from pathlib import Path
+
+import pytest
+
+from uniguide_worker.config import REPO_ROOT
+from uniguide_worker.seed.loader import SeedError, check_placeholders, read_seed_files
+
+SEEDS = REPO_ROOT / "data" / "seed" / "courses"
+
+
+def test_repository_seed_files_are_valid() -> None:
+    docs = read_seed_files(SEEDS)
+    assert len(docs) >= 6
+    countries = {d["institution"]["country"] for _, d in docs}
+    assert {"US", "GB", "CA", "AU", "DE", "IE"} <= countries
+
+
+def test_placeholders_never_load_into_a_hosted_database() -> None:
+    docs = read_seed_files(SEEDS)
+    check_placeholders(docs, hosted=False)
+    with pytest.raises(SeedError, match="placeholder"):
+        check_placeholders(docs, hosted=True)
+
+
+def test_placeholder_files_use_reserved_example_domains() -> None:
+    for path, doc in read_seed_files(SEEDS):
+        if doc.get("placeholder"):
+            urls = [f["source_url"] for c in doc["cycles"] for f in c["facts"]]
+            assert all(".example.org/" in u for u in urls), path
+
+
+def test_facts_without_evidence_are_rejected(tmp_path: Path) -> None:
+    (tmp_path / "bad.yaml").write_text(
+        """
+institution: {name: X University, country: GB}
+program: {slug: x-msc, title: MSc X, level: master}
+cycles:
+  - label: 2027-autumn
+    intake_year: 2027
+    intake_term: autumn
+    facts:
+      - subject: deadline
+        fields: {date: 2027-06-30}
+        source_url: https://x.example.org
+        verified_by: me
+        verified_at: 2026-10-28
+"""
+    )
+    with pytest.raises(SeedError, match="evidence_quote"):
+        read_seed_files(tmp_path)

@@ -1,0 +1,129 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --surface: #f6f6f5;
+  --surface-2: #ececea;
+  --foreground: #111111;
+  --muted: #5c5c5c;
+  --border: #dedede;
+  --accent: #1f5f4a;
+  --accent-foreground: #ffffff;
+  --verified: #1f6f43;
+  --unverified: #8a5a00;
+  --conflicting: #a3261f;
+  --unknown: #6b6b6b;
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #000000;
+    --surface: #181818;
+    --surface-2: #272727;
+    --foreground: #f2f2f2;
+    --muted: #a3a3a3;
+    --border: #313131;
+    --accent: #7fd1ae;
+    --accent-foreground: #000000;
+    --verified: #7fd1ae;
+    --unverified: #f0c060;
+    --conflicting: #ff8f86;
+    --unknown: #a3a3a3;
+  }
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-verified: var(--verified);
+  --color-unverified: var(--unverified);
+  --color-conflicting: var(--conflicting);
+  --color-unknown: var(--unknown);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --ease-soft: var(--ease-out-soft);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+h1, h2, h3 {
+  text-wrap: balance;
+}
+
+p, li, dd {
+  text-wrap: pretty;
+}
+
+/* Hero heading: the one place a gradient is allowed, on text only. */
+.hero-heading {
+  background: linear-gradient(to right, #000000, #666666);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@media (prefers-color-scheme: dark) {
+  .hero-heading {
+    background: linear-gradient(to right, #ffffff, #9b9b9b);
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 0.5rem;
+  padding: 8px 12px;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-weight: 600;
+  transition: transform 300ms var(--ease-out-soft), background-color 300ms var(--ease-out-soft),
+    opacity 300ms var(--ease-out-soft);
+}
+.btn:active { transform: scale(0.98); }
+.btn:focus-visible, .field:focus-visible, a:focus-visible, summary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-primary { background: var(--accent); color: var(--accent-foreground); }
+.btn-primary:hover:not(:disabled) { opacity: 0.9; }
+.btn-secondary { background: var(--surface-2); color: var(--foreground); }
+.btn-secondary:hover:not(:disabled) { background: var(--border); }
+.btn-sm { font-size: 0.875rem; line-height: 1.25rem; }
+
+.field {
+  width: 100%;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border);
+  background: var(--background);
+  padding: 8px 12px;
+  font-size: 1rem;
+  line-height: 1.5rem;
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 700ms var(--ease-out-soft), transform 700ms var(--ease-out-soft);
+}
+.reveal.is-visible { opacity: 1; transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal { transform: none; transition: opacity 300ms linear; }
+  .btn { transition: none; }
+}
