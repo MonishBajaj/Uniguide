@@ -1,7 +1,6 @@
 import "server-only";
 import type {
   CostFact,
-  DeadlineFact,
   FxTable,
   ProgramInput,
   RequirementFact,
@@ -9,6 +8,7 @@ import type {
   TestScore,
 } from "@uniguide/matching";
 import type { Tables, ViewRow } from "@uniguide/db-types";
+import { toDeadlineFact } from "@/lib/deadline-fact";
 import type { createClient } from "@/lib/supabase/server";
 
 type Supabase = Awaited<ReturnType<typeof createClient>>;
@@ -109,17 +109,7 @@ export function toProgramInput(card: ProgramCard, cycle: CycleFacts | undefined)
         creditSystem: r.credit_system,
       }),
     ),
-    deadlines: (cycle?.deadlines ?? []).map(
-      (d): DeadlineFact => ({
-        id: d.id,
-        status: d.status,
-        applicantCategory: d.applicant_category,
-        kind: d.kind,
-        dueAt: d.due_at,
-        precision: d.precision,
-        timezone: d.timezone,
-      }),
-    ),
+    deadlines: (cycle?.deadlines ?? []).map(toDeadlineFact),
     costs: (cycle?.cost_items ?? []).map(
       (c): CostFact => ({
         id: c.id,

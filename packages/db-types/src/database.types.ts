@@ -1055,6 +1055,9 @@ isOneToOne: false
 "credit_balance":
 { Args: { "p_uid"?: string }; Returns: number
                            },
+"fx_convert":
+{ Args: { "p_amount": number,"p_from": string,"p_to": string }; Returns: number
+                           },
 "grant_agency_share":
 { Args: { "p_code": string,"p_display_name": string,"p_policy_version": string }; Returns: string
                            },
@@ -1128,7 +1131,7 @@ isOneToOne: false
 { Args: { "p_share_id": string }; Returns: undefined
                            },
 "search_programs":
-{ Args: { "p_countries"?: (string)[],"p_delivery"?: (Database["public"]['Enums']["delivery_mode"])[],"p_fields"?: (string)[],"p_levels"?: (Database["public"]['Enums']["program_level"])[],"p_limit"?: number,"p_offset"?: number,"p_query"?: string }; Returns: {
+{ Args: { "p_countries"?: (string)[],"p_deadline_open"?: boolean,"p_delivery"?: (Database["public"]['Enums']["delivery_mode"])[],"p_fields"?: (string)[],"p_levels"?: (Database["public"]['Enums']["program_level"])[],"p_limit"?: number,"p_max_tuition"?: number,"p_offset"?: number,"p_query"?: string,"p_tuition_currency"?: string }; Returns: {
               "cip": string | null,
 "city": string | null,
 "country": string,
