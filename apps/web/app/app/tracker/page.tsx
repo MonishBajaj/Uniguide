@@ -50,6 +50,7 @@ export default async function TrackerPage({ searchParams }: PageProps<"/app/trac
         <div className="flex gap-2">
           <Link href="/app/tracker?view=board" aria-current={view === "board" ? "page" : undefined} className="btn btn-secondary btn-sm aria-[current=page]:bg-border">Board</Link>
           <Link href="/app/tracker?view=table" aria-current={view === "table" ? "page" : undefined} className="btn btn-secondary btn-sm aria-[current=page]:bg-border">Table</Link>
+          <Link href="/app/tracker/costs" className="btn btn-secondary btn-sm">Costs</Link>
           <a href="/app/tracker/calendar.ics" className="btn btn-secondary btn-sm">Add all deadlines to my calendar</a>
         </div>
       </header>

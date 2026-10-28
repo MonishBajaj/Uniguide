@@ -152,3 +152,28 @@ export async function removeScoreReport(reportId: string) {
   await supabase.from("score_reports").delete().eq("id", reportId);
   revalidatePath("/app/tracker", "layout");
 }
+
+const Cost = z.object({
+  kind: z.enum(["application_fee", "score_send", "exam", "deposit", "other"]),
+  amount: z.coerce.number().positive().lt(1_000_000),
+  currency: z.string().regex(/^[A-Z]{3}$/),
+  paid_on: z.preprocess((v) => v || null, z.iso.date().nullable()),
+  application_id: z.preprocess((v) => v || null, z.string().uuid().nullable()),
+  note: z.preprocess((v) => (typeof v === "string" && v.trim() ? v.trim().slice(0, 300) : null), z.string().nullable()),
+});
+
+/** Records something the student paid while applying, optionally against one application. */
+export async function addCost(form: FormData) {
+  const parsed = Cost.safeParse(Object.fromEntries(form));
+  if (!parsed.success) return;
+  const { supabase, user } = await getUser();
+  if (!user) return;
+  await supabase.from("application_costs").insert({ user_id: user.id, ...parsed.data });
+  revalidatePath("/app/tracker", "layout");
+}
+
+export async function removeCost(costId: string) {
+  const { supabase } = await getUser();
+  await supabase.from("application_costs").delete().eq("id", costId);
+  revalidatePath("/app/tracker", "layout");
+}

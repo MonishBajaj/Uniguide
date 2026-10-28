@@ -67,6 +67,26 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
+                },"application_costs": {
+                  Row: {
+                    "amount": number,"application_id": string | null,"created_at": string,"currency": string,"id": string,"kind": string,"note": string | null,"paid_on": string | null,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "amount": number,"application_id"?: string | null,"created_at"?: string,"currency": string,"id"?: string,"kind": string,"note"?: string | null,"paid_on"?: string | null,"user_id": string
+                  }
+                  Update: {
+                    "amount"?: number,"application_id"?: string | null,"created_at"?: string,"currency"?: string,"id"?: string,"kind"?: string,"note"?: string | null,"paid_on"?: string | null,"user_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "application_costs_application_id_fkey"
+      columns: ["application_id"]
+isOneToOne: false
+      referencedRelation: "applications"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"application_events": {
                   Row: {
                     "application_id": string,"created_at": string,"from_value": string | null,"id": string,"kind": string,"note": string | null,"to_value": string | null,"user_id": string
@@ -1070,6 +1090,9 @@ isOneToOne: false
 { Args: { "p_code": string }; Returns: {
               "country": string,"id": string,"name": string,"website": string
             }[]
+                           },
+"owns_application":
+{ Args: { "p_application": string }; Returns: boolean
                            },
 "owns_application_and_score":
 { Args: { "p_application": string,"p_score": string }; Returns: boolean

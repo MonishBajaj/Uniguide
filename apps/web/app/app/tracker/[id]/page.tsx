@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { COST_KINDS, totalsByCurrency, type CostKind } from "@/lib/application-costs";
 import { checkedAgo, describeEvent } from "@/lib/application-events";
 import { CURRENCIES } from "@/lib/fields";
 import { scoreNeeds, sentProgress } from "@/lib/score-sending";
-import { daysUntil, deadlineText, label, shortDate } from "@/lib/format";
+import { daysUntil, deadlineText, label, money, shortDate } from "@/lib/format";
 import { getUser } from "@/lib/supabase/server";
+import { CostForm } from "../cost-form";
 import {
   addItem,
   deleteApplication,
@@ -13,6 +15,7 @@ import {
   markScoreReceived,
   recordDecision,
   recordScoreSent,
+  removeCost,
   removeScoreReport,
   saveNotes,
   shareOutcome,
@@ -24,8 +27,8 @@ export const metadata: Metadata = { title: "Application" };
 
 export default async function ApplicationPage({ params }: PageProps<"/app/tracker/[id]">) {
   const { id } = await params;
-  const { supabase } = await getUser();
-  const [{ data: app }, { data: outcome }, { data: consent }, { data: events }, { data: scores }] = await Promise.all([
+  const { supabase, user } = await getUser();
+  const [{ data: app }, { data: outcome }, { data: consent }, { data: events }, { data: scores }, { data: costs }, { data: profile }] = await Promise.all([
     supabase
       .from("applications")
       .select(
@@ -42,6 +45,8 @@ export default async function ApplicationPage({ params }: PageProps<"/app/tracke
       .order("created_at", { ascending: false })
       .limit(50),
     supabase.from("test_scores").select("id, exam, exam_version, total").order("taken_on", { ascending: false }),
+    supabase.from("application_costs").select("id, kind, amount, currency, paid_on, note").eq("application_id", id).order("created_at"),
+    supabase.from("profiles").select("budget_currency").eq("user_id", user!.id).single(),
   ]);
   if (!app) notFound();
   const program = app.program_cycles?.programs;
@@ -158,6 +163,32 @@ export default async function ApplicationPage({ params }: PageProps<"/app/tracke
             Add your test scores on your <Link href="/app/profile" className="underline underline-offset-2">profile</Link> to record sending them.
           </p>
         )}
+      </section>
+
+      <section aria-labelledby="costs" className="grid gap-4 rounded-2xl border border-border bg-surface p-6">
+        <div className="flex flex-wrap items-baseline justify-between gap-2">
+          <h2 id="costs" className="text-lg font-semibold">Costs</h2>
+          <Link href="/app/tracker/costs" className="text-sm underline underline-offset-2">All application costs</Link>
+        </div>
+        {(costs ?? []).length ? (
+          <>
+            <ul className="grid gap-2 text-sm">
+              {(costs ?? []).map((c) => (
+                <li key={c.id} className="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-background p-3">
+                  <span>
+                    <span className="font-semibold">{COST_KINDS[c.kind as CostKind] ?? c.kind}</span> {money(Number(c.amount), c.currency)}
+                    <span className="block text-muted">{c.paid_on ? `Paid ${shortDate(c.paid_on)}` : "Not dated"}{c.note ? ` · ${c.note}` : ""}</span>
+                  </span>
+                  <form action={removeCost.bind(null, c.id)}><button className="btn btn-secondary btn-sm">Remove</button></form>
+                </li>
+              ))}
+            </ul>
+            <p className="text-sm text-muted">
+              Total for this application: {totalsByCurrency((costs ?? []).map((c) => ({ amount: Number(c.amount), currency: c.currency }))).map((t) => money(t.amount, t.currency)).join(" + ")}
+            </p>
+          </>
+        ) : null}
+        <CostForm applicationId={app.id} defaultCurrency={profile?.budget_currency ?? "USD"} />
       </section>
 
       <section aria-labelledby="notes" className="grid gap-3 rounded-2xl border border-border bg-surface p-6">
