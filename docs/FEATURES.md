@@ -191,6 +191,8 @@ Both can start on day one and work in parallel. Almost everything is independent
 | 3.3 Course card badges | 4.4 fee waivers, 7.2 funding facts | Build the card with the badge slots hidden until data exists. |
 | 3.4 City and climate filters | City data (7.3, 7.6, P2 or P3) | Ship the other filters first. |
 
+**Contracts already in place:** `public.my_entitlement() returns text` (`'none'`, `'free'`, later `'season_pass'`) and `public.course_fee_waivers(p_program uuid)` (returns no rows until fee waivers become facts). The signatures are final; A only changes the bodies.
+
 **Agree once, up front (a one-hour call):** the `entitlements` table, the shape of a fee waiver row, and who owns each shared file. Everything else is independent.
 
 **Not a dependency, but shared:** the repository, `database.types.ts` (regenerate after every merge), `globals.css`, `site-header.tsx`, `seed.sql`, and the e2e suite. Conflicts there are resolved by merging small changes often, not by waiting.

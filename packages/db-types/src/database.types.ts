@@ -986,6 +986,11 @@ isOneToOne: false
 "counselor_can_see":
 { Args: { "p_student": string }; Returns: boolean
                            },
+"course_fee_waivers":
+{ Args: { "p_program": string }; Returns: {
+              "amount": number,"conditions": string,"currency": string,"kind": string,"source_url": string,"status": Database["public"]['Enums']["fact_status"],"verified_at": string
+            }[]
+                           },
 "credit_balance":
 { Args: { "p_uid"?: string }; Returns: number
                            },
@@ -1011,6 +1016,9 @@ isOneToOne: false
 { Args: { "p_fields"?: (string)[],"p_institution_id": string,"p_limit"?: number,"p_query"?: string,"p_query_embedding"?: string }; Returns: {
               "cited_by_count": number,"id": string,"name": string,"openalex_id": string,"orcid": string,"recent_works": Json,"score": number,"topics": Json
             }[]
+                           },
+"my_entitlement":
+{ Args: Record<PropertyKey, never>; Returns: string
                            },
 "notifier_recipients":
 { Args: Record<PropertyKey, never>; Returns: {
