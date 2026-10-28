@@ -4,6 +4,8 @@ Source: the Feature Bible (100 features), `BACKLOG.md`, and what the running app
 
 **Totals (103 rows):** 16 built · 15 partly built · 53 to build · 5 need an owner decision · 4 deferred to year 2 · 10 cut on purpose.
 
+**Developer B progress (developer-b, October 2026):** 12 more rows built, and 3.3 and 3.4 finished except for A's data. Totals now: 28 built · 9 partly built · 46 to build · 5 need a decision · 5 deferred (14.4 added) · 10 cut. X10 and 13.2 wait on payments.
+
 Status key: **Built** works today · **Partial** exists, listed gap remains · **To build** not started · **Decision** the owner must settle first · **Deferred** year 2 · **Cut** decided against (BACKLOG). Size: S about 2 days, M about a week, L two weeks or more. Priority: P0 needed for a real launch, P1 next, P2 later, P3 only if time allows.
 
 ## 1. What is already built
@@ -43,17 +45,17 @@ The student app works end to end behind sign-in, but the catalogue holds six pla
 
 | ID | Feature | Dev | What is left |
 |---|---|---|---|
-| 1.2 | Profile dashboard | B | `/app/profile` exists. Missing: completeness / strength indicator. |
-| 1.5 | Parent portal | B | Built: read-only `/parent` page and `parent_links` with RLS. Missing: student-issued invite, parent sign-up, weekly email digest. |
+| 1.2 | Profile dashboard | B | Done on developer-b. |
+| 1.5 | Parent portal | B | Done on developer-b. |
 | 3.3 | Rich course cards | B | Card exists. Missing: deadline countdown, fee waiver badge, funding indicators (depend on 4.4 and 7.2). |
 | 3.4 | Advanced filters and sort | B | Level, country, subject, format work. Add cost range, deadline open, city size and climate (needs city data from A). |
 | 3.5 | Course detail pages | A | Facts, sources, quotes, requirements, per-intake pages. Missing: campus living, career outcomes, similar courses. |
 | 3.9 | Watchlist and change alerts | A | Shortlisting a course triggers change notices. Add watching without shortlisting. |
-| 4.7 | Portal status log | B | Status and decision are recorded. Add last-checked date and a status log. |
-| 5.5 | Why this university helper | B | Faculty dossiers exist for research degrees. Add a per-course paragraph helper grounded in course facts. |
-| 7.7 | Decision-day timer | B | Decision matrix exists. Add deadline countdown and gut-check prompt. |
+| 4.7 | Portal status log | B | Done on developer-b. |
+| 5.5 | Why this university helper | B | Done on developer-b. |
+| 7.7 | Decision-day timer | B | Done on developer-b. |
 | 9.1 | Visa guides | A | `/visas` links only to government pages, with country rules (APS). Add sourced step checklists. |
-| 11.5 | "I got in" share card | B | Outcome sharing for research exists. Add a share card. |
+| 11.5 | "I got in" share card | B | Done on developer-b. |
 | 13.5 | Trend insights | A | Outcome report exists with small-group suppression. Add a public page. |
 | 14.1 | Email lifecycle | A | Reminders and change emails built. Missing: welcome series, weekly digest, re-engagement. |
 | 15.2 | Accessibility options | B | Skip link, landmarks and focus rings exist. Add font size, contrast option and a full audit. |
@@ -133,29 +135,29 @@ The student app works end to end behind sign-in, but the catalogue holds six pla
 
 | Pri | ID | Feature | Status | Size | Scope |
 |---|---|---|---|---|---|
-| P0 | 1.2 | Profile dashboard | Partial | S | `/app/profile` exists. Missing: completeness / strength indicator. |
-| P0 | 1.5 | Parent portal | Partial | M | Built: read-only `/parent` page and `parent_links` with RLS. Missing: student-issued invite, parent sign-up, weekly email digest. |
-| P0 | 3.3 | Rich course cards | Partial | S | Card exists. Missing: deadline countdown, fee waiver badge, funding indicators (depend on 4.4 and 7.2). |
-| P0 | 3.4 | Advanced filters and sort | Partial | S | Level, country, subject, format work. Add cost range, deadline open, city size and climate (needs city data from A). |
-| P0 | 4.5 | Score sending tracker | To build | S | Which scores went to which school, with delivery dates. |
-| P0 | 4.6 | Application cost tracker | To build | S | Running total of exam, score-send and application fees. |
-| P0 | 4.7 | Portal status log | Partial | S | Status and decision are recorded. Add last-checked date and a status log. |
-| P0 | X11 | Guest prompt: "switch to User mode" instead of redirecting home on protected actions | To build | S | Demo-mode follow-up. |
+| P0 | 1.2 | Profile dashboard | Built | S | Built on developer-b: "What matching needs from you" checklist on the profile. |
+| P0 | 1.5 | Parent portal | Built | M | Built on developer-b: student invite links, parent join and removal, weekly parent email. |
+| P0 | 3.3 | Rich course cards | Partial | S | Countdown built on developer-b. Fee waiver and funding badges wait on A's 4.4 and 7.2. |
+| P0 | 3.4 | Advanced filters and sort | Partial | S | Open-deadline and yearly-tuition filters built on developer-b. City size and climate wait on A's city data. |
+| P0 | 4.5 | Score sending tracker | Built | S | Built on developer-b: scores sent per application with sent and received dates. |
+| P0 | 4.6 | Application cost tracker | Built | S | Built on developer-b: costs per application and a totals page. |
+| P0 | 4.7 | Portal status log | Built | S | Built on developer-b: append-only history, portal checks and notes. |
+| P0 | X11 | Guest prompt: "switch to User mode" instead of redirecting home on protected actions | Built | S | Built on developer-b: banner naming the page and the mode that opens it. |
 | P0 | X12 | Rename the product and assistant (UniGuide and Sage are taken) | Decision | S | Owner picks the name; B applies it across copy and metadata. |
 | P1 | 10.1 | Pre-departure checklist | To build | M | Timeline checklist personalised by country and intake. |
-| P1 | 11.5 | "I got in" share card | Partial | S | Outcome sharing for research exists. Add a share card. |
-| P1 | 14.4 | AI email drafter | To build | S | Drafts for admissions, professors and aid offices. |
+| P1 | 11.5 | "I got in" share card | Built | S | Built on developer-b: "I got in" image card, owner only. |
+| P1 | 14.4 | AI email drafter | Deferred | S | Deferred: an AI that writes emails conflicts with the no-ghostwriting rule. Professor emails can later become an add-on to 5.5. |
 | P1 | 17.2 | Blog and content hub | To build | S | One draft exists in `docs/blog`. No `/blog` route yet. |
-| P1 | 4.8 | Waitlist assistant | To build | S | Guidance and a letter of continued interest coach (coaches, never ghostwrites). |
-| P1 | 5.5 | Why this university helper | Partial | S | Faculty dossiers exist for research degrees. Add a per-course paragraph helper grounded in course facts. |
+| P1 | 4.8 | Waitlist assistant | Built | S | Built on developer-b: waitlist steps and a letter of continued interest in the writing coach. |
+| P1 | 5.5 | Why this university helper | Built | S | Built on developer-b: course material beside the draft, with a check of what it names. |
 | P1 | 5.6 | Supplemental essay assistant | To build | M | Prompts and strategy per school; reuses the review engine. |
-| P1 | 6.1 | Recommendation letter tracker | To build | M | Recommenders, requests, reminders, status per school. |
-| P1 | 6.2 | CV builder | To build | M | Templates and quantify hints. |
-| P1 | 7.7 | Decision-day timer | Partial | S | Decision matrix exists. Add deadline countdown and gut-check prompt. |
-| P1 | X10 | Paywall and upgrade UI | To build | M | After X6. |
+| P1 | 6.1 | Recommendation letter tracker | Built | M | Built on developer-b: recommenders, letter status and due dates, nudges to the student. |
+| P1 | 6.2 | CV builder | Built | M | Built on developer-b: own entries, questions under weak points, printable layouts. |
+| P1 | 7.7 | Decision-day timer | Built | S | Built on developer-b: reply-date countdown and a coin-flip gut check. |
+| P1 | X10 | Paywall and upgrade UI | To build | M | Waiting on A's X6 payments backend and the owner's payments decision. |
 | P1 | X13 | Two human raters for the writing eval scores | To build | M | Replace placeholder scores in `apps/web/lib/writing/eval`. |
 | P2 | 1.4 | Multiple application tracks | To build | M | One account, several goals (for example MS and MBA). |
-| P2 | 13.2 | Premium analytics dashboard | To build | M | Personal funnel and cost. Depends on payments. |
+| P2 | 13.2 | Premium analytics dashboard | To build | M | Waiting on payments (X6) and the owner's decision. |
 | P2 | 15.1 | First-generation guide | To build | M | Plain-language hints and a jargon translator. |
 | P2 | 15.2 | Accessibility options | Partial | M | Skip link, landmarks and focus rings exist. Add font size, contrast option and a full audit. |
 | P2 | 5.7 | Research statement workshop | To build | M | Builds on faculty dossiers. |
