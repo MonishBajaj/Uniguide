@@ -1134,6 +1134,39 @@ isOneToOne: false
         isOneToOne: false
         isSetofReturn: true
       } },
+"similar_programs":
+{ Args: { "p_limit"?: number,"p_program": string }; Returns: {
+              "cip": string | null,
+"coverage_tier": Database["public"]['Enums']["coverage_tier"],
+"created_at": string,
+"credit_system": Database["public"]['Enums']["credit_system"] | null,
+"delivery_mode": Database["public"]['Enums']["delivery_mode"],
+"duration_months": number | null,
+"field_label": string | null,
+"id": string,
+"institution_id": string,
+"isced_f": string | null,
+"isced_level": number | null,
+"languages_of_instruction": (string)[],
+"level": Database["public"]['Enums']["program_level"],
+"official_url": string | null,
+"published": boolean,
+"register_ids": NonNullable<Json>,
+"required_credits": number | null,
+"search_tsv": unknown,
+"slug": string,
+"source_id": string | null,
+"title": string,
+"track": string | null,
+"updated_at": string,
+"verification_method": Database["public"]['Enums']["verification_method"]
+            }[]
+                          SetofOptions: {
+        from: "*"
+        to: "programs"
+        isOneToOne: false
+        isSetofReturn: true
+      } },
 "verification_demand":
 { Args: { "p_limit"?: number }; Returns: {
               "facts_unverified": number,"next_deadline": string,"program_id": string,"shortlists": number

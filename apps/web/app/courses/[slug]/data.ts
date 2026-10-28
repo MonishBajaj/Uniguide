@@ -8,6 +8,15 @@ export const loadCard = cache(async (slug: string) => {
   return data;
 });
 
+/** Cards for the courses most like this one (same level and field, other institutions), in similarity order. */
+async function loadSimilarCards(supabase: Awaited<ReturnType<typeof createClient>>, programId: string) {
+  const { data: similar } = await supabase.rpc("similar_programs", { p_program: programId, p_limit: 4 });
+  const ids = (similar ?? []).map((p) => p.id);
+  if (ids.length === 0) return [];
+  const { data: cards } = await supabase.from("program_cards").select("*").in("id", ids);
+  return ids.flatMap((id) => cards?.find((c) => c.id === id) ?? []);
+}
+
 export async function loadCourseExtras(programId: string) {
   const supabase = await createClient();
   const { data: auth } = await supabase.auth.getUser();
@@ -20,5 +29,6 @@ export async function loadCourseExtras(programId: string) {
   const interests = user
     ? (await supabase.from("profiles").select("research_interests").eq("user_id", user.id).maybeSingle()).data?.research_interests ?? null
     : null;
-  return { supabase, user, cycles: cycles ?? [], admin: admin.data ? { sources } : null, interests };
+  const similar = await loadSimilarCards(supabase, programId);
+  return { supabase, user, cycles: cycles ?? [], admin: admin.data ? { sources } : null, interests, similar };
 }

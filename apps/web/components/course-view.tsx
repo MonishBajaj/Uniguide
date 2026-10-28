@@ -5,6 +5,7 @@ import { addCycle, addSource, removeSource } from "@/app/courses/actions";
 import { Evidence, FactBadge, TierBadge } from "@/components/facts";
 import { CourseQuestion } from "@/components/course-question";
 import { ReportForm } from "@/components/report-form";
+import { ProgramCard as SimilarCard } from "@/components/program-card";
 import { ShortlistButton } from "@/components/shortlist-button";
 import { toProgramInput, type CycleFacts, type ProgramCard, type RequirementRow } from "@/lib/catalog";
 import { AUTH_DISABLED } from "@/lib/env";
@@ -49,6 +50,7 @@ export function CourseView(props: {
   fx: FxTable;
   signedIn: boolean;
   admin: { sources: Tables<"program_sources">[] } | null;
+  similar?: ProgramCard[];
   children?: React.ReactNode;
 }) {
   const { card, cycle, cycles, fx, signedIn, admin } = props;
@@ -213,6 +215,14 @@ export function CourseView(props: {
         </>
       )}
 
+      {props.similar?.length ? (
+        <section aria-labelledby="similar" className="mt-12">
+          <h2 id="similar" className="text-2xl font-semibold">Similar courses</h2>
+          <div className="mt-4 grid gap-4 md:grid-cols-2">
+            {props.similar.map((s) => <SimilarCard key={s.id} card={s} signedIn={signedIn} />)}
+          </div>
+        </section>
+      ) : null}
       {props.children}
 
       {signedIn && cycle ? <CourseQuestion programId={card.id!} /> : null}

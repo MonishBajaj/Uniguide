@@ -19,10 +19,10 @@ export async function generateMetadata({ params }: PageProps<"/courses/[slug]">)
 export default async function CoursePage({ params }: PageProps<"/courses/[slug]">) {
   const card = await loadCard((await params).slug);
   if (!card) notFound();
-  const { supabase, user, cycles, admin, interests } = await loadCourseExtras(card.id!);
+  const { supabase, user, cycles, admin, interests, similar } = await loadCourseExtras(card.id!);
   const cycle = (await loadCurrentCycles(supabase, [card.id!])).get(card.id!);
   return (
-    <CourseView card={card} cycle={cycle} cycles={cycles} fx={await loadFx(supabase)} signedIn={Boolean(user)} admin={admin}>
+    <CourseView card={card} cycle={cycle} cycles={cycles} fx={await loadFx(supabase)} signedIn={Boolean(user)} admin={admin} similar={similar}>
       <FacultyDossier supabase={supabase} card={card} interests={interests} />
     </CourseView>
   );
