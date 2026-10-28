@@ -81,6 +81,8 @@ The **Review queue**, **Rules** and **Team** links then appear in the header.
    | `VOYAGE_API_KEY` | embeddings for the faculty matcher (optional; full-text search is used without it) |
    | `RESEND_API_KEY`, `EMAIL_FROM` | parental consent emails |
 
+   Do **not** set `AUTH_DISABLED`. It switches sign-in off, and the Guest / User / Parent switcher refuses a non-local database, so a hosted site with it set would have no way to sign in.
+
 3. **Plan:** Vercel Hobby is for non-commercial use only. The waitlist with pricing questions is borderline and charging money is not allowed on Hobby: move to Pro before taking payments.
 
 Parental consent emails need `RESEND_API_KEY` in production; without it the request fails rather than silently not sending.
