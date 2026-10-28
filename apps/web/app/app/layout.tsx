@@ -10,7 +10,7 @@ export default async function AppLayout({ children }: LayoutProps<"/app">) {
   const { data: profile } = await supabase.from("profiles").select("consent_state").eq("user_id", user.id).single();
 
   return (
-    <div className="mx-auto max-w-5xl px-6 py-12">
+    <div className="mx-auto max-w-5xl px-6 py-12 print:max-w-none print:p-0">
       {profile?.consent_state === "pending_parental" ? (
         <div role="status" className="mb-8 rounded-2xl border border-border bg-surface p-4 text-sm">
           A parent or guardian needs to confirm your account before we save grades, scores or a shortlist.{" "}

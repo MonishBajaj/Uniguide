@@ -253,6 +253,34 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
+                },"cv_entries": {
+                  Row: {
+                    "bullets": (string)[],"created_at": string,"end_month": string | null,"id": string,"location": string | null,"organisation": string | null,"section": string,"start_month": string | null,"title": string,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "bullets"?: (string)[],"created_at"?: string,"end_month"?: string | null,"id"?: string,"location"?: string | null,"organisation"?: string | null,"section": string,"start_month"?: string | null,"title": string,"user_id": string
+                  }
+                  Update: {
+                    "bullets"?: (string)[],"created_at"?: string,"end_month"?: string | null,"id"?: string,"location"?: string | null,"organisation"?: string | null,"section"?: string,"start_month"?: string | null,"title"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"cv_headers": {
+                  Row: {
+                    "contact_line": string | null,"full_name": string,"headline": string | null,"updated_at": string,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "contact_line"?: string | null,"full_name": string,"headline"?: string | null,"updated_at"?: string,"user_id": string
+                  }
+                  Update: {
+                    "contact_line"?: string | null,"full_name"?: string,"headline"?: string | null,"updated_at"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
                 },"deadlines": {
                   Row: {
                     "applicant_category": Database["public"]['Enums']["applicant_category"],"created_at": string,"current_version_id": string | null,"cycle_id": string,"due_at": string,"evidence_quote": string | null,"id": string,"kind": Database["public"]['Enums']["deadline_kind"],"original_text": string | null,"owning_system": Database["public"]['Enums']["owning_system"],"precision": Database["public"]['Enums']["date_precision"],"published": boolean,"round": string | null,"source_id": string | null,"status": Database["public"]['Enums']["fact_status"],"timezone": string,"updated_at": string,"verification_method": Database["public"]['Enums']["verification_method"] | null,"verified_at": string | null,"verified_by": string | null

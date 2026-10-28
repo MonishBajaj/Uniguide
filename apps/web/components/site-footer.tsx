@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export function SiteFooter() {
   return (
-    <footer className="mt-24 border-t border-border">
+    <footer className="mt-24 border-t border-border print:hidden">
       <div className="mx-auto flex max-w-5xl flex-col gap-4 px-6 py-8 text-sm text-muted sm:flex-row sm:items-center sm:justify-between">
         <p>Uniguide shows facts from official pages. Always confirm on the official page before you apply.</p>
         <ul className="flex gap-4">

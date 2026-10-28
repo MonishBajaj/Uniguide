@@ -24,6 +24,7 @@ export default async function WritingPage() {
         </div>
         <div className="flex gap-2">
           <Link href="/app/writing/stories" className="btn btn-secondary btn-sm">Story bank</Link>
+          <Link href="/app/cv" className="btn btn-secondary btn-sm">CV</Link>
           <Link href="/app/writing/new" className="btn btn-primary btn-sm">New document</Link>
         </div>
       </header>
