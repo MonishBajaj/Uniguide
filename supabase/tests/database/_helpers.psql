@@ -1,0 +1,87 @@
+-- Shared setup for pgTAP tests. Each test file runs inside its own transaction and rolls back.
+create extension if not exists pgtap with schema extensions;
+
+create schema if not exists tests;
+grant usage on schema tests to anon, authenticated, ingest_worker;
+
+create or replace function tests.create_user(p_email text, p_birth_month text default '1995-01', p_country text default 'US')
+returns uuid language plpgsql security definer set search_path = '' as $$
+declare
+  v_id uuid := gen_random_uuid();
+begin
+  insert into auth.users (id, instance_id, aud, role, email, raw_user_meta_data, raw_app_meta_data, created_at, updated_at)
+  values (v_id, '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', p_email,
+          jsonb_build_object('birth_month', p_birth_month, 'residence_country', p_country), '{}', now(), now());
+  return v_id;
+end;
+$$;
+
+-- Birth month for someone who turned p_years recently (a few months ago).
+create or replace function tests.birth_month_for_age(p_years integer) returns text
+language sql stable as $$
+  select to_char(current_date - make_interval(years => p_years, months => 3), 'YYYY-MM');
+$$;
+
+create or replace function tests.authenticate_as(p_uid uuid) returns void language plpgsql as $$
+begin
+  perform set_config('role', 'authenticated', true);
+  perform set_config('request.jwt.claims', json_build_object('sub', p_uid, 'role', 'authenticated')::text, true);
+end;
+$$;
+
+create or replace function tests.as_anon() returns void language plpgsql as $$
+begin
+  perform set_config('role', 'anon', true);
+  perform set_config('request.jwt.claims', '{"role":"anon"}', true);
+end;
+$$;
+
+create or replace function tests.as_worker() returns void language plpgsql as $$
+begin
+  perform set_config('role', 'ingest_worker', true);
+  perform set_config('request.jwt.claims', '', true);
+end;
+$$;
+
+create or replace function tests.as_postgres() returns void language plpgsql as $$
+begin
+  perform set_config('role', 'postgres', true);
+  perform set_config('request.jwt.claims', '', true);
+end;
+$$;
+
+-- A published program with one current cycle. Returns the cycle id.
+create or replace function tests.make_program(p_slug text, p_published boolean default true)
+returns uuid language plpgsql security definer set search_path = '' as $$
+declare
+  v_inst uuid;
+  v_prog uuid;
+  v_cycle uuid;
+begin
+  insert into public.institutions (name, country) values ('Test University ' || p_slug, 'GB') returning id into v_inst;
+  insert into public.programs (institution_id, slug, title, level, published)
+    values (v_inst, p_slug, 'MSc ' || p_slug, 'master', p_published) returning id into v_prog;
+  insert into public.program_cycles (program_id, label, intake_year, intake_term)
+    values (v_prog, '2027-autumn', 2027, 'autumn') returning id into v_cycle;
+  return v_cycle;
+end;
+$$;
+
+create or replace function tests.make_source() returns uuid
+language sql security definer set search_path = '' as $$
+  insert into public.sources (url, owner) values ('https://example.ac.uk/' || gen_random_uuid(), 'Test University')
+  returning id;
+$$;
+
+-- A pending fact version for a deadline on the given cycle.
+create or replace function tests.propose_deadline(p_cycle uuid, p_due date, p_subject uuid default null)
+returns uuid language sql security definer set search_path = '' as $$
+  insert into public.fact_versions (subject, subject_id, cycle_id, proposed, evidence_quote, source_id, created_by)
+  values ('deadline', p_subject, p_cycle,
+          jsonb_build_object('due_at', p_due::timestamptz, 'kind', 'application', 'precision', 'date', 'timezone', 'Europe/London'),
+          'Applications close on ' || p_due::text, tests.make_source(), 'worker')
+  returning id;
+$$;
+
+-- Everything above is created by postgres; let the switched-to roles call it.
+grant execute on all functions in schema tests to anon, authenticated, ingest_worker;
