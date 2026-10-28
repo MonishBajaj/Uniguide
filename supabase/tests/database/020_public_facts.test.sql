@@ -23,26 +23,26 @@ select is((select count(*)::int from public.programs where slug = 'visible'), 1,
 select is((select count(*)::int from public.programs where slug = 'hidden'), 0, 'anon cannot see an unpublished program');
 select is((select count(*)::int from public.program_cycles where id = :'hidden_cycle'), 0, 'anon cannot see cycles of an unpublished program');
 select results_eq(
-  $$ select status::text from public.deadlines order by due_at $$,
+  format($$ select status::text from public.deadlines where cycle_id = %L order by due_at $$, :'cycle'),
   array['verified', 'unverified'],
   'anon sees the verified and the extracted deadline, not the pending one'
 );
-select is((select count(*)::int from public.cost_items), 0, 'anon cannot see an unpublished cost');
+select is((select count(*)::int from public.cost_items where cycle_id = :'cycle'), 0, 'anon cannot see an unpublished cost');
 select throws_ok($$ select * from public.fact_versions $$, '42501', null, 'anon cannot read the review queue');
 select is((select coverage_tier::text from public.programs where slug = 'visible'), 'verified', 'coverage tier follows the verified fact');
 select is((select facts_verified::int from public.program_cards where slug = 'visible'), 1, 'program_cards counts verified facts');
 
 select tests.authenticate_as(:'reader');
 select is((select count(*)::int from public.fact_versions), 0, 'non-admins cannot read the review queue');
-select is((select count(*)::int from public.cost_items), 0, 'non-admins cannot see unpublished facts');
+select is((select count(*)::int from public.cost_items where cycle_id = :'cycle'), 0, 'non-admins cannot see unpublished facts');
 select throws_ok(
   $$ insert into public.deadlines (cycle_id, due_at) select id, now() from public.program_cycles limit 1 $$,
   '42501', null, 'users cannot write facts directly'
 );
 
 select tests.authenticate_as(:'admin');
-select is((select count(*)::int from public.fact_versions), 3, 'admins see every fact version');
-select is((select count(*)::int from public.cost_items), 1, 'admins see unpublished facts');
+select is((select count(*)::int from public.fact_versions where cycle_id = :'cycle'), 3, 'admins see every fact version');
+select is((select count(*)::int from public.cost_items where cycle_id = :'cycle'), 1, 'admins see unpublished facts');
 select is((select count(*)::int from public.programs where slug = 'hidden'), 1, 'admins see unpublished programs');
 
 select * from finish();

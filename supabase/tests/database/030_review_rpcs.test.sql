@@ -30,7 +30,7 @@ select throws_ok(format($$ select public.promote_fact_version(%L, 'unknown') $$,
 -- Admin rejects v2.
 select public.reject_fact_version(:'v2', 'wrong cycle');
 select is((select review_state::text from public.fact_versions where id = :'v2'), 'rejected', 'version rejected');
-select is((select count(*)::int from public.deadlines), 1, 'rejected proposal created no fact');
+select is((select count(*)::int from public.deadlines where cycle_id = :'cycle'), 1, 'rejected proposal created no fact');
 
 -- An update to the verified fact supersedes the old version.
 select tests.as_postgres();

@@ -79,5 +79,16 @@ select throws_ok(
   'P0001', null, 'parental consent requests only for accounts that need one'
 );
 
+-- Terms and privacy acceptance at sign-up is recorded with the account.
+select tests.as_postgres();
+insert into auth.users (id, instance_id, aud, role, email, raw_user_meta_data)
+values ('00000000-0000-4000-b000-000000000099', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated',
+        'terms@test.dev', '{"birth_month": "1990-05", "residence_country": "GB", "accepted_policy_version": "2026-10-draft"}');
+select results_eq(
+  $$ select kind::text from public.consents where user_id = '00000000-0000-4000-b000-000000000099' order by kind $$,
+  array['privacy', 'terms'],
+  'sign-up records terms and privacy consent'
+);
+
 select * from finish();
 rollback;
