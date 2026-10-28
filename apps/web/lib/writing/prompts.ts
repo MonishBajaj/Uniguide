@@ -41,6 +41,13 @@ export const OUTLINES: Record<string, OutlineSection[]> = {
     { id: "resources", title: "What only they offer", share: 0.3, questions: ["Which modules, facilities or partnerships do you need, by name?"] },
     { id: "contribution", title: "What you add", share: 0.2, questions: ["What will you contribute to the group or cohort?"] },
   ],
+  // A waitlisted applicant's short update. Honest commitment, then only what is new since applying.
+  continued_interest: [
+    { id: "commitment", title: "Where you stand", share: 0.2, questions: ["Would you accept a place if offered? Say so only if it is true.", "Is it truly your first choice? Never tell two universities that."] },
+    { id: "new", title: "What is new since you applied", share: 0.5, questions: ["Which grades, results, awards, work or projects have you completed since you applied, with dates?", "What did you do yourself in each?"] },
+    { id: "fit", title: "One reason this course fits", share: 0.2, questions: ["Which one module, lab or person connects to something new you have done, by name?"] },
+    { id: "close", title: "Close", share: 0.1, questions: ["Have you thanked them and given your applicant ID?"] },
+  ],
   other: [
     { id: "answer", title: "Answer the question", share: 0.7, questions: ["What exactly is the question asking?", "Which experience answers it best?"] },
     { id: "reflect", title: "Reflection", share: 0.3, questions: ["What did you learn, and what changed afterwards?"] },

@@ -5,6 +5,8 @@ import { COST_KINDS, totalsByCurrency, type CostKind } from "@/lib/application-c
 import { checkedAgo, describeEvent } from "@/lib/application-events";
 import { CURRENCIES } from "@/lib/fields";
 import { scoreNeeds, sentProgress } from "@/lib/score-sending";
+import { WAITLIST_STEPS } from "@/lib/waitlist";
+import { startContinuedInterest } from "../../writing/actions";
 import { daysUntil, deadlineText, label, money, shortDate } from "@/lib/format";
 import { getUser } from "@/lib/supabase/server";
 import { CostForm } from "../cost-form";
@@ -29,7 +31,7 @@ export const metadata: Metadata = { title: "Application" };
 export default async function ApplicationPage({ params }: PageProps<"/app/tracker/[id]">) {
   const { id } = await params;
   const { supabase, user } = await getUser();
-  const [{ data: app }, { data: outcome }, { data: consent }, { data: events }, { data: scores }, { data: costs }, { data: profile }] = await Promise.all([
+  const [{ data: app }, { data: outcome }, { data: consent }, { data: events }, { data: scores }, { data: costs }, { data: profile }, { data: letter }] = await Promise.all([
     supabase
       .from("applications")
       .select(
@@ -48,6 +50,7 @@ export default async function ApplicationPage({ params }: PageProps<"/app/tracke
     supabase.from("test_scores").select("id, exam, exam_version, total").order("taken_on", { ascending: false }),
     supabase.from("application_costs").select("id, kind, amount, currency, paid_on, note").eq("application_id", id).order("created_at"),
     supabase.from("profiles").select("budget_currency").eq("user_id", user!.id).single(),
+    supabase.from("documents").select("id, document_versions(word_count, created_at)").eq("application_id", id).eq("kind", "continued_interest").limit(1).maybeSingle(),
   ]);
   if (!app) notFound();
   const program = app.program_cycles?.programs;
@@ -232,6 +235,36 @@ export default async function ApplicationPage({ params }: PageProps<"/app/tracke
           </label>
           <button className="btn btn-secondary self-end justify-self-start">Save decision</button>
         </form>
+
+        {app.decision === "waitlisted" ? (
+          <div className="grid gap-3 border-t border-border pt-4">
+            <h3 className="font-semibold">You&apos;re on the waitlist: what to do now</h3>
+            <ol className="grid gap-2 text-sm">
+              {WAITLIST_STEPS.map((step, i) => (
+                <li key={step.id} className="grid grid-cols-[24px_1fr] gap-2">
+                  <span className="font-mono text-muted">{i + 1}</span>
+                  <span>
+                    <span className="font-semibold">{step.title}.</span> <span className="text-muted">{step.body}</span>
+                  </span>
+                </li>
+              ))}
+            </ol>
+            <div className="flex flex-wrap items-center gap-3">
+              {program?.official_url ? (
+                <a href={program.official_url} target="_blank" rel="noreferrer" className="btn btn-secondary btn-sm">Official course page</a>
+              ) : null}
+              <form action={startContinuedInterest.bind(null, app.id)}>
+                <button className="btn btn-primary btn-sm">{letter ? "Continue your letter of continued interest" : "Start a letter of continued interest"}</button>
+              </form>
+              {letter?.document_versions.length ? (
+                <span className="text-sm text-muted">
+                  Last saved {shortDate([...letter.document_versions].sort((a, b) => b.created_at.localeCompare(a.created_at))[0]!.created_at)},{" "}
+                  {[...letter.document_versions].sort((a, b) => b.created_at.localeCompare(a.created_at))[0]!.word_count} words
+                </span>
+              ) : null}
+            </div>
+          </div>
+        ) : null}
 
         {app.decision === "admitted" ? (
           <div className="grid gap-2 border-t border-border pt-4">

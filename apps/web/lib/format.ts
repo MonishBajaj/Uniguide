@@ -29,6 +29,7 @@ export function daysUntil(iso: string, now = new Date()): number {
 }
 
 const LABELS: Record<string, string> = {
+  continued_interest: "Letter of continued interest",
   foundation: "Foundation",
   diploma: "Diploma",
   bachelor: "Bachelor's",

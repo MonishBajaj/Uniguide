@@ -108,6 +108,7 @@ class DocumentKind(StrEnum):
     PERSONAL_STATEMENT = "personal_statement"
     WHY_THIS_UNIVERSITY = "why_this_university"
     OTHER = "other"
+    CONTINUED_INTEREST = "continued_interest"
 
 
 class ExamKind(StrEnum):

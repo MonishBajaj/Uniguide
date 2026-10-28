@@ -15,7 +15,7 @@ const PENDING = "A parent or guardian needs to confirm your account before we ca
 export async function createDocument(form: FormData) {
   const parsed = z
     .object({
-      kind: z.enum(["statement_of_purpose", "personal_statement", "why_this_university", "other"]),
+      kind: z.enum(["statement_of_purpose", "personal_statement", "why_this_university", "continued_interest", "other"]),
       title: z.string().trim().min(1).max(200),
       word_limit: z.preprocess((v) => (v ? Number(v) : null), z.number().int().min(50).max(5000).nullable()),
       question: z.preprocess((v) => (v ? String(v).trim() : null), z.string().max(2000).nullable()),
@@ -37,6 +37,38 @@ const Authorship = z.object({
   session_started_at: z.string(),
   active_seconds: z.number().int().min(0),
 });
+
+/** Opens the student's letter of continued interest for a waitlisted application, creating it the first time. */
+export async function startContinuedInterest(applicationId: string) {
+  const { supabase, user } = await getUser();
+  const { data: existing } = await supabase
+    .from("documents")
+    .select("id")
+    .eq("application_id", applicationId)
+    .eq("kind", "continued_interest")
+    .limit(1)
+    .maybeSingle();
+  if (existing) redirect(`/app/writing/${existing.id}`);
+  const { data: app } = await supabase
+    .from("applications")
+    .select("decision, program_cycles(programs(title))")
+    .eq("id", applicationId)
+    .maybeSingle();
+  if (app?.decision !== "waitlisted") redirect(`/app/tracker/${applicationId}`);
+  const { data, error } = await supabase
+    .from("documents")
+    .insert({
+      user_id: user!.id,
+      application_id: applicationId,
+      kind: "continued_interest",
+      title: `Letter of continued interest: ${app.program_cycles?.programs?.title ?? "course"}`.slice(0, 200),
+      word_limit: 300,
+    })
+    .select("id")
+    .single();
+  if (error || !data) redirect(`/app/tracker/${applicationId}?error=${error?.code === "42501" ? "consent" : "1"}`);
+  redirect(`/app/writing/${data.id}`);
+}
 
 export async function saveVersion(documentId: string, _prev: ActionState, form: FormData): Promise<ActionState> {
   const body = String(form.get("body") ?? "");

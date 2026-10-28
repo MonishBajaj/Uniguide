@@ -7,7 +7,7 @@ import { enforceCoaching } from "./guard";
 import type { Sentence } from "./segment";
 
 export const REVIEW_MODEL = "claude-sonnet-5-5";
-export const REVIEW_PROMPT_VERSION = "sop-review-2026-10-28";
+export const REVIEW_PROMPT_VERSION = "sop-review-2026-12-01";
 // USD per million tokens (Oct 2026 list price).
 const INPUT_PRICE = 2;
 const OUTPUT_PRICE = 10;
@@ -73,6 +73,12 @@ async function call<T>(api: Anthropic, schema: z.ZodType<T>, user: string) {
   };
 }
 
+/** Extra reading instructions per document kind. */
+const KIND_NOTES: Record<string, string> = {
+  continued_interest:
+    "This is a letter of continued interest for a waitlisted application. Judge it on whether it gives information that is new since the application, with dates, and states the student's commitment plainly. Flag claims of being a first choice so the student checks they are true, and flag repetition of the original application.",
+};
+
 export type Run<T> = Awaited<ReturnType<typeof call<T>>> & { inputHash: string };
 
 export async function reviewDraft(
@@ -83,6 +89,7 @@ export async function reviewDraft(
   const draft = numbered(sentences);
   const user = [
     `Document: ${context.kind.replaceAll("_", " ")}${context.wordLimit ? `, limit ${context.wordLimit} words` : ""}.`,
+    KIND_NOTES[context.kind] ?? "",
     context.question ? `<institution_question>\n${context.question}\n</institution_question>` : "",
     context.programFacts.length ? `<program_facts>\n${context.programFacts.join("\n")}\n</program_facts>` : "",
     `<draft>\n${draft}\n</draft>`,
