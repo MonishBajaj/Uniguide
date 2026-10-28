@@ -609,16 +609,44 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
-                },"parent_links": {
+                },"parent_digest_log": {
                   Row: {
-                    "created_at": string,"parent_id": string,"revoked_at": string | null,"student_id": string,"student_name": string
+                    "parent_id": string,"sent_at": string,"student_id": string,"week_start": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "created_at"?: string,"parent_id": string,"revoked_at"?: string | null,"student_id": string,"student_name": string
+                    "parent_id": string,"sent_at"?: string,"student_id": string,"week_start": string
                   }
                   Update: {
-                    "created_at"?: string,"parent_id"?: string,"revoked_at"?: string | null,"student_id"?: string,"student_name"?: string
+                    "parent_id"?: string,"sent_at"?: string,"student_id"?: string,"week_start"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"parent_invites": {
+                  Row: {
+                    "code": string,"created_at": string,"expires_at": string,"student_id": string,"student_name": string,"used_at": string | null,"used_by": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "code"?: string,"created_at"?: string,"expires_at"?: string,"student_id": string,"student_name": string,"used_at"?: string | null,"used_by"?: string | null
+                  }
+                  Update: {
+                    "code"?: string,"created_at"?: string,"expires_at"?: string,"student_id"?: string,"student_name"?: string,"used_at"?: string | null,"used_by"?: string | null
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"parent_links": {
+                  Row: {
+                    "created_at": string,"digest_enabled": boolean,"parent_id": string,"parent_name": string | null,"revoked_at": string | null,"student_id": string,"student_name": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"digest_enabled"?: boolean,"parent_id": string,"parent_name"?: string | null,"revoked_at"?: string | null,"student_id": string,"student_name": string
+                  }
+                  Update: {
+                    "created_at"?: string,"digest_enabled"?: boolean,"parent_id"?: string,"parent_name"?: string | null,"revoked_at"?: string | null,"student_id"?: string,"student_name"?: string
                   }
                   Relationships: [
                     
@@ -1019,6 +1047,9 @@ isOneToOne: false
 "_apply_fact_version":
 { Args: { "p_method": Database["public"]['Enums']["verification_method"],"p_status": Database["public"]['Enums']["fact_status"],"p_verified_at": string,"p_verified_by": string,"p_version": Omit<Database["public"]['Tables']["fact_versions"]['Row'], Database["public"]['Tables']["fact_versions"]['ComputedFields']> }; Returns: string
                            },
+"accept_parent_invite":
+{ Args: { "p_code": string,"p_parent_name": string }; Returns: string
+                           },
 "add_country_rule":
 { Args: { "p_applies_to"?: (string)[],"p_destination": string,"p_details"?: string,"p_kind": string,"p_link"?: string,"p_quote": string,"p_source_url": string,"p_title": string }; Returns: string
                            },
@@ -1051,6 +1082,9 @@ isOneToOne: false
                            },
 "counselor_can_see":
 { Args: { "p_student": string }; Returns: boolean
+                           },
+"create_parent_invite":
+{ Args: { "p_student_name": string }; Returns: string
                            },
 "credit_balance":
 { Args: { "p_uid"?: string }; Returns: number
@@ -1103,6 +1137,16 @@ isOneToOne: false
 "parent_can_see":
 { Args: { "p_student": string }; Returns: boolean
                            },
+"parent_digest_recipients":
+{ Args: Record<PropertyKey, never>; Returns: {
+              "email": string,"parent_id": string,"student_id": string,"student_name": string
+            }[]
+                           },
+"parent_invite_info":
+{ Args: { "p_code": string }; Returns: {
+              "student_name": string,"usable": boolean
+            }[]
+                           },
 "parental_consent_age":
 { Args: { "p_country": string }; Returns: number
                            },
@@ -1129,6 +1173,9 @@ isOneToOne: false
                            },
 "revoke_agency_share":
 { Args: { "p_share_id": string }; Returns: undefined
+                           },
+"revoke_parent_link":
+{ Args: { "p_parent": string }; Returns: undefined
                            },
 "search_programs":
 { Args: { "p_countries"?: (string)[],"p_deadline_open"?: boolean,"p_delivery"?: (Database["public"]['Enums']["delivery_mode"])[],"p_fields"?: (string)[],"p_levels"?: (Database["public"]['Enums']["program_level"])[],"p_limit"?: number,"p_max_tuition"?: number,"p_offset"?: number,"p_query"?: string,"p_tuition_currency"?: string }; Returns: {
@@ -1163,6 +1210,9 @@ isOneToOne: false
         isOneToOne: false
         isSetofReturn: true
       } },
+"set_parent_digest":
+{ Args: { "p_enabled": boolean,"p_student": string }; Returns: undefined
+                           },
 "verification_demand":
 { Args: { "p_limit"?: number }; Returns: {
               "facts_unverified": number,"next_deadline": string,"program_id": string,"shortlists": number

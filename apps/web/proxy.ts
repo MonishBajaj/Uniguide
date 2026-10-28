@@ -21,7 +21,7 @@ export async function proxy(request: NextRequest) {
   const path = request.nextUrl.pathname;
   if (!data.user && ["/app", "/admin", "/agency", "/parent"].some((p) => path.startsWith(p))) {
     // With sign-in switched off the guest goes home, where a banner says which mode opens the page.
-    const target = AUTH_DISABLED ? promptUrl(path) : `/login?next=${encodeURIComponent(path)}`;
+    const target = AUTH_DISABLED ? promptUrl(path) : `/login?next=${encodeURIComponent(path + request.nextUrl.search)}`;
     return NextResponse.redirect(new URL(target, request.url));
   }
   return response;

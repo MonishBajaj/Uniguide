@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { daysUntil, deadlineText, isFuture, label } from "@/lib/format";
+import { setDigest } from "@/app/family/actions";
 import { getRoles } from "@/lib/roles";
 import { getUser } from "@/lib/supabase/server";
 
@@ -15,6 +16,8 @@ export default async function ParentPage() {
   if (parentOf.length === 0) notFound();
 
   const studentIds = parentOf.map((l) => l.student_id);
+  const { data: settings } = await supabase.from("parent_links").select("student_id, digest_enabled").eq("parent_id", user.id).is("revoked_at", null);
+  const digestOn = new Map((settings ?? []).map((s) => [s.student_id, s.digest_enabled]));
   const [{ data: shortlist }, { data: apps }] = await Promise.all([
     supabase.from("shortlists").select("user_id, programs(slug, title, institutions(name))").in("user_id", studentIds),
     supabase
@@ -42,7 +45,13 @@ export default async function ParentPage() {
 
         return (
           <section key={link.student_id} aria-labelledby={`s-${link.student_id}`} className="grid gap-6">
-            <h2 id={`s-${link.student_id}`} className="text-2xl font-semibold">{link.student_name}</h2>
+            <div className="flex flex-wrap items-baseline justify-between gap-3">
+              <h2 id={`s-${link.student_id}`} className="text-2xl font-semibold">{link.student_name}</h2>
+              <form action={setDigest.bind(null, link.student_id, !digestOn.get(link.student_id))} className="flex items-center gap-2 text-sm">
+                <span className="text-muted">Weekly email {digestOn.get(link.student_id) ? "on" : "off"}</span>
+                <button className="btn btn-secondary btn-sm">{digestOn.get(link.student_id) ? "Turn off" : "Turn on"}</button>
+              </form>
+            </div>
 
             <dl className="grid gap-3 rounded-2xl border border-border bg-surface p-6 text-sm sm:grid-cols-3">
               <div><dt className="text-muted">Shortlisted courses</dt><dd className="text-lg font-semibold">{listed.length}</dd></div>
