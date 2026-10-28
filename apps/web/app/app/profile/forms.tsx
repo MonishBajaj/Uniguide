@@ -3,7 +3,7 @@
 import { useActionState, useState } from "react";
 import type { Tables } from "@uniguide/db-types";
 import { CURRENCIES, EXAMS, FIELDS, GRADE_SCALES, QUALIFICATIONS } from "@/lib/fields";
-import { LEVELS, WAVE_1, countryName, label } from "@/lib/format";
+import { LEVELS, DESTINATIONS, countryName, label } from "@/lib/format";
 import { addTestScore, applyCvItems, readCv, saveProfile, type ExtractState, type FormState } from "./actions";
 
 function Status({ state }: { state: FormState }) {
@@ -94,18 +94,21 @@ export function ProfileForm({ profile }: { profile: Tables<"profiles"> }) {
         </div>
         <p className="mt-4 mb-2 text-sm font-semibold">Countries you would consider</p>
         <div className="flex flex-wrap gap-2">
-          {WAVE_1.map((c) => (
+          {DESTINATIONS.map((c) => (
             <label key={c} className="flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2 text-sm has-[:checked]:border-accent">
               <input type="checkbox" name="target_countries" value={c} defaultChecked={profile.target_countries.includes(c)} className="accent-[var(--accent)]" />
               {countryName(c)}
             </label>
           ))}
         </div>
+        <p className="mt-2 text-xs text-muted">
+          Coverage is deepest for the first six countries. Courses elsewhere are added as we verify them.
+        </p>
         <label className="mt-4 grid max-w-xs gap-2 text-sm font-semibold">
           Favourite among them
           <select name="favourite_country" defaultValue={profile.target_countries[0] ?? ""} className="field font-normal">
             <option value="">No favourite</option>
-            {WAVE_1.map((c) => <option key={c} value={c}>{countryName(c)}</option>)}
+            {DESTINATIONS.map((c) => <option key={c} value={c}>{countryName(c)}</option>)}
           </select>
         </label>
         <p className="mt-4 mb-2 text-sm font-semibold">Fields of study</p>

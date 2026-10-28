@@ -33,6 +33,26 @@ export type Database = {
                   Relationships: [
                     
                   ]
+                },"agency_shares": {
+                  Row: {
+                    "display_name": string,"granted_at": string,"id": string,"org_id": string,"revoked_at": string | null,"student_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "display_name": string,"granted_at"?: string,"id"?: string,"org_id": string,"revoked_at"?: string | null,"student_id": string
+                  }
+                  Update: {
+                    "display_name"?: string,"granted_at"?: string,"id"?: string,"org_id"?: string,"revoked_at"?: string | null,"student_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "agency_shares_org_id_fkey"
+      columns: ["org_id"]
+isOneToOne: false
+      referencedRelation: "organizations"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"ai_runs": {
                   Row: {
                     "cost_usd": number | null,"created_at": string,"id": string,"input_hash": string | null,"input_tokens": number | null,"latency_ms": number | null,"model": string,"output_tokens": number | null,"prompt_version": string,"purpose": string,"stop_reason": string | null,"user_id": string | null
@@ -477,6 +497,40 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"org_members": {
+                  Row: {
+                    "created_at": string,"org_id": string,"role": string,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"org_id": string,"role"?: string,"user_id": string
+                  }
+                  Update: {
+                    "created_at"?: string,"org_id"?: string,"role"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "org_members_org_id_fkey"
+      columns: ["org_id"]
+isOneToOne: false
+      referencedRelation: "organizations"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"organizations": {
+                  Row: {
+                    "country": string | null,"created_at": string,"id": string,"invite_code": string,"name": string,"website": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "country"?: string | null,"created_at"?: string,"id"?: string,"invite_code"?: string,"name": string,"website"?: string | null
+                  }
+                  Update: {
+                    "country"?: string | null,"created_at"?: string,"id"?: string,"invite_code"?: string,"name"?: string,"website"?: string | null
+                  }
+                  Relationships: [
+                    
+                  ]
                 },"outcomes": {
                   Row: {
                     "application_id": string,"created_at": string,"cycle_id": string,"decided_at": string | null,"decision": Database["public"]['Enums']["decision"],"funding_amount": number | null,"funding_currency": string | null,"funding_offered": boolean | null,"id": string,"profile_snapshot": NonNullable<Json>,"program_id": string,"user_id": string,"verification_level": string
@@ -831,6 +885,20 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
+                },"verifiers": {
+                  Row: {
+                    "active": boolean,"countries": (string)[],"created_at": string,"display_name": string,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "active"?: boolean,"countries": (string)[],"created_at"?: string,"display_name": string,"user_id": string
+                  }
+                  Update: {
+                    "active"?: boolean,"countries"?: (string)[],"created_at"?: string,"display_name"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
                 }
           }
           Views: {
@@ -874,11 +942,17 @@ isOneToOne: false
 "add_country_rule":
 { Args: { "p_applies_to"?: (string)[],"p_destination": string,"p_details"?: string,"p_kind": string,"p_link"?: string,"p_quote": string,"p_source_url": string,"p_title": string }; Returns: string
                            },
+"add_org_member":
+{ Args: { "p_email": string,"p_org": string,"p_role"?: string }; Returns: string
+                           },
 "add_program_cycle":
 { Args: { "p_intake_term": string,"p_intake_year": number,"p_program_id": string,"p_starts_on"?: string }; Returns: string
                            },
 "add_program_stat":
 { Args: { "p_admit_rate": number,"p_admitted"?: number,"p_applicants"?: number,"p_cycle_label": string,"p_program_id": string,"p_quote": string,"p_source_url": string }; Returns: string
+                           },
+"add_verifier":
+{ Args: { "p_countries": (string)[],"p_display_name": string,"p_email": string }; Returns: string
                            },
 "age_band_for":
 { Args: { "p_age": number }; Returns: Database["public"]['Enums']["age_band"]
@@ -889,11 +963,20 @@ isOneToOne: false
 "can_process_personal_data":
 { Args: { "uid": string }; Returns: boolean
                            },
+"can_review_cycle":
+{ Args: { "p_cycle": string }; Returns: boolean
+                           },
 "confirm_parental_consent":
 { Args: { "p_policy_version": string,"p_token": string }; Returns: boolean
                            },
+"counselor_can_see":
+{ Args: { "p_student": string }; Returns: boolean
+                           },
 "credit_balance":
 { Args: { "p_uid"?: string }; Returns: number
+                           },
+"grant_agency_share":
+{ Args: { "p_code": string,"p_display_name": string,"p_policy_version": string }; Returns: string
                            },
 "grant_credits":
 { Args: { "p_amount": number,"p_reason"?: string,"p_user_id": string }; Returns: undefined
@@ -907,6 +990,9 @@ isOneToOne: false
 "is_operator":
 { Args: Record<PropertyKey, never>; Returns: boolean
                            },
+"is_org_member":
+{ Args: { "p_org": string }; Returns: boolean
+                           },
 "match_faculty":
 { Args: { "p_fields"?: (string)[],"p_institution_id": string,"p_limit"?: number,"p_query"?: string,"p_query_embedding"?: string }; Returns: {
               "cited_by_count": number,"id": string,"name": string,"openalex_id": string,"orcid": string,"recent_works": Json,"score": number,"topics": Json
@@ -919,6 +1005,11 @@ isOneToOne: false
                            },
 "notify_program_watchers":
 { Args: { "p_body": string,"p_program_id": string,"p_title": string }; Returns: number
+                           },
+"organization_by_code":
+{ Args: { "p_code": string }; Returns: {
+              "country": string,"id": string,"name": string,"website": string
+            }[]
                            },
 "parental_consent_age":
 { Args: { "p_country": string }; Returns: number
@@ -943,6 +1034,9 @@ isOneToOne: false
                            },
 "resolve_fact_report":
 { Args: { "p_accepted": boolean,"p_credits"?: number,"p_report_id": string }; Returns: undefined
+                           },
+"revoke_agency_share":
+{ Args: { "p_share_id": string }; Returns: undefined
                            },
 "search_programs":
 { Args: { "p_countries"?: (string)[],"p_delivery"?: (Database["public"]['Enums']["delivery_mode"])[],"p_fields"?: (string)[],"p_levels"?: (Database["public"]['Enums']["program_level"])[],"p_limit"?: number,"p_offset"?: number,"p_query"?: string }; Returns: {
@@ -980,6 +1074,14 @@ isOneToOne: false
 "verification_demand":
 { Args: { "p_limit"?: number }; Returns: {
               "facts_unverified": number,"next_deadline": string,"program_id": string,"shortlists": number
+            }[]
+                           },
+"verifier_countries":
+{ Args: Record<PropertyKey, never>; Returns: (string)[]
+                           },
+"verifier_tally":
+{ Args: Record<PropertyKey, never>; Returns: {
+              "approved": number,"countries": (string)[],"courses_verified": number,"display_name": string,"last_review": string,"rejected": number,"user_id": string
             }[]
                            },
 "verify_country_rule":

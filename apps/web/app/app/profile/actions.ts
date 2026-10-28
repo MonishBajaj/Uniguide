@@ -6,7 +6,7 @@ import type { Enums } from "@uniguide/db-types";
 import { CURRENCIES, EXAMS, FIELDS, GRADE_SCALES, QUALIFICATIONS } from "@/lib/fields";
 import { POLICY_VERSION } from "@/lib/env";
 import { asJson } from "@/lib/json";
-import { LEVELS, WAVE_1 } from "@/lib/format";
+import { LEVELS, DESTINATIONS } from "@/lib/format";
 import { extractProfile, MAX_CV_CHARS, PROFILE_MODEL, PROFILE_PROMPT_VERSION, type ProfileExtraction } from "@/lib/profile-extract";
 import { getUser } from "@/lib/supabase/server";
 
@@ -25,7 +25,7 @@ const Profile = z.object({
   budget_amount: optionalNumber.refine((v) => v == null || v > 0),
   budget_currency: z.enum(CURRENCIES).nullable(),
   target_levels: z.array(z.enum(LEVELS)),
-  target_countries: z.array(z.enum(WAVE_1)),
+  target_countries: z.array(z.enum(DESTINATIONS)),
   target_fields: z.array(z.enum(Object.keys(FIELDS) as [string, ...string[]])),
   preferred_delivery: z.enum(["on_campus", "online", "hybrid"]).nullable(),
   weights: z.object({ field: z.number(), budget: z.number(), location: z.number(), delivery: z.number() }),

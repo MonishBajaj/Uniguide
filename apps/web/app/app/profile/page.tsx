@@ -20,7 +20,7 @@ export default async function ProfilePage() {
     <div className="grid gap-12">
       <header>
         <h1 className="text-4xl font-semibold">Your profile</h1>
-        <p className="mt-2 text-muted">Used to check requirements and rank courses. Nothing here is shared with universities.</p>
+        <p className="mt-2 text-muted">Used to check requirements and rank courses. Nothing here is shared with universities, or with anyone else unless you choose to.</p>
       </header>
 
       <section aria-labelledby="ai" className="grid gap-3 rounded-2xl bg-surface p-6 text-sm">
@@ -67,6 +67,12 @@ export default async function ProfilePage() {
           </ul>
         )}
         <TestScoreForm />
+      </section>
+
+      <section aria-labelledby="sharing" className="grid gap-2 rounded-2xl bg-surface p-6 text-sm">
+        <h2 id="sharing" className="text-lg font-semibold">Working with a consultancy?</h2>
+        <p className="text-muted">You decide whether a counselor can see your plans, and you can stop at any time.</p>
+        <Link href="/app/sharing" className="justify-self-start underline underline-offset-2">Manage sharing</Link>
       </section>
     </div>
   );

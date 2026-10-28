@@ -26,7 +26,7 @@ select is((select status::text from public.country_rules where id = :'rule'), 'v
 -- Admit rates are hidden until verified.
 select public.add_program_stat(:'prog', '2026-autumn', 0.42, 'https://example.edu/stats', '42% of applicants were admitted.') as stat \gset
 select tests.as_anon();
-select is_empty($$ select 1 from public.program_stats $$, 'unverified admit rates are not public');
+select is_empty(format($$ select 1 from public.program_stats where program_id = %L $$, :'prog'), 'unverified admit rates are not public');
 select tests.authenticate_as(:'admin');
 select public.verify_program_stat(:'stat');
 select tests.as_anon();
@@ -34,7 +34,7 @@ select is((select admit_rate from public.program_stats where id = :'stat'), 0.42
 select tests.authenticate_as(:'admin');
 select public.add_program_stat(:'prog', '2026-autumn', 0.40, 'https://example.edu/stats', '40% were admitted.');
 select tests.as_anon();
-select is_empty($$ select 1 from public.program_stats $$, 'a corrected rate goes back to review');
+select is_empty(format($$ select 1 from public.program_stats where program_id = %L $$, :'prog'), 'a corrected rate goes back to review');
 
 -- Decision matrices are private.
 select tests.authenticate_as(:'a');

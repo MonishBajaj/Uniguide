@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { getRoles } from "@/lib/roles";
 import { label, shortDate } from "@/lib/format";
 import { getUser } from "@/lib/supabase/server";
 import { approve, reject, resolveReport } from "./actions";
@@ -34,8 +35,8 @@ const HIDDEN = new Set(["_seed_key"]);
 
 export default async function ReviewQueue() {
   const { supabase, user } = await getUser();
-  const { data: admin } = await supabase.from("admins").select("user_id").eq("user_id", user!.id).maybeSingle();
-  if (!admin) notFound();
+  const roles = await getRoles(supabase, user!.id);
+  if (!roles.admin && !roles.verifier) notFound();
 
   const [{ data: pending, count }, { data: demand }, { data: reports }] = await Promise.all([
     supabase
@@ -49,6 +50,7 @@ export default async function ReviewQueue() {
       .limit(500)
       .returns<Version[]>(),
     supabase.rpc("verification_demand", { p_limit: 200 }),
+    // Reports pay credits when accepted, so only admins resolve them.
     supabase
       .from("fact_reports")
       .select("id, message, evidence_url, subject, created_at, programs(slug, title)")
@@ -76,6 +78,11 @@ export default async function ReviewQueue() {
         {count ?? 0} facts waiting. Open the source, find the quote, and check the value matches the page and the intake.
         Deadlines, eligibility and tuition are only shown as verified after this step.
       </p>
+      {roles.verifier ? (
+        <p className="mt-2 text-sm text-muted">
+          You review courses in {roles.verifier.countries.join(", ")} as {roles.verifier.display_name}.
+        </p>
+      ) : null}
 
       {wanted.length ? (
         <section aria-labelledby="wanted" className="mt-8 rounded-2xl bg-surface p-6">
@@ -92,7 +99,7 @@ export default async function ReviewQueue() {
         </section>
       ) : null}
 
-      {(reports ?? []).length ? (
+      {roles.admin && (reports ?? []).length ? (
         <section aria-labelledby="reports" className="mt-8 grid gap-3">
           <h2 id="reports" className="text-2xl font-semibold">Reports from students ({reports!.length})</h2>
           {reports!.map((r) => (

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getRoles } from "@/lib/roles";
 import { getUser } from "@/lib/supabase/server";
 import { NavLinks } from "./nav-links";
 
@@ -7,9 +8,7 @@ export async function SiteHeader() {
   const unread = user
     ? (await supabase.from("notifications").select("id", { count: "exact", head: true }).is("read_at", null)).count ?? 0
     : 0;
-  const isAdmin = user
-    ? Boolean((await supabase.from("admins").select("user_id").eq("user_id", user.id).maybeSingle()).data)
-    : false;
+  const roles = await getRoles(supabase, user?.id);
 
   const links = [
     { href: "/courses", label: "Courses" },
@@ -25,7 +24,9 @@ export async function SiteHeader() {
           { href: "/app/notifications", label: unread ? `Updates (${unread})` : "Updates" },
         ]
       : []),
-    ...(isAdmin ? [{ href: "/admin/review", label: "Review queue" }, { href: "/admin/rules", label: "Rules" }] : []),
+    ...(roles.admin || roles.verifier ? [{ href: "/admin/review", label: "Review queue" }] : []),
+    ...(roles.admin ? [{ href: "/admin/rules", label: "Rules" }, { href: "/admin/team", label: "Team" }] : []),
+    ...(roles.orgs.length ? [{ href: "/agency", label: "Students" }] : []),
   ];
 
   return (
