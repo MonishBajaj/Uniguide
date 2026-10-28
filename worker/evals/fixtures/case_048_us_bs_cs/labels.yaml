@@ -1,0 +1,19 @@
+cycle:
+  label: 2027-spring
+  intake_year: 2027
+  starts_on: '2027-01-15'
+country: US
+deadlines:
+- date: '2026-09-15'
+  kind: priority
+- date: '2026-11-01'
+  kind: application
+fees:
+- kind: tuition
+  basis: per_credit
+  base: 1560
+  currency: USD
+- kind: application_fee
+  basis: one_off
+  base: 70
+  currency: USD

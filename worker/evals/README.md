@@ -15,10 +15,9 @@ Metrics (`metrics.py`), computed over facts that would be published (no validato
 | False publications (published deadlines/fees that match no label) | 0 |
 
 ```bash
-uv run pytest evals              # offline: recorded responses
+uv run pytest evals              # offline: 200 cases with recorded responses
 uv run pytest evals -m live      # calls Claude Haiku 5.5 (needs ANTHROPIC_API_KEY; costs cents)
+uv run python evals/generate_fixtures.py  # regenerate synthetic cases
 ```
 
-The plan calls for 200 labelled pages across countries and levels. Add a case by copying a
-folder, writing the labels by hand from the page, and saving a model response as
-`recorded_response.json` (the live run prints what it sees; check it against the labels).
+The benchmark suite contains 200 labelled synthetic pages across 10 destinations (US, GB, CA, AU, DE, NL, IE, FR, NZ, SG) and degree levels (undergraduate, master's, doctoral). These test single and multi-round deadlines, varied fee bases, domestic vs. international fees, and edge cases including stale cycles and prompt injection attacks. All synthetic pages use reserved domains (`example.org`) in compliance with the data policy forbidding copies of live copyrighted university pages.

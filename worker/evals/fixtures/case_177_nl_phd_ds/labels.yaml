@@ -1,0 +1,19 @@
+cycle:
+  label: 2027-fall
+  intake_year: 2027
+  starts_on: '2027-09-01'
+country: NL
+deadlines:
+- date: '2027-01-15'
+  kind: priority
+- date: '2027-05-15'
+  kind: application
+fees:
+- kind: tuition
+  basis: per_year
+  base: 39490
+  currency: EUR
+- kind: application_fee
+  basis: one_off
+  base: 105
+  currency: EUR

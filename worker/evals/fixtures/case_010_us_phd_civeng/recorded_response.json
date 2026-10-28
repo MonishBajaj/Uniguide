@@ -1,0 +1,62 @@
+{
+  "effective_intake": "Fall 2027",
+  "effective_intake_year": 2027,
+  "language_tests": [
+    {
+      "applicant_category": "international",
+      "exam": "ielts_academic",
+      "exam_version": null,
+      "min_total": 6.5,
+      "min_sections": [],
+      "quote": "English proficiency requirement: IELTS Academic 6.5 minimum overall score."
+    }
+  ],
+  "entry_qualifications": [],
+  "admissions_tests": [],
+  "deadlines": [
+    {
+      "applicant_category": "all",
+      "round": "Priority",
+      "kind": "priority",
+      "owning_system": "direct",
+      "date": "2026-12-15",
+      "time": null,
+      "timezone": "America/New_York",
+      "original_text": "2026-12-15",
+      "quote": "Priority scholarship deadline: 2026-12-15"
+    },
+    {
+      "applicant_category": "all",
+      "round": "Final",
+      "kind": "application",
+      "owning_system": "direct",
+      "date": "2027-03-31",
+      "time": null,
+      "timezone": "America/New_York",
+      "original_text": "2027-03-31",
+      "quote": "Final application deadline: 2027-03-31"
+    }
+  ],
+  "costs": [
+    {
+      "applicant_category": "all",
+      "kind": "tuition",
+      "basis": "per_year",
+      "amount": 15700.0,
+      "amount_high": null,
+      "currency": "USD",
+      "fee_year": "2027-2028",
+      "quote": "Tuition fee: USD 15,700 per year."
+    },
+    {
+      "applicant_category": "all",
+      "kind": "application_fee",
+      "basis": "one_off",
+      "amount": 100.0,
+      "amount_high": null,
+      "currency": "USD",
+      "fee_year": null,
+      "quote": "A non-refundable application fee of USD 100 is required."
+    }
+  ]
+}
