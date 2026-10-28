@@ -81,6 +81,9 @@ export function toProgramInput(card: ProgramCard, cycle: CycleFacts | undefined)
         minSections: (r.min_sections as Record<string, number> | null) ?? null,
         testPolicy: r.test_policy,
         isDesirable: r.is_desirable,
+        countRequired: r.count_required,
+        wordLimit: r.word_limit,
+        details: r.details,
       }),
     ),
     deadlines: (cycle?.deadlines ?? []).map(

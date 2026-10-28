@@ -183,3 +183,21 @@ def seed_check(
         typer.echo(str(exc), err=True)
         raise typer.Exit(1) from exc
     typer.echo(f"{len(docs)} seed files valid ({sum(bool(d.get('placeholder')) for _, d in docs)} placeholders)")
+
+
+@app.command()
+def notify() -> None:
+    """Send due deadline reminders and update emails (connects as the notifier role)."""
+    from .mailer import Mailer
+    from .notify import send_reminders
+
+    settings = get_settings()
+    if not settings.notifier_database_url:
+        raise typer.BadParameter("Set NOTIFIER_DATABASE_URL (see .env.example)")
+    mailer = Mailer.from_env()
+    with connect(settings.notifier_database_url) as conn:
+        report = send_reminders(conn, mailer, settings.site_url)
+    if mailer.dry_run:
+        for m in mailer.sent:
+            typer.echo(f"[dry run] to {m.to}: {m.subject}")
+    _report(report)

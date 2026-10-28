@@ -125,6 +125,22 @@ export function ProfileForm({ profile }: { profile: Tables<"profiles"> }) {
         ))}
       </fieldset>
 
+      <fieldset className="grid gap-3">
+        <legend className="mb-2 text-lg font-semibold">Deadline reminders</legend>
+        <label className="flex items-center gap-2 text-sm">
+          <input type="checkbox" name="reminders_enabled" defaultChecked={profile.reminders_enabled} className="accent-[var(--accent)]" />
+          Email me before deadlines on my tracker
+        </label>
+        <div className="flex flex-wrap gap-2 text-sm">
+          {[60, 30, 14, 7, 3, 1].map((d) => (
+            <label key={d} className="flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2 has-[:checked]:border-accent">
+              <input type="checkbox" name="reminder_days" value={d} defaultChecked={profile.reminder_days.includes(d)} className="accent-[var(--accent)]" />
+              {d === 1 ? "1 day before" : `${d} days before`}
+            </label>
+          ))}
+        </div>
+      </fieldset>
+
       <Status state={state} />
       <button disabled={pending} className="btn btn-primary justify-self-start">{pending ? "Saving…" : "Save profile"}</button>
     </form>

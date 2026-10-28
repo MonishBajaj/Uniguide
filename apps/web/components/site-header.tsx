@@ -4,6 +4,9 @@ import { NavLinks } from "./nav-links";
 
 export async function SiteHeader() {
   const { supabase, user } = await getUser();
+  const unread = user
+    ? (await supabase.from("notifications").select("id", { count: "exact", head: true }).is("read_at", null)).count ?? 0
+    : 0;
   const isAdmin = user
     ? Boolean((await supabase.from("admins").select("user_id").eq("user_id", user.id).maybeSingle()).data)
     : false;
@@ -15,7 +18,9 @@ export async function SiteHeader() {
       ? [
           { href: "/app/match", label: "My matches" },
           { href: "/app/shortlist", label: "Shortlist" },
+          { href: "/app/tracker", label: "Tracker" },
           { href: "/app/profile", label: "Profile" },
+          { href: "/app/notifications", label: unread ? `Updates (${unread})` : "Updates" },
         ]
       : []),
     ...(isAdmin ? [{ href: "/admin/review", label: "Review queue" }] : []),

@@ -29,6 +29,8 @@ const Profile = z.object({
   target_fields: z.array(z.enum(Object.keys(FIELDS) as [string, ...string[]])),
   preferred_delivery: z.enum(["on_campus", "online", "hybrid"]).nullable(),
   weights: z.object({ field: z.number(), budget: z.number(), location: z.number(), delivery: z.number() }),
+  reminders_enabled: z.boolean(),
+  reminder_days: z.array(z.coerce.number().int().min(1).max(90)).max(6),
 });
 
 export async function saveProfile(_prev: FormState, form: FormData): Promise<FormState> {
@@ -49,6 +51,8 @@ export async function saveProfile(_prev: FormState, form: FormData): Promise<For
     target_fields: form.getAll("target_fields"),
     preferred_delivery: orNull("preferred_delivery"),
     weights: { field: weight("field"), budget: weight("budget"), location: weight("location"), delivery: weight("delivery") },
+    reminders_enabled: form.get("reminders_enabled") === "on",
+    reminder_days: form.getAll("reminder_days"),
   });
   if (!parsed.success) return { ok: false, message: "Some values are not valid. Check numbers are numbers." };
   if (parsed.data.grade_value != null && !parsed.data.grade_scale) {

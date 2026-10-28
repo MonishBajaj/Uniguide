@@ -43,6 +43,9 @@ export interface RequirementFact extends Fact {
   minSections?: Record<string, number> | null;
   testPolicy?: TestPolicy | null;
   isDesirable?: boolean;
+  countRequired?: number | null;
+  wordLimit?: number | null;
+  details?: string | null;
 }
 
 export interface DeadlineFact extends Fact {

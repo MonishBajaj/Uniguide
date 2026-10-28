@@ -2,7 +2,9 @@
 create extension if not exists pgtap with schema extensions;
 
 create schema if not exists tests;
-grant usage on schema tests to anon, authenticated, ingest_worker;
+grant usage on schema tests to anon, authenticated, ingest_worker, notifier;
+-- pgTAP lives in extensions; the notifier role has no other use for that schema.
+grant usage on schema extensions to notifier;
 
 create or replace function tests.create_user(p_email text, p_birth_month text default '1995-01', p_country text default 'US')
 returns uuid language plpgsql security definer set search_path = '' as $$
@@ -84,4 +86,4 @@ returns uuid language sql security definer set search_path = '' as $$
 $$;
 
 -- Everything above is created by postgres; let the switched-to roles call it.
-grant execute on all functions in schema tests to anon, authenticated, ingest_worker;
+grant execute on all functions in schema tests to anon, authenticated, ingest_worker, notifier;

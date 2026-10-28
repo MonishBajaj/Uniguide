@@ -7,3 +7,4 @@ export { hardFilters } from "./filters";
 export { budgetHeadroom, DEFAULT_WEIGHTS, fitScore } from "./score";
 export { matchPrograms } from "./match";
 export { ALGORITHM_VERSION } from "./version";
+export { buildChecklist, type ChecklistDeadline, type ChecklistItem } from "./checklist";

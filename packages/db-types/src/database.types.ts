@@ -35,14 +35,14 @@ export type Database = {
                   ]
                 },"applications": {
                   Row: {
-                    "created_at": string,"cycle_id": string,"due_at": string | null,"id": string,"status": Database["public"]['Enums']["application_status"],"updated_at": string,"user_id": string
+                    "awarded_aid": number | null,"awarded_aid_currency": string | null,"created_at": string,"cycle_id": string,"decided_at": string | null,"decision": Database["public"]['Enums']["decision"] | null,"deposit_due_at": string | null,"due_at": string | null,"id": string,"notes": string | null,"status": Database["public"]['Enums']["application_status"],"updated_at": string,"user_id": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "created_at"?: string,"cycle_id": string,"due_at"?: string | null,"id"?: string,"status"?: Database["public"]['Enums']["application_status"],"updated_at"?: string,"user_id": string
+                    "awarded_aid"?: number | null,"awarded_aid_currency"?: string | null,"created_at"?: string,"cycle_id": string,"decided_at"?: string | null,"decision"?: Database["public"]['Enums']["decision"] | null,"deposit_due_at"?: string | null,"due_at"?: string | null,"id"?: string,"notes"?: string | null,"status"?: Database["public"]['Enums']["application_status"],"updated_at"?: string,"user_id": string
                   }
                   Update: {
-                    "created_at"?: string,"cycle_id"?: string,"due_at"?: string | null,"id"?: string,"status"?: Database["public"]['Enums']["application_status"],"updated_at"?: string,"user_id"?: string
+                    "awarded_aid"?: number | null,"awarded_aid_currency"?: string | null,"created_at"?: string,"cycle_id"?: string,"decided_at"?: string | null,"decision"?: Database["public"]['Enums']["decision"] | null,"deposit_due_at"?: string | null,"due_at"?: string | null,"id"?: string,"notes"?: string | null,"status"?: Database["public"]['Enums']["application_status"],"updated_at"?: string,"user_id"?: string
                   }
                   Relationships: [
                     {
@@ -55,14 +55,14 @@ isOneToOne: false
                   ]
                 },"checklist_items": {
                   Row: {
-                    "application_id": string,"created_at": string,"done": boolean,"due_at": string | null,"id": string,"requirement_id": string | null,"title": string,"user_id": string
+                    "application_id": string,"created_at": string,"deadline_id": string | null,"details": string | null,"done": boolean,"done_at": string | null,"due_at": string | null,"id": string,"kind": string,"link": string | null,"requirement_id": string | null,"sort": number,"title": string,"user_id": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "application_id": string,"created_at"?: string,"done"?: boolean,"due_at"?: string | null,"id"?: string,"requirement_id"?: string | null,"title": string,"user_id": string
+                    "application_id": string,"created_at"?: string,"deadline_id"?: string | null,"details"?: string | null,"done"?: boolean,"done_at"?: string | null,"due_at"?: string | null,"id"?: string,"kind"?: string,"link"?: string | null,"requirement_id"?: string | null,"sort"?: number,"title": string,"user_id": string
                   }
                   Update: {
-                    "application_id"?: string,"created_at"?: string,"done"?: boolean,"due_at"?: string | null,"id"?: string,"requirement_id"?: string | null,"title"?: string,"user_id"?: string
+                    "application_id"?: string,"created_at"?: string,"deadline_id"?: string | null,"details"?: string | null,"done"?: boolean,"done_at"?: string | null,"due_at"?: string | null,"id"?: string,"kind"?: string,"link"?: string | null,"requirement_id"?: string | null,"sort"?: number,"title"?: string,"user_id"?: string
                   }
                   Relationships: [
                     {
@@ -70,6 +70,12 @@ isOneToOne: false
       columns: ["application_id"]
 isOneToOne: false
       referencedRelation: "applications"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "checklist_items_deadline_id_fkey"
+      columns: ["deadline_id"]
+isOneToOne: false
+      referencedRelation: "deadlines"
       referencedColumns: ["id"]
     },{
       foreignKeyName: "checklist_items_requirement_id_fkey"
@@ -139,6 +145,20 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"credit_ledger": {
+                  Row: {
+                    "created_at": string,"delta": number,"id": string,"reason": string,"ref": string | null,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"delta": number,"id"?: string,"reason": string,"ref"?: string | null,"user_id": string
+                  }
+                  Update: {
+                    "created_at"?: string,"delta"?: number,"id"?: string,"reason"?: string,"ref"?: string | null,"user_id"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
                 },"deadlines": {
                   Row: {
                     "applicant_category": Database["public"]['Enums']["applicant_category"],"created_at": string,"current_version_id": string | null,"cycle_id": string,"due_at": string,"evidence_quote": string | null,"id": string,"kind": Database["public"]['Enums']["deadline_kind"],"original_text": string | null,"owning_system": Database["public"]['Enums']["owning_system"],"precision": Database["public"]['Enums']["date_precision"],"published": boolean,"round": string | null,"source_id": string | null,"status": Database["public"]['Enums']["fact_status"],"timezone": string,"updated_at": string,"verification_method": Database["public"]['Enums']["verification_method"] | null,"verified_at": string | null,"verified_by": string | null
@@ -168,6 +188,32 @@ isOneToOne: false
       columns: ["source_id"]
 isOneToOne: false
       referencedRelation: "sources"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"fact_reports": {
+                  Row: {
+                    "created_at": string,"evidence_url": string | null,"fact_id": string | null,"id": string,"message": string,"program_id": string,"resolved_at": string | null,"resolved_by": string | null,"status": string,"subject": Database["public"]['Enums']["fact_subject"] | null,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"evidence_url"?: string | null,"fact_id"?: string | null,"id"?: string,"message": string,"program_id": string,"resolved_at"?: string | null,"resolved_by"?: string | null,"status"?: string,"subject"?: Database["public"]['Enums']["fact_subject"] | null,"user_id": string
+                  }
+                  Update: {
+                    "created_at"?: string,"evidence_url"?: string | null,"fact_id"?: string | null,"id"?: string,"message"?: string,"program_id"?: string,"resolved_at"?: string | null,"resolved_by"?: string | null,"status"?: string,"subject"?: Database["public"]['Enums']["fact_subject"] | null,"user_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "fact_reports_program_id_fkey"
+      columns: ["program_id"]
+isOneToOne: false
+      referencedRelation: "program_cards"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "fact_reports_program_id_fkey"
+      columns: ["program_id"]
+isOneToOne: false
+      referencedRelation: "programs"
       referencedColumns: ["id"]
     }
                   ]
@@ -285,6 +331,70 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
+                },"notifications": {
+                  Row: {
+                    "body": string | null,"created_at": string,"emailed_at": string | null,"id": string,"kind": Database["public"]['Enums']["notification_kind"],"program_id": string | null,"read_at": string | null,"title": string,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "body"?: string | null,"created_at"?: string,"emailed_at"?: string | null,"id"?: string,"kind": Database["public"]['Enums']["notification_kind"],"program_id"?: string | null,"read_at"?: string | null,"title": string,"user_id": string
+                  }
+                  Update: {
+                    "body"?: string | null,"created_at"?: string,"emailed_at"?: string | null,"id"?: string,"kind"?: Database["public"]['Enums']["notification_kind"],"program_id"?: string | null,"read_at"?: string | null,"title"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "notifications_program_id_fkey"
+      columns: ["program_id"]
+isOneToOne: false
+      referencedRelation: "program_cards"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "notifications_program_id_fkey"
+      columns: ["program_id"]
+isOneToOne: false
+      referencedRelation: "programs"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"outcomes": {
+                  Row: {
+                    "application_id": string,"created_at": string,"cycle_id": string,"decided_at": string | null,"decision": Database["public"]['Enums']["decision"],"funding_amount": number | null,"funding_currency": string | null,"funding_offered": boolean | null,"id": string,"profile_snapshot": NonNullable<Json>,"program_id": string,"user_id": string,"verification_level": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "application_id": string,"created_at"?: string,"cycle_id": string,"decided_at"?: string | null,"decision": Database["public"]['Enums']["decision"],"funding_amount"?: number | null,"funding_currency"?: string | null,"funding_offered"?: boolean | null,"id"?: string,"profile_snapshot"?: NonNullable<Json>,"program_id": string,"user_id": string,"verification_level"?: string
+                  }
+                  Update: {
+                    "application_id"?: string,"created_at"?: string,"cycle_id"?: string,"decided_at"?: string | null,"decision"?: Database["public"]['Enums']["decision"],"funding_amount"?: number | null,"funding_currency"?: string | null,"funding_offered"?: boolean | null,"id"?: string,"profile_snapshot"?: NonNullable<Json>,"program_id"?: string,"user_id"?: string,"verification_level"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "outcomes_application_id_fkey"
+      columns: ["application_id"]
+isOneToOne: true
+      referencedRelation: "applications"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "outcomes_cycle_id_fkey"
+      columns: ["cycle_id"]
+isOneToOne: false
+      referencedRelation: "program_cycles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "outcomes_program_id_fkey"
+      columns: ["program_id"]
+isOneToOne: false
+      referencedRelation: "program_cards"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "outcomes_program_id_fkey"
+      columns: ["program_id"]
+isOneToOne: false
+      referencedRelation: "programs"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"parental_consent_requests": {
                   Row: {
                     "confirmed_at": string | null,"created_at": string,"expires_at": string,"id": string,"parent_email": string,"token_hash": string,"user_id": string
@@ -301,14 +411,14 @@ isOneToOne: false
                   ]
                 },"profiles": {
                   Row: {
-                    "age_band": Database["public"]['Enums']["age_band"],"birth_month": string,"budget_amount": number | null,"budget_currency": string | null,"consent_state": Database["public"]['Enums']["consent_state"],"created_at": string,"display_name": string | null,"grade_scale": string | null,"grade_text": string | null,"grade_value": number | null,"home_qualification": string | null,"intake_year": number | null,"preferences": NonNullable<Json>,"residence_country": string,"target_countries": (string)[],"target_fields": (string)[],"target_levels": (Database["public"]['Enums']["program_level"])[],"updated_at": string,"user_id": string
+                    "age_band": Database["public"]['Enums']["age_band"],"birth_month": string,"budget_amount": number | null,"budget_currency": string | null,"consent_state": Database["public"]['Enums']["consent_state"],"created_at": string,"display_name": string | null,"grade_scale": string | null,"grade_text": string | null,"grade_value": number | null,"home_qualification": string | null,"intake_year": number | null,"preferences": NonNullable<Json>,"reminder_days": (number)[],"reminders_enabled": boolean,"research_interests": string | null,"residence_country": string,"target_countries": (string)[],"target_fields": (string)[],"target_levels": (Database["public"]['Enums']["program_level"])[],"updated_at": string,"user_id": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "age_band": Database["public"]['Enums']["age_band"],"birth_month": string,"budget_amount"?: number | null,"budget_currency"?: string | null,"consent_state": Database["public"]['Enums']["consent_state"],"created_at"?: string,"display_name"?: string | null,"grade_scale"?: string | null,"grade_text"?: string | null,"grade_value"?: number | null,"home_qualification"?: string | null,"intake_year"?: number | null,"preferences"?: NonNullable<Json>,"residence_country": string,"target_countries"?: (string)[],"target_fields"?: (string)[],"target_levels"?: (Database["public"]['Enums']["program_level"])[],"updated_at"?: string,"user_id": string
+                    "age_band": Database["public"]['Enums']["age_band"],"birth_month": string,"budget_amount"?: number | null,"budget_currency"?: string | null,"consent_state": Database["public"]['Enums']["consent_state"],"created_at"?: string,"display_name"?: string | null,"grade_scale"?: string | null,"grade_text"?: string | null,"grade_value"?: number | null,"home_qualification"?: string | null,"intake_year"?: number | null,"preferences"?: NonNullable<Json>,"reminder_days"?: (number)[],"reminders_enabled"?: boolean,"research_interests"?: string | null,"residence_country": string,"target_countries"?: (string)[],"target_fields"?: (string)[],"target_levels"?: (Database["public"]['Enums']["program_level"])[],"updated_at"?: string,"user_id": string
                   }
                   Update: {
-                    "age_band"?: Database["public"]['Enums']["age_band"],"birth_month"?: string,"budget_amount"?: number | null,"budget_currency"?: string | null,"consent_state"?: Database["public"]['Enums']["consent_state"],"created_at"?: string,"display_name"?: string | null,"grade_scale"?: string | null,"grade_text"?: string | null,"grade_value"?: number | null,"home_qualification"?: string | null,"intake_year"?: number | null,"preferences"?: NonNullable<Json>,"residence_country"?: string,"target_countries"?: (string)[],"target_fields"?: (string)[],"target_levels"?: (Database["public"]['Enums']["program_level"])[],"updated_at"?: string,"user_id"?: string
+                    "age_band"?: Database["public"]['Enums']["age_band"],"birth_month"?: string,"budget_amount"?: number | null,"budget_currency"?: string | null,"consent_state"?: Database["public"]['Enums']["consent_state"],"created_at"?: string,"display_name"?: string | null,"grade_scale"?: string | null,"grade_text"?: string | null,"grade_value"?: number | null,"home_qualification"?: string | null,"intake_year"?: number | null,"preferences"?: NonNullable<Json>,"reminder_days"?: (number)[],"reminders_enabled"?: boolean,"research_interests"?: string | null,"residence_country"?: string,"target_countries"?: (string)[],"target_fields"?: (string)[],"target_levels"?: (Database["public"]['Enums']["program_level"])[],"updated_at"?: string,"user_id"?: string
                   }
                   Relationships: [
                     
@@ -333,6 +443,32 @@ isOneToOne: false
       referencedColumns: ["id"]
     },{
       foreignKeyName: "program_cycles_program_id_fkey"
+      columns: ["program_id"]
+isOneToOne: false
+      referencedRelation: "programs"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"program_sources": {
+                  Row: {
+                    "active": boolean,"content_hash": string | null,"created_at": string,"etag": string | null,"id": string,"kind": Database["public"]['Enums']["source_kind"],"last_changed_at": string | null,"last_checked_at": string | null,"last_modified": string | null,"program_id": string,"rights_note": string | null,"url": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "active"?: boolean,"content_hash"?: string | null,"created_at"?: string,"etag"?: string | null,"id"?: string,"kind": Database["public"]['Enums']["source_kind"],"last_changed_at"?: string | null,"last_checked_at"?: string | null,"last_modified"?: string | null,"program_id": string,"rights_note"?: string | null,"url": string
+                  }
+                  Update: {
+                    "active"?: boolean,"content_hash"?: string | null,"created_at"?: string,"etag"?: string | null,"id"?: string,"kind"?: Database["public"]['Enums']["source_kind"],"last_changed_at"?: string | null,"last_checked_at"?: string | null,"last_modified"?: string | null,"program_id"?: string,"rights_note"?: string | null,"url"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "program_sources_program_id_fkey"
+      columns: ["program_id"]
+isOneToOne: false
+      referencedRelation: "program_cards"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "program_sources_program_id_fkey"
       columns: ["program_id"]
 isOneToOne: false
       referencedRelation: "programs"
@@ -368,6 +504,26 @@ isOneToOne: false
       columns: ["source_id"]
 isOneToOne: false
       referencedRelation: "sources"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"reminder_log": {
+                  Row: {
+                    "application_id": string,"days_before": number,"due_at": string,"id": string,"sent_at": string,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "application_id": string,"days_before": number,"due_at": string,"id"?: string,"sent_at"?: string,"user_id": string
+                  }
+                  Update: {
+                    "application_id"?: string,"days_before"?: number,"due_at"?: string,"id"?: string,"sent_at"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "reminder_log_application_id_fkey"
+      columns: ["application_id"]
+isOneToOne: false
+      referencedRelation: "applications"
       referencedColumns: ["id"]
     }
                   ]
@@ -506,11 +662,28 @@ isOneToOne: false
 "confirm_parental_consent":
 { Args: { "p_policy_version": string,"p_token": string }; Returns: boolean
                            },
+"credit_balance":
+{ Args: { "p_uid"?: string }; Returns: number
+                           },
+"grant_credits":
+{ Args: { "p_amount": number,"p_reason"?: string,"p_user_id": string }; Returns: undefined
+                           },
+"has_consent":
+{ Args: { "p_kind": Database["public"]['Enums']["consent_kind"],"p_uid": string }; Returns: boolean
+                           },
 "is_admin":
 { Args: Record<PropertyKey, never>; Returns: boolean
                            },
 "is_operator":
 { Args: Record<PropertyKey, never>; Returns: boolean
+                           },
+"notifier_recipients":
+{ Args: Record<PropertyKey, never>; Returns: {
+              "email": string,"reminder_days": (number)[],"user_id": string
+            }[]
+                           },
+"notify_program_watchers":
+{ Args: { "p_body": string,"p_program_id": string,"p_title": string }; Returns: number
                            },
 "parental_consent_age":
 { Args: { "p_country": string }; Returns: number
@@ -529,6 +702,9 @@ isOneToOne: false
                            },
 "request_parental_consent":
 { Args: { "p_parent_email": string,"p_token_hash": string }; Returns: string
+                           },
+"resolve_fact_report":
+{ Args: { "p_accepted": boolean,"p_credits"?: number,"p_report_id": string }; Returns: undefined
                            },
 "search_programs":
 { Args: { "p_countries"?: (string)[],"p_delivery"?: (Database["public"]['Enums']["delivery_mode"])[],"p_fields"?: (string)[],"p_levels"?: (Database["public"]['Enums']["program_level"])[],"p_limit"?: number,"p_offset"?: number,"p_query"?: string }; Returns: {
@@ -562,10 +738,15 @@ isOneToOne: false
         to: "program_cards"
         isOneToOne: false
         isSetofReturn: true
-      } }
+      } },
+"verification_demand":
+{ Args: { "p_limit"?: number }; Returns: {
+              "facts_unverified": number,"next_deadline": string,"program_id": string,"shortlists": number
+            }[]
+                           }
           }
           Enums: {
-            "age_band": "under_13"|"age_13_15"|"age_16_17"|"adult","applicant_category": "all"|"domestic"|"international"|"eu_eea"|"uk_home","application_status": "shortlisted"|"preparing"|"submitted"|"decided"|"withdrawn","consent_kind": "terms"|"privacy"|"parental"|"ai_processing"|"outcomes_research"|"marketing","consent_state": "not_required"|"pending_parental"|"granted"|"revoked","cost_basis": "per_credit"|"per_term"|"per_year"|"per_month"|"total"|"one_off","cost_kind": "tuition"|"fees"|"insurance"|"living"|"application_fee"|"other","coverage_tier": "listed"|"extracted"|"verified","credit_system": "us_credit"|"ects"|"uk_cats"|"other","date_precision": "exact_time"|"date"|"month","deadline_kind": "application"|"priority"|"funding"|"scholarship"|"documents"|"deposit","delivery_mode": "on_campus"|"online"|"hybrid","exam_kind": "ielts_academic"|"ielts_ukvi"|"toefl_ibt"|"toefl_ibt_home"|"pte_academic"|"duolingo"|"cambridge_c1_c2"|"testdaf"|"dsh"|"goethe"|"delf_dalf"|"tcf"|"gre"|"gmat"|"sat"|"act","fact_status": "verified"|"unverified"|"conflicting"|"unknown","fact_subject": "requirement"|"deadline"|"cost_item","owning_system": "direct"|"ucas"|"uni_assist"|"common_app"|"ouac"|"uac"|"cao"|"other","program_level": "foundation"|"diploma"|"bachelor"|"master"|"doctorate","requirement_kind": "entry_qualification"|"language_test"|"admissions_test"|"prerequisite"|"recommendation_letters"|"statement"|"portfolio"|"interview"|"other","review_state": "pending"|"approved"|"rejected"|"superseded"|"auto_rejected","signup_interest": "verified_tracker"|"writing_coach","test_policy": "required"|"recommended"|"optional"|"not_accepted"|"waived_conditional"|"unknown"|"conflicting","verification_method": "human_review"|"seed_manual"|"official_register"|"automated_extraction"
+            "age_band": "under_13"|"age_13_15"|"age_16_17"|"adult","applicant_category": "all"|"domestic"|"international"|"eu_eea"|"uk_home","application_status": "shortlisted"|"preparing"|"submitted"|"decided"|"withdrawn","consent_kind": "terms"|"privacy"|"parental"|"ai_processing"|"outcomes_research"|"marketing"|"agency_sharing","consent_state": "not_required"|"pending_parental"|"granted"|"revoked","cost_basis": "per_credit"|"per_term"|"per_year"|"per_month"|"total"|"one_off","cost_kind": "tuition"|"fees"|"insurance"|"living"|"application_fee"|"other","coverage_tier": "listed"|"extracted"|"verified","credit_system": "us_credit"|"ects"|"uk_cats"|"other","date_precision": "exact_time"|"date"|"month","deadline_kind": "application"|"priority"|"funding"|"scholarship"|"documents"|"deposit","decision": "admitted"|"rejected"|"waitlisted"|"withdrawn"|"deferred","delivery_mode": "on_campus"|"online"|"hybrid","exam_kind": "ielts_academic"|"ielts_ukvi"|"toefl_ibt"|"toefl_ibt_home"|"pte_academic"|"duolingo"|"cambridge_c1_c2"|"testdaf"|"dsh"|"goethe"|"delf_dalf"|"tcf"|"gre"|"gmat"|"sat"|"act","fact_status": "verified"|"unverified"|"conflicting"|"unknown","fact_subject": "requirement"|"deadline"|"cost_item","notification_kind": "fact_changed"|"reminder"|"report_resolved"|"agency","owning_system": "direct"|"ucas"|"uni_assist"|"common_app"|"ouac"|"uac"|"cao"|"other","program_level": "foundation"|"diploma"|"bachelor"|"master"|"doctorate","requirement_kind": "entry_qualification"|"language_test"|"admissions_test"|"prerequisite"|"recommendation_letters"|"statement"|"portfolio"|"interview"|"other","review_state": "pending"|"approved"|"rejected"|"superseded"|"auto_rejected","signup_interest": "verified_tracker"|"writing_coach","source_kind": "course"|"admissions"|"requirements"|"international"|"fees"|"deadlines","test_policy": "required"|"recommended"|"optional"|"not_accepted"|"waived_conditional"|"unknown"|"conflicting","verification_method": "human_review"|"seed_manual"|"official_register"|"automated_extraction"
           }
           CompositeTypes: {
             [_ in never]: never
@@ -681,7 +862,7 @@ export type CompositeTypes<
 export const Constants = {
   "public": {
           Enums: {
-            "age_band": ["under_13", "age_13_15", "age_16_17", "adult"],"applicant_category": ["all", "domestic", "international", "eu_eea", "uk_home"],"application_status": ["shortlisted", "preparing", "submitted", "decided", "withdrawn"],"consent_kind": ["terms", "privacy", "parental", "ai_processing", "outcomes_research", "marketing"],"consent_state": ["not_required", "pending_parental", "granted", "revoked"],"cost_basis": ["per_credit", "per_term", "per_year", "per_month", "total", "one_off"],"cost_kind": ["tuition", "fees", "insurance", "living", "application_fee", "other"],"coverage_tier": ["listed", "extracted", "verified"],"credit_system": ["us_credit", "ects", "uk_cats", "other"],"date_precision": ["exact_time", "date", "month"],"deadline_kind": ["application", "priority", "funding", "scholarship", "documents", "deposit"],"delivery_mode": ["on_campus", "online", "hybrid"],"exam_kind": ["ielts_academic", "ielts_ukvi", "toefl_ibt", "toefl_ibt_home", "pte_academic", "duolingo", "cambridge_c1_c2", "testdaf", "dsh", "goethe", "delf_dalf", "tcf", "gre", "gmat", "sat", "act"],"fact_status": ["verified", "unverified", "conflicting", "unknown"],"fact_subject": ["requirement", "deadline", "cost_item"],"owning_system": ["direct", "ucas", "uni_assist", "common_app", "ouac", "uac", "cao", "other"],"program_level": ["foundation", "diploma", "bachelor", "master", "doctorate"],"requirement_kind": ["entry_qualification", "language_test", "admissions_test", "prerequisite", "recommendation_letters", "statement", "portfolio", "interview", "other"],"review_state": ["pending", "approved", "rejected", "superseded", "auto_rejected"],"signup_interest": ["verified_tracker", "writing_coach"],"test_policy": ["required", "recommended", "optional", "not_accepted", "waived_conditional", "unknown", "conflicting"],"verification_method": ["human_review", "seed_manual", "official_register", "automated_extraction"]
+            "age_band": ["under_13", "age_13_15", "age_16_17", "adult"],"applicant_category": ["all", "domestic", "international", "eu_eea", "uk_home"],"application_status": ["shortlisted", "preparing", "submitted", "decided", "withdrawn"],"consent_kind": ["terms", "privacy", "parental", "ai_processing", "outcomes_research", "marketing", "agency_sharing"],"consent_state": ["not_required", "pending_parental", "granted", "revoked"],"cost_basis": ["per_credit", "per_term", "per_year", "per_month", "total", "one_off"],"cost_kind": ["tuition", "fees", "insurance", "living", "application_fee", "other"],"coverage_tier": ["listed", "extracted", "verified"],"credit_system": ["us_credit", "ects", "uk_cats", "other"],"date_precision": ["exact_time", "date", "month"],"deadline_kind": ["application", "priority", "funding", "scholarship", "documents", "deposit"],"decision": ["admitted", "rejected", "waitlisted", "withdrawn", "deferred"],"delivery_mode": ["on_campus", "online", "hybrid"],"exam_kind": ["ielts_academic", "ielts_ukvi", "toefl_ibt", "toefl_ibt_home", "pte_academic", "duolingo", "cambridge_c1_c2", "testdaf", "dsh", "goethe", "delf_dalf", "tcf", "gre", "gmat", "sat", "act"],"fact_status": ["verified", "unverified", "conflicting", "unknown"],"fact_subject": ["requirement", "deadline", "cost_item"],"notification_kind": ["fact_changed", "reminder", "report_resolved", "agency"],"owning_system": ["direct", "ucas", "uni_assist", "common_app", "ouac", "uac", "cao", "other"],"program_level": ["foundation", "diploma", "bachelor", "master", "doctorate"],"requirement_kind": ["entry_qualification", "language_test", "admissions_test", "prerequisite", "recommendation_letters", "statement", "portfolio", "interview", "other"],"review_state": ["pending", "approved", "rejected", "superseded", "auto_rejected"],"signup_interest": ["verified_tracker", "writing_coach"],"source_kind": ["course", "admissions", "requirements", "international", "fees", "deadlines"],"test_policy": ["required", "recommended", "optional", "not_accepted", "waived_conditional", "unknown", "conflicting"],"verification_method": ["human_review", "seed_manual", "official_register", "automated_extraction"]
           }
         }
 } as const
