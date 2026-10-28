@@ -17,6 +17,7 @@
         "city": { "type": "string" },
         "region": { "type": "string", "pattern": "^[A-Z0-9]{1,3}$" },
         "official_domain": { "type": "string" },
+        "extra_official_domains": { "type": "array", "items": { "type": "string" } },
         "ids": {
           "type": "object",
           "additionalProperties": false,

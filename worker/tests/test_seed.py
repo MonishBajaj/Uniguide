@@ -3,7 +3,14 @@ from pathlib import Path
 
 import pytest
 
-from uniguide_worker.seed.loader import PLACEHOLDER_ROOT, SEED_ROOT, SeedError, check_placeholders, read_seed_files
+from uniguide_worker.seed.loader import (
+    PLACEHOLDER_ROOT,
+    SEED_ROOT,
+    SeedError,
+    check_placeholders,
+    check_sources,
+    read_seed_files,
+)
 
 SEEDS = PLACEHOLDER_ROOT
 
@@ -63,3 +70,44 @@ def test_repository_real_folder_holds_no_placeholders() -> None:
 def test_read_seed_files_reads_several_roots() -> None:
     both = read_seed_files(SEED_ROOT, PLACEHOLDER_ROOT)
     assert len(both) == len(read_seed_files(SEED_ROOT)) + len(read_seed_files(PLACEHOLDER_ROOT))
+
+
+def _doc(official_domain: str | None, url: str, extra: list[str] | None = None) -> tuple[Path, dict]:
+    inst: dict = {"name": "X University", "country": "GB"}
+    if official_domain:
+        inst["official_domain"] = official_domain
+    if extra:
+        inst["extra_official_domains"] = extra
+    fact = {"subject": "deadline", "fields": {}, "source_url": url}
+    doc = {"institution": inst, "program": {"slug": "x"}, "cycles": [{"label": "2027-autumn", "facts": [fact]}]}
+    return Path("courses/gb/x.yaml"), doc
+
+
+def test_blocked_aggregator_sources_are_rejected() -> None:
+    with pytest.raises(SeedError, match=r"yocket\.com"):
+        check_sources([_doc("uni.ac.uk", "https://yocket.com/uni/msc")])
+
+
+def test_sources_off_the_official_domain_are_rejected() -> None:
+    with pytest.raises(SeedError, match="not an official domain"):
+        check_sources([_doc("uni.ac.uk", "https://other.edu/msc")])
+
+
+def test_real_files_need_an_official_domain() -> None:
+    with pytest.raises(SeedError, match="official_domain"):
+        check_sources([_doc(None, "https://uni.ac.uk/msc")])
+
+
+def test_subdomains_and_declared_domains_pass() -> None:
+    check_sources([_doc("uni.ac.uk", "https://finance.uni.ac.uk/fees")])
+    check_sources([_doc("uni.ac.uk", "https://www.gov.uk/student-visa", extra=["gov.uk"])])
+
+
+def test_lookalike_domains_do_not_pass() -> None:
+    with pytest.raises(SeedError):
+        check_sources([_doc("uni.ac.uk", "https://fakeuni.ac.uk/msc")])
+
+
+def test_placeholders_are_skipped_by_the_source_check() -> None:
+    path, doc = _doc(None, "https://x.example.org/p")
+    check_sources([(path, {**doc, "placeholder": True})])

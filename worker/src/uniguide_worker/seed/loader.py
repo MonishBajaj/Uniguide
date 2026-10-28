@@ -14,6 +14,7 @@ from dataclasses import dataclass, field
 from datetime import date, time
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlsplit
 from uuid import UUID
 
 import jsonschema
@@ -22,6 +23,7 @@ from psycopg.types.json import Jsonb
 
 from ..config import REPO_ROOT
 from ..db import Connection
+from ..fetch.fetcher import is_blocked
 from ..proposals import deadline_proposal
 from ..validate.checks import CycleInfo
 
@@ -63,6 +65,34 @@ def check_placeholders(docs: list[tuple[Path, dict[str, Any]]], *, hosted: bool)
         placeholders = [str(p) for p, d in docs if d.get("placeholder")]
         if placeholders:
             raise SeedError("Refusing to load placeholder courses into a hosted database: " + ", ".join(placeholders))
+
+
+def _host_matches(host: str, domain: str) -> bool:
+    domain = domain.lower().lstrip(".")
+    return host == domain or host.endswith("." + domain)
+
+
+def check_sources(docs: list[tuple[Path, dict[str, Any]]]) -> None:
+    """Real files cite only the institution's official domains, never an aggregator."""
+    problems: list[str] = []
+    for path, doc in docs:
+        if doc.get("placeholder"):
+            continue
+        inst = doc["institution"]
+        if not inst.get("official_domain"):
+            problems.append(f"{path}: institution needs official_domain")
+            continue
+        allowed = [inst["official_domain"], *inst.get("extra_official_domains", [])]
+        for cycle in doc["cycles"]:
+            for fact in cycle["facts"]:
+                url = fact["source_url"]
+                host = (urlsplit(url).hostname or "").lower()
+                if is_blocked(url):
+                    problems.append(f"{path}: {host} is a blocked source ({url})")
+                elif not any(_host_matches(host, d) for d in allowed):
+                    problems.append(f"{path}: {host} is not an official domain ({url})")
+    if problems:
+        raise SeedError("; ".join(problems))
 
 
 def _seed_key(slug: str, cycle: str, fact: dict[str, Any]) -> str:
@@ -196,6 +226,7 @@ def _fact_fields(
 def load(conn: Connection, roots: Sequence[Path], *, hosted: bool, publish_placeholders: bool = False) -> SeedReport:
     docs = read_seed_files(*roots)
     check_placeholders(docs, hosted=hosted)
+    check_sources(docs)
     if hosted and publish_placeholders:
         raise SeedError("--publish-placeholders is for local development only")
 
