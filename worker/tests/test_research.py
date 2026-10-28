@@ -1,11 +1,12 @@
 import math
 import random
+from typing import Any
 
 from uniguide_worker.research import admission
 from uniguide_worker.research.outcomes import build_report
 
 
-def synthetic(n: int, seed: int = 7) -> list[dict]:
+def synthetic(n: int, seed: int = 7) -> list[dict[str, Any]]:
     """Outcomes where a better grade (on either scale) and a less selective course raise the odds."""
     rng = random.Random(seed)
     programs = [(f"p{i}", "GB" if i % 2 else "DE", rng.gauss(0, 1.0)) for i in range(12)]
