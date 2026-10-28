@@ -299,6 +299,20 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"email_preferences": {
+                  Row: {
+                    "digest": boolean,"tips": boolean,"unsubscribe_token": string,"updated_at": string,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "digest"?: boolean,"tips"?: boolean,"unsubscribe_token"?: string,"updated_at"?: string,"user_id": string
+                  }
+                  Update: {
+                    "digest"?: boolean,"tips"?: boolean,"unsubscribe_token"?: string,"updated_at"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
                 },"entitlements": {
                   Row: {
                     "amount": number,"created_at": string,"currency": string,"ends_at": string,"external_id": string,"id": string,"kind": string,"provider": string,"refunded_at": string | null,"starts_at": string,"user_id": string
@@ -1201,6 +1215,9 @@ isOneToOne: false
         isOneToOne: false
         isSetofReturn: true
       } },
+"unsubscribe":
+{ Args: { "p_kind": string,"p_token": string }; Returns: boolean
+                           },
 "verification_demand":
 { Args: { "p_limit"?: number }; Returns: {
               "facts_unverified": number,"next_deadline": string,"program_id": string,"shortlists": number
