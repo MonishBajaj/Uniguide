@@ -2,7 +2,7 @@
 
 Source: the Feature Bible (100 features), `BACKLOG.md`, and what the running app contains (checked October 2026). IDs match the Bible; `X` rows are work from the backlog or this session that the Bible does not number.
 
-**Totals (103 rows):** 17 built · 17 partly built · 49 to build · 6 need an owner decision · 4 deferred to year 2 · 10 cut on purpose.
+**Totals (103 rows):** 20 built · 17 partly built · 46 to build · 6 need an owner decision · 4 deferred to year 2 · 10 cut on purpose.
 
 Status key: **Built** works today · **Partial** exists, listed gap remains · **To build** not started · **Decision** the owner must settle first · **Deferred** year 2 · **Cut** decided against (BACKLOG). Size: S about 2 days, M about a week, L two weeks or more. Priority: P0 needed for a real launch, P1 next, P2 later, P3 only if time allows.
 
@@ -98,11 +98,11 @@ The student app works end to end behind sign-in, but the catalogue holds six pla
 | P0 | X4 | Hosted setup: Supabase, Vercel Pro, role passwords, Actions secrets | Partial | M | `docs/SETUP.md` warns against `AUTH_DISABLED` on hosted sites. Missing: the setup itself (needs the owner's accounts). |
 | P0 | X5 | Run Playwright in CI with `AUTH_DISABLED=false` | Built | S | The e2e suite signs in through the login page. CI already runs with sign-in on; locally, Playwright's own server now forces `AUTH_DISABLED=false`, and a `globalSetup` stops the run when a demo-mode server is reused. |
 | P1 | 14.1 | Email lifecycle | Partial | M | Reminders and change emails built. Missing: welcome series, weekly digest, re-engagement. |
-| P1 | 2.6 | English proficiency guide | To build | M | Which test, per-course minimums, waivers. Requirement rows already hold the data. |
+| P1 | 2.6 | English proficiency guide | Built | M | `/english-tests`: each exam and version with the courses that accept it and their published minimums; no score conversion between tests. |
 | P1 | 3.10 | Country comparison tool | To build | M | Side-by-side countries. Data from `country_rules` plus new sourced rows. |
-| P1 | 3.11 | Global deadline calendar | To build | M | List or month view of deadlines across courses. Heatmap is cut. |
-| P1 | 3.5 | Course detail pages | Partial | M | Facts, sources, quotes, requirements, per-intake pages. Missing: campus living, career outcomes, similar courses. |
-| P1 | 4.4 | Fee waiver database | To build | M | Sourced waiver programmes per university, plus a request-email helper. |
+| P1 | 3.11 | Global deadline calendar | Built | M | `/deadlines`: upcoming application deadlines by month in each institution's time zone, with country, level and intake filters. |
+| P1 | 3.5 | Course detail pages | Partial | M | Similar courses added. Missing: campus living (7.3) and career outcomes (13.3). |
+| P1 | 4.4 | Fee waiver database | Built | M | Fee waivers are a fourth fact subject (`fee_waivers`), loaded from seed files and shown on course pages; `course_fee_waivers()` returns them. A request-email helper and model extraction are not built. |
 | P1 | 9.1 | Visa guides | Partial | M | `/visas` links only to government pages, with country rules (APS). Add sourced step checklists. |
 | P1 | 9.2 | Visa financial requirement calculator | To build | M | Needs verified amounts in `country_rules`. |
 | P1 | 9.4 | Post-graduation pathways | To build | M | Sourced work-visa routes per country. |
