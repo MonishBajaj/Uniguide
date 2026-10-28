@@ -2,15 +2,30 @@
 
 Only official sources. Never aggregators (Yocket, Studyportals, Leverage Edu, ...), rankings sites (QS, THE, US News), forums or GradCafe, and nothing behind a login. The fetcher enforces a blocklist and robots.txt.
 
+## Registers and open data
+
 | Source | Country | Used for | Licence / terms | Status in code |
 |---|---|---|---|---|
-| [CRICOS register](https://data.gov.au/data/dataset/cricos) (data.gov.au) | AU | Institutions and courses open to student-visa holders (Listed) | CC BY 2.5 AU, attribute the Department of Education | `import au-cricos`, verified against the live export (Oct 2026): 1,105 providers, 18,607 tertiary courses |
-| [College Scorecard API](https://collegescorecard.ed.gov/data/documentation/) | US | Institutions and fields of study by credential (Listed) | Public domain; api.data.gov key, 1,000 requests/hour default | `import us-scorecard`. Written to the documented response shape; **confirm against a live response with your key** before a full import |
+| [CRICOS register](https://data.gov.au/data/dataset/cricos) (data.gov.au) | AU | Institutions and courses open to student-visa holders (Listed); register tuition as unverified proposals | CC BY 2.5 AU, attribute the Department of Education | `import au-cricos [--with-fees]`, checked against the live export (Oct 2026): 1,105 providers, 18,607 tertiary courses |
+| [DUO, overview of accredited programmes](https://onderwijsdata.duo.nl/) | NL | Accredited HBO and WO programmes: level, ECTS, language, mode (Listed) | CC BY 4.0, attribute DUO | `import nl-duo`, checked against the live file (Oct 2026): 5,067 current programmes from 6,863 rows |
+| [College Scorecard API](https://collegescorecard.ed.gov/data/documentation/) | US | Institutions and fields of study by credential (Listed), CIP to ISCED-F crosswalk | Public domain; api.data.gov key, 1,000 requests/hour default | `import us-scorecard`. Written to the documented response shape; **confirm against a live response with your key** before a full import (the shared demo key was rate limited during the build) |
 | [Discover Uni dataset](https://www.discoveruni.gov.uk/about-our-data/) | GB | Undergraduate courses (Listed) | Open Government Licence v3.0 | `import uk-discover-uni` from downloaded files. **Confirm the column names** against the current year's specification; the importer fails loudly on a mismatch |
 | [Hochschulkompass](https://www.hochschulkompass.de/) (HRK) | DE | Degree programmes | Reuse needs a partner export from HRK | Stub until access is granted. Do not scrape |
-| [ROR](https://ror.org/) | All | Institution identifiers | CC0 | Column exists (`institutions.ror_id`); importer in backlog |
-| [OpenAlex](https://openalex.org/) | All | Faculty and research for research degrees | CC0 | Weeks 7–12 |
+| [ROR](https://ror.org/) | All | Institution identifiers | CC0 | `import ror-match`: accepts only ROR's own high-confidence match in the same country |
+| [OpenAlex](https://openalex.org/) | All | Faculty, topics and recent works for research degrees | CC0; API key for regular use | `import openalex-faculty`. Written to the documented shape; **confirm against a live response** (the free budget was exhausted during the build) |
 | University pages | All | Requirements, fees, deadlines (Extracted, then Verified) | Copyright of the institution | Facts, short evidence quotes and content hashes only; never page copies |
+
+## Countries without a usable register
+
+| Country | Why | How courses arrive |
+|---|---|---|
+| France | The national open data API reset connections during the build | Extraction from official pages, added through the source register |
+| New Zealand | The official course catalogue sits behind a bot challenge | Extraction from official pages |
+| Singapore, Japan, South Korea, UAE, Qatar (Wave 3) | No open course register found | Extraction, reviewed by per-country verifiers |
+
+## Visa and country rules
+
+`country_rules` links only to government pages (or government-run study portals where the visa page refuses automated checks) and stores a short quote for rules such as the APS certificate. Gulf visa links are left for a reviewer to add from the admin rules page once the current official page has been checked.
 
 ## Rules for fetching
 

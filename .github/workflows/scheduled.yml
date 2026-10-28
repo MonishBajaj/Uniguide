@@ -1,0 +1,74 @@
+name: Scheduled jobs
+
+# Each job runs only when its connection secret is set (Settings > Secrets and variables > Actions),
+# so forks and fresh clones skip them quietly. See docs/SETUP.md, "Scheduled jobs".
+on:
+  schedule:
+    - cron: "7 * * * *"     # notify: hourly, deadline reminders and update emails
+    - cron: "17 3 * * *"    # monitor: daily, re-check official pages by demand
+    - cron: "23 4 * * 1"    # research: weekly, outcome report and admission model gate
+  workflow_dispatch:
+    inputs:
+      job:
+        description: Job to run
+        type: choice
+        options: [notify, monitor, research]
+
+concurrency:
+  group: scheduled-${{ github.event.schedule || inputs.job }}
+  cancel-in-progress: false
+
+jobs:
+  notify:
+    if: (github.event.schedule == '7 * * * *' || inputs.job == 'notify')
+    runs-on: ubuntu-latest
+    env:
+      NOTIFIER_DATABASE_URL: ${{ secrets.NOTIFIER_DATABASE_URL }}
+      RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+      EMAIL_FROM: ${{ vars.EMAIL_FROM }}
+      SITE_URL: ${{ vars.SITE_URL }}
+    defaults:
+      run:
+        working-directory: worker
+    steps:
+      - uses: actions/checkout@v4
+        if: env.NOTIFIER_DATABASE_URL != ''
+      - uses: astral-sh/setup-uv@v5
+        if: env.NOTIFIER_DATABASE_URL != ''
+      - run: uv sync --frozen && uv run uniguide-worker notify
+        if: env.NOTIFIER_DATABASE_URL != ''
+
+  monitor:
+    if: (github.event.schedule == '17 3 * * *' || inputs.job == 'monitor')
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      WORKER_DATABASE_URL: ${{ secrets.WORKER_DATABASE_URL }}
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      CRAWLER_CONTACT: ${{ vars.CRAWLER_CONTACT }}
+    defaults:
+      run:
+        working-directory: worker
+    steps:
+      - uses: actions/checkout@v4
+        if: env.WORKER_DATABASE_URL != '' && env.ANTHROPIC_API_KEY != ''
+      - uses: astral-sh/setup-uv@v5
+        if: env.WORKER_DATABASE_URL != '' && env.ANTHROPIC_API_KEY != ''
+      - run: uv sync --frozen && uv run uniguide-worker monitor --limit 50
+        if: env.WORKER_DATABASE_URL != '' && env.ANTHROPIC_API_KEY != ''
+
+  research:
+    if: (github.event.schedule == '23 4 * * 1' || inputs.job == 'research')
+    runs-on: ubuntu-latest
+    env:
+      ANALYST_DATABASE_URL: ${{ secrets.ANALYST_DATABASE_URL }}
+    defaults:
+      run:
+        working-directory: worker
+    steps:
+      - uses: actions/checkout@v4
+        if: env.ANALYST_DATABASE_URL != ''
+      - uses: astral-sh/setup-uv@v5
+        if: env.ANALYST_DATABASE_URL != ''
+      - run: uv sync --frozen && uv run uniguide-worker research outcomes && uv run uniguide-worker research train-admission
+        if: env.ANALYST_DATABASE_URL != ''

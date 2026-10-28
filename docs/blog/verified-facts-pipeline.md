@@ -13,10 +13,10 @@ Every requirement, deadline and cost is a typed row (not a JSON blob) with its o
 Every change arrives first as a row in an append-only `fact_versions` log. Only three Postgres functions change what students see:
 
 - `publish_extracted_version` shows a clean extraction as **unverified** (the "Extracted" tier). It refuses to overwrite anything a person has verified, and flags the disagreement instead.
-- `promote_fact_version` marks a fact **verified** or **conflicting**. Only admins can call it.
+- `promote_fact_version` marks a fact **verified** or **conflicting**. Only admins, and verifiers for that course's country, can call it.
 - `reject_fact_version` takes an extraction down.
 
-Row-level security covers every table. A pgTAP test fails the build if a table is added without it, and 130 database tests check cross-user isolation, consent gates and role limits. The extraction worker connects as its own Postgres role and cannot read any student data.
+Row-level security covers every table. A pgTAP test fails the build if a table is added without it, and 180 database tests check cross-user isolation, consent gates and role limits. The extraction worker connects as its own Postgres role and cannot read any student data.
 
 ## From page to proposal
 
