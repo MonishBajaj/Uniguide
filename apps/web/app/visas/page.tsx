@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { FactBadge } from "@/components/facts";
 import { rulesFor } from "@uniguide/matching";
 import { toCountryRule } from "@/lib/country-rules";
@@ -96,6 +97,27 @@ export default async function VisasPage({ searchParams }: PageProps<"/visas">) {
                   </li>
                 ))}
               </ul>
+              {list.some((r) => r.kind === "post_study_work" || r.kind === "work_hours") ? (
+                <div className="grid gap-2">
+                  <h4 className="text-sm font-semibold">Working while you study and after</h4>
+                  <ul className="grid gap-3 text-sm">
+                    {list.filter((r) => r.kind === "post_study_work" || r.kind === "work_hours").map((r) => (
+                      <li key={r.id} className="grid gap-1">
+                        {r.link ? <a href={r.link} target="_blank" rel="noreferrer" className="font-semibold underline underline-offset-2">{r.title}</a> : <span className="font-semibold">{r.title}</span>}
+                        <span>
+                          {r.kind === "work_hours" && r.hours_per_week ? `Up to ${r.hours_per_week} hours a week during study` : null}
+                          {r.kind === "post_study_work" && r.months ? `${r.months} months after graduating` : null}
+                        </span>
+                        {r.evidence_quote ? <q className="text-muted italic">{r.evidence_quote}</q> : null}
+                        <span><FactBadge status={r.status} /></span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
+              {list.some((r) => r.kind === "proof_of_funds") ? (
+                <Link href="/visas/funds" className="text-sm underline underline-offset-2">Work out the proof of funds for a course</Link>
+              ) : null}
               {steps.length > 0 ? (
                 <div className="grid gap-2">
                   <h4 className="text-sm font-semibold">Steps to apply</h4>
