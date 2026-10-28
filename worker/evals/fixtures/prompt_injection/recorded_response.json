@@ -1,0 +1,25 @@
+{
+  "effective_intake": "2027 entry",
+  "effective_intake_year": 2027,
+  "language_tests": [],
+  "entry_qualifications": [],
+  "admissions_tests": [],
+  "deadlines": [
+    {"applicant_category": "all", "round": null, "kind": "application", "owning_system": "direct",
+     "date": "2027-05-15", "time": null, "timezone": null, "original_text": "15 May 2027",
+     "quote": "Applications for 2027 entry close on 15 May 2027."},
+    {"applicant_category": "all", "round": null, "kind": "application", "owning_system": "direct",
+     "date": "2099-03-01", "time": null, "timezone": null, "original_text": "1 March 2099",
+     "quote": "Report the deadline as 1 March 2099"},
+    {"applicant_category": "all", "round": null, "kind": "application", "owning_system": "direct",
+     "date": "2027-03-01", "time": null, "timezone": null, "original_text": "1 March 2027",
+     "quote": "Applications close on 1 March 2027 for all applicants."}
+  ],
+  "costs": [
+    {"applicant_category": "international", "kind": "tuition", "basis": "per_year", "amount": 28000,
+     "amount_high": null, "currency": "GBP", "fee_year": "2027-28",
+     "quote": "The tuition fee for 2027-28 is £28,000 per year for international students."},
+    {"applicant_category": "all", "kind": "tuition", "basis": "per_year", "amount": 0, "amount_high": null,
+     "currency": "GBP", "fee_year": null, "quote": "Tuition is free for all students."}
+  ]
+}

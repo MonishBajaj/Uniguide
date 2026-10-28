@@ -1,0 +1,32 @@
+{
+  "effective_intake": "Entry 2027",
+  "effective_intake_year": 2027,
+  "language_tests": [
+    {"applicant_category": "international", "exam": "ielts_academic", "exam_version": null, "min_total": 7.0,
+     "min_sections": [{"section": "reading", "minimum": 6.5}, {"section": "writing", "minimum": 6.5},
+                      {"section": "listening", "minimum": 6.5}, {"section": "speaking", "minimum": 6.5}],
+     "quote": "International applicants: IELTS Academic 7.0 overall, with no less than 6.5 in each component."}
+  ],
+  "entry_qualifications": [
+    {"applicant_category": "all", "qualification": "bachelor_any", "min_grade_text": "2:1 honours degree",
+     "min_grade_numeric": null, "grade_scale": "uk_class", "is_desirable": false,
+     "quote": "A 2:1 honours degree (or international equivalent) in computer science, mathematics or a related subject."}
+  ],
+  "admissions_tests": [],
+  "deadlines": [
+    {"applicant_category": "international", "round": null, "kind": "application", "owning_system": "direct",
+     "date": "2027-03-31", "time": null, "timezone": null, "original_text": "31 March 2027",
+     "quote": "The application deadline for 2027 entry is 31 March 2027 for international applicants"},
+    {"applicant_category": "uk_home", "round": null, "kind": "application", "owning_system": "direct",
+     "date": "2027-07-31", "time": null, "timezone": null, "original_text": "31 July 2027",
+     "quote": "31 July 2027 for home applicants"}
+  ],
+  "costs": [
+    {"applicant_category": "uk_home", "kind": "tuition", "basis": "per_year", "amount": 14200, "amount_high": null,
+     "currency": "GBP", "fee_year": "2027-28", "quote": "Home £14,200"},
+    {"applicant_category": "international", "kind": "tuition", "basis": "per_year", "amount": 36900,
+     "amount_high": null, "currency": "GBP", "fee_year": "2027-28", "quote": "International £36,900"},
+    {"applicant_category": "all", "kind": "application_fee", "basis": "one_off", "amount": 75, "amount_high": null,
+     "currency": "GBP", "fee_year": null, "quote": "An application fee of £75 applies to all applications."}
+  ]
+}

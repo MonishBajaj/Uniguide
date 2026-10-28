@@ -1,0 +1,41 @@
+# PLACEHOLDER: fictional institution and figures, for format and local development only.
+placeholder: true
+institution:
+  name: Example Bay University (placeholder)
+  country: IE
+  city: Baytown
+  official_domain: examplebay.example.org
+program:
+  slug: example-bay-bsc-business
+  title: BSc Business and Analytics
+  level: bachelor
+  isced_level: 6
+  isced_f: "0413"
+  field_label: Business and Management
+  delivery_mode: on_campus
+  duration_months: 48
+  official_url: https://examplebay.example.org/ug/business-analytics
+cycles:
+  - label: 2027-september
+    intake_year: 2027
+    intake_term: september
+    starts_on: 2027-09-06
+    facts:
+      - subject: requirement
+        fields: { kind: entry_qualification, applicant_category: international, qualification: a_levels, min_grade_text: "ABB" }
+        source_url: https://examplebay.example.org/ug/international/entry
+        evidence_quote: "A-levels: ABB, including Mathematics."
+        verified_by: placeholder
+        verified_at: 2026-10-28
+      - subject: requirement
+        fields: { kind: language_test, applicant_category: international, exam: duolingo, min_total: 115 }
+        source_url: https://examplebay.example.org/ug/international/english
+        evidence_quote: "Duolingo English Test: minimum overall 115."
+        verified_by: placeholder
+        verified_at: 2026-10-28
+      - subject: deadline
+        fields: { date: 2027-02-01, time: "17:15", timezone: Europe/Dublin, kind: application, owning_system: cao, original_text: "1 February 2027, 5:15pm (CAO)" }
+        source_url: https://examplebay.example.org/ug/apply
+        evidence_quote: "Apply through the CAO by 5:15pm on 1 February 2027."
+        verified_by: placeholder
+        verified_at: 2026-10-28

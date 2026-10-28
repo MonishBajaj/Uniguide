@@ -1,0 +1,7 @@
+cycle: {label: 2027-fall, intake_year: 2027, starts_on: 2027-09-22}
+country: US
+deadlines:
+  - {date: 2026-12-01, kind: priority}
+  - {date: 2027-01-15, kind: application}
+fees:
+  - {kind: tuition, basis: per_credit, base: 2150, currency: USD}

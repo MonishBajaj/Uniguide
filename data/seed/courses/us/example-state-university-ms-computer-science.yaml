@@ -1,0 +1,75 @@
+# PLACEHOLDER: fictional institution and figures, for format and local development only.
+placeholder: true
+institution:
+  name: Example State University (placeholder)
+  country: US
+  city: Springfield
+  official_domain: example-state.example.org
+program:
+  slug: example-state-ms-computer-science
+  title: MS in Computer Science
+  level: master
+  isced_level: 7
+  isced_f: "0613"
+  cip: "11.0701"
+  field_label: Computer Science
+  track: thesis_or_coursework
+  delivery_mode: on_campus
+  duration_months: 18
+  required_credits: 30
+  credit_system: us_credit
+  official_url: https://example-state.example.org/grad/cs-ms
+cycles:
+  - label: 2027-fall
+    intake_year: 2027
+    intake_term: fall
+    starts_on: 2027-08-23
+    facts:
+      - subject: requirement
+        fields: { kind: entry_qualification, applicant_category: all, qualification: bachelor_4yr, min_grade_numeric: 3.0, grade_scale: gpa_4, min_grade_text: "3.0 GPA" }
+        source_url: https://example-state.example.org/grad/cs-ms/admissions
+        evidence_quote: "Applicants should hold a four-year bachelor's degree with a minimum GPA of 3.0."
+        verified_by: placeholder
+        verified_at: 2026-10-28
+      - subject: requirement
+        fields: { kind: language_test, applicant_category: international, exam: toefl_ibt, exam_version: "2026-01", min_total: 4.5 }
+        source_url: https://example-state.example.org/grad/international
+        evidence_quote: "TOEFL iBT (January 2026 format): minimum overall band 4.5."
+        verified_by: placeholder
+        verified_at: 2026-10-28
+      - subject: requirement
+        fields: { kind: language_test, applicant_category: international, exam: ielts_academic, min_total: 7.0 }
+        source_url: https://example-state.example.org/grad/international
+        evidence_quote: "IELTS Academic: minimum overall score of 7.0."
+        verified_by: placeholder
+        verified_at: 2026-10-28
+      - subject: requirement
+        fields: { kind: admissions_test, applicant_category: all, exam: gre, test_policy: optional }
+        source_url: https://example-state.example.org/grad/cs-ms/admissions
+        evidence_quote: "The GRE is optional for Fall 2027 applicants."
+        verified_by: placeholder
+        verified_at: 2026-10-28
+      - subject: deadline
+        fields: { date: 2027-01-15, time: "23:59", timezone: America/New_York, kind: application, owning_system: direct, original_text: "January 15, 11:59 p.m. Eastern" }
+        source_url: https://example-state.example.org/grad/cs-ms/admissions
+        evidence_quote: "Fall 2027 applications are due January 15, 11:59 p.m. Eastern."
+        verified_by: placeholder
+        verified_at: 2026-10-28
+      - subject: deadline
+        fields: { date: 2026-12-15, kind: funding, owning_system: direct, original_text: "December 15 (funding consideration)" }
+        source_url: https://example-state.example.org/grad/cs-ms/admissions
+        evidence_quote: "Apply by December 15 to be considered for assistantships."
+        verified_by: placeholder
+        verified_at: 2026-10-28
+      - subject: cost_item
+        fields: { kind: tuition, basis: per_credit, base: 1450, currency: USD, fee_year: "2027-28", applicant_category: international }
+        source_url: https://example-state.example.org/bursar/tuition
+        evidence_quote: "Graduate tuition (non-resident): $1,450 per credit hour, 2027-28."
+        verified_by: placeholder
+        verified_at: 2026-10-28
+      - subject: cost_item
+        fields: { kind: living, basis: per_month, low: 1300, base: 1600, high: 2000, currency: USD }
+        source_url: https://example-state.example.org/international/cost-of-attendance
+        evidence_quote: "Estimated living expenses: $1,300 to $2,000 per month."
+        verified_by: placeholder
+        verified_at: 2026-10-28
