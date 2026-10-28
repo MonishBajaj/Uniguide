@@ -99,6 +99,8 @@ jobs:
           } > apps/web/.env.local
       - run: pnpm --filter web exec playwright install --with-deps chromium
       - run: pnpm --filter web e2e
+      - name: Demo mode (sign-in switched off)
+        run: pnpm --filter web e2e:demo
       - uses: actions/upload-artifact@v4
         if: failure()
         with:

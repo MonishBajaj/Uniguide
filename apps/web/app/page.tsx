@@ -1,6 +1,9 @@
 import Link from "next/link";
+import { ModePrompt } from "@/components/mode-prompt";
 import { Reveal } from "@/components/reveal";
 import { TaglineReveal } from "@/components/tagline-reveal";
+import { modePrompt } from "@/lib/demo-mode";
+import { AUTH_DISABLED, DEMO_SWITCHER } from "@/lib/env";
 import { createClient } from "@/lib/supabase/server";
 import { WaitlistForm } from "./waitlist-form";
 
@@ -63,11 +66,13 @@ export default async function Home({ searchParams }: PageProps<"/">) {
       typeof params[k] === "string" ? [[k, params[k] as string]] : [],
     ),
   );
+  const prompt = AUTH_DISABLED ? modePrompt(params.from) : null;
   const supabase = await createClient();
   const { count } = await supabase.from("programs").select("id", { count: "exact", head: true });
 
   return (
     <>
+      {prompt ? <ModePrompt prompt={prompt} canSwitch={DEMO_SWITCHER} /> : null}
       <section className="mx-auto max-w-5xl px-6 pt-24 pb-24 text-center">
         <h1 className="hero-heading mx-auto max-w-[680px] text-4xl font-semibold sm:text-5xl lg:text-6xl">
           Course requirements and deadlines, with the source beside every fact
