@@ -22,14 +22,14 @@ export function WaitlistForm({ utm }: { utm: Record<string, string> }) {
 
   if (state?.ok) {
     return (
-      <p role="status" className="rounded-2xl bg-surface p-6 text-lg">
+      <p role="status" className="rounded-2xl border border-border bg-surface p-6 text-lg">
         {state.message}
       </p>
     );
   }
 
   return (
-    <form action={action} className="grid gap-4 rounded-2xl bg-surface p-6" noValidate={false}>
+    <form action={action} className="grid gap-4 rounded-2xl border border-border bg-surface p-6" noValidate={false}>
       {Object.entries(utm).map(([k, v]) => (
         <input key={k} type="hidden" name={k} value={v} />
       ))}

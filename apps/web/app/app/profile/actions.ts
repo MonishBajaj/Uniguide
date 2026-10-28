@@ -6,7 +6,7 @@ import type { Enums } from "@uniguide/db-types";
 import { CURRENCIES, EXAMS, FIELDS, GRADE_SCALES, QUALIFICATIONS } from "@/lib/fields";
 import { POLICY_VERSION } from "@/lib/env";
 import { asJson } from "@/lib/json";
-import { LEVELS, WAVE_1 } from "@/lib/format";
+import { LEVELS, DESTINATIONS } from "@/lib/format";
 import { extractProfile, MAX_CV_CHARS, PROFILE_MODEL, PROFILE_PROMPT_VERSION, type ProfileExtraction } from "@/lib/profile-extract";
 import { getUser } from "@/lib/supabase/server";
 
@@ -25,10 +25,17 @@ const Profile = z.object({
   budget_amount: optionalNumber.refine((v) => v == null || v > 0),
   budget_currency: z.enum(CURRENCIES).nullable(),
   target_levels: z.array(z.enum(LEVELS)),
-  target_countries: z.array(z.enum(WAVE_1)),
+  target_countries: z.array(z.enum(DESTINATIONS)),
   target_fields: z.array(z.enum(Object.keys(FIELDS) as [string, ...string[]])),
   preferred_delivery: z.enum(["on_campus", "online", "hybrid"]).nullable(),
   weights: z.object({ field: z.number(), budget: z.number(), location: z.number(), delivery: z.number() }),
+  reminders_enabled: z.boolean(),
+  reminder_days: z.array(z.coerce.number().int().min(1).max(90)).max(6),
+  research_interests: z.preprocess((v) => (v ? String(v).trim() : null), z.string().max(2000).nullable()),
+  prior_credits: optionalNumber.refine((v) => v == null || v > 0),
+  prior_credit_system: z.enum(["ects", "us_credit", "uk_cats", "other"]).nullable(),
+  class_percentile: optionalNumber.refine((v) => v == null || (Number.isInteger(v) && v >= 1 && v <= 100)),
+  show_bands: z.boolean(),
 });
 
 export async function saveProfile(_prev: FormState, form: FormData): Promise<FormState> {
@@ -49,6 +56,13 @@ export async function saveProfile(_prev: FormState, form: FormData): Promise<For
     target_fields: form.getAll("target_fields"),
     preferred_delivery: orNull("preferred_delivery"),
     weights: { field: weight("field"), budget: weight("budget"), location: weight("location"), delivery: weight("delivery") },
+    reminders_enabled: form.get("reminders_enabled") === "on",
+    reminder_days: form.getAll("reminder_days"),
+    research_interests: form.get("research_interests"),
+    prior_credits: form.get("prior_credits"),
+    prior_credit_system: orNull("prior_credit_system"),
+    class_percentile: form.get("class_percentile"),
+    show_bands: form.get("show_bands") === "on",
   });
   if (!parsed.success) return { ok: false, message: "Some values are not valid. Check numbers are numbers." };
   if (parsed.data.grade_value != null && !parsed.data.grade_scale) {
@@ -60,13 +74,16 @@ export async function saveProfile(_prev: FormState, form: FormData): Promise<For
 
   const { supabase, user } = await getUser();
   if (!user) return { ok: false, message: "Sign in first." };
-  const { preferred_delivery, weights, ...columns } = parsed.data;
+  if (parsed.data.prior_credits != null && !parsed.data.prior_credit_system) {
+    return { ok: false, message: "Choose the credit system of your degree." };
+  }
+  const { preferred_delivery, weights, show_bands, ...columns } = parsed.data;
   const { error } = await supabase
     .from("profiles")
     .update({
       ...columns,
       target_levels: columns.target_levels as Enums<"program_level">[],
-      preferences: asJson({ preferredDelivery: preferred_delivery, weights }),
+      preferences: asJson({ preferredDelivery: preferred_delivery, weights, showBands: show_bands }),
     })
     .eq("user_id", user.id);
   if (error) return failed(error.code);
@@ -223,4 +240,15 @@ export async function applyCvItems(_prev: FormState, form: FormData): Promise<Fo
   }
   revalidatePath("/app/profile");
   return { ok: true, message: "Saved the items you kept." };
+}
+
+export async function setAiConsent(on: boolean) {
+  const { supabase, user } = await getUser();
+  if (!user) return;
+  if (on) {
+    await supabase.from("consents").insert({ user_id: user.id, kind: "ai_processing", policy_version: POLICY_VERSION, method: "checkbox" });
+  } else {
+    await supabase.from("consents").update({ withdrawn_at: new Date().toISOString() }).eq("kind", "ai_processing").is("withdrawn_at", null);
+  }
+  revalidatePath("/app", "layout");
 }

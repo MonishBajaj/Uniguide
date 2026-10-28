@@ -81,9 +81,17 @@ export const COUNTRIES: Record<string, string> = {
   SG: "Singapore",
   JP: "Japan",
   KR: "South Korea",
+  AE: "United Arab Emirates",
+  QA: "Qatar",
 };
 
 export const countryName = (code: string | null) => (code ? (COUNTRIES[code] ?? code) : "");
 
 export const LEVELS = ["foundation", "diploma", "bachelor", "master", "doctorate"] as const;
 export const WAVE_1 = ["US", "GB", "CA", "AU", "DE", "IE"] as const;
+export const WAVE_2 = ["NL", "FR", "NZ"] as const;
+export const WAVE_3 = ["SG", "JP", "KR", "AE", "QA"] as const;
+/** Destinations a student can target, in rollout order. Coverage is deepest in Wave 1. */
+export const DESTINATIONS = [...WAVE_1, ...WAVE_2, ...WAVE_3] as const;
+
+export const isFuture = (iso: string, now = new Date()) => Date.parse(iso) > now.getTime();

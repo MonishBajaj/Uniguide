@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { getUser } from "@/lib/supabase/server";
+import { ensureApplication } from "@/lib/tracker";
 
 export type ShortlistResult = { ok: boolean; message?: string };
 
@@ -14,7 +15,10 @@ export async function addToShortlist(programId: string): Promise<ShortlistResult
     .from("shortlists")
     .upsert({ user_id: user.id, program_id: programId }, { onConflict: "user_id,program_id", ignoreDuplicates: true });
   if (error) return { ok: false, message: error.code === "42501" ? PENDING : "Could not save. Try again." };
+  // Shortlisting also opens a tracker card with its checklist and reminders.
+  await ensureApplication(supabase, user.id, programId);
   revalidatePath("/app/shortlist");
+  revalidatePath("/app/tracker");
   return { ok: true };
 }
 
@@ -37,6 +41,7 @@ export async function mergeLocalShortlist(programIds: string[]): Promise<Shortli
       ignoreDuplicates: true,
     });
   if (error) return { ok: false, message: error.code === "42501" ? PENDING : "Could not save." };
+  for (const id of ids) await ensureApplication(supabase, user.id, id);
   revalidatePath("/app/shortlist");
   return { ok: true };
 }

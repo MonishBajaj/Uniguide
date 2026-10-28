@@ -43,6 +43,12 @@ export interface RequirementFact extends Fact {
   minSections?: Record<string, number> | null;
   testPolicy?: TestPolicy | null;
   isDesirable?: boolean;
+  countRequired?: number | null;
+  wordLimit?: number | null;
+  details?: string | null;
+  /** e.g. "at least 180 ECTS"; compared only on the same credit system. */
+  minCredits?: number | null;
+  creditSystem?: "us_credit" | "ects" | "uk_cats" | "other" | null;
 }
 
 export interface DeadlineFact extends Fact {
@@ -107,6 +113,10 @@ export interface StudentProfile {
   testScores?: TestScore[];
   /** Only aid the student has actually been awarded. Never pass expected or hoped-for aid. */
   awardedAid?: Money[];
+  priorCredits?: number | null;
+  priorCreditSystem?: "us_credit" | "ects" | "uk_cats" | "other" | null;
+  /** Self-reported "top x%" of the home cohort, used only for optional bands. */
+  classPercentile?: number | null;
 }
 
 export interface FxRate {
@@ -128,7 +138,7 @@ export interface MatchContext {
 export type EligibilityResult = "meets" | "does_not_meet" | "needs_clarification";
 
 export interface EligibilityCheck {
-  kind: RequirementFact["kind"] | "deadline";
+  kind: RequirementFact["kind"] | "deadline" | "credits";
   result: EligibilityResult;
   reason: string;
   factIds: string[];

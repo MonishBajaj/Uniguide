@@ -3,6 +3,7 @@ placeholder: true
 institution:
   name: Example Lakes University (placeholder)
   country: CA
+  region: "ON"
   city: Lakeside
   official_domain: examplelakes.example.org
 program:

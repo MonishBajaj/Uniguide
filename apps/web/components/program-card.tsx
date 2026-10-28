@@ -16,7 +16,7 @@ export function ProgramCard({
   children?: React.ReactNode;
 }) {
   return (
-    <article className="flex flex-col gap-3 rounded-2xl bg-surface p-6">
+    <article className="flex flex-col gap-3 rounded-2xl border border-border bg-surface p-6">
       <div className="flex flex-wrap items-center gap-2 text-xs text-muted">
         <TierBadge tier={card.coverage_tier!} />
         <span>{label(card.level)}</span>

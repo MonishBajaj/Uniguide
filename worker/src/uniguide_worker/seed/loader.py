@@ -82,15 +82,16 @@ def _upsert_institution(conn: Connection, inst: dict[str, Any], source_owner_not
         return UUID(str(row["id"]))
     row = conn.execute(
         """
-        insert into institutions (name, country, city, official_domain, ror_id, ipeds_unitid, ukprn,
+        insert into institutions (name, country, city, region, official_domain, ror_id, ipeds_unitid, ukprn,
                                   cricos_provider_code, verification_method)
-        values (%s, %s, %s, %s, %s, %s, %s, %s, 'seed_manual')
+        values (%s, %s, %s, %s, %s, %s, %s, %s, %s, 'seed_manual')
         returning id
         """,
         (
             inst["name"],
             inst["country"],
             inst.get("city"),
+            inst.get("region"),
             inst.get("official_domain"),
             ids.get("ror_id"),
             ids.get("ipeds_unitid"),
@@ -157,7 +158,9 @@ def _upsert_cycle(conn: Connection, program_id: UUID, cycle: dict[str, Any]) -> 
     return UUID(str(row["id"]))
 
 
-def _fact_fields(fact: dict[str, Any], cycle: dict[str, Any], country: str) -> tuple[dict[str, Any], list[str]]:
+def _fact_fields(
+    fact: dict[str, Any], cycle: dict[str, Any], country: str, region: str | None = None
+) -> tuple[dict[str, Any], list[str]]:
     fields = dict(fact["fields"])
     if fact["subject"] != "deadline":
         if fact["subject"] == "cost_item":
@@ -181,6 +184,7 @@ def _fact_fields(fact: dict[str, Any], cycle: dict[str, Any], country: str) -> t
         ),
         page_text=None,  # the reviewer checked the page by hand
         extra=fields,
+        region=region,
     )
     return proposal.proposed, [f"{i.code}: {i.message}" for i in proposal.issues if i.level == "error"]
 
@@ -212,7 +216,7 @@ def load(conn: Connection, root: Path, *, hosted: bool, publish_placeholders: bo
                 if exists:
                     report.facts_skipped += 1
                     continue
-                fields, errors = _fact_fields(fact, cycle, inst["country"])
+                fields, errors = _fact_fields(fact, cycle, inst["country"], inst.get("region"))
                 if errors:
                     report.errors += [f"{path.name}: {e}" for e in errors]
                     continue

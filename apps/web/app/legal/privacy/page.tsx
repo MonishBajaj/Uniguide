@@ -6,7 +6,7 @@ export default function Privacy() {
   return (
     <article className="mx-auto grid max-w-3xl gap-4 px-6 py-16 text-muted">
       <h1 className="text-4xl font-semibold text-foreground">Privacy policy</h1>
-      <p className="rounded-2xl bg-surface p-4 text-sm">Draft for review by counsel before launch. Not yet in force.</p>
+      <p className="rounded-2xl border border-border bg-surface p-4 text-sm">Draft for review by counsel before launch. Not yet in force.</p>
       <h2 className="mt-4 text-xl font-semibold text-foreground">What we collect</h2>
       <p>Your email, birth month and country of residence when you create an account. If you choose to add them: your qualification and grades, test scores, budget, target countries and subjects, and your shortlist. We do not ask for ethnicity, religion or health information.</p>
       <h2 className="mt-4 text-xl font-semibold text-foreground">Children</h2>

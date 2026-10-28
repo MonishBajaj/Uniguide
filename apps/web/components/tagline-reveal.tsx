@@ -25,7 +25,7 @@ export function TaglineReveal({ lines }: { lines: string[] }) {
   }, []);
 
   return (
-    <p ref={ref} className="mx-auto max-w-[680px] text-4xl font-semibold sm:text-5xl">
+    <p ref={ref} className="mx-auto max-w-[680px] text-balance text-center text-4xl font-semibold sm:text-5xl">
       {lines.map((line, i) => (
         <span key={i} className="block">
           {line.split(" ").map((word, j) => (

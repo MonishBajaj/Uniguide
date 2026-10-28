@@ -13,10 +13,13 @@ from psycopg.types.json import Jsonb
 
 from .config import REPO_ROOT, get_settings
 from .db import Connection, connect, is_local
+from .fetch.fetcher import Fetcher
 
 app = typer.Typer(help="Uniguide ingestion, extraction and seed tools.", no_args_is_help=True)
 importer = typer.Typer(help="Import official registers (Listed tier).", no_args_is_help=True)
 seed = typer.Typer(help="Hand-verified seed courses.", no_args_is_help=True)
+research = typer.Typer(help="Consented outcomes: analytics and the admission model.", no_args_is_help=True)
+app.add_typer(research, name="research")
 app.add_typer(importer, name="import")
 app.add_typer(seed, name="seed")
 
@@ -69,6 +72,7 @@ def import_au_cricos(
     limit: Annotated[int | None, typer.Option(help="Import at most this many courses.")] = None,
     institutions_file: Annotated[Path | None, typer.Option(help="Local cricos-institutions.csv")] = None,
     courses_file: Annotated[Path | None, typer.Option(help="Local cricos-courses.csv")] = None,
+    with_fees: Annotated[bool, typer.Option(help="Also propose register tuition as unverified facts.")] = False,
 ) -> None:
     """Australia: CRICOS register from data.gov.au."""
     from .fetch.fetcher import Fetcher
@@ -76,7 +80,11 @@ def import_au_cricos(
 
     files = (str(institutions_file), str(courses_file)) if institutions_file and courses_file else None
     fetcher = None if files else Fetcher(get_settings().user_agent)
-    _report(_with_run("import:au_cricos", lambda conn: au_cricos.run(conn, fetcher, limit=limit, files=files)))
+    _report(
+        _with_run(
+            "import:au_cricos", lambda conn: au_cricos.run(conn, fetcher, limit=limit, files=files, with_fees=with_fees)
+        )
+    )
 
 
 @importer.command("us-scorecard")
@@ -118,6 +126,54 @@ def import_uk_discover_uni(
     )
 
 
+@importer.command("nl-duo")
+def import_nl_duo(
+    file: Annotated[Path | None, typer.Option(help="Local ho_opleidingsoverzicht.csv")] = None,
+    limit: Annotated[int | None, typer.Option(help="Import at most this many programmes.")] = None,
+) -> None:
+    """Netherlands: DUO overview of accredited higher-education programmes."""
+    from .fetch.fetcher import Fetcher
+    from .importers import nl_duo
+
+    fetcher = None if file else Fetcher(get_settings().user_agent)
+    path = str(file) if file else None
+    _report(_with_run("import:nl_duo", lambda conn: nl_duo.run(conn, fetcher, file=path, limit=limit)))
+
+
+@importer.command("ror-match")
+def import_ror_match(
+    country: Annotated[str | None, typer.Option(help="Two-letter country code.")] = None,
+    limit: Annotated[int, typer.Option(help="Institutions to look up.")] = 200,
+) -> None:
+    """Attach ROR identifiers using ROR's affiliation matcher (accepts only its chosen match)."""
+    from .importers import ror
+
+    ua = get_settings().user_agent
+    _report(_with_run("import:ror_match", lambda conn: ror.run(conn, user_agent=ua, country=country, limit=limit)))
+
+
+@importer.command("openalex-faculty")
+def import_openalex_faculty(
+    program: Annotated[str, typer.Option(help="Course slug; researchers at its institution in its field.")],
+    limit: Annotated[int, typer.Option(help="Researchers to keep.")] = 40,
+) -> None:
+    """Research-degree faculty from OpenAlex (needs the institution's ROR id; OPENALEX_API_KEY recommended)."""
+    from .importers import openalex
+
+    settings = get_settings()
+
+    def work(conn: Connection) -> object:
+        row = conn.execute("select institution_id, isced_f from programs where slug = %s", (program,)).fetchone()
+        if row is None:
+            raise typer.BadParameter(f"No course {program}")
+        return openalex.run(
+            conn, institution_id=str(row["institution_id"]), contact=settings.crawler_contact,
+            isced_f=row["isced_f"], limit=limit,
+        )  # fmt: skip
+
+    _report(_with_run("import:openalex_faculty", work))
+
+
 @importer.command("de-hochschulkompass")
 def import_de_hochschulkompass() -> None:
     """Germany: Hochschulkompass (waits for an HRK partner export)."""
@@ -144,6 +200,26 @@ def extract(
 
     fetcher = Fetcher(get_settings().user_agent)
     _report(_with_run("extract", lambda conn: extract_page(conn, fetcher, Extractor(), url, cycle, publish=publish)))
+
+
+@app.command("extract-program")
+def extract_program_cmd(slug: Annotated[str, typer.Argument(help="Course slug.")]) -> None:
+    """Read every registered official page of one course and queue what they state."""
+    from .extract.extractor import Extractor
+    from .monitor import extract_program
+
+    fetcher = Fetcher(get_settings().user_agent)
+    _report(_with_run("extract-program", lambda conn: extract_program(conn, fetcher, Extractor(), slug)))
+
+
+@app.command("monitor")
+def monitor_cmd(limit: Annotated[int, typer.Option(help="Pages to re-check this run.")] = 50) -> None:
+    """Weekly in season: re-check pages by demand, re-extract changed ones, tell watchers."""
+    from .extract.extractor import Extractor
+    from .monitor import monitor
+
+    fetcher = Fetcher(get_settings().user_agent)
+    _report(_with_run("monitor", lambda conn: monitor(conn, fetcher, Extractor(), limit=limit)))
 
 
 @seed.command("load")
@@ -183,3 +259,58 @@ def seed_check(
         typer.echo(str(exc), err=True)
         raise typer.Exit(1) from exc
     typer.echo(f"{len(docs)} seed files valid ({sum(bool(d.get('placeholder')) for _, d in docs)} placeholders)")
+
+
+@app.command()
+def notify() -> None:
+    """Send due deadline reminders and update emails (connects as the notifier role)."""
+    from .mailer import Mailer
+    from .notify import send_reminders
+
+    settings = get_settings()
+    if not settings.notifier_database_url:
+        raise typer.BadParameter("Set NOTIFIER_DATABASE_URL (see .env.example)")
+    mailer = Mailer.from_env()
+    with connect(settings.notifier_database_url) as conn:
+        report = send_reminders(conn, mailer, settings.site_url)
+    if mailer.dry_run:
+        for m in mailer.sent:
+            typer.echo(f"[dry run] to {m.to}: {m.subject}")
+    _report(report)
+
+
+def _analyst_conn() -> Connection:
+    url = get_settings().analyst_database_url
+    if not url:
+        raise typer.BadParameter("Set ANALYST_DATABASE_URL (see .env.example)")
+    return connect(url)
+
+
+@research.command("outcomes")
+def research_outcomes(
+    min_n: Annotated[int, typer.Option(help="Suppress groups smaller than this.")] = 10,
+) -> None:
+    """Admit shares by destination and course, from consented outcomes only."""
+    from .research.outcomes import build_report, load_rows
+
+    with _analyst_conn() as conn:
+        _report(build_report(load_rows(conn), min_n=min_n))
+
+
+@research.command("train-admission")
+def research_train_admission(
+    dry_run: Annotated[bool, typer.Option(help="Evaluate without storing the run.")] = False,
+) -> None:
+    """Fit the admission model, test it on the latest intake, and publish it only if it passes the gate."""
+    from .research.admission import evaluate, publish
+    from .research.outcomes import load_rows
+
+    with _analyst_conn() as conn:
+        ev = evaluate(load_rows(conn))
+        if ev is None:
+            typer.echo("Need outcomes from at least two intake years; nothing to train.")
+            return
+        summary = {k: v for k, v in ev.__dict__.items() if k != "fit"}
+        if not dry_run:
+            summary["model_id"] = publish(conn, ev)
+    typer.echo(json.dumps(summary, indent=2, default=str))

@@ -33,6 +33,7 @@ class ConsentKind(StrEnum):
     AI_PROCESSING = "ai_processing"
     OUTCOMES_RESEARCH = "outcomes_research"
     MARKETING = "marketing"
+    AGENCY_SHARING = "agency_sharing"
 
 
 class ConsentState(StrEnum):
@@ -88,10 +89,25 @@ class DeadlineKind(StrEnum):
     DEPOSIT = "deposit"
 
 
+class Decision(StrEnum):
+    ADMITTED = "admitted"
+    REJECTED = "rejected"
+    WAITLISTED = "waitlisted"
+    WITHDRAWN = "withdrawn"
+    DEFERRED = "deferred"
+
+
 class DeliveryMode(StrEnum):
     ON_CAMPUS = "on_campus"
     ONLINE = "online"
     HYBRID = "hybrid"
+
+
+class DocumentKind(StrEnum):
+    STATEMENT_OF_PURPOSE = "statement_of_purpose"
+    PERSONAL_STATEMENT = "personal_statement"
+    WHY_THIS_UNIVERSITY = "why_this_university"
+    OTHER = "other"
 
 
 class ExamKind(StrEnum):
@@ -124,6 +140,13 @@ class FactSubject(StrEnum):
     REQUIREMENT = "requirement"
     DEADLINE = "deadline"
     COST_ITEM = "cost_item"
+
+
+class NotificationKind(StrEnum):
+    FACT_CHANGED = "fact_changed"
+    REMINDER = "reminder"
+    REPORT_RESOLVED = "report_resolved"
+    AGENCY = "agency"
 
 
 class OwningSystem(StrEnum):
@@ -168,6 +191,15 @@ class ReviewState(StrEnum):
 class SignupInterest(StrEnum):
     VERIFIED_TRACKER = "verified_tracker"
     WRITING_COACH = "writing_coach"
+
+
+class SourceKind(StrEnum):
+    COURSE = "course"
+    ADMISSIONS = "admissions"
+    REQUIREMENTS = "requirements"
+    INTERNATIONAL = "international"
+    FEES = "fees"
+    DEADLINES = "deadlines"
 
 
 class TestPolicy(StrEnum):

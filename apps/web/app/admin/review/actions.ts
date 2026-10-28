@@ -20,3 +20,10 @@ export async function reject(versionId: string, form: FormData) {
   if (error) throw new Error(error.message);
   revalidatePath("/admin/review");
 }
+
+export async function resolveReport(reportId: string, accepted: boolean) {
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("resolve_fact_report", { p_report_id: reportId, p_accepted: accepted });
+  if (error) throw new Error(error.message);
+  revalidatePath("/admin/review");
+}

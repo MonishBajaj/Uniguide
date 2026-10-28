@@ -7,7 +7,7 @@ import { signIn } from "./actions";
 export function LoginForm({ next }: { next: string }) {
   const [error, action, pending] = useActionState<string | null, FormData>(signIn, null);
   return (
-    <form action={action} className="grid gap-4 rounded-2xl bg-surface p-6">
+    <form action={action} className="grid gap-4 rounded-2xl border border-border bg-surface p-6">
       <input type="hidden" name="next" value={next} />
       <label className="grid gap-2 text-sm font-semibold">
         Email

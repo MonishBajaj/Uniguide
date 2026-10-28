@@ -62,3 +62,29 @@ def test_discover_uni_fails_loudly_on_unexpected_columns() -> None:
 def test_hochschulkompass_waits_for_access() -> None:
     with pytest.raises(AccessPendingError):
         hochschulkompass()
+
+
+def test_duo_groups_offered_rows_into_programmes() -> None:
+    from datetime import date
+
+    from uniguide_worker.importers import nl_duo
+
+    parsed = nl_duo.parse((FIXTURES / "duo-programmes.csv").read_text(), today=date(2026, 10, 28))
+    levels = sorted(p.level for _, p in parsed.programs)
+    # Kept: a WO master, an HBO bachelor offered in two rows, an associate degree, a variant and a
+    # bachelor with no stated language. Skipped: a pre-master, an HBO-O row and an ended programme.
+    assert levels == ["bachelor", "bachelor", "bachelor", "diploma", "master"]
+    assert parsed.skipped == 3
+    master = next(p for _, p in parsed.programs if p.level == "master")
+    assert master.languages == ["en"] and master.track == "research"
+    assert master.duration_months == round(master.register_ids["ects"] / 60 * 12)
+    assert any(p.languages == [] for _, p in parsed.programs)
+    inst = parsed.institutions[next(b for b, _ in parsed.programs)]
+    assert inst.country == "NL" and inst.id_column == "register_id" and not inst.name.startswith("Stichting ")
+
+
+def test_duo_fails_loudly_on_unexpected_columns() -> None:
+    from uniguide_worker.importers import nl_duo
+
+    with pytest.raises(nl_duo.ColumnMismatch):
+        nl_duo.parse("A,B\n1,2\n")

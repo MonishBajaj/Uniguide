@@ -1,0 +1,22 @@
+{
+  "params": {
+    "intercept": -0.3,
+    "slopes": { "grade": 1.2, "grade_missing": -0.4 },
+    "scales": {
+      "gpa_10": { "mean": 7.5, "sd": 1.0, "direction": 1.0 },
+      "german_1_5": { "mean": 2.3, "sd": 0.5, "direction": -1.0 }
+    },
+    "country": { "GB": 0.2, "DE": -0.1 },
+    "program": {
+      "p-gb": { "offset": -0.5, "n": 40, "country": "GB" },
+      "p-de": { "offset": 0.3, "n": 25, "country": "DE" }
+    }
+  },
+  "min_program_n": 20,
+  "cases": [
+    { "program_id": "p-gb", "country": "GB", "grade_value": 8.5, "grade_scale": "gpa_10", "expected": 0.6457 },
+    { "program_id": "p-de", "country": "DE", "grade_value": 1.8, "grade_scale": "german_1_5", "expected": 0.7503 },
+    { "program_id": "p-gb", "country": "GB", "grade_value": 85, "grade_scale": "percent", "expected": 0.2689 },
+    { "program_id": "unknown", "country": "GB", "grade_value": 8.5, "grade_scale": "gpa_10", "expected": null }
+  ]
+}

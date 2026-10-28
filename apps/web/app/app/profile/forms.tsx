@@ -3,7 +3,7 @@
 import { useActionState, useState } from "react";
 import type { Tables } from "@uniguide/db-types";
 import { CURRENCIES, EXAMS, FIELDS, GRADE_SCALES, QUALIFICATIONS } from "@/lib/fields";
-import { LEVELS, WAVE_1, countryName, label } from "@/lib/format";
+import { LEVELS, DESTINATIONS, countryName, label } from "@/lib/format";
 import { addTestScore, applyCvItems, readCv, saveProfile, type ExtractState, type FormState } from "./actions";
 
 function Status({ state }: { state: FormState }) {
@@ -23,7 +23,7 @@ export function ProfileForm({ profile }: { profile: Tables<"profiles"> }) {
   const weight = (k: string) => Math.round((prefs.weights?.[k] ?? 0.5) * 10);
 
   return (
-    <form action={action} className="grid gap-6 rounded-2xl bg-surface p-6">
+    <form action={action} className="grid gap-6 rounded-2xl border border-border bg-surface p-6">
       <fieldset className="grid gap-4 sm:grid-cols-2">
         <legend className="mb-2 text-lg font-semibold">Your most recent qualification</legend>
         <label className="grid gap-2 text-sm font-semibold sm:col-span-2">
@@ -48,7 +48,21 @@ export function ProfileForm({ profile }: { profile: Tables<"profiles"> }) {
           Grade as written (optional)
           <input name="grade_text" maxLength={60} defaultValue={profile.grade_text ?? ""} placeholder="For example: AAB, 2:1, 8.7 CGPA" className="field font-normal" />
         </label>
-        <p className="text-sm text-muted sm:col-span-2">We keep your grade on its own scale and never convert it to a 4.0 GPA.</p>
+        <label className="grid gap-2 text-sm font-semibold">
+          Degree credits (for master&apos;s applicants)
+          <input name="prior_credits" inputMode="numeric" defaultValue={profile.prior_credits ?? ""} className="field font-normal" />
+        </label>
+        <label className="grid gap-2 text-sm font-semibold">
+          Credit system
+          <select name="prior_credit_system" defaultValue={profile.prior_credit_system ?? ""} className="field font-normal">
+            <option value="">Not set</option>
+            <option value="ects">ECTS</option>
+            <option value="us_credit">US credits</option>
+            <option value="uk_cats">UK CATS</option>
+            <option value="other">Other</option>
+          </select>
+        </label>
+        <p className="text-sm text-muted sm:col-span-2">We keep your grade and credits on their own scales and never convert them.</p>
       </fieldset>
 
       <fieldset className="grid gap-4 sm:grid-cols-2">
@@ -80,18 +94,21 @@ export function ProfileForm({ profile }: { profile: Tables<"profiles"> }) {
         </div>
         <p className="mt-4 mb-2 text-sm font-semibold">Countries you would consider</p>
         <div className="flex flex-wrap gap-2">
-          {WAVE_1.map((c) => (
+          {DESTINATIONS.map((c) => (
             <label key={c} className="flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2 text-sm has-[:checked]:border-accent">
               <input type="checkbox" name="target_countries" value={c} defaultChecked={profile.target_countries.includes(c)} className="accent-[var(--accent)]" />
               {countryName(c)}
             </label>
           ))}
         </div>
+        <p className="mt-2 text-xs text-muted">
+          Coverage is deepest for the first six countries. Courses elsewhere are added as we verify them.
+        </p>
         <label className="mt-4 grid max-w-xs gap-2 text-sm font-semibold">
           Favourite among them
           <select name="favourite_country" defaultValue={profile.target_countries[0] ?? ""} className="field font-normal">
             <option value="">No favourite</option>
-            {WAVE_1.map((c) => <option key={c} value={c}>{countryName(c)}</option>)}
+            {DESTINATIONS.map((c) => <option key={c} value={c}>{countryName(c)}</option>)}
           </select>
         </label>
         <p className="mt-4 mb-2 text-sm font-semibold">Fields of study</p>
@@ -103,6 +120,10 @@ export function ProfileForm({ profile }: { profile: Tables<"profiles"> }) {
             </label>
           ))}
         </div>
+        <label className="mt-4 grid gap-2 text-sm font-semibold">
+          Research interests (for research degrees)
+          <textarea name="research_interests" rows={3} maxLength={2000} defaultValue={profile.research_interests ?? ""} placeholder="For example: optimisation under uncertainty for hospital scheduling" className="field font-normal" />
+        </label>
         <label className="mt-4 grid max-w-xs gap-2 text-sm font-semibold">
           Preferred format
           <select name="preferred_delivery" defaultValue={prefs.preferredDelivery ?? ""} className="field font-normal">
@@ -123,6 +144,38 @@ export function ProfileForm({ profile }: { profile: Tables<"profiles"> }) {
             <input type="range" min={0} max={10} name={`weight_${k}`} defaultValue={weight(k)} className="accent-[var(--accent)]" />
           </label>
         ))}
+      </fieldset>
+
+      <fieldset className="grid gap-3">
+        <legend className="mb-2 text-lg font-semibold">Reach, target and likely (optional)</legend>
+        <p className="text-sm text-muted">
+          A rough band from a course&apos;s published admit rate and your standing in your class. Low confidence, off by
+          default, never a percentage, and only for courses whose admit rate we have verified.
+        </p>
+        <label className="flex items-center gap-2 text-sm">
+          <input type="checkbox" name="show_bands" defaultChecked={Boolean((prefs as { showBands?: boolean }).showBands)} className="accent-[var(--accent)]" />
+          Show bands on my matches
+        </label>
+        <label className="grid max-w-xs gap-2 text-sm font-semibold">
+          My standing: top what percent of my class?
+          <input name="class_percentile" type="number" min={1} max={100} defaultValue={profile.class_percentile ?? ""} className="field font-normal" />
+        </label>
+      </fieldset>
+
+      <fieldset className="grid gap-3">
+        <legend className="mb-2 text-lg font-semibold">Deadline reminders</legend>
+        <label className="flex items-center gap-2 text-sm">
+          <input type="checkbox" name="reminders_enabled" defaultChecked={profile.reminders_enabled} className="accent-[var(--accent)]" />
+          Email me before deadlines on my tracker
+        </label>
+        <div className="flex flex-wrap gap-2 text-sm">
+          {[60, 30, 14, 7, 3, 1].map((d) => (
+            <label key={d} className="flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2 has-[:checked]:border-accent">
+              <input type="checkbox" name="reminder_days" value={d} defaultChecked={profile.reminder_days.includes(d)} className="accent-[var(--accent)]" />
+              {d === 1 ? "1 day before" : `${d} days before`}
+            </label>
+          ))}
+        </div>
       </fieldset>
 
       <Status state={state} />

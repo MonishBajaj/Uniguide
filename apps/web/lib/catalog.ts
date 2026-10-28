@@ -16,7 +16,10 @@ type SourceRef = { url: string; owner: string } | null;
 export type RequirementRow = Tables<"requirements"> & { sources: SourceRef };
 export type DeadlineRow = Tables<"deadlines"> & { sources: SourceRef };
 export type CostRow = Tables<"cost_items"> & { sources: SourceRef };
-export type CycleFacts = Pick<Tables<"program_cycles">, "id" | "program_id" | "label" | "intake_year" | "starts_on"> & {
+export type CycleFacts = Pick<
+  Tables<"program_cycles">,
+  "id" | "program_id" | "label" | "intake_year" | "intake_term" | "starts_on"
+> & {
   requirements: RequirementRow[];
   deadlines: DeadlineRow[];
   cost_items: CostRow[];
@@ -24,7 +27,7 @@ export type CycleFacts = Pick<Tables<"program_cycles">, "id" | "program_id" | "l
 export type ProgramCard = ViewRow<"program_cards">;
 
 const CYCLE_SELECT =
-  "id, program_id, label, intake_year, starts_on, requirements(*, sources(url, owner)), deadlines(*, sources(url, owner)), cost_items(*, sources(url, owner))";
+  "id, program_id, label, intake_year, intake_term, starts_on, requirements(*, sources(url, owner)), deadlines(*, sources(url, owner)), cost_items(*, sources(url, owner))";
 
 /** The current cycle (latest intake) of each program, with every published fact and its source. */
 export async function loadCurrentCycles(supabase: Supabase, programIds: string[]): Promise<Map<string, CycleFacts>> {
@@ -42,6 +45,24 @@ export async function loadCurrentCycles(supabase: Supabase, programIds: string[]
     if (!cycles.has(cycle.program_id)) cycles.set(cycle.program_id, cycle);
   }
   return cycles;
+}
+
+/** One named intake of a program, for the per-intake pages. */
+export async function loadCycle(supabase: Supabase, programId: string, label: string): Promise<CycleFacts | null> {
+  const { data } = await supabase
+    .from("program_cycles")
+    .select(CYCLE_SELECT)
+    .eq("program_id", programId)
+    .eq("label", label)
+    .returns<CycleFacts[]>()
+    .maybeSingle();
+  return data;
+}
+
+/** An intake by id, for a tracked application. */
+export async function loadCycleById(supabase: Supabase, cycleId: string): Promise<CycleFacts | null> {
+  const { data } = await supabase.from("program_cycles").select(CYCLE_SELECT).eq("id", cycleId).returns<CycleFacts[]>().maybeSingle();
+  return data;
 }
 
 export async function loadFx(supabase: Supabase): Promise<FxTable> {
@@ -81,6 +102,11 @@ export function toProgramInput(card: ProgramCard, cycle: CycleFacts | undefined)
         minSections: (r.min_sections as Record<string, number> | null) ?? null,
         testPolicy: r.test_policy,
         isDesirable: r.is_desirable,
+        countRequired: r.count_required,
+        wordLimit: r.word_limit,
+        details: r.details,
+        minCredits: num(r.min_credits),
+        creditSystem: r.credit_system,
       }),
     ),
     deadlines: (cycle?.deadlines ?? []).map(
@@ -113,6 +139,11 @@ export function toProgramInput(card: ProgramCard, cycle: CycleFacts | undefined)
 
 export function toStudentProfile(profile: Tables<"profiles">, scores: Tables<"test_scores">[]): StudentProfile {
   const prefs = (profile.preferences ?? {}) as { preferredDelivery?: StudentProfile["preferredDelivery"] };
+  const credits = {
+    priorCredits: num(profile.prior_credits),
+    priorCreditSystem: profile.prior_credit_system,
+    classPercentile: profile.class_percentile,
+  };
   return {
     residenceCountry: profile.residence_country,
     homeQualification: profile.home_qualification,
@@ -126,6 +157,7 @@ export function toStudentProfile(profile: Tables<"profiles">, scores: Tables<"te
     targetCountries: profile.target_countries,
     targetFields: profile.target_fields,
     preferredDelivery: prefs.preferredDelivery ?? null,
+    ...credits,
     testScores: scores.map(
       (s): TestScore => ({
         exam: s.exam,
