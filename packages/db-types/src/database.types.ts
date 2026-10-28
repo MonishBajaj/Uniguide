@@ -19,6 +19,20 @@ export type Database = {
                   Relationships: [
                     
                   ]
+                },"admission_models": {
+                  Row: {
+                    "active": boolean,"brier": number,"brier_baseline": number,"calibration": NonNullable<Json>,"calibration_error": number,"created_at": string,"holdout_year": number,"id": string,"min_program_n": number,"n_holdout": number,"n_train": number,"notes": string | null,"params": NonNullable<Json>,"passed": boolean,"trained_through": number,"version": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "active"?: boolean,"brier": number,"brier_baseline": number,"calibration"?: NonNullable<Json>,"calibration_error": number,"created_at"?: string,"holdout_year": number,"id"?: string,"min_program_n": number,"n_holdout": number,"n_train": number,"notes"?: string | null,"params": NonNullable<Json>,"passed": boolean,"trained_through": number,"version": string
+                  }
+                  Update: {
+                    "active"?: boolean,"brier"?: number,"brier_baseline"?: number,"calibration"?: NonNullable<Json>,"calibration_error"?: number,"created_at"?: string,"holdout_year"?: number,"id"?: string,"min_program_n"?: number,"n_holdout"?: number,"n_train"?: number,"notes"?: string | null,"params"?: NonNullable<Json>,"passed"?: boolean,"trained_through"?: number,"version"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
                 },"ai_runs": {
                   Row: {
                     "cost_usd": number | null,"created_at": string,"id": string,"input_hash": string | null,"input_tokens": number | null,"latency_ms": number | null,"model": string,"output_tokens": number | null,"prompt_version": string,"purpose": string,"stop_reason": string | null,"user_id": string | null
@@ -145,6 +159,26 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"country_rules": {
+                  Row: {
+                    "applies_to": (string)[],"created_at": string,"destination": string,"details": string | null,"evidence_quote": string | null,"id": string,"kind": string,"link": string | null,"published": boolean,"source_id": string | null,"status": Database["public"]['Enums']["fact_status"],"title": string,"verified_at": string | null,"verified_by": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "applies_to"?: (string)[],"created_at"?: string,"destination": string,"details"?: string | null,"evidence_quote"?: string | null,"id"?: string,"kind": string,"link"?: string | null,"published"?: boolean,"source_id"?: string | null,"status"?: Database["public"]['Enums']["fact_status"],"title": string,"verified_at"?: string | null,"verified_by"?: string | null
+                  }
+                  Update: {
+                    "applies_to"?: (string)[],"created_at"?: string,"destination"?: string,"details"?: string | null,"evidence_quote"?: string | null,"id"?: string,"kind"?: string,"link"?: string | null,"published"?: boolean,"source_id"?: string | null,"status"?: Database["public"]['Enums']["fact_status"],"title"?: string,"verified_at"?: string | null,"verified_by"?: string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "country_rules_source_id_fkey"
+      columns: ["source_id"]
+isOneToOne: false
+      referencedRelation: "sources"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"credit_ledger": {
                   Row: {
                     "created_at": string,"delta": number,"id": string,"reason": string,"ref": string | null,"user_id": string
@@ -190,6 +224,20 @@ isOneToOne: false
       referencedRelation: "sources"
       referencedColumns: ["id"]
     }
+                  ]
+                },"decision_matrices": {
+                  Row: {
+                    "criteria": NonNullable<Json>,"scores": NonNullable<Json>,"updated_at": string,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "criteria"?: NonNullable<Json>,"scores"?: NonNullable<Json>,"updated_at"?: string,"user_id": string
+                  }
+                  Update: {
+                    "criteria"?: NonNullable<Json>,"scores"?: NonNullable<Json>,"updated_at"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    
                   ]
                 },"document_versions": {
                   Row: {
@@ -483,14 +531,14 @@ isOneToOne: false
                   ]
                 },"profiles": {
                   Row: {
-                    "age_band": Database["public"]['Enums']["age_band"],"birth_month": string,"budget_amount": number | null,"budget_currency": string | null,"consent_state": Database["public"]['Enums']["consent_state"],"created_at": string,"display_name": string | null,"grade_scale": string | null,"grade_text": string | null,"grade_value": number | null,"home_qualification": string | null,"intake_year": number | null,"preferences": NonNullable<Json>,"reminder_days": (number)[],"reminders_enabled": boolean,"research_interests": string | null,"residence_country": string,"target_countries": (string)[],"target_fields": (string)[],"target_levels": (Database["public"]['Enums']["program_level"])[],"updated_at": string,"user_id": string
+                    "age_band": Database["public"]['Enums']["age_band"],"birth_month": string,"budget_amount": number | null,"budget_currency": string | null,"class_percentile": number | null,"consent_state": Database["public"]['Enums']["consent_state"],"created_at": string,"display_name": string | null,"grade_scale": string | null,"grade_text": string | null,"grade_value": number | null,"home_qualification": string | null,"intake_year": number | null,"preferences": NonNullable<Json>,"prior_credit_system": Database["public"]['Enums']["credit_system"] | null,"prior_credits": number | null,"reminder_days": (number)[],"reminders_enabled": boolean,"research_interests": string | null,"residence_country": string,"target_countries": (string)[],"target_fields": (string)[],"target_levels": (Database["public"]['Enums']["program_level"])[],"updated_at": string,"user_id": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "age_band": Database["public"]['Enums']["age_band"],"birth_month": string,"budget_amount"?: number | null,"budget_currency"?: string | null,"consent_state": Database["public"]['Enums']["consent_state"],"created_at"?: string,"display_name"?: string | null,"grade_scale"?: string | null,"grade_text"?: string | null,"grade_value"?: number | null,"home_qualification"?: string | null,"intake_year"?: number | null,"preferences"?: NonNullable<Json>,"reminder_days"?: (number)[],"reminders_enabled"?: boolean,"research_interests"?: string | null,"residence_country": string,"target_countries"?: (string)[],"target_fields"?: (string)[],"target_levels"?: (Database["public"]['Enums']["program_level"])[],"updated_at"?: string,"user_id": string
+                    "age_band": Database["public"]['Enums']["age_band"],"birth_month": string,"budget_amount"?: number | null,"budget_currency"?: string | null,"class_percentile"?: number | null,"consent_state": Database["public"]['Enums']["consent_state"],"created_at"?: string,"display_name"?: string | null,"grade_scale"?: string | null,"grade_text"?: string | null,"grade_value"?: number | null,"home_qualification"?: string | null,"intake_year"?: number | null,"preferences"?: NonNullable<Json>,"prior_credit_system"?: Database["public"]['Enums']["credit_system"] | null,"prior_credits"?: number | null,"reminder_days"?: (number)[],"reminders_enabled"?: boolean,"research_interests"?: string | null,"residence_country": string,"target_countries"?: (string)[],"target_fields"?: (string)[],"target_levels"?: (Database["public"]['Enums']["program_level"])[],"updated_at"?: string,"user_id": string
                   }
                   Update: {
-                    "age_band"?: Database["public"]['Enums']["age_band"],"birth_month"?: string,"budget_amount"?: number | null,"budget_currency"?: string | null,"consent_state"?: Database["public"]['Enums']["consent_state"],"created_at"?: string,"display_name"?: string | null,"grade_scale"?: string | null,"grade_text"?: string | null,"grade_value"?: number | null,"home_qualification"?: string | null,"intake_year"?: number | null,"preferences"?: NonNullable<Json>,"reminder_days"?: (number)[],"reminders_enabled"?: boolean,"research_interests"?: string | null,"residence_country"?: string,"target_countries"?: (string)[],"target_fields"?: (string)[],"target_levels"?: (Database["public"]['Enums']["program_level"])[],"updated_at"?: string,"user_id"?: string
+                    "age_band"?: Database["public"]['Enums']["age_band"],"birth_month"?: string,"budget_amount"?: number | null,"budget_currency"?: string | null,"class_percentile"?: number | null,"consent_state"?: Database["public"]['Enums']["consent_state"],"created_at"?: string,"display_name"?: string | null,"grade_scale"?: string | null,"grade_text"?: string | null,"grade_value"?: number | null,"home_qualification"?: string | null,"intake_year"?: number | null,"preferences"?: NonNullable<Json>,"prior_credit_system"?: Database["public"]['Enums']["credit_system"] | null,"prior_credits"?: number | null,"reminder_days"?: (number)[],"reminders_enabled"?: boolean,"research_interests"?: string | null,"residence_country"?: string,"target_countries"?: (string)[],"target_fields"?: (string)[],"target_levels"?: (Database["public"]['Enums']["program_level"])[],"updated_at"?: string,"user_id"?: string
                   }
                   Relationships: [
                     
@@ -544,6 +592,38 @@ isOneToOne: false
       columns: ["program_id"]
 isOneToOne: false
       referencedRelation: "programs"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"program_stats": {
+                  Row: {
+                    "admit_rate": number,"admitted": number | null,"applicants": number | null,"created_at": string,"cycle_label": string,"evidence_quote": string | null,"id": string,"program_id": string,"published": boolean,"source_id": string | null,"status": Database["public"]['Enums']["fact_status"],"verified_at": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "admit_rate": number,"admitted"?: number | null,"applicants"?: number | null,"created_at"?: string,"cycle_label": string,"evidence_quote"?: string | null,"id"?: string,"program_id": string,"published"?: boolean,"source_id"?: string | null,"status"?: Database["public"]['Enums']["fact_status"],"verified_at"?: string | null
+                  }
+                  Update: {
+                    "admit_rate"?: number,"admitted"?: number | null,"applicants"?: number | null,"created_at"?: string,"cycle_label"?: string,"evidence_quote"?: string | null,"id"?: string,"program_id"?: string,"published"?: boolean,"source_id"?: string | null,"status"?: Database["public"]['Enums']["fact_status"],"verified_at"?: string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "program_stats_program_id_fkey"
+      columns: ["program_id"]
+isOneToOne: false
+      referencedRelation: "program_cards"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "program_stats_program_id_fkey"
+      columns: ["program_id"]
+isOneToOne: false
+      referencedRelation: "programs"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "program_stats_source_id_fkey"
+      columns: ["source_id"]
+isOneToOne: false
+      referencedRelation: "sources"
       referencedColumns: ["id"]
     }
                   ]
@@ -601,14 +681,14 @@ isOneToOne: false
                   ]
                 },"requirements": {
                   Row: {
-                    "applicant_category": Database["public"]['Enums']["applicant_category"],"count_required": number | null,"created_at": string,"current_version_id": string | null,"cycle_id": string,"details": string | null,"evidence_quote": string | null,"exam": Database["public"]['Enums']["exam_kind"] | null,"exam_version": string | null,"grade_scale": string | null,"id": string,"is_desirable": boolean,"kind": Database["public"]['Enums']["requirement_kind"],"min_grade_numeric": number | null,"min_grade_text": string | null,"min_sections": Json | null,"min_total": number | null,"published": boolean,"qualification": string | null,"source_id": string | null,"status": Database["public"]['Enums']["fact_status"],"test_policy": Database["public"]['Enums']["test_policy"] | null,"updated_at": string,"verification_method": Database["public"]['Enums']["verification_method"] | null,"verified_at": string | null,"verified_by": string | null,"word_limit": number | null
+                    "applicant_category": Database["public"]['Enums']["applicant_category"],"count_required": number | null,"created_at": string,"credit_system": Database["public"]['Enums']["credit_system"] | null,"current_version_id": string | null,"cycle_id": string,"details": string | null,"evidence_quote": string | null,"exam": Database["public"]['Enums']["exam_kind"] | null,"exam_version": string | null,"grade_scale": string | null,"id": string,"is_desirable": boolean,"kind": Database["public"]['Enums']["requirement_kind"],"min_credits": number | null,"min_grade_numeric": number | null,"min_grade_text": string | null,"min_sections": Json | null,"min_total": number | null,"published": boolean,"qualification": string | null,"source_id": string | null,"status": Database["public"]['Enums']["fact_status"],"test_policy": Database["public"]['Enums']["test_policy"] | null,"updated_at": string,"verification_method": Database["public"]['Enums']["verification_method"] | null,"verified_at": string | null,"verified_by": string | null,"word_limit": number | null
                   }
                   ComputedFields: never
                   Insert: {
-                    "applicant_category"?: Database["public"]['Enums']["applicant_category"],"count_required"?: number | null,"created_at"?: string,"current_version_id"?: string | null,"cycle_id": string,"details"?: string | null,"evidence_quote"?: string | null,"exam"?: Database["public"]['Enums']["exam_kind"] | null,"exam_version"?: string | null,"grade_scale"?: string | null,"id"?: string,"is_desirable"?: boolean,"kind": Database["public"]['Enums']["requirement_kind"],"min_grade_numeric"?: number | null,"min_grade_text"?: string | null,"min_sections"?: Json | null,"min_total"?: number | null,"published"?: boolean,"qualification"?: string | null,"source_id"?: string | null,"status"?: Database["public"]['Enums']["fact_status"],"test_policy"?: Database["public"]['Enums']["test_policy"] | null,"updated_at"?: string,"verification_method"?: Database["public"]['Enums']["verification_method"] | null,"verified_at"?: string | null,"verified_by"?: string | null,"word_limit"?: number | null
+                    "applicant_category"?: Database["public"]['Enums']["applicant_category"],"count_required"?: number | null,"created_at"?: string,"credit_system"?: Database["public"]['Enums']["credit_system"] | null,"current_version_id"?: string | null,"cycle_id": string,"details"?: string | null,"evidence_quote"?: string | null,"exam"?: Database["public"]['Enums']["exam_kind"] | null,"exam_version"?: string | null,"grade_scale"?: string | null,"id"?: string,"is_desirable"?: boolean,"kind": Database["public"]['Enums']["requirement_kind"],"min_credits"?: number | null,"min_grade_numeric"?: number | null,"min_grade_text"?: string | null,"min_sections"?: Json | null,"min_total"?: number | null,"published"?: boolean,"qualification"?: string | null,"source_id"?: string | null,"status"?: Database["public"]['Enums']["fact_status"],"test_policy"?: Database["public"]['Enums']["test_policy"] | null,"updated_at"?: string,"verification_method"?: Database["public"]['Enums']["verification_method"] | null,"verified_at"?: string | null,"verified_by"?: string | null,"word_limit"?: number | null
                   }
                   Update: {
-                    "applicant_category"?: Database["public"]['Enums']["applicant_category"],"count_required"?: number | null,"created_at"?: string,"current_version_id"?: string | null,"cycle_id"?: string,"details"?: string | null,"evidence_quote"?: string | null,"exam"?: Database["public"]['Enums']["exam_kind"] | null,"exam_version"?: string | null,"grade_scale"?: string | null,"id"?: string,"is_desirable"?: boolean,"kind"?: Database["public"]['Enums']["requirement_kind"],"min_grade_numeric"?: number | null,"min_grade_text"?: string | null,"min_sections"?: Json | null,"min_total"?: number | null,"published"?: boolean,"qualification"?: string | null,"source_id"?: string | null,"status"?: Database["public"]['Enums']["fact_status"],"test_policy"?: Database["public"]['Enums']["test_policy"] | null,"updated_at"?: string,"verification_method"?: Database["public"]['Enums']["verification_method"] | null,"verified_at"?: string | null,"verified_by"?: string | null,"word_limit"?: number | null
+                    "applicant_category"?: Database["public"]['Enums']["applicant_category"],"count_required"?: number | null,"created_at"?: string,"credit_system"?: Database["public"]['Enums']["credit_system"] | null,"current_version_id"?: string | null,"cycle_id"?: string,"details"?: string | null,"evidence_quote"?: string | null,"exam"?: Database["public"]['Enums']["exam_kind"] | null,"exam_version"?: string | null,"grade_scale"?: string | null,"id"?: string,"is_desirable"?: boolean,"kind"?: Database["public"]['Enums']["requirement_kind"],"min_credits"?: number | null,"min_grade_numeric"?: number | null,"min_grade_text"?: string | null,"min_sections"?: Json | null,"min_total"?: number | null,"published"?: boolean,"qualification"?: string | null,"source_id"?: string | null,"status"?: Database["public"]['Enums']["fact_status"],"test_policy"?: Database["public"]['Enums']["test_policy"] | null,"updated_at"?: string,"verification_method"?: Database["public"]['Enums']["verification_method"] | null,"verified_at"?: string | null,"verified_by"?: string | null,"word_limit"?: number | null
                   }
                   Relationships: [
                     {
@@ -762,14 +842,43 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
+                },"research_outcomes": {
+                  Row: {
+                    "country": string,"cycle_label": string,"decision": Database["public"]['Enums']["decision"],"funding_offered": boolean | null,"grade_scale": string | null,"grade_value": number | null,"home_qualification": string | null,"id": string,"intake_year": number,"program_id": string,"residence_country": string | null,"verification_level": string
+                  }
+                  ComputedFields: never
+                  Relationships: [
+                    {
+      foreignKeyName: "outcomes_program_id_fkey"
+      columns: ["program_id"]
+isOneToOne: false
+      referencedRelation: "program_cards"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "outcomes_program_id_fkey"
+      columns: ["program_id"]
+isOneToOne: false
+      referencedRelation: "programs"
+      referencedColumns: ["id"]
+    }
+                  ]
                 }
           }
           Functions: {
-            "_apply_fact_version":
+            "_admin_source":
+{ Args: { "p_owner": string,"p_url": string }; Returns: string
+                           },
+"_apply_fact_version":
 { Args: { "p_method": Database["public"]['Enums']["verification_method"],"p_status": Database["public"]['Enums']["fact_status"],"p_verified_at": string,"p_verified_by": string,"p_version": Omit<Database["public"]['Tables']["fact_versions"]['Row'], Database["public"]['Tables']["fact_versions"]['ComputedFields']> }; Returns: string
+                           },
+"add_country_rule":
+{ Args: { "p_applies_to"?: (string)[],"p_destination": string,"p_details"?: string,"p_kind": string,"p_link"?: string,"p_quote": string,"p_source_url": string,"p_title": string }; Returns: string
                            },
 "add_program_cycle":
 { Args: { "p_intake_term": string,"p_intake_year": number,"p_program_id": string,"p_starts_on"?: string }; Returns: string
+                           },
+"add_program_stat":
+{ Args: { "p_admit_rate": number,"p_admitted"?: number,"p_applicants"?: number,"p_cycle_label": string,"p_program_id": string,"p_quote": string,"p_source_url": string }; Returns: string
                            },
 "age_band_for":
 { Args: { "p_age": number }; Returns: Database["public"]['Enums']["age_band"]
@@ -872,6 +981,12 @@ isOneToOne: false
 { Args: { "p_limit"?: number }; Returns: {
               "facts_unverified": number,"next_deadline": string,"program_id": string,"shortlists": number
             }[]
+                           },
+"verify_country_rule":
+{ Args: { "p_rule_id": string }; Returns: undefined
+                           },
+"verify_program_stat":
+{ Args: { "p_stat_id": string }; Returns: undefined
                            },
 "writing_allowance":
 { Args: Record<PropertyKey, never>; Returns: {

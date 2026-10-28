@@ -18,6 +18,8 @@ from .fetch.fetcher import Fetcher
 app = typer.Typer(help="Uniguide ingestion, extraction and seed tools.", no_args_is_help=True)
 importer = typer.Typer(help="Import official registers (Listed tier).", no_args_is_help=True)
 seed = typer.Typer(help="Hand-verified seed courses.", no_args_is_help=True)
+research = typer.Typer(help="Consented outcomes: analytics and the admission model.", no_args_is_help=True)
+app.add_typer(research, name="research")
 app.add_typer(importer, name="import")
 app.add_typer(seed, name="seed")
 
@@ -122,6 +124,20 @@ def import_uk_discover_uni(
             ),
         )
     )
+
+
+@importer.command("nl-duo")
+def import_nl_duo(
+    file: Annotated[Path | None, typer.Option(help="Local ho_opleidingsoverzicht.csv")] = None,
+    limit: Annotated[int | None, typer.Option(help="Import at most this many programmes.")] = None,
+) -> None:
+    """Netherlands: DUO overview of accredited higher-education programmes."""
+    from .fetch.fetcher import Fetcher
+    from .importers import nl_duo
+
+    fetcher = None if file else Fetcher(get_settings().user_agent)
+    path = str(file) if file else None
+    _report(_with_run("import:nl_duo", lambda conn: nl_duo.run(conn, fetcher, file=path, limit=limit)))
 
 
 @importer.command("ror-match")
@@ -261,3 +277,40 @@ def notify() -> None:
         for m in mailer.sent:
             typer.echo(f"[dry run] to {m.to}: {m.subject}")
     _report(report)
+
+
+def _analyst_conn() -> Connection:
+    url = get_settings().analyst_database_url
+    if not url:
+        raise typer.BadParameter("Set ANALYST_DATABASE_URL (see .env.example)")
+    return connect(url)
+
+
+@research.command("outcomes")
+def research_outcomes(
+    min_n: Annotated[int, typer.Option(help="Suppress groups smaller than this.")] = 10,
+) -> None:
+    """Admit shares by destination and course, from consented outcomes only."""
+    from .research.outcomes import build_report, load_rows
+
+    with _analyst_conn() as conn:
+        _report(build_report(load_rows(conn), min_n=min_n))
+
+
+@research.command("train-admission")
+def research_train_admission(
+    dry_run: Annotated[bool, typer.Option(help="Evaluate without storing the run.")] = False,
+) -> None:
+    """Fit the admission model, test it on the latest intake, and publish it only if it passes the gate."""
+    from .research.admission import evaluate, publish
+    from .research.outcomes import load_rows
+
+    with _analyst_conn() as conn:
+        ev = evaluate(load_rows(conn))
+        if ev is None:
+            typer.echo("Need outcomes from at least two intake years; nothing to train.")
+            return
+        summary = {k: v for k, v in ev.__dict__.items() if k != "fit"}
+        if not dry_run:
+            summary["model_id"] = publish(conn, ev)
+    typer.echo(json.dumps(summary, indent=2, default=str))

@@ -106,6 +106,8 @@ function checkEntryQualification(rows: RequirementFact[], profile: StudentProfil
     );
   }
 
+  const credits = matching.filter((r) => r.minCredits != null).map((r) => checkCredits(r, profile));
+
   const outcomes = matching.map((req): EligibilityCheck => {
     if (req.minGradeNumeric == null) {
       return check("entry_qualification", "meets", "Your qualification is accepted.", [req]);
@@ -136,7 +138,28 @@ function checkEntryQualification(rows: RequirementFact[], profile: StudentProfil
     }
     return check("entry_qualification", "does_not_meet", `Your grade is below the minimum ${published}.`, [req]);
   });
-  return guardStatus(bestOf(outcomes), matching);
+  const grade = guardStatus(bestOf(outcomes), matching);
+  // A credit shortfall outweighs a good grade: report the worse of the two.
+  const worst = [grade, ...credits].reduce((w, c) => (RANK[c.result] > RANK[w.result] ? c : w));
+  return worst;
+}
+
+const CREDIT_NAMES = { ects: "ECTS", us_credit: "US credits", uk_cats: "UK CATS credits", other: "credits" } as const;
+
+function checkCredits(req: RequirementFact, profile: StudentProfile): EligibilityCheck {
+  const needed = `${req.minCredits} ${CREDIT_NAMES[req.creditSystem ?? "other"]}`;
+  if (profile.priorCredits == null || !profile.priorCreditSystem) {
+    return check("credits", "needs_clarification", `The course asks for at least ${needed}; add your degree's credits.`, [req]);
+  }
+  if (profile.priorCreditSystem !== req.creditSystem) {
+    // No silent conversion between credit systems.
+    return check("credits", "needs_clarification", `The course counts ${needed}; ask how they convert your ${CREDIT_NAMES[profile.priorCreditSystem]}.`, [req]);
+  }
+  const result = profile.priorCredits >= req.minCredits! ? "meets" : "does_not_meet";
+  return guardStatus(
+    check("credits", result, result === "meets" ? `Your ${profile.priorCredits} credits meet the minimum of ${needed}.` : `Your ${profile.priorCredits} credits are below the minimum of ${needed}.`, [req]),
+    [req],
+  );
 }
 
 function checkLanguage(rows: RequirementFact[], profile: StudentProfile, at: Date): EligibilityCheck {

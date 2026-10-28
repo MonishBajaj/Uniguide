@@ -48,7 +48,21 @@ export function ProfileForm({ profile }: { profile: Tables<"profiles"> }) {
           Grade as written (optional)
           <input name="grade_text" maxLength={60} defaultValue={profile.grade_text ?? ""} placeholder="For example: AAB, 2:1, 8.7 CGPA" className="field font-normal" />
         </label>
-        <p className="text-sm text-muted sm:col-span-2">We keep your grade on its own scale and never convert it to a 4.0 GPA.</p>
+        <label className="grid gap-2 text-sm font-semibold">
+          Degree credits (for master&apos;s applicants)
+          <input name="prior_credits" inputMode="numeric" defaultValue={profile.prior_credits ?? ""} className="field font-normal" />
+        </label>
+        <label className="grid gap-2 text-sm font-semibold">
+          Credit system
+          <select name="prior_credit_system" defaultValue={profile.prior_credit_system ?? ""} className="field font-normal">
+            <option value="">Not set</option>
+            <option value="ects">ECTS</option>
+            <option value="us_credit">US credits</option>
+            <option value="uk_cats">UK CATS</option>
+            <option value="other">Other</option>
+          </select>
+        </label>
+        <p className="text-sm text-muted sm:col-span-2">We keep your grade and credits on their own scales and never convert them.</p>
       </fieldset>
 
       <fieldset className="grid gap-4 sm:grid-cols-2">
@@ -127,6 +141,22 @@ export function ProfileForm({ profile }: { profile: Tables<"profiles"> }) {
             <input type="range" min={0} max={10} name={`weight_${k}`} defaultValue={weight(k)} className="accent-[var(--accent)]" />
           </label>
         ))}
+      </fieldset>
+
+      <fieldset className="grid gap-3">
+        <legend className="mb-2 text-lg font-semibold">Reach, target and likely (optional)</legend>
+        <p className="text-sm text-muted">
+          A rough band from a course&apos;s published admit rate and your standing in your class. Low confidence, off by
+          default, never a percentage, and only for courses whose admit rate we have verified.
+        </p>
+        <label className="flex items-center gap-2 text-sm">
+          <input type="checkbox" name="show_bands" defaultChecked={Boolean((prefs as { showBands?: boolean }).showBands)} className="accent-[var(--accent)]" />
+          Show bands on my matches
+        </label>
+        <label className="grid max-w-xs gap-2 text-sm font-semibold">
+          My standing: top what percent of my class?
+          <input name="class_percentile" type="number" min={1} max={100} defaultValue={profile.class_percentile ?? ""} className="field font-normal" />
+        </label>
       </fieldset>
 
       <fieldset className="grid gap-3">

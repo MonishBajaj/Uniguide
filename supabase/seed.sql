@@ -28,3 +28,6 @@ where u.email in ('admin@uniguide.local', 'student@uniguide.local');
 insert into public.admins (user_id) values ('00000000-0000-4000-a000-000000000001');
 -- Local password for the notifier role (hosted: see docs/SETUP.md).
 alter role notifier with login password 'notifier_local';
+
+-- Local password for the analyst role (hosted: see docs/SETUP.md).
+alter role analyst with login password 'analyst_local';

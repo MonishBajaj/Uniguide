@@ -59,6 +59,12 @@ export async function loadCycle(supabase: Supabase, programId: string, label: st
   return data;
 }
 
+/** An intake by id, for a tracked application. */
+export async function loadCycleById(supabase: Supabase, cycleId: string): Promise<CycleFacts | null> {
+  const { data } = await supabase.from("program_cycles").select(CYCLE_SELECT).eq("id", cycleId).returns<CycleFacts[]>().maybeSingle();
+  return data;
+}
+
 export async function loadFx(supabase: Supabase): Promise<FxTable> {
   const { data } = await supabase.from("fx_rates").select("*").order("as_of", { ascending: false });
   const fx: FxTable = {};
@@ -99,6 +105,8 @@ export function toProgramInput(card: ProgramCard, cycle: CycleFacts | undefined)
         countRequired: r.count_required,
         wordLimit: r.word_limit,
         details: r.details,
+        minCredits: num(r.min_credits),
+        creditSystem: r.credit_system,
       }),
     ),
     deadlines: (cycle?.deadlines ?? []).map(
@@ -131,6 +139,11 @@ export function toProgramInput(card: ProgramCard, cycle: CycleFacts | undefined)
 
 export function toStudentProfile(profile: Tables<"profiles">, scores: Tables<"test_scores">[]): StudentProfile {
   const prefs = (profile.preferences ?? {}) as { preferredDelivery?: StudentProfile["preferredDelivery"] };
+  const credits = {
+    priorCredits: num(profile.prior_credits),
+    priorCreditSystem: profile.prior_credit_system,
+    classPercentile: profile.class_percentile,
+  };
   return {
     residenceCountry: profile.residence_country,
     homeQualification: profile.home_qualification,
@@ -144,6 +157,7 @@ export function toStudentProfile(profile: Tables<"profiles">, scores: Tables<"te
     targetCountries: profile.target_countries,
     targetFields: profile.target_fields,
     preferredDelivery: prefs.preferredDelivery ?? null,
+    ...credits,
     testScores: scores.map(
       (s): TestScore => ({
         exam: s.exam,

@@ -32,6 +32,10 @@ const Profile = z.object({
   reminders_enabled: z.boolean(),
   reminder_days: z.array(z.coerce.number().int().min(1).max(90)).max(6),
   research_interests: z.preprocess((v) => (v ? String(v).trim() : null), z.string().max(2000).nullable()),
+  prior_credits: optionalNumber.refine((v) => v == null || v > 0),
+  prior_credit_system: z.enum(["ects", "us_credit", "uk_cats", "other"]).nullable(),
+  class_percentile: optionalNumber.refine((v) => v == null || (Number.isInteger(v) && v >= 1 && v <= 100)),
+  show_bands: z.boolean(),
 });
 
 export async function saveProfile(_prev: FormState, form: FormData): Promise<FormState> {
@@ -55,6 +59,10 @@ export async function saveProfile(_prev: FormState, form: FormData): Promise<For
     reminders_enabled: form.get("reminders_enabled") === "on",
     reminder_days: form.getAll("reminder_days"),
     research_interests: form.get("research_interests"),
+    prior_credits: form.get("prior_credits"),
+    prior_credit_system: orNull("prior_credit_system"),
+    class_percentile: form.get("class_percentile"),
+    show_bands: form.get("show_bands") === "on",
   });
   if (!parsed.success) return { ok: false, message: "Some values are not valid. Check numbers are numbers." };
   if (parsed.data.grade_value != null && !parsed.data.grade_scale) {
@@ -66,13 +74,16 @@ export async function saveProfile(_prev: FormState, form: FormData): Promise<For
 
   const { supabase, user } = await getUser();
   if (!user) return { ok: false, message: "Sign in first." };
-  const { preferred_delivery, weights, ...columns } = parsed.data;
+  if (parsed.data.prior_credits != null && !parsed.data.prior_credit_system) {
+    return { ok: false, message: "Choose the credit system of your degree." };
+  }
+  const { preferred_delivery, weights, show_bands, ...columns } = parsed.data;
   const { error } = await supabase
     .from("profiles")
     .update({
       ...columns,
       target_levels: columns.target_levels as Enums<"program_level">[],
-      preferences: asJson({ preferredDelivery: preferred_delivery, weights }),
+      preferences: asJson({ preferredDelivery: preferred_delivery, weights, showBands: show_bands }),
     })
     .eq("user_id", user.id);
   if (error) return failed(error.code);

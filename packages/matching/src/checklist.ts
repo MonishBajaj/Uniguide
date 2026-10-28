@@ -5,6 +5,14 @@ export interface ChecklistDeadline extends DeadlineFact {
   owningSystem: string;
 }
 
+export interface CountryRule {
+  id: string;
+  kind: string;
+  title: string;
+  details?: string | null;
+  link?: string | null;
+}
+
 export interface ChecklistItem {
   kind: "requirement" | "system_step" | "deadline";
   title: string;
@@ -67,6 +75,7 @@ export function buildChecklist(
   applicantCategories: string[],
   now: Date,
   qualificationLabel: (code: string) => string = (code) => code.replaceAll("_", " "),
+  countryRules: CountryRule[] = [],
 ): ChecklistItem[] {
   const reqs = requirements.filter((r) => applicantCategories.includes(r.applicantCategory));
   const open = deadlines
@@ -82,6 +91,11 @@ export function buildChecklist(
 
   for (const s of SYSTEM_STEPS[main?.owningSystem ?? ""] ?? []) {
     push({ kind: "system_step", title: s.title, link: s.link, dueAt: due, deadlineId: mainId });
+  }
+
+  // Steps that depend on where the student comes from (e.g. APS for Germany), before anything else.
+  for (const rule of countryRules.filter((r) => r.kind !== "visa_info")) {
+    push({ kind: "system_step", title: rule.title, details: rule.details ?? undefined, link: rule.link ?? undefined, dueAt: due, deadlineId: mainId });
   }
 
   const entry = reqs.filter((r) => r.kind === "entry_qualification");

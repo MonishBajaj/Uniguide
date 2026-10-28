@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { createHash } from "node:crypto";
-import { matchPrograms, type Exclusion } from "@uniguide/matching";
+import { admissionBand, admissionEstimate, matchPrograms, type AdmissionModelParams, type Exclusion } from "@uniguide/matching";
 import { ExplainButton } from "@/components/explain-button";
 import { ProgramCard } from "@/components/program-card";
 import { daysUntil, deadlineText, money } from "@/lib/format";
@@ -41,6 +41,21 @@ export default async function MatchPage() {
   }
   const { candidates, cycles, student, weights, fx, programs } = inputs;
   const { results, algorithmVersion } = matchPrograms(programs, student, { now: new Date(), fx }, weights);
+  const showBands = Boolean((inputs.profile.preferences as { showBands?: boolean }).showBands);
+  const { data: stats } = showBands
+    ? await supabase.from("program_stats").select("program_id, admit_rate, status, cycle_label").in("program_id", candidates.map((c) => c.id!)).order("cycle_label", { ascending: false })
+    : { data: [] };
+  const statsBy = new Map<string, { admitRate: number; status: "verified" | "unverified" | "conflicting" | "unknown" }>();
+  for (const s of stats ?? []) if (!statsBy.has(s.program_id)) statsBy.set(s.program_id, { admitRate: Number(s.admit_rate), status: s.status });
+  // Only a model that passed its holdout and calibration gate is readable (RLS), and only when opted in.
+  const { data: model } = showBands
+    ? await supabase.from("admission_models").select("params, min_program_n, n_train, holdout_year").maybeSingle()
+    : { data: null };
+  const countryOf = new Map(candidates.map((c) => [c.id!, c.country!]));
+  const estimateFor = (programId: string) =>
+    model
+      ? admissionEstimate(model.params as unknown as AdmissionModelParams, model.min_program_n, { id: programId, country: countryOf.get(programId) ?? "" }, student)
+      : null;
 
   // Record the run so results can be reproduced: inputs, catalog state and algorithm version.
   const factIds = [...cycles.values()]
@@ -111,6 +126,26 @@ export default async function MatchPage() {
                       {!cost.complete && cost.lines.length ? <span className="block text-xs font-normal text-unverified">Incomplete, the real total is higher</span> : null}
                     </dd>
                   </div>
+                  {showBands ? (
+                    <div className="col-span-2">
+                      <dt className="text-muted">Band (low confidence)</dt>
+                      <dd className="font-semibold">
+                        {(() => {
+                          const band = admissionBand(statsBy.get(r.programId), r.eligibility.overall, student.classPercentile);
+                          return band ? band[0]!.toUpperCase() + band.slice(1) : "Not enough verified data";
+                        })()}
+                      </dd>
+                      {(() => {
+                        const est = estimateFor(r.programId);
+                        return est ? (
+                          <dd className="text-xs text-muted">
+                            Model estimate: about {Math.max(1, Math.min(9, Math.round(est.probability * 10)))} in 10 applicants with a grade
+                            like yours, learned from {est.n} shared outcomes for this course. Experimental.
+                          </dd>
+                        ) : null;
+                      })()}
+                    </div>
+                  ) : null}
                   <div className="col-span-2">
                     <dt className="text-muted">Next deadline</dt>
                     <dd className="font-semibold">

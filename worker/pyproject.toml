@@ -8,6 +8,7 @@ dependencies = [
     "anthropic>=2.3.0",
     "httpx>=0.28.1",
     "jsonschema>=4.26.0",
+    "numpy>=2.3",
     "protego>=0.7.0",
     "psycopg[binary]>=3.3.6",
     "pydantic>=2.14.1",

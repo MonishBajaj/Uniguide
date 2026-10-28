@@ -30,6 +30,7 @@ class Settings:
     data_gov_api_key: str | None
     crawler_contact: str
     notifier_database_url: str | None = None
+    analyst_database_url: str | None = None
     site_url: str = "http://localhost:3000"
 
     @property
@@ -45,5 +46,6 @@ def get_settings() -> Settings:
         data_gov_api_key=os.environ.get("DATA_GOV_API_KEY") or None,
         crawler_contact=os.environ.get("CRAWLER_CONTACT") or "ops@example.com",
         notifier_database_url=os.environ.get("NOTIFIER_DATABASE_URL") or None,
+        analyst_database_url=os.environ.get("ANALYST_DATABASE_URL") or None,
         site_url=os.environ.get("SITE_URL") or os.environ.get("NEXT_PUBLIC_SITE_URL") or "http://localhost:3000",
     )

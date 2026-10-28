@@ -19,12 +19,13 @@ export async function SiteHeader() {
           { href: "/app/match", label: "My matches" },
           { href: "/app/shortlist", label: "Shortlist" },
           { href: "/app/tracker", label: "Tracker" },
+          { href: "/app/offers", label: "Offers" },
           { href: "/app/writing", label: "Writing" },
           { href: "/app/profile", label: "Profile" },
           { href: "/app/notifications", label: unread ? `Updates (${unread})` : "Updates" },
         ]
       : []),
-    ...(isAdmin ? [{ href: "/admin/review", label: "Review queue" }] : []),
+    ...(isAdmin ? [{ href: "/admin/review", label: "Review queue" }, { href: "/admin/rules", label: "Rules" }] : []),
   ];
 
   return (
