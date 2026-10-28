@@ -132,6 +132,19 @@ def _seed_key(slug: str, cycle: str, fact: dict[str, Any]) -> str:
     return hashlib.sha256(payload.encode()).hexdigest()
 
 
+FACT_TABLES = {"requirement": "requirements", "deadline": "deadlines", "cost_item": "cost_items"}
+
+
+def _refresh_verified_at(conn: Connection, subject: str, fact_id: UUID, fact: dict[str, Any]) -> None:
+    """A re-check of an unchanged fact moves its verified date forward, so the site stops flagging it."""
+    checked = max(str(d) for d in (fact["verified_at"], fact.get("second_checked_at")) if d)
+    conn.execute(
+        f"update {FACT_TABLES[subject]} set verified_at = %s "
+        "where id = %s and (verified_at is null or verified_at < %s)",
+        (checked, fact_id, checked),
+    )
+
+
 def _upsert_institution(conn: Connection, inst: dict[str, Any], source_owner_note: str | None) -> UUID:
     ids = inst.get("ids") or {}
     for column in ("ror_id", "ipeds_unitid", "ukprn", "cricos_provider_code"):
@@ -276,10 +289,13 @@ def load(conn: Connection, roots: Sequence[Path], *, hosted: bool, publish_place
             for fact in cycle["facts"]:
                 key = _seed_key(doc["program"]["slug"], cycle["label"], fact)
                 exists = conn.execute(
-                    "select 1 from fact_versions where proposed ->> '_seed_key' = %s and review_state <> 'rejected'",
+                    "select subject, subject_id from fact_versions "
+                    "where proposed ->> '_seed_key' = %s and review_state <> 'rejected'",
                     (key,),
                 ).fetchone()
                 if exists:
+                    if not placeholder and exists["subject_id"]:
+                        _refresh_verified_at(conn, exists["subject"], exists["subject_id"], fact)
                     report.facts_skipped += 1
                     continue
                 fields, errors = _fact_fields(fact, cycle, inst["country"], inst.get("region"))
