@@ -4,7 +4,7 @@ import { useActionState, useState } from "react";
 import type { Tables } from "@uniguide/db-types";
 import { CURRENCIES, EXAMS, FIELDS, GRADE_SCALES, QUALIFICATIONS } from "@/lib/fields";
 import { LEVELS, DESTINATIONS, countryName, label } from "@/lib/format";
-import { addTestScore, applyCvItems, readCv, saveProfile, type ExtractState, type FormState } from "./actions";
+import { addTestScore, addTrack, applyCvItems, readCv, saveProfile, type ExtractState, type FormState } from "./actions";
 
 function Status({ state }: { state: FormState }) {
   if (!state) return null;
@@ -304,5 +304,68 @@ function Proposal(props: { checked: boolean; onChange: (v: boolean) => void; tit
         {props.confidence < 0.7 ? <span className="block text-xs text-unverified">Low confidence: check this one carefully.</span> : null}
       </span>
     </label>
+  );
+}
+
+const chip = "flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2 text-sm has-[:checked]:border-accent";
+
+/** 1.4 A separate set of targets. Grades and scores still come from the profile. */
+export function TrackForm() {
+  const [state, action, pending] = useActionState<FormState, FormData>(addTrack, null);
+  return (
+    <form action={action} className="grid gap-4">
+      <label className="grid max-w-sm gap-2 text-sm font-semibold">
+        Name
+        <input name="name" required maxLength={60} placeholder="For example: MBA" className="field font-normal" />
+      </label>
+      <fieldset>
+        <legend className="mb-2 text-sm font-semibold">Levels</legend>
+        <div className="flex flex-wrap gap-2">
+          {LEVELS.map((l) => (
+            <label key={l} className={chip}>
+              <input type="checkbox" name="target_levels" value={l} className="accent-[var(--accent)]" />
+              {label(l)}
+            </label>
+          ))}
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend className="mb-2 text-sm font-semibold">Countries (none means anywhere)</legend>
+        <div className="flex flex-wrap gap-2">
+          {DESTINATIONS.map((c) => (
+            <label key={c} className={chip}>
+              <input type="checkbox" name="target_countries" value={c} className="accent-[var(--accent)]" />
+              {countryName(c)}
+            </label>
+          ))}
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend className="mb-2 text-sm font-semibold">Fields of study</legend>
+        <div className="flex flex-wrap gap-2">
+          {Object.entries(FIELDS).map(([code, name]) => (
+            <label key={code} className={chip}>
+              <input type="checkbox" name="target_fields" value={code} className="accent-[var(--accent)]" />
+              {name}
+            </label>
+          ))}
+        </div>
+      </fieldset>
+      <div className="flex flex-wrap items-end gap-3">
+        <label className="grid gap-2 text-sm font-semibold">
+          Budget (optional; otherwise your profile&apos;s)
+          <input name="budget_amount" inputMode="numeric" className="field font-normal" />
+        </label>
+        <label className="grid gap-2 text-sm font-semibold">
+          Currency
+          <select name="budget_currency" defaultValue="" className="field font-normal">
+            <option value="">Not set</option>
+            {CURRENCIES.map((c) => <option key={c} value={c}>{c}</option>)}
+          </select>
+        </label>
+      </div>
+      <Status state={state} />
+      <button disabled={pending} className="btn btn-secondary justify-self-start">{pending ? "Adding…" : "Add track"}</button>
+    </form>
   );
 }

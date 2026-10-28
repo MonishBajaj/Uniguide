@@ -17,6 +17,15 @@ export async function trackProgram(programId: string) {
   redirect(id ? `/app/tracker/${id}` : "/app/tracker?error=no-intake");
 }
 
+/** Moves an application to one of the student's tracks, or back to Main (1.4). */
+export async function setApplicationTrack(applicationId: string, form: FormData) {
+  const value = form.get("track_id");
+  const trackId = typeof value === "string" && z.uuid().safeParse(value).success ? value : null;
+  const { supabase } = await getUser();
+  await supabase.from("applications").update({ track_id: trackId }).eq("id", applicationId);
+  revalidatePath("/app/tracker", "layout");
+}
+
 const STATUSES = ["shortlisted", "preparing", "submitted", "decided", "withdrawn"] as const;
 
 export async function setStatus(applicationId: string, form: FormData) {

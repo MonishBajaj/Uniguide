@@ -23,6 +23,7 @@ import {
   removeCost,
   removeScoreReport,
   saveNotes,
+  setApplicationTrack,
   shareOutcome,
   toggleItem,
   withdrawOutcome,
@@ -33,7 +34,7 @@ export const metadata: Metadata = { title: "Application" };
 export default async function ApplicationPage({ params }: PageProps<"/app/tracker/[id]">) {
   const { id } = await params;
   const { supabase, user } = await getUser();
-  const [{ data: app }, { data: outcome }, { data: consent }, { data: events }, { data: scores }, { data: costs }, { data: profile }, { data: linkedDocs }] = await Promise.all([
+  const [{ data: app }, { data: outcome }, { data: consent }, { data: events }, { data: scores }, { data: costs }, { data: profile }, { data: tracks }, { data: linkedDocs }] = await Promise.all([
     supabase
       .from("applications")
       .select(
@@ -52,6 +53,7 @@ export default async function ApplicationPage({ params }: PageProps<"/app/tracke
     supabase.from("test_scores").select("id, exam, exam_version, total").order("taken_on", { ascending: false }),
     supabase.from("application_costs").select("id, kind, amount, currency, paid_on, note").eq("application_id", id).order("created_at"),
     supabase.from("profiles").select("budget_currency").eq("user_id", user!.id).single(),
+    supabase.from("tracks").select("id, name").order("created_at"),
     supabase
       .from("documents")
       .select("id, kind, question, word_limit, created_at, document_versions(word_count, created_at)")
@@ -81,6 +83,16 @@ export default async function ApplicationPage({ params }: PageProps<"/app/tracke
         <div className="mt-4 flex flex-wrap gap-2">
           {program ? <Link href={`/courses/${program.slug}`} className="btn btn-secondary btn-sm">Course facts and sources</Link> : null}
           <a href={`/app/tracker/calendar.ics?application=${app.id}`} className="btn btn-secondary btn-sm">Add to calendar (.ics)</a>
+          {tracks?.length ? (
+            <form action={setApplicationTrack.bind(null, app.id)} className="flex items-center gap-2">
+              <label htmlFor="track_id" className="text-sm text-muted">Track</label>
+              <select id="track_id" name="track_id" defaultValue={app.track_id ?? ""} className="field py-1 text-sm">
+                <option value="">Main</option>
+                {tracks.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
+              </select>
+              <button className="btn btn-secondary btn-sm">Move</button>
+            </form>
+          ) : null}
           <form action={startLinkedDocument.bind(null, app.id, "why_this_university")}>
             <button className="btn btn-secondary btn-sm">{whyDoc ? "Continue your \u201cWhy this university\u201d" : "Write your \u201cWhy this university\u201d"}</button>
           </form>

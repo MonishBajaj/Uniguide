@@ -1,19 +1,20 @@
 import type { Metadata } from "next";
-import { label } from "@/lib/format";
+import { countryName, label } from "@/lib/format";
 import { profileChecklist } from "@/lib/profile-completeness";
 import { getUser } from "@/lib/supabase/server";
 import Link from "next/link";
-import { deleteTestScore, setAiConsent } from "./actions";
-import { CvReader, ProfileForm, TestScoreForm } from "./forms";
+import { deleteTestScore, removeTrack, setAiConsent } from "./actions";
+import { CvReader, ProfileForm, TestScoreForm, TrackForm } from "./forms";
 
 export const metadata: Metadata = { title: "Profile" };
 
 export default async function ProfilePage() {
   const { supabase, user } = await getUser();
-  const [{ data: profile }, { data: scores }, { data: consent }] = await Promise.all([
+  const [{ data: profile }, { data: scores }, { data: consent }, { data: tracks }] = await Promise.all([
     supabase.from("profiles").select("*").eq("user_id", user!.id).single(),
     supabase.from("test_scores").select("*").order("taken_on", { ascending: false }),
     supabase.from("consents").select("id").eq("kind", "ai_processing").is("withdrawn_at", null).limit(1).maybeSingle(),
+    supabase.from("tracks").select("*").order("created_at"),
   ]);
   if (!profile) return <p>Profile not found.</p>;
   const checklist = profileChecklist(profile, (scores ?? []).length);
@@ -99,6 +100,39 @@ export default async function ProfilePage() {
           </ul>
         )}
         <TestScoreForm />
+      </section>
+
+      <section id="tracks" aria-labelledby="tracks-title" className="grid scroll-mt-24 gap-4 rounded-2xl border border-border bg-surface p-6">
+        <div>
+          <h2 id="tracks-title" className="text-lg font-semibold">Application tracks</h2>
+          <p className="text-sm text-muted">
+            Applying for two different things, such as an MS and an MBA? Give each its own levels, countries, subjects and
+            budget. The targets above are your Main track. Matches and the tracker can then be viewed one track at a time.
+          </p>
+        </div>
+        {(tracks ?? []).length ? (
+          <ul className="grid gap-2">
+            {tracks!.map((t) => (
+              <li key={t.id} className="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-background p-3 text-sm">
+                <span>
+                  <Link href={`/app/match?track=${t.id}`} className="font-semibold underline-offset-2 hover:underline">{t.name}</Link>
+                  <span className="text-muted">
+                    {" · "}{t.target_levels.map(label).join(", ")}
+                    {" · "}{t.target_countries.length ? t.target_countries.map(countryName).join(", ") : "any country"}
+                    {t.budget_amount && t.budget_currency ? ` · budget ${Number(t.budget_amount).toLocaleString("en")} ${t.budget_currency}` : ""}
+                  </span>
+                </span>
+                <form action={removeTrack.bind(null, t.id)}>
+                  <button className="btn btn-secondary btn-sm" aria-label={`Remove the ${t.name} track`}>Remove</button>
+                </form>
+              </li>
+            ))}
+          </ul>
+        ) : null}
+        <details className="rounded-lg border border-border p-4">
+          <summary className="cursor-pointer font-semibold">Add a track</summary>
+          <div className="mt-4"><TrackForm /></div>
+        </details>
       </section>
 
       <section aria-labelledby="sharing" className="grid gap-2 rounded-2xl border border-border bg-surface p-6 text-sm">

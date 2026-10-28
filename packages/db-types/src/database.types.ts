@@ -109,14 +109,14 @@ isOneToOne: false
                   ]
                 },"applications": {
                   Row: {
-                    "awarded_aid": number | null,"awarded_aid_currency": string | null,"created_at": string,"cycle_id": string,"decided_at": string | null,"decision": Database["public"]['Enums']["decision"] | null,"deposit_due_at": string | null,"due_at": string | null,"id": string,"notes": string | null,"offer_accepted_at": string | null,"portal_checked_at": string | null,"status": Database["public"]['Enums']["application_status"],"updated_at": string,"user_id": string
+                    "awarded_aid": number | null,"awarded_aid_currency": string | null,"created_at": string,"cycle_id": string,"decided_at": string | null,"decision": Database["public"]['Enums']["decision"] | null,"deposit_due_at": string | null,"due_at": string | null,"id": string,"notes": string | null,"offer_accepted_at": string | null,"portal_checked_at": string | null,"status": Database["public"]['Enums']["application_status"],"track_id": string | null,"updated_at": string,"user_id": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "awarded_aid"?: number | null,"awarded_aid_currency"?: string | null,"created_at"?: string,"cycle_id": string,"decided_at"?: string | null,"decision"?: Database["public"]['Enums']["decision"] | null,"deposit_due_at"?: string | null,"due_at"?: string | null,"id"?: string,"notes"?: string | null,"offer_accepted_at"?: string | null,"portal_checked_at"?: string | null,"status"?: Database["public"]['Enums']["application_status"],"updated_at"?: string,"user_id": string
+                    "awarded_aid"?: number | null,"awarded_aid_currency"?: string | null,"created_at"?: string,"cycle_id": string,"decided_at"?: string | null,"decision"?: Database["public"]['Enums']["decision"] | null,"deposit_due_at"?: string | null,"due_at"?: string | null,"id"?: string,"notes"?: string | null,"offer_accepted_at"?: string | null,"portal_checked_at"?: string | null,"status"?: Database["public"]['Enums']["application_status"],"track_id"?: string | null,"updated_at"?: string,"user_id": string
                   }
                   Update: {
-                    "awarded_aid"?: number | null,"awarded_aid_currency"?: string | null,"created_at"?: string,"cycle_id"?: string,"decided_at"?: string | null,"decision"?: Database["public"]['Enums']["decision"] | null,"deposit_due_at"?: string | null,"due_at"?: string | null,"id"?: string,"notes"?: string | null,"offer_accepted_at"?: string | null,"portal_checked_at"?: string | null,"status"?: Database["public"]['Enums']["application_status"],"updated_at"?: string,"user_id"?: string
+                    "awarded_aid"?: number | null,"awarded_aid_currency"?: string | null,"created_at"?: string,"cycle_id"?: string,"decided_at"?: string | null,"decision"?: Database["public"]['Enums']["decision"] | null,"deposit_due_at"?: string | null,"due_at"?: string | null,"id"?: string,"notes"?: string | null,"offer_accepted_at"?: string | null,"portal_checked_at"?: string | null,"status"?: Database["public"]['Enums']["application_status"],"track_id"?: string | null,"updated_at"?: string,"user_id"?: string
                   }
                   Relationships: [
                     {
@@ -124,6 +124,12 @@ isOneToOne: false
       columns: ["cycle_id"]
 isOneToOne: false
       referencedRelation: "program_cycles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "applications_track_id_fkey"
+      columns: ["track_id"]
+isOneToOne: false
+      referencedRelation: "tracks"
       referencedColumns: ["id"]
     }
                   ]
@@ -1097,6 +1103,20 @@ isOneToOne: false
                   }
                   Update: {
                     "created_at"?: string,"exam"?: Database["public"]['Enums']["exam_kind"],"exam_version"?: string | null,"id"?: string,"sections"?: NonNullable<Json>,"taken_on"?: string | null,"total"?: number | null,"user_id"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"tracks": {
+                  Row: {
+                    "budget_amount": number | null,"budget_currency": string | null,"created_at": string,"id": string,"name": string,"target_countries": (string)[],"target_fields": (string)[],"target_levels": (Database["public"]['Enums']["program_level"])[],"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "budget_amount"?: number | null,"budget_currency"?: string | null,"created_at"?: string,"id"?: string,"name": string,"target_countries"?: (string)[],"target_fields"?: (string)[],"target_levels": (Database["public"]['Enums']["program_level"])[],"user_id": string
+                  }
+                  Update: {
+                    "budget_amount"?: number | null,"budget_currency"?: string | null,"created_at"?: string,"id"?: string,"name"?: string,"target_countries"?: (string)[],"target_fields"?: (string)[],"target_levels"?: (Database["public"]['Enums']["program_level"])[],"user_id"?: string
                   }
                   Relationships: [
                     

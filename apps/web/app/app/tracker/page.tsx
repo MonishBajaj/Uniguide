@@ -5,6 +5,8 @@ import { daysUntil, deadlineText } from "@/lib/format";
 import { letterProgress, lettersNeeded } from "@/lib/recommendations";
 import { scoreNeeds, sentProgress } from "@/lib/score-sending";
 import { getUser } from "@/lib/supabase/server";
+import { inTrack } from "@/lib/tracks";
+import { TrackSwitcher } from "@/components/track-switcher";
 import { setStatus } from "./actions";
 
 export const metadata: Metadata = { title: "Tracker" };
@@ -18,15 +20,18 @@ const COLUMNS = [
 ] as const;
 
 export default async function TrackerPage({ searchParams }: PageProps<"/app/tracker">) {
-  const view = (await searchParams).view === "table" ? "table" : "board";
+  const params = await searchParams;
+  const view = params.view === "table" ? "table" : "board";
+  const trackFilter = typeof params.track === "string" ? params.track : "all";
   const { supabase } = await getUser();
+  const { data: tracks } = await supabase.from("tracks").select("id, name").order("created_at");
   const { data } = await supabase
     .from("applications")
     .select(
-      "id, status, due_at, decision, portal_checked_at, program_cycles(label, requirements(kind, exam, test_policy, count_required), programs(slug, title, institutions(name, country))), checklist_items(done, deadlines(due_at, timezone, precision)), score_reports(test_scores(exam)), recommendation_requests(status)",
+      "id, status, due_at, decision, portal_checked_at, track_id, program_cycles(label, requirements(kind, exam, test_policy, count_required), programs(slug, title, institutions(name, country))), checklist_items(done, deadlines(due_at, timezone, precision)), score_reports(test_scores(exam)), recommendation_requests(status)",
     )
     .order("due_at", { ascending: true, nullsFirst: false });
-  const apps = (data ?? []).map((a) => ({
+  const apps = (data ?? []).filter((a) => inTrack(a.track_id, trackFilter)).map((a) => ({
     ...a,
     program: a.program_cycles?.programs,
     // Show the next deadline in the institution's own time zone.
@@ -50,13 +55,21 @@ export default async function TrackerPage({ searchParams }: PageProps<"/app/trac
           <p className="mt-2 text-muted">One card per course you shortlist, with its checklist and deadlines.</p>
         </div>
         <div className="flex gap-2">
-          <Link href="/app/tracker?view=board" aria-current={view === "board" ? "page" : undefined} className="btn btn-secondary btn-sm aria-[current=page]:bg-border">Board</Link>
-          <Link href="/app/tracker?view=table" aria-current={view === "table" ? "page" : undefined} className="btn btn-secondary btn-sm aria-[current=page]:bg-border">Table</Link>
+          <Link href={`/app/tracker?view=board${trackFilter !== "all" ? `&track=${trackFilter}` : ""}`} aria-current={view === "board" ? "page" : undefined} className="btn btn-secondary btn-sm aria-[current=page]:bg-border">Board</Link>
+          <Link href={`/app/tracker?view=table${trackFilter !== "all" ? `&track=${trackFilter}` : ""}`} aria-current={view === "table" ? "page" : undefined} className="btn btn-secondary btn-sm aria-[current=page]:bg-border">Table</Link>
           <Link href="/app/recommenders" className="btn btn-secondary btn-sm">Recommenders</Link>
           <Link href="/app/tracker/costs" className="btn btn-secondary btn-sm">Costs</Link>
           <a href="/app/tracker/calendar.ics" className="btn btn-secondary btn-sm">Add all deadlines to my calendar</a>
         </div>
       </header>
+
+      {tracks?.length ? (
+        <TrackSwitcher
+          href={(v) => `/app/tracker?view=${view}${v === "all" ? "" : `&track=${v}`}`}
+          options={[{ value: "all", label: "All" }, { value: "main", label: "Main" }, ...tracks.map((t) => ({ value: t.id, label: t.name }))]}
+          current={trackFilter}
+        />
+      ) : null}
 
       {apps.length === 0 ? (
         <div className="rounded-2xl border border-border bg-surface p-8">

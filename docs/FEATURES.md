@@ -4,7 +4,7 @@ Source: the Feature Bible (100 features), `BACKLOG.md`, and what the running app
 
 **Totals (103 rows):** 16 built · 15 partly built · 53 to build · 5 need an owner decision · 4 deferred to year 2 · 10 cut on purpose.
 
-**Developer B progress (developer-b, October 2026):** 15 more rows built, and 3.3 and 3.4 finished except for A's data. Totals now: 31 built · 9 partly built · 43 to build · 5 need a decision · 5 deferred (14.4 added) · 10 cut. X10 and 13.2 wait on payments.
+**Developer B progress (developer-b, October 2026):** 16 more rows built, and 3.3 and 3.4 finished except for A's data. Totals now: 32 built · 9 partly built · 42 to build · 5 need a decision · 5 deferred (14.4 added) · 10 cut. X10 and 13.2 wait on payments.
 
 Status key: **Built** works today · **Partial** exists, listed gap remains · **To build** not started · **Decision** the owner must settle first · **Deferred** year 2 · **Cut** decided against (BACKLOG). Size: S about 2 days, M about a week, L two weeks or more. Priority: P0 needed for a real launch, P1 next, P2 later, P3 only if time allows.
 
@@ -156,7 +156,7 @@ The student app works end to end behind sign-in, but the catalogue holds six pla
 | P1 | 7.7 | Decision-day timer | Built | S | Built on developer-b: reply-date countdown and a coin-flip gut check. |
 | P1 | X10 | Paywall and upgrade UI | To build | M | Waiting on A's X6 payments backend and the owner's payments decision. |
 | P1 | X13 | Two human raters for the writing eval scores | To build | M | Replace placeholder scores in `apps/web/lib/writing/eval`. |
-| P2 | 1.4 | Multiple application tracks | To build | M | One account, several goals (for example MS and MBA). |
+| P2 | 1.4 | Multiple application tracks | Built | M | Built on developer-b: tracks with their own levels, countries, subjects and budget; matches and the tracker switch per track; the profile's targets stay the Main track. |
 | P2 | 13.2 | Premium analytics dashboard | To build | M | Waiting on payments (X6) and the owner's decision. |
 | P2 | 15.1 | First-generation guide | To build | M | Plain-language hints and a jargon translator. |
 | P2 | 15.2 | Accessibility options | Partial | M | Skip link, landmarks and focus rings exist. Add font size, contrast option and a full audit. |

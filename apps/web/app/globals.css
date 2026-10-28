@@ -80,6 +80,8 @@ p, li, dd {
 .btn-primary:hover:not(:disabled) { background: #265a49; }
 .btn-secondary { background: var(--surface); color: var(--foreground); box-shadow: inset 0 0 0 1px var(--border); }
 .btn-secondary:hover:not(:disabled) { background: var(--surface-2); }
+/* Toggle links (board/table, tracks): the selected one. Plain CSS here outranks Tailwind variants. */
+.btn-secondary[aria-current="page"] { background: var(--border); }
 .btn-sm { font-size: 0.875rem; line-height: 1.25rem; }
 
 .field {

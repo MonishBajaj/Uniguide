@@ -29,6 +29,7 @@ export function resetStudent() {
        delete from shortlists where user_id = '${STUDENT}';
        delete from agency_shares where student_id = '${STUDENT}';
        delete from decision_matrices where user_id = '${STUDENT}';
+       delete from tracks where user_id = '${STUDENT}';
        update profiles set residence_country = 'IN', target_levels = '{master}', target_countries = '{GB,US,DE}',
          home_qualification = 'bachelor_4yr', grade_value = 8.4, grade_scale = 'gpa_10', budget_amount = 60000,
          budget_currency = 'USD', prior_credits = null, prior_credit_system = null, class_percentile = null,
