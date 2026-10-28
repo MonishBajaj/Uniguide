@@ -1,4 +1,5 @@
 export type LanguageRow = {
+  id: string;
   programSlug: string;
   programTitle: string;
   institution: string;

@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { byExam, type LanguageRow } from "./english-tests";
 
+let n = 0;
 const row = (over: Partial<LanguageRow> = {}): LanguageRow => ({
+  id: `r${n++}`,
   programSlug: "msc-x",
   programTitle: "MSc X",
   institution: "X University",

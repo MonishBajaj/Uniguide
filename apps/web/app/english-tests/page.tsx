@@ -24,13 +24,16 @@ export default async function EnglishTests({ searchParams }: PageProps<"/english
   const { data, error } = await supabase
     .from("requirements")
     .select(
-      "exam, exam_version, min_total, min_sections, status, test_policy, program_cycles!inner(programs!inner(slug, title, institutions!inner(name, country)))",
+      "id, exam, exam_version, min_total, min_sections, status, test_policy, program_cycles!inner(is_current, programs!inner(slug, title, institutions!inner(name, country)))",
     )
     .eq("kind", "language_test")
+    .eq("program_cycles.is_current", true)
     .not("exam", "is", null)
+    .order("id")
     .limit(1000);
 
   const rows: LanguageRow[] = (data ?? []).map((r) => ({
+    id: r.id,
     programSlug: r.program_cycles.programs.slug,
     programTitle: r.program_cycles.programs.title,
     institution: r.program_cycles.programs.institutions.name,
@@ -75,7 +78,7 @@ export default async function EnglishTests({ searchParams }: PageProps<"/english
               </h2>
               <ul className="mt-4 grid gap-3">
                 {g.courses.map((c) => (
-                  <li key={`${c.programSlug}-${c.minTotal}`} className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border bg-surface p-4">
+                  <li key={c.id} className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border bg-surface p-4">
                     <div>
                       <Link href={`/courses/${c.programSlug}`} className="font-semibold underline-offset-2 hover:underline">{c.programTitle}</Link>
                       <p className="text-sm text-muted">{c.institution} · {countryName(c.country)}</p>

@@ -1,7 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { groupByMonth, type CalendarDeadline } from "./deadline-calendar";
 
+let n = 0;
 const row = (over: Partial<CalendarDeadline> = {}): CalendarDeadline => ({
+  id: `d${n++}`,
+  applicantCategory: "all",
+  round: null,
   programSlug: "msc-x",
   programTitle: "MSc X",
   institution: "X University",
