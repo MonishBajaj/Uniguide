@@ -994,6 +994,9 @@ isOneToOne: false
 "credit_balance":
 { Args: { "p_uid"?: string }; Returns: number
                            },
+"fact_table":
+{ Args: { "p_subject": Database["public"]['Enums']["fact_subject"] }; Returns: string
+                           },
 "grant_agency_share":
 { Args: { "p_code": string,"p_display_name": string,"p_policy_version": string }; Returns: string
                            },
@@ -1044,6 +1047,9 @@ isOneToOne: false
                            },
 "publish_extracted_version":
 { Args: { "p_version_id": string }; Returns: string
+                           },
+"raise_unknown_fact_subject":
+{ Args: { "p_subject": Database["public"]['Enums']["fact_subject"] }; Returns: string
                            },
 "recompute_coverage":
 { Args: { "p_program_id": string }; Returns: Database["public"]['Enums']["coverage_tier"]
