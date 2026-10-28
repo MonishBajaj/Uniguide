@@ -50,6 +50,14 @@ export const OUTLINES: Record<string, OutlineSection[]> = {
     { id: "fit", title: "One reason this course fits", share: 0.2, questions: ["Which one module, lab or person connects to something new you have done, by name?"] },
     { id: "close", title: "Close", share: 0.1, questions: ["Have you thanked them and given your applicant ID?"] },
   ],
+  // A research master's or doctorate: the question first, then why the student can answer it, here.
+  research_statement: [
+    { id: "question", title: "Your question", share: 0.15, questions: ["What exactly do you want to find out, in one sentence?", "Why does it matter, and to whom?"] },
+    { id: "background", title: "What is known", share: 0.25, questions: ["Which two or three studies is your question built on?", "What gap or disagreement do they leave?"] },
+    { id: "approach", title: "How you would answer it", share: 0.3, questions: ["Which methods and data would you use?", "Which of them have you used before, and on what?"] },
+    { id: "fit", title: "Why here", share: 0.2, questions: ["Which researchers here work on something close, by name and paper?", "Which facilities or data here do you need?"] },
+    { id: "feasibility", title: "Is it doable", share: 0.1, questions: ["What could go wrong, and what would you do then?", "Can a first result come within the first year?"] },
+  ],
   other: [
     { id: "answer", title: "Answer the question", share: 0.7, questions: ["What exactly is the question asking?", "Which experience answers it best?"] },
     { id: "reflect", title: "Reflection", share: 0.3, questions: ["What did you learn, and what changed afterwards?"] },

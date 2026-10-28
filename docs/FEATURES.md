@@ -4,7 +4,7 @@ Source: the Feature Bible (100 features), `BACKLOG.md`, and what the running app
 
 **Totals (103 rows):** 16 built · 15 partly built · 53 to build · 5 need an owner decision · 4 deferred to year 2 · 10 cut on purpose.
 
-**Developer B progress (developer-b, October 2026):** 17 more rows built, and 3.3 and 3.4 finished except for A's data. Totals now: 33 built · 9 partly built · 41 to build · 5 need a decision · 5 deferred (14.4 added) · 10 cut. X10 and 13.2 wait on payments.
+**Developer B progress (developer-b, October 2026):** 18 more rows built, and 3.3 and 3.4 finished except for A's data. Totals now: 34 built · 9 partly built · 40 to build · 5 need a decision · 5 deferred (14.4 added) · 10 cut. X10 and 13.2 wait on payments.
 
 Status key: **Built** works today · **Partial** exists, listed gap remains · **To build** not started · **Decision** the owner must settle first · **Deferred** year 2 · **Cut** decided against (BACKLOG). Size: S about 2 days, M about a week, L two weeks or more. Priority: P0 needed for a real launch, P1 next, P2 later, P3 only if time allows.
 
@@ -160,7 +160,7 @@ The student app works end to end behind sign-in, but the catalogue holds six pla
 | P2 | 13.2 | Premium analytics dashboard | To build | M | Waiting on payments (X6) and the owner's decision. |
 | P2 | 15.1 | First-generation guide | Built | M | Built on developer-b: public `/guide` with the steps in order and a plain-language glossary; dotted terms explain themselves inline on offers and applications. |
 | P2 | 15.2 | Accessibility options | Partial | M | Skip link, landmarks and focus rings exist. Add font size, contrast option and a full audit. |
-| P2 | 5.7 | Research statement workshop | To build | M | Builds on faculty dossiers. |
+| P2 | 5.7 | Research statement workshop | Built | M | Built on developer-b: research statement documents with their own outline, the course's researchers beside the draft, and checks for a stated question and named methods. |
 | P2 | 6.3 | Brag sheet | To build | S | One-page summary for recommenders. After 6.1. |
 | P3 | 11.1 | Reviews and ratings | To build | L | Needs moderation. Not in BACKLOG. |
 | P3 | 11.3 | Ask an alum | To build | L | Not in BACKLOG; needs moderation and legal review. |

@@ -6,6 +6,7 @@ import { getUser } from "@/lib/supabase/server";
 import { loadFaculty } from "@/lib/faculty";
 import { courseMaterial, namedInDraft, WHY_QUESTIONS, type MaterialItem } from "@/lib/why-helper";
 import { outlineFor, STORY_QUESTIONS } from "@/lib/writing/prompts";
+import { researchChecks } from "@/lib/writing/research";
 import { classifyPrompt, PROMPT_TYPES } from "@/lib/writing/supplemental";
 import { segment } from "@/lib/writing/segment";
 import type { RubricResult, ComparisonResult } from "@/lib/writing/review";
@@ -43,7 +44,8 @@ export default async function DocumentPage({ params }: PageProps<"/app/writing/[
   // "Why this university": material from this course's stored facts and its researchers.
   let material: MaterialItem[] = [];
   let institution: string | null = null;
-  if ((doc.kind === "why_this_university" || promptType === "why_us") && doc.application_id) {
+  const isResearch = doc.kind === "research_statement";
+  if ((doc.kind === "why_this_university" || promptType === "why_us" || isResearch) && doc.application_id) {
     const { data: app } = await supabase.from("applications").select("program_cycles(program_id)").eq("id", doc.application_id).maybeSingle();
     const programId = app?.program_cycles?.program_id;
     const [{ data: card }, { data: profile }] = await Promise.all([
@@ -53,10 +55,12 @@ export default async function DocumentPage({ params }: PageProps<"/app/writing/[
     if (card) {
       institution = card.institution_name;
       const faculty = card.level === "master" || card.level === "doctorate" ? await loadFaculty(supabase, card, profile?.research_interests ?? null, 6) : [];
-      material = courseMaterial(card, faculty);
+      // A research statement needs the people, not the city or the format.
+      material = courseMaterial(card, faculty).filter((m) => !isResearch || m.group === "Researchers");
     }
   }
   const named = namedInDraft(latest?.body ?? "", material);
+  const checks = isResearch && latest ? researchChecks(latest.body) : null;
   const countable = material.filter((m) => m.terms.length);
 
   return (
@@ -102,6 +106,30 @@ export default async function DocumentPage({ params }: PageProps<"/app/writing/[
             </ul>
             <Link href="/app/writing/stories" className="justify-self-start underline underline-offset-2">Answer these in your story bank</Link>
           </div>
+        </section>
+      ) : null}
+
+      {isResearch ? (
+        <section aria-labelledby="research-checks" className="grid gap-3 rounded-2xl border border-border bg-surface p-6 text-sm">
+          <h2 id="research-checks" className="text-lg font-semibold">Research statement checks</h2>
+          {checks ? (
+            <ul className="grid gap-2">
+              <li>
+                <span aria-hidden="true" className={checks.questionSentences.length ? "text-verified" : "text-unverified"}>{checks.questionSentences.length ? "✓ " : "○ "}</span>
+                {checks.questionSentences.length
+                  ? `States a research question (${checks.questionSentences.join(", ")}). Could someone else tell when it has been answered?`
+                  : "No research question found yet. What exactly do you want to find out?"}
+              </li>
+              <li>
+                <span aria-hidden="true" className={checks.methods.length ? "text-verified" : "text-unverified"}>{checks.methods.length ? "✓ " : "○ "}</span>
+                {checks.methods.length
+                  ? `Names how you would answer it: ${checks.methods.join(", ")}. Have you used these before, and on what?`
+                  : "No method named yet. How would you answer the question, and with what data?"}
+              </li>
+            </ul>
+          ) : (
+            <p className="text-muted">Save a draft to check whether it states a question and names how you would answer it.</p>
+          )}
         </section>
       ) : null}
 

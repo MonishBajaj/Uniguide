@@ -39,7 +39,7 @@ export default async function ApplicationPage({ params }: PageProps<"/app/tracke
     supabase
       .from("applications")
       .select(
-        "*, program_cycles(label, requirements(kind, exam, test_policy, count_required), programs(slug, title, official_url, institutions(name))), checklist_items(*, deadlines(due_at, timezone, precision, status), requirements(status)), score_reports(id, sent_on, received_on, test_scores(exam, exam_version, total)), recommendation_requests(id, status, due_on, recommenders(name))",
+        "*, program_cycles(label, requirements(kind, exam, test_policy, count_required), programs(slug, title, level, official_url, institutions(name))), checklist_items(*, deadlines(due_at, timezone, precision, status), requirements(status)), score_reports(id, sent_on, received_on, test_scores(exam, exam_version, total)), recommendation_requests(id, status, due_on, recommenders(name))",
       )
       .eq("id", id)
       .maybeSingle(),
@@ -59,7 +59,7 @@ export default async function ApplicationPage({ params }: PageProps<"/app/tracke
       .from("documents")
       .select("id, kind, question, word_limit, created_at, document_versions(word_count, created_at)")
       .eq("application_id", id)
-      .in("kind", ["continued_interest", "why_this_university", "supplemental"])
+      .in("kind", ["continued_interest", "why_this_university", "supplemental", "research_statement"])
       .order("created_at"),
   ]);
   if (!app) notFound();
@@ -69,6 +69,8 @@ export default async function ApplicationPage({ params }: PageProps<"/app/tracke
   const letters = letterProgress(app.recommendation_requests, lettersNeeded(app.program_cycles?.requirements ?? []));
   const whyDoc = (linkedDocs ?? []).find((d) => d.kind === "why_this_university");
   const supplementals = (linkedDocs ?? []).filter((d) => d.kind === "supplemental");
+  const researchDoc = (linkedDocs ?? []).find((d) => d.kind === "research_statement");
+  const researchLevel = program?.level === "master" || program?.level === "doctorate";
   const needs = scoreNeeds(app.program_cycles?.requirements ?? []);
   const reports = [...app.score_reports].sort((a, b) => a.sent_on.localeCompare(b.sent_on));
   const progress = sentProgress(needs, reports.flatMap((r) => (r.test_scores ? [r.test_scores.exam] : [])));
@@ -97,6 +99,11 @@ export default async function ApplicationPage({ params }: PageProps<"/app/tracke
           <form action={startLinkedDocument.bind(null, app.id, "why_this_university")}>
             <button className="btn btn-secondary btn-sm">{whyDoc ? "Continue your \u201cWhy this university\u201d" : "Write your \u201cWhy this university\u201d"}</button>
           </form>
+          {researchLevel ? (
+            <form action={startLinkedDocument.bind(null, app.id, "research_statement")}>
+              <button className="btn btn-secondary btn-sm">{researchDoc ? "Continue your research statement" : "Write a research statement"}</button>
+            </form>
+          ) : null}
         </div>
       </header>
 

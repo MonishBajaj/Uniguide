@@ -110,6 +110,7 @@ class DocumentKind(StrEnum):
     OTHER = "other"
     CONTINUED_INTEREST = "continued_interest"
     SUPPLEMENTAL = "supplemental"
+    RESEARCH_STATEMENT = "research_statement"
 
 
 class ExamKind(StrEnum):

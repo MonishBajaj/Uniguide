@@ -15,7 +15,7 @@ const PENDING = "A parent or guardian needs to confirm your account before we ca
 export async function createDocument(form: FormData) {
   const parsed = z
     .object({
-      kind: z.enum(["statement_of_purpose", "personal_statement", "why_this_university", "continued_interest", "supplemental", "other"]),
+      kind: z.enum(["statement_of_purpose", "personal_statement", "why_this_university", "continued_interest", "supplemental", "research_statement", "other"]),
       title: z.string().trim().min(1).max(200),
       word_limit: z.preprocess((v) => (v ? Number(v) : null), z.number().int().min(50).max(5000).nullable()),
       question: z.preprocess((v) => (v ? String(v).trim() : null), z.string().max(2000).nullable()),
@@ -44,7 +44,7 @@ const Authorship = z.object({
  * "why this university" statement for any application, a letter of continued interest only when
  * the application is waitlisted.
  */
-export async function startLinkedDocument(applicationId: string, kind: "why_this_university" | "continued_interest") {
+export async function startLinkedDocument(applicationId: string, kind: "why_this_university" | "continued_interest" | "research_statement") {
   const { supabase, user } = await getUser();
   const { data: existing } = await supabase
     .from("documents")
@@ -64,7 +64,9 @@ export async function startLinkedDocument(applicationId: string, kind: "why_this
   const title =
     kind === "continued_interest"
       ? `Letter of continued interest: ${program?.title ?? "course"}`
-      : `Why ${program?.institutions?.name ?? "this university"}: ${program?.title ?? "course"}`;
+      : kind === "research_statement"
+        ? `Research statement: ${program?.title ?? "course"}`
+        : `Why ${program?.institutions?.name ?? "this university"}: ${program?.title ?? "course"}`;
   const { data, error } = await supabase
     .from("documents")
     .insert({
