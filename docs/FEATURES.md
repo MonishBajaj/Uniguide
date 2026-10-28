@@ -173,7 +173,7 @@ The student app works end to end behind sign-in, but the catalogue holds six pla
 
 ### Working agreement
 
-- **Branches.** One branch per feature row, named by ID (for example `feat/4-5-score-sending`). Plain commit messages, no Claude co-author line.
+- **Branches.** Developer B pushes all work to `developer-b`, one commit per feature row, each starting with its ID (for example `4.5 Track which scores went to which school`). A draft pull request from that branch runs CI on every push. Developer A uses one branch per feature row, named by ID (for example `feat/x1-real-seed`). Plain commit messages, no Claude co-author line.
 - **Migrations.** A uses timestamps starting `202611`, B starts `202612`, so filenames never collide. Both add pgTAP tests, and RLS is mandatory (a test fails otherwise).
 - **Generated files.** `packages/db-types/src/database.types.ts` and `worker/.../db_enums.py` are regenerated with `pnpm db:types` after merging, never hand-merged.
 - **Shared files.** `globals.css`, `site-header.tsx` (navigation), `supabase/seed.sql`, `README.md` and `BACKLOG.md` are touched by both. Keep those edits small and merge them first.
