@@ -39,4 +39,25 @@ describe("compareCountries", () => {
   it("keeps the requested order of countries", () => {
     expect(compareCountries(["US", "GB"], [], []).map((c) => c.code)).toEqual(["US", "GB"]);
   });
+
+  it("never lets a rule for one residence or one region stand for the whole country", () => {
+    const rules = [
+      rule({ id: "in-only", kind: "work_hours", hoursPerWeek: 10, appliesTo: ["IN"] }),
+      rule({ id: "london", kind: "proof_of_funds", amount: 1300, currency: "GBP", period: "per_month", region: "london" }),
+    ];
+    const [gb] = compareCountries(["GB"], rules, []);
+    expect(gb.workHours).toBeNull();
+    expect(gb.fundsRule).toBeNull();
+  });
+
+  it("prefers the most recently verified rule and needs an amount for funds", () => {
+    const rules = [
+      rule({ id: "untyped", kind: "proof_of_funds", amount: null }),
+      rule({ id: "old", kind: "post_study_work", months: 24 }),
+      rule({ id: "new", kind: "post_study_work", months: 36 }),
+    ];
+    const [gb] = compareCountries(["GB"], rules.map((r, i) => ({ ...r, verifiedAt: `2026-0${i + 1}-01` })), []);
+    expect(gb.fundsRule).toBeNull();
+    expect(gb.postStudy?.id).toBe("new");
+  });
 });

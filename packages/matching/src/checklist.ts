@@ -5,6 +5,8 @@ export interface ChecklistDeadline extends DeadlineFact {
   owningSystem: string;
 }
 
+const NOT_APPLICATION_TASKS = new Set(["visa_step", "post_study_work", "work_hours"]);
+
 export interface CountryRule {
   id: string;
   kind: string;
@@ -23,6 +25,7 @@ export interface CountryRule {
   region?: string | null;
   step?: number | null;
   evidenceQuote?: string | null;
+  verifiedAt?: string | null;
 }
 
 export interface ChecklistItem {
@@ -106,7 +109,11 @@ export function buildChecklist(
   }
 
   // Steps that depend on where the student comes from (e.g. APS for Germany), before anything else.
-  for (const rule of countryRules.filter((r) => r.kind !== "visa_info")) {
+  // Visa-stage and informational rules (steps after an offer, work rights, regional funds) are not application tasks.
+  const applicationRules = countryRules.filter(
+    (r) => r.kind !== "visa_info" && !NOT_APPLICATION_TASKS.has(r.kind) && !(r.kind === "proof_of_funds" && r.region),
+  );
+  for (const rule of applicationRules) {
     push({ kind: "system_step", title: rule.title, details: rule.details ?? undefined, link: rule.link ?? undefined, dueAt: due, deadlineId: mainId });
   }
 

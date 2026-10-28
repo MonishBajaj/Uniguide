@@ -17,7 +17,7 @@ const REASONS: Record<Extract<FundsResult, { ok: false }>["reason"], string> = {
   no_verified_rule: "This country's proof of funds amount is not verified yet. Check the official visa page.",
   region_required: "The amount depends on where you will live. Choose a region.",
   currency_mismatch: "The course's tuition is published in a different currency from the visa amount, so we cannot add them.",
-  no_tuition: "This course has no published tuition yet, so we cannot total the amount. The visa amount alone is on the official page.",
+  no_tuition: "This course has no verified international tuition yet, so we cannot total the amount. The visa amount alone is on the official page.",
 };
 
 export default async function FundsPage({ searchParams }: PageProps<"/visas/funds">) {
@@ -36,15 +36,17 @@ export default async function FundsPage({ searchParams }: PageProps<"/visas/fund
   let tuitionFact: ReturnType<typeof firstYearTuition> = null;
   let rules: ReturnType<typeof toCountryRule>[] = [];
   let approx: { amount: number; currency: string } | null = null;
+  let regions: string[] = [];
   if (card) {
     const [{ data: ruleRows }, cycles, fx] = await Promise.all([
-      supabase.from("country_rules").select("*").eq("destination", card.country!).eq("kind", "proof_of_funds"),
+      supabase.from("country_rules").select("*").eq("destination", card.country!).eq("kind", "proof_of_funds").order("verified_at", { ascending: false, nullsFirst: false }),
       loadCurrentCycles(supabase, [card.id!]),
       loadFx(supabase),
     ]);
     rules = (ruleRows ?? []).map(toCountryRule);
     const applicable = [...rulesFor(rules, card.country!, from && /^[A-Z]{2}$/.test(from) ? from : null, "proof_of_funds")];
-    tuitionFact = firstYearTuition(toProgramInput(card, cycles.get(card.id!)));
+    tuitionFact = firstYearTuition(toProgramInput(card, cycles.get(card.id!)), { verifiedOnly: true });
+    regions = [...new Set(applicable.filter((r) => r.status === "verified" && r.region).map((r) => r.region as string))].sort();
     result = requiredFunds(applicable, card.country!, region, tuitionFact);
     if (result.ok && currency && /^[A-Z]{3}$/.test(currency) && currency !== result.currency) {
       const c = convert(result.total, result.currency, currency, fx);
@@ -70,9 +72,14 @@ export default async function FundsPage({ searchParams }: PageProps<"/visas/fund
             {(courses ?? []).map((c) => <option key={c.slug} value={c.slug}>{c.title}</option>)}
           </select>
         </label>
-        <label className="grid gap-1 text-sm">Region (if the amount depends on it)
-          <input name="region" defaultValue={region ?? ""} maxLength={60} className="field" />
-        </label>
+        {regions.length > 0 ? (
+          <label className="grid gap-1 text-sm">Region
+            <select name="region" defaultValue={region ?? ""} className="field">
+              <option value="">Rest of the country</option>
+              {regions.map((r) => <option key={r} value={r}>{r.charAt(0).toUpperCase() + r.slice(1)}</option>)}
+            </select>
+          </label>
+        ) : null}
         <label className="grid gap-1 text-sm">Where you live now
           <select name="from" defaultValue={from ?? ""} className="field">
             <option value="">Not stated</option>
@@ -87,7 +94,7 @@ export default async function FundsPage({ searchParams }: PageProps<"/visas/fund
 
       {!card ? null : result === null ? null : result.ok ? (
         <section aria-labelledby="total" className="grid gap-4 rounded-2xl border border-border bg-surface p-6">
-          <h2 id="total" className="text-2xl font-semibold">{money(result.total, result.currency)}</h2>
+          <h2 id="total" className="text-2xl font-semibold">{money(Math.ceil(result.total), result.currency)}</h2>
           <dl className="grid gap-2 text-sm">
             <div className="flex justify-between gap-4"><dt className="text-muted">Living costs ({countryName(card.country!)})</dt><dd>{money(result.living, result.currency)}</dd></div>
             <div className="flex justify-between gap-4"><dt className="text-muted">First year tuition ({card.title})</dt><dd>{money(result.tuition, result.currency)}</dd></div>

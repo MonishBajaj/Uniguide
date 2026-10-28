@@ -146,28 +146,48 @@ export function baseInCurrency(cost: CostScenarios, currency: string): number | 
 }
 
 /**
- * What the first year of tuition costs, on the course's own cost basis, in the tuition currency.
- * Null when there is no mandatory tuition fact or the basis needs a figure the course does not publish.
+ * What the first year of tuition costs, on the course's own cost basis, in the tuition currency, and never more
+ * than the whole course costs. With `verifiedOnly` (for visa money) only a verified fee for international or all
+ * applicants counts, preferring the international one. Null when no fee qualifies or the basis needs a figure
+ * the course does not publish.
  */
-export function firstYearTuition(program: ProgramInput): { amount: number; currency: string; assumption?: string } | null {
-  const tuition = program.costs.find((c) => c.mandatory && c.kind === "tuition");
+export function firstYearTuition(
+  program: ProgramInput,
+  options: { verifiedOnly?: boolean } = {},
+): { amount: number; currency: string; assumption?: string } | null {
+  let fees = program.costs.filter((c) => c.mandatory && c.kind === "tuition");
+  if (options.verifiedOnly) {
+    fees = fees.filter((c) => c.status === "verified" && (c.applicantCategory === "international" || c.applicantCategory === "all"));
+    fees.sort((a, b) => Number(b.applicantCategory === "international") - Number(a.applicantCategory === "international"));
+  }
+  const tuition = fees[0];
   if (!tuition) return null;
   const months = program.durationMonths ?? null;
-  const { currency, base } = tuition;
+  let perYear: number | null;
+  let assumption: string | undefined;
   switch (tuition.basis) {
     case "per_year":
-      return { amount: base, currency };
-    case "per_term":
-      return { amount: base * TERMS_PER_YEAR, currency, assumption: `Per-term fees assume ${TERMS_PER_YEAR} terms a year.` };
-    case "per_month":
-      return { amount: base * Math.min(12, months ?? 12), currency };
-    case "per_credit": {
-      if (program.requiredCredits == null || months == null || months <= 0) return null;
-      const creditsPerYear = program.requiredCredits / (months / 12);
-      return { amount: base * Math.min(creditsPerYear, program.requiredCredits), currency, assumption: "Credits are assumed to be spread evenly over the course." };
-    }
     case "total":
     case "one_off":
-      return { amount: months != null && months > 12 ? (base * 12) / months : base, currency, assumption: months != null && months > 12 ? "The total fee is assumed to be spread evenly over the course." : undefined };
+      perYear = 1;
+      break;
+    case "per_term":
+      perYear = TERMS_PER_YEAR;
+      break;
+    case "per_month":
+      perYear = 12;
+      break;
+    case "per_credit":
+      if (program.requiredCredits == null || months == null || months <= 0) return null;
+      perYear = program.requiredCredits / (months / 12);
+      assumption = "Credits are assumed to be spread evenly over the course.";
+      break;
   }
+  const whole = multiplierFor(tuition, program);
+  const multiplier = whole.value == null ? perYear : Math.min(perYear, whole.value);
+  return {
+    amount: tuition.base * multiplier,
+    currency: tuition.currency,
+    assumption: tuition.basis === "per_term" ? whole.assumption : assumption,
+  };
 }

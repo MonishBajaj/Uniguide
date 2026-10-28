@@ -15,7 +15,12 @@ export function compareCountries(
   tuition: { country: string; amount: number; currency: string }[],
 ): CountryColumn[] {
   return codes.map((code) => {
-    const verified = (kind: string) => rules.find((r) => r.destination === code && r.kind === kind && r.status === "verified") ?? null;
+    // Only verified rules that hold for everyone in the country, newest verification first. A rule for one
+    // residence or one region must not stand for the whole country.
+    const general = rules
+      .filter((r) => r.destination === code && r.status === "verified" && (r.appliesTo ?? []).length === 0 && !r.region)
+      .sort((x, y) => (y.verifiedAt ?? "").localeCompare(x.verifiedAt ?? ""));
+    const verified = (kind: string) => general.find((r) => r.kind === kind) ?? null;
     const mine = tuition.filter((t) => t.country === code);
     const counts = new Map<string, number>();
     for (const t of mine) counts.set(t.currency, (counts.get(t.currency) ?? 0) + 1);
@@ -24,7 +29,7 @@ export function compareCountries(
     return {
       code,
       tuitionRange: currency ? { low: Math.min(...amounts), high: Math.max(...amounts), currency, courses: amounts.length } : null,
-      fundsRule: rules.find((r) => r.destination === code && r.kind === "proof_of_funds" && r.status === "verified" && !r.region) ?? verified("proof_of_funds"),
+      fundsRule: general.find((r) => r.kind === "proof_of_funds" && r.amount != null) ?? null,
       postStudy: verified("post_study_work"),
       workHours: verified("work_hours"),
     };

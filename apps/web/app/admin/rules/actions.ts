@@ -9,6 +9,7 @@ import { createClient } from "@/lib/supabase/server";
 const codes = (v: FormDataEntryValue | null) =>
   String(v ?? "").split(",").map((c) => c.trim().toUpperCase()).filter((c) => /^[A-Z]{2}$/.test(c));
 
+const optionalInt = z.preprocess((v) => (v === "" || v === null ? undefined : Number(v)), z.number().int().min(1).optional());
 const optionalNumber = z.preprocess((v) => (v === "" || v === null ? undefined : Number(v)), z.number().nonnegative().optional());
 
 const RuleInput = z
@@ -22,10 +23,10 @@ const RuleInput = z
     amount: optionalNumber,
     currency: z.preprocess((v) => (v === "" ? undefined : String(v).toUpperCase()), z.string().regex(/^[A-Z]{3}$/).optional()),
     period: z.preprocess((v) => (v === "" ? undefined : v), z.enum(["per_month", "per_year", "total"]).optional()),
-    months: optionalNumber,
-    hours_per_week: optionalNumber,
+    months: optionalInt,
+    hours_per_week: optionalInt,
     region: z.string().trim().max(60),
-    step: optionalNumber,
+    step: z.preprocess((v) => (v === "" || v === null ? undefined : Number(v)), z.number().int().min(0).optional()),
   })
   .superRefine((v, ctx) => {
     const need = (ok: boolean, message: string) => ok || ctx.addIssue({ code: "custom", message });
