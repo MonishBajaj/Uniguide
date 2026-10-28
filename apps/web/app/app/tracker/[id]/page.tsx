@@ -3,20 +3,33 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { checkedAgo, describeEvent } from "@/lib/application-events";
 import { CURRENCIES } from "@/lib/fields";
+import { scoreNeeds, sentProgress } from "@/lib/score-sending";
 import { daysUntil, deadlineText, label, shortDate } from "@/lib/format";
 import { getUser } from "@/lib/supabase/server";
-import { addItem, deleteApplication, logPortal, recordDecision, saveNotes, shareOutcome, toggleItem, withdrawOutcome } from "../actions";
+import {
+  addItem,
+  deleteApplication,
+  logPortal,
+  markScoreReceived,
+  recordDecision,
+  recordScoreSent,
+  removeScoreReport,
+  saveNotes,
+  shareOutcome,
+  toggleItem,
+  withdrawOutcome,
+} from "../actions";
 
 export const metadata: Metadata = { title: "Application" };
 
 export default async function ApplicationPage({ params }: PageProps<"/app/tracker/[id]">) {
   const { id } = await params;
   const { supabase } = await getUser();
-  const [{ data: app }, { data: outcome }, { data: consent }, { data: events }] = await Promise.all([
+  const [{ data: app }, { data: outcome }, { data: consent }, { data: events }, { data: scores }] = await Promise.all([
     supabase
       .from("applications")
       .select(
-        "*, program_cycles(label, programs(slug, title, official_url, institutions(name))), checklist_items(*, deadlines(due_at, timezone, precision, status), requirements(status))",
+        "*, program_cycles(label, requirements(kind, exam, test_policy), programs(slug, title, official_url, institutions(name))), checklist_items(*, deadlines(due_at, timezone, precision, status), requirements(status)), score_reports(id, sent_on, received_on, test_scores(exam, exam_version, total))",
       )
       .eq("id", id)
       .maybeSingle(),
@@ -28,10 +41,16 @@ export default async function ApplicationPage({ params }: PageProps<"/app/tracke
       .eq("application_id", id)
       .order("created_at", { ascending: false })
       .limit(50),
+    supabase.from("test_scores").select("id, exam, exam_version, total").order("taken_on", { ascending: false }),
   ]);
   if (!app) notFound();
   const program = app.program_cycles?.programs;
   const items = [...app.checklist_items].sort((a, b) => a.sort - b.sort);
+  const needs = scoreNeeds(app.program_cycles?.requirements ?? []);
+  const reports = [...app.score_reports].sort((a, b) => a.sent_on.localeCompare(b.sent_on));
+  const progress = sentProgress(needs, reports.flatMap((r) => (r.test_scores ? [r.test_scores.exam] : [])));
+  const scoreName = (t: { exam: string; exam_version: string | null; total: number | null }) =>
+    `${label(t.exam)}${t.exam_version ? ` (${t.exam_version})` : ""}${t.total != null ? ` ${t.total}` : ""}`;
 
   return (
     <div className="grid gap-8">
@@ -83,6 +102,62 @@ export default async function ApplicationPage({ params }: PageProps<"/app/tracke
           <input id="new-due" name="due" type="date" className="field max-w-[180px]" />
           <button className="btn btn-secondary">Add</button>
         </form>
+      </section>
+
+      <section aria-labelledby="scores" className="grid gap-4 rounded-2xl border border-border bg-surface p-6">
+        <div>
+          <h2 id="scores" className="text-lg font-semibold">Scores sent</h2>
+          {needs.length ? (
+            <p className="text-sm text-muted">
+              This course asks for {needs.filter((n) => n.required).map((n) => n.label).join(" and ") || "no required tests"}
+              {needs.some((n) => !n.required) ? `; optional: ${needs.filter((n) => !n.required).map((n) => n.label).join(", ")}` : ""}.
+              {progress.needed ? ` Sent ${progress.sent} of ${progress.needed}.` : ""} Confirm on the official page.
+            </p>
+          ) : (
+            <p className="text-sm text-muted">No test requirements are published for this course yet. Check the official page.</p>
+          )}
+        </div>
+        {reports.length ? (
+          <ul className="grid gap-2 text-sm">
+            {reports.map((r) => (
+              <li key={r.id} className="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-background p-3">
+                <span>
+                  <span className="font-semibold">{r.test_scores ? scoreName(r.test_scores) : "Score"}</span>
+                  <span className="block text-muted">
+                    Sent {shortDate(r.sent_on)}{r.received_on ? ` · received ${shortDate(r.received_on)}` : " · not confirmed as received yet"}
+                  </span>
+                </span>
+                <span className="flex flex-wrap items-center gap-2">
+                  {r.received_on ? null : (
+                    <form action={markScoreReceived.bind(null, r.id)} className="flex items-center gap-2">
+                      <label className="sr-only" htmlFor={`recv-${r.id}`}>Date received</label>
+                      <input id={`recv-${r.id}`} type="date" name="received_on" required min={r.sent_on} className="field py-1 text-sm" />
+                      <button className="btn btn-secondary btn-sm">Mark received</button>
+                    </form>
+                  )}
+                  <form action={removeScoreReport.bind(null, r.id)}>
+                    <button className="btn btn-secondary btn-sm" aria-label={`Remove ${r.test_scores ? scoreName(r.test_scores) : "score"}`}>Remove</button>
+                  </form>
+                </span>
+              </li>
+            ))}
+          </ul>
+        ) : null}
+        {(scores ?? []).length ? (
+          <form action={recordScoreSent.bind(null, app.id)} className="flex flex-wrap gap-2">
+            <label className="sr-only" htmlFor="send-score">Score</label>
+            <select id="send-score" name="test_score_id" required className="field max-w-xs">
+              {(scores ?? []).map((t) => <option key={t.id} value={t.id}>{scoreName(t)}</option>)}
+            </select>
+            <label className="sr-only" htmlFor="send-date">Date sent</label>
+            <input id="send-date" type="date" name="sent_on" required className="field max-w-[180px]" />
+            <button className="btn btn-secondary">Record score sent</button>
+          </form>
+        ) : (
+          <p className="text-sm">
+            Add your test scores on your <Link href="/app/profile" className="underline underline-offset-2">profile</Link> to record sending them.
+          </p>
+        )}
       </section>
 
       <section aria-labelledby="notes" className="grid gap-3 rounded-2xl border border-border bg-surface p-6">

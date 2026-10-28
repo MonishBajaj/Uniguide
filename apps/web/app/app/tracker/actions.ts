@@ -126,3 +126,29 @@ export async function logPortal(applicationId: string, kind: "portal_check" | "n
   await supabase.from("application_events").insert({ application_id: applicationId, user_id: user.id, kind, note: note || null });
   revalidatePath("/app/tracker", "layout");
 }
+
+const ScoreSent = z.object({ test_score_id: z.string().uuid(), sent_on: z.iso.date() });
+
+/** Records that one of the student's own scores was sent to this application. */
+export async function recordScoreSent(applicationId: string, form: FormData) {
+  const parsed = ScoreSent.safeParse(Object.fromEntries(form));
+  if (!parsed.success) return;
+  const { supabase, user } = await getUser();
+  if (!user) return;
+  await supabase.from("score_reports").insert({ user_id: user.id, application_id: applicationId, ...parsed.data });
+  revalidatePath("/app/tracker", "layout");
+}
+
+export async function markScoreReceived(reportId: string, form: FormData) {
+  const received = z.iso.date().safeParse(form.get("received_on"));
+  if (!received.success) return;
+  const { supabase } = await getUser();
+  await supabase.from("score_reports").update({ received_on: received.data }).eq("id", reportId);
+  revalidatePath("/app/tracker", "layout");
+}
+
+export async function removeScoreReport(reportId: string) {
+  const { supabase } = await getUser();
+  await supabase.from("score_reports").delete().eq("id", reportId);
+  revalidatePath("/app/tracker", "layout");
+}

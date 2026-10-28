@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { checkedAgo } from "@/lib/application-events";
 import { daysUntil, deadlineText } from "@/lib/format";
+import { scoreNeeds, sentProgress } from "@/lib/score-sending";
 import { getUser } from "@/lib/supabase/server";
 import { setStatus } from "./actions";
 
@@ -21,7 +22,7 @@ export default async function TrackerPage({ searchParams }: PageProps<"/app/trac
   const { data } = await supabase
     .from("applications")
     .select(
-      "id, status, due_at, decision, portal_checked_at, program_cycles(label, programs(slug, title, institutions(name, country))), checklist_items(done, deadlines(due_at, timezone, precision))",
+      "id, status, due_at, decision, portal_checked_at, program_cycles(label, requirements(kind, exam, test_policy), programs(slug, title, institutions(name, country))), checklist_items(done, deadlines(due_at, timezone, precision)), score_reports(test_scores(exam))",
     )
     .order("due_at", { ascending: true, nullsFirst: false });
   const apps = (data ?? []).map((a) => ({
@@ -33,6 +34,10 @@ export default async function TrackerPage({ searchParams }: PageProps<"/app/trac
       .sort((x, y) => x.due_at.localeCompare(y.due_at))[0],
     done: a.checklist_items.filter((i) => i.done).length,
     total: a.checklist_items.length,
+    scores: sentProgress(
+      scoreNeeds(a.program_cycles?.requirements ?? []),
+      a.score_reports.flatMap((r) => (r.test_scores ? [r.test_scores.exam] : [])),
+    ),
   }));
 
   return (
@@ -68,6 +73,7 @@ export default async function TrackerPage({ searchParams }: PageProps<"/app/trac
                     <p className="text-muted">{a.program?.institutions?.name}</p>
                     <p>{a.next ? `Due ${deadlineText(a.next.due_at, a.next.timezone, a.next.precision)} (${daysUntil(a.next.due_at)} days)` : "No deadline known"}</p>
                     <p className="text-muted">{a.done} of {a.total} steps done</p>
+                    {a.scores.needed ? <p className="text-muted">Scores sent: {a.scores.sent} of {a.scores.needed}</p> : null}
                     <form action={setStatus.bind(null, a.id)} className="grid grid-cols-[1fr_auto] gap-2">
                       <label className="sr-only" htmlFor={`s-${a.id}`}>Move to</label>
                       <select id={`s-${a.id}`} name="status" defaultValue={a.status} className="field py-1 text-sm">

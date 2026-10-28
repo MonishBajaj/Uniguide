@@ -831,6 +831,32 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"score_reports": {
+                  Row: {
+                    "application_id": string,"created_at": string,"id": string,"note": string | null,"received_on": string | null,"sent_on": string,"test_score_id": string,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "application_id": string,"created_at"?: string,"id"?: string,"note"?: string | null,"received_on"?: string | null,"sent_on": string,"test_score_id": string,"user_id": string
+                  }
+                  Update: {
+                    "application_id"?: string,"created_at"?: string,"id"?: string,"note"?: string | null,"received_on"?: string | null,"sent_on"?: string,"test_score_id"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "score_reports_application_id_fkey"
+      columns: ["application_id"]
+isOneToOne: false
+      referencedRelation: "applications"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "score_reports_test_score_id_fkey"
+      columns: ["test_score_id"]
+isOneToOne: false
+      referencedRelation: "test_scores"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"shortlists": {
                   Row: {
                     "created_at": string,"cycle_id": string | null,"eligibility": Json | null,"fit_score": number | null,"id": string,"note": string | null,"program_id": string,"user_id": string
@@ -1044,6 +1070,9 @@ isOneToOne: false
 { Args: { "p_code": string }; Returns: {
               "country": string,"id": string,"name": string,"website": string
             }[]
+                           },
+"owns_application_and_score":
+{ Args: { "p_application": string,"p_score": string }; Returns: boolean
                            },
 "parent_can_see":
 { Args: { "p_student": string }; Returns: boolean
