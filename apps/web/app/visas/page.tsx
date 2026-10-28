@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { FactBadge } from "@/components/facts";
-import { countryName } from "@/lib/format";
+import { rulesFor } from "@uniguide/matching";
+import { toCountryRule } from "@/lib/country-rules";
+import { COUNTRIES, countryName } from "@/lib/format";
+import { orderSteps } from "@/lib/visa-steps";
 import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
@@ -27,15 +30,26 @@ const PREP = [
   },
 ];
 
-export default async function VisasPage() {
+/** Kinds listed in their own blocks rather than in the general list. */
+const OWN_BLOCK = new Set(["visa_step", "post_study_work", "work_hours"]);
+
+export default async function VisasPage({ searchParams }: PageProps<"/visas">) {
+  const raw = (await searchParams).from;
+  const from = typeof raw === "string" && /^[A-Za-z]{2}$/.test(raw) ? raw.toUpperCase() : null;
   const supabase = await createClient();
   const { data: rules } = await supabase
     .from("country_rules")
-    .select("id, destination, applies_to, kind, title, details, link, status, evidence_quote")
+    .select("*")
     .order("destination")
     .order("kind", { ascending: false });
   const byCountry = new Map<string, NonNullable<typeof rules>>();
   for (const r of rules ?? []) byCountry.set(r.destination, [...(byCountry.get(r.destination) ?? []), r]);
+  // With a residence chosen, show only the rules that apply to it; otherwise show all, each labelled.
+  const visible = (country: string, list: NonNullable<typeof rules>) => {
+    if (!from) return list;
+    const ids = new Set(rulesFor(list.map(toCountryRule), country, from).map((r) => r.id));
+    return list.filter((r) => ids.has(r.id));
+  };
 
   return (
     <div className="mx-auto grid max-w-5xl gap-12 px-6 py-16">
@@ -49,12 +63,24 @@ export default async function VisasPage() {
 
       <section aria-labelledby="by-country" className="grid gap-4">
         <h2 id="by-country" className="text-2xl font-semibold">Official pages by destination</h2>
+        <form className="flex flex-wrap items-end gap-3" role="search">
+          <label className="grid gap-1 text-sm">Where you live now
+            <select name="from" defaultValue={from ?? ""} className="field">
+              <option value="">Show every rule</option>
+              {Object.keys(COUNTRIES).map((c) => <option key={c} value={c}>{countryName(c)}</option>)}
+            </select>
+          </label>
+          <button className="btn btn-secondary">Apply</button>
+        </form>
         <div className="grid gap-4 md:grid-cols-2">
-          {[...byCountry.entries()].map(([country, list]) => (
+          {[...byCountry.entries()].map(([country, all]) => {
+            const list = visible(country, all);
+            const steps = orderSteps(list.map(toCountryRule));
+            return (
             <article key={country} className="grid content-start gap-3 rounded-2xl border border-border bg-surface p-6">
               <h3 className="text-lg font-semibold">{countryName(country)}</h3>
               <ul className="grid gap-3 text-sm">
-                {list.map((r) => (
+                {list.filter((r) => !OWN_BLOCK.has(r.kind)).map((r) => (
                   <li key={r.id} className="grid gap-1">
                     {r.link ? (
                       <a href={r.link} target="_blank" rel="noreferrer" className="font-semibold underline underline-offset-2">{r.title}</a>
@@ -70,8 +96,24 @@ export default async function VisasPage() {
                   </li>
                 ))}
               </ul>
+              {steps.length > 0 ? (
+                <div className="grid gap-2">
+                  <h4 className="text-sm font-semibold">Steps to apply</h4>
+                  <ol className="grid list-decimal gap-3 pl-5 text-sm">
+                    {steps.map((s) => (
+                      <li key={s.id} className="grid gap-1">
+                        {s.link ? <a href={s.link} target="_blank" rel="noreferrer" className="font-semibold underline underline-offset-2">{s.title}</a> : <span className="font-semibold">{s.title}</span>}
+                        {s.details ? <span className="text-muted">{s.details}</span> : null}
+                        {s.evidenceQuote ? <q className="text-muted italic">{s.evidenceQuote}</q> : null}
+                        <span><FactBadge status={s.status ?? "unknown"} /></span>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              ) : null}
             </article>
-          ))}
+            );
+          })}
         </div>
       </section>
 
