@@ -109,14 +109,14 @@ isOneToOne: false
                   ]
                 },"applications": {
                   Row: {
-                    "awarded_aid": number | null,"awarded_aid_currency": string | null,"created_at": string,"cycle_id": string,"decided_at": string | null,"decision": Database["public"]['Enums']["decision"] | null,"deposit_due_at": string | null,"due_at": string | null,"id": string,"notes": string | null,"portal_checked_at": string | null,"status": Database["public"]['Enums']["application_status"],"updated_at": string,"user_id": string
+                    "awarded_aid": number | null,"awarded_aid_currency": string | null,"created_at": string,"cycle_id": string,"decided_at": string | null,"decision": Database["public"]['Enums']["decision"] | null,"deposit_due_at": string | null,"due_at": string | null,"id": string,"notes": string | null,"offer_accepted_at": string | null,"portal_checked_at": string | null,"status": Database["public"]['Enums']["application_status"],"updated_at": string,"user_id": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "awarded_aid"?: number | null,"awarded_aid_currency"?: string | null,"created_at"?: string,"cycle_id": string,"decided_at"?: string | null,"decision"?: Database["public"]['Enums']["decision"] | null,"deposit_due_at"?: string | null,"due_at"?: string | null,"id"?: string,"notes"?: string | null,"portal_checked_at"?: string | null,"status"?: Database["public"]['Enums']["application_status"],"updated_at"?: string,"user_id": string
+                    "awarded_aid"?: number | null,"awarded_aid_currency"?: string | null,"created_at"?: string,"cycle_id": string,"decided_at"?: string | null,"decision"?: Database["public"]['Enums']["decision"] | null,"deposit_due_at"?: string | null,"due_at"?: string | null,"id"?: string,"notes"?: string | null,"offer_accepted_at"?: string | null,"portal_checked_at"?: string | null,"status"?: Database["public"]['Enums']["application_status"],"updated_at"?: string,"user_id": string
                   }
                   Update: {
-                    "awarded_aid"?: number | null,"awarded_aid_currency"?: string | null,"created_at"?: string,"cycle_id"?: string,"decided_at"?: string | null,"decision"?: Database["public"]['Enums']["decision"] | null,"deposit_due_at"?: string | null,"due_at"?: string | null,"id"?: string,"notes"?: string | null,"portal_checked_at"?: string | null,"status"?: Database["public"]['Enums']["application_status"],"updated_at"?: string,"user_id"?: string
+                    "awarded_aid"?: number | null,"awarded_aid_currency"?: string | null,"created_at"?: string,"cycle_id"?: string,"decided_at"?: string | null,"decision"?: Database["public"]['Enums']["decision"] | null,"deposit_due_at"?: string | null,"due_at"?: string | null,"id"?: string,"notes"?: string | null,"offer_accepted_at"?: string | null,"portal_checked_at"?: string | null,"status"?: Database["public"]['Enums']["application_status"],"updated_at"?: string,"user_id"?: string
                   }
                   Relationships: [
                     {
@@ -326,6 +326,26 @@ isOneToOne: false
                   }
                   Relationships: [
                     
+                  ]
+                },"departure_tasks": {
+                  Row: {
+                    "application_id": string,"done_at": string,"id": string,"task_key": string,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "application_id": string,"done_at"?: string,"id"?: string,"task_key": string,"user_id": string
+                  }
+                  Update: {
+                    "application_id"?: string,"done_at"?: string,"id"?: string,"task_key"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "departure_tasks_application_id_fkey"
+      columns: ["application_id"]
+isOneToOne: false
+      referencedRelation: "applications"
+      referencedColumns: ["id"]
+    }
                   ]
                 },"document_versions": {
                   Row: {
@@ -1301,6 +1321,9 @@ isOneToOne: false
         isOneToOne: false
         isSetofReturn: true
       } },
+"set_accepted_offer":
+{ Args: { "p_application_id": string }; Returns: undefined
+                           },
 "set_parent_digest":
 { Args: { "p_enabled": boolean,"p_student": string }; Returns: undefined
                            },

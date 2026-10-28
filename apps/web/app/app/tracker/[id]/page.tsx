@@ -7,6 +7,7 @@ import { CURRENCIES } from "@/lib/fields";
 import { letterProgress, lettersNeeded, LETTER_STATUSES, type LetterStatus } from "@/lib/recommendations";
 import { scoreNeeds, sentProgress } from "@/lib/score-sending";
 import { WAITLIST_STEPS } from "@/lib/waitlist";
+import { setAcceptedOffer } from "../../departure/actions";
 import { startLinkedDocument } from "../../writing/actions";
 import { daysUntil, deadlineText, label, money, shortDate } from "@/lib/format";
 import { getUser } from "@/lib/supabase/server";
@@ -300,6 +301,17 @@ export default async function ApplicationPage({ params }: PageProps<"/app/tracke
             <h3 className="font-semibold">Congratulations! Share the news</h3>
             <p className="text-sm text-muted">A card with the course, university and intake. It never shows your grades, scores or funding.</p>
             <ShareCard applicationId={app.id} />
+            <h3 className="mt-4 font-semibold">Taking this offer?</h3>
+            {app.offer_accepted_at ? (
+              <p className="text-sm">
+                This is the offer you are taking. <Link href="/app/departure" className="underline underline-offset-2">See what to arrange before you leave</Link>.
+              </p>
+            ) : (
+              <form action={setAcceptedOffer.bind(null, app.id)} className="grid gap-2 text-sm">
+                <p className="text-muted">Mark it as your choice to get a pre-departure timeline: housing, insurance, travel and the visa steps for your destination.</p>
+                <button className="btn btn-primary btn-sm justify-self-start">I&apos;m accepting this offer</button>
+              </form>
+            )}
           </div>
         ) : null}
 

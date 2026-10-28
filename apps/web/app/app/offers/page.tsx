@@ -144,6 +144,12 @@ export default async function OffersPage() {
         </section>
       )}
 
+      {admitted.length > 0 ? (
+        <p className="text-sm">
+          Made your choice? <Link href="/app/departure" className="font-semibold underline underline-offset-2">Plan what to arrange before you leave</Link>.
+        </p>
+      ) : null}
+
       {admitted.length > 0 || rows.length > 1 ? (
         <section aria-labelledby="matrix" className="grid gap-4 rounded-2xl border border-border bg-surface p-6">
           <div>
