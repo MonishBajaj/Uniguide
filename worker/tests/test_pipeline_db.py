@@ -9,11 +9,12 @@ import pytest
 
 from uniguide_worker.db import Connection
 from uniguide_worker.extract.extractor import Extractor
+from uniguide_worker.extract.gemini import GeminiExtractor
 from uniguide_worker.extract.schema import PageExtraction
 from uniguide_worker.fetch.fetcher import FetchResult, content_hash
 from uniguide_worker.pipeline import extract_page
 
-from .conftest import FakeAnthropic, FakeResponse
+from .conftest import FakeAnthropic, FakeGenai, FakeGenaiResponse, FakeResponse
 from .test_proposals import PAGE, extraction
 
 
@@ -101,3 +102,16 @@ def test_ai_run_is_logged_without_the_page(worker: Connection, operator: Connect
         "select model, prompt_version, input_hash, user_id from ai_runs order by created_at desc limit 1"
     ).fetchone()
     assert row and row["model"] == "claude-haiku-5-5" and row["user_id"] is None and len(row["input_hash"]) == 64
+
+
+def test_gemini_invented_quote_is_dropped_and_page_still_extracted(
+    worker: Connection, operator: Connection, cycle_id: str
+) -> None:
+    ex = extraction(costs=[], language_tests=[])
+    ex.deadlines[0].quote = "Applications close 1 March 2027 for everyone."
+    extractor = GeminiExtractor(client=FakeGenai(FakeGenaiResponse(ex.model_dump_json())), model="gemini-test")  # type: ignore[arg-type]
+    report = extract_page(worker, FakeFetcher(PAGE), extractor, f"https://test.example.org/{uuid.uuid4()}", cycle_id)  # type: ignore[arg-type]
+    assert report.status == "extracted" and report.published == 0
+    assert operator.execute("select count(*) as n from deadlines where cycle_id = %s", (cycle_id,)).fetchone() == {
+        "n": 0
+    }

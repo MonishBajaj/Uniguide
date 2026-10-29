@@ -194,32 +194,39 @@ def extract(
     publish: Annotated[bool, typer.Option(help="Publish clean extractions as unverified.")] = True,
 ) -> None:
     """Fetch one official page, extract facts with Claude Haiku 5.5 and queue them for review."""
-    from .extract.extractor import Extractor
+    from .extract.factory import make_extractor
     from .fetch.fetcher import Fetcher
     from .pipeline import extract_page
 
     fetcher = Fetcher(get_settings().user_agent)
-    _report(_with_run("extract", lambda conn: extract_page(conn, fetcher, Extractor(), url, cycle, publish=publish)))
+    _report(
+        _with_run(
+            "extract",
+            lambda conn: extract_page(conn, fetcher, make_extractor(get_settings()), url, cycle, publish=publish),
+        )
+    )
 
 
 @app.command("extract-program")
 def extract_program_cmd(slug: Annotated[str, typer.Argument(help="Course slug.")]) -> None:
     """Read every registered official page of one course and queue what they state."""
-    from .extract.extractor import Extractor
+    from .extract.factory import make_extractor
     from .monitor import extract_program
 
     fetcher = Fetcher(get_settings().user_agent)
-    _report(_with_run("extract-program", lambda conn: extract_program(conn, fetcher, Extractor(), slug)))
+    _report(
+        _with_run("extract-program", lambda conn: extract_program(conn, fetcher, make_extractor(get_settings()), slug))
+    )
 
 
 @app.command("monitor")
 def monitor_cmd(limit: Annotated[int, typer.Option(help="Pages to re-check this run.")] = 50) -> None:
     """Weekly in season: re-check pages by demand, re-extract changed ones, tell watchers."""
-    from .extract.extractor import Extractor
+    from .extract.factory import make_extractor
     from .monitor import monitor
 
     fetcher = Fetcher(get_settings().user_agent)
-    _report(_with_run("monitor", lambda conn: monitor(conn, fetcher, Extractor(), limit=limit)))
+    _report(_with_run("monitor", lambda conn: monitor(conn, fetcher, make_extractor(get_settings()), limit=limit)))
 
 
 @seed.command("load")

@@ -15,7 +15,8 @@ from uuid import UUID
 from psycopg.types.json import Jsonb
 
 from .db import Connection
-from .extract.extractor import EXTRACTOR_VERSION, ExtractionRun, Extractor
+from .extract.base import PageExtractor
+from .extract.extractor import ExtractionRun
 from .fetch.fetcher import Fetcher, FetchRefused, FetchResult
 from .proposals import Proposal, from_extraction
 from .validate.checks import CycleInfo, check_changed, check_cycle
@@ -193,10 +194,10 @@ def publish_extracted(conn: Connection, version_id: UUID) -> UUID | None:
     return row["fact_id"] if row else None
 
 
-def already_processed(conn: Connection, url: str, content_hash: str) -> bool:
+def already_processed(conn: Connection, url: str, content_hash: str, version: str) -> bool:
     row = conn.execute(
         "select 1 from sources where url = %s and content_hash = %s and extractor_version = %s",
-        (url, content_hash, EXTRACTOR_VERSION),
+        (url, content_hash, version),
     ).fetchone()
     return row is not None
 
@@ -207,7 +208,7 @@ CHANGE_KEYS = ["min_total", "min_sections", "min_grade_numeric", "test_policy", 
 def extract_page(
     conn: Connection,
     fetcher: Fetcher,
-    extractor: Extractor,
+    extractor: PageExtractor,
     url: str,
     cycle_id: UUID | str,
     *,
@@ -222,7 +223,7 @@ def extract_page(
             return PageReport(url, "refused", str(exc))
     if result.status >= 400 or not result.text:
         return PageReport(url, "failed", f"HTTP {result.status}")
-    if already_processed(conn, url, result.content_hash):
+    if already_processed(conn, url, result.content_hash, extractor.version):
         return PageReport(url, "unchanged", "Same content and extractor version as last time.")
 
     run = extractor.extract(url, cycle.label, result.text)
@@ -237,7 +238,7 @@ def extract_page(
         owner=cycle.institution_name,
         result=result,
         rights_note="Official institution page; facts and short quotes only.",
-        extractor_version=EXTRACTOR_VERSION,
+        extractor_version=extractor.version,
     )
     proposals = from_extraction(run.extraction, cycle.info, cycle.country, result.text, cycle.region)
     cycle_issues = check_cycle(run.extraction.effective_intake_year, cycle.info)
@@ -263,7 +264,7 @@ def extract_page(
             cycle_id=cycle.id,
             subject_id=current["id"] if current else None,
             source_id=source_id,
-            extractor_version=EXTRACTOR_VERSION,
+            extractor_version=extractor.version,
             ai_run_id=ai_run_id,
         )
         report.proposed += 1

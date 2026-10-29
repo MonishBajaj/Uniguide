@@ -74,3 +74,35 @@ class FakeAnthropic:
 
     def __init__(self, response: FakeResponse) -> None:
         self.messages = FakeMessages(response)
+
+
+class FakeGenaiUsage:
+    def __init__(self, prompt: int = 1000, candidates: int = 200) -> None:
+        self.prompt_token_count = prompt
+        self.candidates_token_count = candidates
+
+
+class FakeGenaiResponse:
+    def __init__(self, text: str | None, finish_reason: str = "STOP") -> None:
+        self.text = text
+        self.usage_metadata = FakeGenaiUsage()
+        self.candidates = [type("Candidate", (), {"finish_reason": finish_reason})()]
+
+
+class FakeGenaiModels:
+    def __init__(self, response: FakeGenaiResponse | Exception) -> None:
+        self.response = response
+        self.calls: list[dict[str, Any]] = []
+
+    def generate_content(self, **kwargs: Any) -> FakeGenaiResponse:
+        self.calls.append(kwargs)
+        if isinstance(self.response, Exception):
+            raise self.response
+        return self.response
+
+
+class FakeGenai:
+    """Stands in for google.genai.Client in offline tests."""
+
+    def __init__(self, response: FakeGenaiResponse | Exception) -> None:
+        self.models = FakeGenaiModels(response)

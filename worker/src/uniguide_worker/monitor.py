@@ -9,7 +9,7 @@ from typing import Any
 from uuid import UUID
 
 from .db import Connection
-from .extract.extractor import Extractor
+from .extract.base import PageExtractor
 from .fetch.fetcher import Fetcher, FetchRefused
 from .pipeline import PageReport, extract_page
 
@@ -57,7 +57,7 @@ def _record(
 
 
 def check_source(
-    conn: Connection, fetcher: Fetcher, extractor: Extractor, source: dict[str, Any], report: MonitorReport
+    conn: Connection, fetcher: Fetcher, extractor: PageExtractor, source: dict[str, Any], report: MonitorReport
 ) -> PageReport | None:
     cycle_id = intake_cycle(conn, source["program_id"])
     if cycle_id is None:
@@ -104,7 +104,7 @@ def check_source(
     return page
 
 
-def extract_program(conn: Connection, fetcher: Fetcher, extractor: Extractor, slug: str) -> MonitorReport:
+def extract_program(conn: Connection, fetcher: Fetcher, extractor: PageExtractor, slug: str) -> MonitorReport:
     report = MonitorReport()
     sources = conn.execute(
         """
@@ -122,7 +122,7 @@ def extract_program(conn: Connection, fetcher: Fetcher, extractor: Extractor, sl
     return report
 
 
-def monitor(conn: Connection, fetcher: Fetcher, extractor: Extractor, *, limit: int = 50) -> MonitorReport:
+def monitor(conn: Connection, fetcher: Fetcher, extractor: PageExtractor, *, limit: int = 50) -> MonitorReport:
     """Re-check the pages of the most-shortlisted courses first, then the least recently checked."""
     report = MonitorReport()
     sources = conn.execute(

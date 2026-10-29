@@ -37,6 +37,7 @@ class Extractor:
     def __init__(self, client: anthropic.Anthropic | None = None, model: str = MODEL) -> None:
         self.client = client or anthropic.Anthropic()
         self.model = model
+        self.version = f"{model}/{PROMPT_VERSION}"
 
     def extract(self, url: str, cycle_label: str, page_text: str) -> ExtractionRun:
         started = time.monotonic()
