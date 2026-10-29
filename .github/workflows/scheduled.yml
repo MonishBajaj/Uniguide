@@ -70,5 +70,5 @@ jobs:
         if: env.ANALYST_DATABASE_URL != ''
       - uses: astral-sh/setup-uv@v5
         if: env.ANALYST_DATABASE_URL != ''
-      - run: uv sync --frozen && uv run uniguide-worker research outcomes && uv run uniguide-worker research insights && uv run uniguide-worker research train-admission
+      - run: uv sync --frozen && uv run uniguide-worker research outcomes && uv run uniguide-worker research train-admission && uv run uniguide-worker research insights
         if: env.ANALYST_DATABASE_URL != ''

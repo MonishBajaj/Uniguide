@@ -26,6 +26,9 @@ select throws_ok(format($$ select public.add_institution_fact(%L, 'free_lunch', 
   '23514', null, 'an unknown kind is refused');
 
 select lives_ok(format($$ select public.add_institution_fact(%L, 'student_societies', 'Societies list', 'https://test.ac.uk/societies', 'Over 200 student societies.') $$, :'inst'), 'a student life fact');
+select throws_ok(format($$ select public.add_institution_fact(%L, 'assistantship', 'Spoof', 'https://evil.com\.test.ac.uk/x', 'quote text') $$, :'inst'), '22023', null, 'a backslash cannot smuggle another host');
+select throws_ok(format($$ select public.add_institution_fact(%L, 'assistantship', 'Spoof', 'https://x.test.ac.uk@evil.com/x', 'quote text') $$, :'inst'), '22023', null, 'userinfo cannot smuggle another host');
+select throws_ok(format($$ select public.add_institution_fact(%L, 'assistantship', 'Off link', 'https://test.ac.uk/ok', 'quote text', p_link := 'https://anything.example/x') $$, :'inst'), '22023', null, 'the official page link must be on the domain too');
 
 select tests.authenticate_as(:'dev');
 select throws_ok(format($$ select public.add_institution_fact(%L, 'assistantship', 'x', 'https://test.ac.uk/x', 'quote text') $$, :'inst'),

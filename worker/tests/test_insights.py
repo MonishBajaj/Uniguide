@@ -28,3 +28,14 @@ def test_one_row_per_country_and_nothing_identifying() -> None:
         "user_id" not in i.dimension and set(vars(i)) == {"metric", "dimension", "value", "group_size"}
         for i in insights
     )
+
+
+def test_suppresses_when_too_few_outcomes_are_decided() -> None:
+    waitlisted = [{"country": "GB", "decision": "waitlisted", "program_id": "p"} for _ in range(9)]
+    one_decided = waitlisted + [{"country": "GB", "decision": "admitted", "program_id": "p"}]
+    assert compute_insights(one_decided) == []
+
+
+def test_values_are_rounded_to_the_nearest_five_percent() -> None:
+    [i] = compute_insights(outcomes("GB", 7, 5))  # 58.3% of decided
+    assert i.value == 0.6

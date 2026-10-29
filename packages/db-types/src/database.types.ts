@@ -1154,6 +1154,9 @@ isOneToOne: false
 "_can_edit_institution":
 { Args: { "p_institution": string }; Returns: boolean
                            },
+"_url_on_domain":
+{ Args: { "p_domain": string,"p_url": string }; Returns: boolean
+                           },
 "add_country_rule":
 { Args: { "p_amount"?: number,"p_applies_to"?: (string)[],"p_currency"?: string,"p_destination": string,"p_details"?: string,"p_hours_per_week"?: number,"p_kind": string,"p_link"?: string,"p_months"?: number,"p_period"?: string,"p_quote": string,"p_region"?: string,"p_source_url": string,"p_step"?: number,"p_title": string }; Returns: string
                            },

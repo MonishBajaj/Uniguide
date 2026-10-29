@@ -27,5 +27,9 @@ select tests.authenticate_as(:'owner');
 select lives_ok(format($$ select public.owner_remove_member(%L, %L) $$, :'org', :'viewer'), 'an owner removes a member');
 select throws_ok(format($$ select public.owner_remove_member(%L, %L) $$, :'org', :'owner'), '23514', null, 'the last owner cannot be removed');
 
+select throws_ok(format($$ select public.owner_add_member(%L, 'owner@test.dev', 'viewer') $$, :'org'), '23514', null, 'the last owner cannot demote themselves');
+select lives_ok(format($$ select public.owner_add_member(%L, 'cou@test.dev', 'owner') $$, :'org'), 'an owner can promote a counselor');
+select lives_ok(format($$ select public.owner_add_member(%L, 'owner@test.dev', 'viewer') $$, :'org'), 'with a second owner, an owner can step down');
+
 select * from finish();
 rollback;

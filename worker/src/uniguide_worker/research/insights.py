@@ -20,17 +20,19 @@ class Insight:
 
 
 def compute_insights(rows: list[dict[str, Any]], min_n: int = DEFAULT_MIN_N) -> list[Insight]:
-    """Share of decided applicants admitted, by destination country, for countries with at least min_n outcomes."""
+    """Share of decided applicants admitted, by destination country, for countries with at least min_n decided outcomes."""
     by_country: dict[str, list[dict[str, Any]]] = defaultdict(list)
     for r in rows:
         by_country[r["country"]].append(r)
     out = []
     for country, rs in sorted(by_country.items()):
         decided = [r for r in rs if r["decision"] in ("admitted", "rejected")]
-        if len(rs) < min_n or not decided:
+        # The share rests on decided outcomes, so that is the group that must be large enough to publish.
+        if len(decided) < min_n:
             continue
         share = sum(r["decision"] == "admitted" for r in decided) / len(decided)
-        out.append(Insight("admit_share", {"country": country}, round(share, 3), len(rs)))
+        # Rounded to the nearest 5%, so weekly changes cannot reveal a single new result.
+        out.append(Insight("admit_share", {"country": country}, round(round(share * 20) / 20, 2), len(decided)))
     return out
 
 
