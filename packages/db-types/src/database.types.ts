@@ -165,6 +165,84 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"community_alumni": {
+                  Row: {
+                    "created_at": string,"evidence": string | null,"graduation_year": number,"id": string,"program_id": string,"reviewed_at": string | null,"reviewed_by": string | null,"status": string,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"evidence"?: string | null,"graduation_year": number,"id"?: string,"program_id": string,"reviewed_at"?: string | null,"reviewed_by"?: string | null,"status"?: string,"user_id": string
+                  }
+                  Update: {
+                    "created_at"?: string,"evidence"?: string | null,"graduation_year"?: number,"id"?: string,"program_id"?: string,"reviewed_at"?: string | null,"reviewed_by"?: string | null,"status"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "community_alumni_program_id_fkey"
+      columns: ["program_id"]
+isOneToOne: false
+      referencedRelation: "program_cards"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "community_alumni_program_id_fkey"
+      columns: ["program_id"]
+isOneToOne: false
+      referencedRelation: "programs"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"community_posts": {
+                  Row: {
+                    "author_id": string,"badge": string | null,"body": string,"country": string | null,"created_at": string,"id": string,"kind": Database["public"]['Enums']["community_kind"],"level": Database["public"]['Enums']["program_level"] | null,"moderated_at": string | null,"moderated_by": string | null,"moderation_note": string | null,"parent_id": string | null,"program_id": string | null,"pseudonym": string,"ratings": Json | null,"staff_answer": string | null,"status": Database["public"]['Enums']["community_status"],"title": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "author_id": string,"badge"?: string | null,"body": string,"country"?: string | null,"created_at"?: string,"id"?: string,"kind": Database["public"]['Enums']["community_kind"],"level"?: Database["public"]['Enums']["program_level"] | null,"moderated_at"?: string | null,"moderated_by"?: string | null,"moderation_note"?: string | null,"parent_id"?: string | null,"program_id"?: string | null,"pseudonym": string,"ratings"?: Json | null,"staff_answer"?: string | null,"status"?: Database["public"]['Enums']["community_status"],"title"?: string | null
+                  }
+                  Update: {
+                    "author_id"?: string,"badge"?: string | null,"body"?: string,"country"?: string | null,"created_at"?: string,"id"?: string,"kind"?: Database["public"]['Enums']["community_kind"],"level"?: Database["public"]['Enums']["program_level"] | null,"moderated_at"?: string | null,"moderated_by"?: string | null,"moderation_note"?: string | null,"parent_id"?: string | null,"program_id"?: string | null,"pseudonym"?: string,"ratings"?: Json | null,"staff_answer"?: string | null,"status"?: Database["public"]['Enums']["community_status"],"title"?: string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "community_posts_parent_id_fkey"
+      columns: ["parent_id"]
+isOneToOne: false
+      referencedRelation: "community_posts"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "community_posts_program_id_fkey"
+      columns: ["program_id"]
+isOneToOne: false
+      referencedRelation: "program_cards"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "community_posts_program_id_fkey"
+      columns: ["program_id"]
+isOneToOne: false
+      referencedRelation: "programs"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"community_reports": {
+                  Row: {
+                    "created_at": string,"id": string,"note": string | null,"post_id": string,"reason": string,"reporter_id": string,"resolved_at": string | null,"resolved_by": string | null,"status": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"id"?: string,"note"?: string | null,"post_id": string,"reason": string,"reporter_id": string,"resolved_at"?: string | null,"resolved_by"?: string | null,"status"?: string
+                  }
+                  Update: {
+                    "created_at"?: string,"id"?: string,"note"?: string | null,"post_id"?: string,"reason"?: string,"reporter_id"?: string,"resolved_at"?: string | null,"resolved_by"?: string | null,"status"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "community_reports_post_id_fkey"
+      columns: ["post_id"]
+isOneToOne: false
+      referencedRelation: "community_posts"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"consent_age_rules": {
                   Row: {
                     "basis": string,"country": string,"parental_consent_below": number
@@ -1193,17 +1271,29 @@ isOneToOne: false
 "add_verifier":
 { Args: { "p_countries": (string)[],"p_display_name": string,"p_email": string }; Returns: string
                            },
+"admitted_to":
+{ Args: { "p_program": string,"uid": string }; Returns: boolean
+                           },
 "age_band_for":
 { Args: { "p_age": number }; Returns: Database["public"]['Enums']["age_band"]
                            },
 "age_in_years":
 { Args: { "p_birth_month": string,"p_on"?: string }; Returns: number
                            },
+"can_answer":
+{ Args: { "p_parent": string,"uid": string }; Returns: boolean
+                           },
+"can_post_community":
+{ Args: { "uid": string }; Returns: boolean
+                           },
 "can_process_personal_data":
 { Args: { "uid": string }; Returns: boolean
                            },
 "can_review_cycle":
 { Args: { "p_cycle": string }; Returns: boolean
+                           },
+"community_pending_count":
+{ Args: { "uid": string }; Returns: number
                            },
 "confirm_parental_consent":
 { Args: { "p_policy_version": string,"p_token": string }; Returns: boolean
@@ -1232,15 +1322,29 @@ isOneToOne: false
 "is_admin":
 { Args: Record<PropertyKey, never>; Returns: boolean
                            },
+"is_alum":
+{ Args: { "p_program": string,"uid": string }; Returns: boolean
+                           },
 "is_operator":
 { Args: Record<PropertyKey, never>; Returns: boolean
                            },
 "is_org_member":
 { Args: { "p_org": string }; Returns: boolean
                            },
+"is_published_post":
+{ Args: { "p_post": string }; Returns: boolean
+                           },
 "match_faculty":
 { Args: { "p_fields"?: (string)[],"p_institution_id": string,"p_limit"?: number,"p_query"?: string,"p_query_embedding"?: string }; Returns: {
               "cited_by_count": number,"id": string,"name": string,"openalex_id": string,"orcid": string,"recent_works": Json,"score": number,"topics": Json
+            }[]
+                           },
+"moderate_community_post":
+{ Args: { "p_note"?: string,"p_post": string,"p_status": Database["public"]['Enums']["community_status"] }; Returns: undefined
+                           },
+"my_community_posts":
+{ Args: Record<PropertyKey, never>; Returns: {
+              "body": string,"created_at": string,"id": string,"kind": Database["public"]['Enums']["community_kind"],"moderation_note": string,"status": Database["public"]['Enums']["community_status"],"title": string
             }[]
                            },
 "notifier_recipients":
@@ -1299,8 +1403,14 @@ isOneToOne: false
 "request_parental_consent":
 { Args: { "p_parent_email": string,"p_token_hash": string }; Returns: string
                            },
+"resolve_community_report":
+{ Args: { "p_report": string,"p_uphold": boolean }; Returns: undefined
+                           },
 "resolve_fact_report":
 { Args: { "p_accepted": boolean,"p_credits"?: number,"p_report_id": string }; Returns: undefined
+                           },
+"review_community_alum":
+{ Args: { "p_approve": boolean,"p_id": string }; Returns: undefined
                            },
 "revoke_agency_share":
 { Args: { "p_share_id": string }; Returns: undefined
@@ -1347,6 +1457,9 @@ isOneToOne: false
 "set_parent_digest":
 { Args: { "p_enabled": boolean,"p_student": string }; Returns: undefined
                            },
+"valid_ratings":
+{ Args: { "r": Json }; Returns: boolean
+                           },
 "verification_demand":
 { Args: { "p_limit"?: number }; Returns: {
               "facts_unverified": number,"next_deadline": string,"program_id": string,"shortlists": number
@@ -1373,7 +1486,7 @@ isOneToOne: false
                            }
           }
           Enums: {
-            "age_band": "under_13"|"age_13_15"|"age_16_17"|"adult","applicant_category": "all"|"domestic"|"international"|"eu_eea"|"uk_home","application_status": "shortlisted"|"preparing"|"submitted"|"decided"|"withdrawn","consent_kind": "terms"|"privacy"|"parental"|"ai_processing"|"outcomes_research"|"marketing"|"agency_sharing","consent_state": "not_required"|"pending_parental"|"granted"|"revoked","cost_basis": "per_credit"|"per_term"|"per_year"|"per_month"|"total"|"one_off","cost_kind": "tuition"|"fees"|"insurance"|"living"|"application_fee"|"other","coverage_tier": "listed"|"extracted"|"verified","credit_system": "us_credit"|"ects"|"uk_cats"|"other","date_precision": "exact_time"|"date"|"month","deadline_kind": "application"|"priority"|"funding"|"scholarship"|"documents"|"deposit","decision": "admitted"|"rejected"|"waitlisted"|"withdrawn"|"deferred","delivery_mode": "on_campus"|"online"|"hybrid","document_kind": "statement_of_purpose"|"personal_statement"|"why_this_university"|"other"|"continued_interest"|"supplemental"|"research_statement","exam_kind": "ielts_academic"|"ielts_ukvi"|"toefl_ibt"|"toefl_ibt_home"|"pte_academic"|"duolingo"|"cambridge_c1_c2"|"testdaf"|"dsh"|"goethe"|"delf_dalf"|"tcf"|"gre"|"gmat"|"sat"|"act","fact_status": "verified"|"unverified"|"conflicting"|"unknown","fact_subject": "requirement"|"deadline"|"cost_item","notification_kind": "fact_changed"|"reminder"|"report_resolved"|"agency","owning_system": "direct"|"ucas"|"uni_assist"|"common_app"|"ouac"|"uac"|"cao"|"other","program_level": "foundation"|"diploma"|"bachelor"|"master"|"doctorate","requirement_kind": "entry_qualification"|"language_test"|"admissions_test"|"prerequisite"|"recommendation_letters"|"statement"|"portfolio"|"interview"|"other","review_state": "pending"|"approved"|"rejected"|"superseded"|"auto_rejected","signup_interest": "verified_tracker"|"writing_coach","source_kind": "course"|"admissions"|"requirements"|"international"|"fees"|"deadlines","test_policy": "required"|"recommended"|"optional"|"not_accepted"|"waived_conditional"|"unknown"|"conflicting","verification_method": "human_review"|"seed_manual"|"official_register"|"automated_extraction"
+            "age_band": "under_13"|"age_13_15"|"age_16_17"|"adult","applicant_category": "all"|"domestic"|"international"|"eu_eea"|"uk_home","application_status": "shortlisted"|"preparing"|"submitted"|"decided"|"withdrawn","community_kind": "story"|"review"|"question"|"answer"|"ama_question","community_status": "pending"|"published"|"rejected"|"removed","consent_kind": "terms"|"privacy"|"parental"|"ai_processing"|"outcomes_research"|"marketing"|"agency_sharing","consent_state": "not_required"|"pending_parental"|"granted"|"revoked","cost_basis": "per_credit"|"per_term"|"per_year"|"per_month"|"total"|"one_off","cost_kind": "tuition"|"fees"|"insurance"|"living"|"application_fee"|"other","coverage_tier": "listed"|"extracted"|"verified","credit_system": "us_credit"|"ects"|"uk_cats"|"other","date_precision": "exact_time"|"date"|"month","deadline_kind": "application"|"priority"|"funding"|"scholarship"|"documents"|"deposit","decision": "admitted"|"rejected"|"waitlisted"|"withdrawn"|"deferred","delivery_mode": "on_campus"|"online"|"hybrid","document_kind": "statement_of_purpose"|"personal_statement"|"why_this_university"|"other"|"continued_interest"|"supplemental"|"research_statement","exam_kind": "ielts_academic"|"ielts_ukvi"|"toefl_ibt"|"toefl_ibt_home"|"pte_academic"|"duolingo"|"cambridge_c1_c2"|"testdaf"|"dsh"|"goethe"|"delf_dalf"|"tcf"|"gre"|"gmat"|"sat"|"act","fact_status": "verified"|"unverified"|"conflicting"|"unknown","fact_subject": "requirement"|"deadline"|"cost_item","notification_kind": "fact_changed"|"reminder"|"report_resolved"|"agency","owning_system": "direct"|"ucas"|"uni_assist"|"common_app"|"ouac"|"uac"|"cao"|"other","program_level": "foundation"|"diploma"|"bachelor"|"master"|"doctorate","requirement_kind": "entry_qualification"|"language_test"|"admissions_test"|"prerequisite"|"recommendation_letters"|"statement"|"portfolio"|"interview"|"other","review_state": "pending"|"approved"|"rejected"|"superseded"|"auto_rejected","signup_interest": "verified_tracker"|"writing_coach","source_kind": "course"|"admissions"|"requirements"|"international"|"fees"|"deadlines","test_policy": "required"|"recommended"|"optional"|"not_accepted"|"waived_conditional"|"unknown"|"conflicting","verification_method": "human_review"|"seed_manual"|"official_register"|"automated_extraction"
           }
           CompositeTypes: {
             [_ in never]: never
@@ -1489,7 +1602,7 @@ export type CompositeTypes<
 export const Constants = {
   "public": {
           Enums: {
-            "age_band": ["under_13", "age_13_15", "age_16_17", "adult"],"applicant_category": ["all", "domestic", "international", "eu_eea", "uk_home"],"application_status": ["shortlisted", "preparing", "submitted", "decided", "withdrawn"],"consent_kind": ["terms", "privacy", "parental", "ai_processing", "outcomes_research", "marketing", "agency_sharing"],"consent_state": ["not_required", "pending_parental", "granted", "revoked"],"cost_basis": ["per_credit", "per_term", "per_year", "per_month", "total", "one_off"],"cost_kind": ["tuition", "fees", "insurance", "living", "application_fee", "other"],"coverage_tier": ["listed", "extracted", "verified"],"credit_system": ["us_credit", "ects", "uk_cats", "other"],"date_precision": ["exact_time", "date", "month"],"deadline_kind": ["application", "priority", "funding", "scholarship", "documents", "deposit"],"decision": ["admitted", "rejected", "waitlisted", "withdrawn", "deferred"],"delivery_mode": ["on_campus", "online", "hybrid"],"document_kind": ["statement_of_purpose", "personal_statement", "why_this_university", "other", "continued_interest", "supplemental", "research_statement"],"exam_kind": ["ielts_academic", "ielts_ukvi", "toefl_ibt", "toefl_ibt_home", "pte_academic", "duolingo", "cambridge_c1_c2", "testdaf", "dsh", "goethe", "delf_dalf", "tcf", "gre", "gmat", "sat", "act"],"fact_status": ["verified", "unverified", "conflicting", "unknown"],"fact_subject": ["requirement", "deadline", "cost_item"],"notification_kind": ["fact_changed", "reminder", "report_resolved", "agency"],"owning_system": ["direct", "ucas", "uni_assist", "common_app", "ouac", "uac", "cao", "other"],"program_level": ["foundation", "diploma", "bachelor", "master", "doctorate"],"requirement_kind": ["entry_qualification", "language_test", "admissions_test", "prerequisite", "recommendation_letters", "statement", "portfolio", "interview", "other"],"review_state": ["pending", "approved", "rejected", "superseded", "auto_rejected"],"signup_interest": ["verified_tracker", "writing_coach"],"source_kind": ["course", "admissions", "requirements", "international", "fees", "deadlines"],"test_policy": ["required", "recommended", "optional", "not_accepted", "waived_conditional", "unknown", "conflicting"],"verification_method": ["human_review", "seed_manual", "official_register", "automated_extraction"]
+            "age_band": ["under_13", "age_13_15", "age_16_17", "adult"],"applicant_category": ["all", "domestic", "international", "eu_eea", "uk_home"],"application_status": ["shortlisted", "preparing", "submitted", "decided", "withdrawn"],"community_kind": ["story", "review", "question", "answer", "ama_question"],"community_status": ["pending", "published", "rejected", "removed"],"consent_kind": ["terms", "privacy", "parental", "ai_processing", "outcomes_research", "marketing", "agency_sharing"],"consent_state": ["not_required", "pending_parental", "granted", "revoked"],"cost_basis": ["per_credit", "per_term", "per_year", "per_month", "total", "one_off"],"cost_kind": ["tuition", "fees", "insurance", "living", "application_fee", "other"],"coverage_tier": ["listed", "extracted", "verified"],"credit_system": ["us_credit", "ects", "uk_cats", "other"],"date_precision": ["exact_time", "date", "month"],"deadline_kind": ["application", "priority", "funding", "scholarship", "documents", "deposit"],"decision": ["admitted", "rejected", "waitlisted", "withdrawn", "deferred"],"delivery_mode": ["on_campus", "online", "hybrid"],"document_kind": ["statement_of_purpose", "personal_statement", "why_this_university", "other", "continued_interest", "supplemental", "research_statement"],"exam_kind": ["ielts_academic", "ielts_ukvi", "toefl_ibt", "toefl_ibt_home", "pte_academic", "duolingo", "cambridge_c1_c2", "testdaf", "dsh", "goethe", "delf_dalf", "tcf", "gre", "gmat", "sat", "act"],"fact_status": ["verified", "unverified", "conflicting", "unknown"],"fact_subject": ["requirement", "deadline", "cost_item"],"notification_kind": ["fact_changed", "reminder", "report_resolved", "agency"],"owning_system": ["direct", "ucas", "uni_assist", "common_app", "ouac", "uac", "cao", "other"],"program_level": ["foundation", "diploma", "bachelor", "master", "doctorate"],"requirement_kind": ["entry_qualification", "language_test", "admissions_test", "prerequisite", "recommendation_letters", "statement", "portfolio", "interview", "other"],"review_state": ["pending", "approved", "rejected", "superseded", "auto_rejected"],"signup_interest": ["verified_tracker", "writing_coach"],"source_kind": ["course", "admissions", "requirements", "international", "fees", "deadlines"],"test_policy": ["required", "recommended", "optional", "not_accepted", "waived_conditional", "unknown", "conflicting"],"verification_method": ["human_review", "seed_manual", "official_register", "automated_extraction"]
           }
         }
 } as const

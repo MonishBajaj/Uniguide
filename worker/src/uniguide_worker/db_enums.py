@@ -26,6 +26,21 @@ class ApplicationStatus(StrEnum):
     WITHDRAWN = "withdrawn"
 
 
+class CommunityKind(StrEnum):
+    STORY = "story"
+    REVIEW = "review"
+    QUESTION = "question"
+    ANSWER = "answer"
+    AMA_QUESTION = "ama_question"
+
+
+class CommunityStatus(StrEnum):
+    PENDING = "pending"
+    PUBLISHED = "published"
+    REJECTED = "rejected"
+    REMOVED = "removed"
+
+
 class ConsentKind(StrEnum):
     TERMS = "terms"
     PRIVACY = "privacy"

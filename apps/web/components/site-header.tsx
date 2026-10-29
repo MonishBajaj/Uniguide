@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { DEMO_SWITCHER } from "@/lib/env";
+import { COMMUNITY_ENABLED, DEMO_SWITCHER } from "@/lib/env";
 import { modeOf } from "@/lib/demo-mode";
 import { getRoles } from "@/lib/roles";
 import { getUser } from "@/lib/supabase/server";
@@ -31,6 +31,7 @@ export async function SiteHeader() {
       : []),
     ...(roles.admin || roles.verifier ? [{ href: "/admin/review", label: "Review queue" }] : []),
     ...(roles.admin ? [{ href: "/admin/rules", label: "Rules" }, { href: "/admin/team", label: "Team" }] : []),
+    ...(roles.admin && COMMUNITY_ENABLED ? [{ href: "/admin/community", label: "Community" }] : []),
     ...(roles.orgs.length ? [{ href: "/agency", label: "Students" }] : []),
   ];
 
