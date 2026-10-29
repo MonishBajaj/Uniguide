@@ -1,4 +1,4 @@
-"""Public trend insights from consented, de-identified outcomes. Groups under the suppression size are never published."""
+"""Public trend insights from consented, de-identified outcomes. Groups under the suppression size are not published."""
 
 from __future__ import annotations
 

@@ -2,7 +2,7 @@
 
 Source: the Feature Bible (100 features), `BACKLOG.md`, and what the running app contains (checked October 2026). IDs match the Bible; `X` rows are work from the backlog or this session that the Bible does not number.
 
-**Totals (103 rows):** 26 built · 15 partly built · 42 to build · 6 need an owner decision · 4 deferred to year 2 · 10 cut on purpose.
+**Totals (103 rows):** 33 built · 15 partly built · 35 to build · 6 need an owner decision · 4 deferred to year 2 · 10 cut on purpose.
 
 Status key: **Built** works today · **Partial** exists, listed gap remains · **To build** not started · **Decision** the owner must settle first · **Deferred** year 2 · **Cut** decided against (BACKLOG). Size: S about 2 days, M about a week, L two weeks or more. Priority: P0 needed for a real launch, P1 next, P2 later, P3 only if time allows.
 
@@ -107,16 +107,16 @@ The student app works end to end behind sign-in, but the catalogue holds six pla
 | P1 | 9.2 | Visa financial requirement calculator | Built | M | `/visas/funds`: verified proof of funds amount plus the course's first year tuition, by region, with the reason shown when it cannot be totalled. Needs verified rules entered per country. |
 | P1 | 9.4 | Post-graduation pathways | Built | M | `/visas` shows sourced post-study work months and part-time work hours per country. Needs rules entered and verified. |
 | P1 | X6 | Payments (Stripe USD 15–29, Razorpay INR 999–1,999) and entitlements | Built | L | Backend: `entitlements`, `record_payment` (token-guarded), `my_entitlement()` returns `season_pass`, writing reviews free during a pass, `POST /api/checkout` and signature-checked Stripe and Razorpay webhooks. Needs provider keys and a hosted setup; the paywall UI is X10 (Developer B). |
-| P2 | 1.3 | Profile comparison insights | To build | M | Compare a profile to published admit data. Needs verified `program_stats`; optional bands already exist. |
-| P2 | 10.2 | Airport to campus guide | To build | S | Per-university data. |
-| P2 | 10.3 | Banking and money setup guide | To build | S | Per-country content with sources. |
-| P2 | 10.4 | Course registration guide | To build | M | Per-university data. |
-| P2 | 13.4 | Application strategy optimizer | To build | M | Shortlist balance and deadline clashes, in `packages/matching`. |
-| P2 | 13.5 | Trend insights | Partial | S | Outcome report exists with small-group suppression. Add a public page. |
-| P2 | 16.4 | Consultancy dashboard | Partial | M | Read-only dashboard built. Missing: team roles, exports, bulk views. |
-| P2 | 3.9 | Watchlist and change alerts | Partial | S | Shortlisting a course triggers change notices. Add watching without shortlisting. |
-| P2 | 7.2 | Assistantship and work rules | To build | M | Per-course funding facts and work-hour rules, sourced. |
-| P2 | 7.3 | Campus living | To build | L | Housing, transport, weather, safety. Needs official sources per university. |
+| P2 | 1.3 | Profile comparison insights | Partial | M | `compareProfile` (grade and English test against published minimums, verified admit rate only) and a presentational `ProfileComparison`; Developer B places it on a student page. |
+| P2 | 10.2 | Airport to campus guide | Built | S | `/courses/[slug]/arrival`: airport and arrival support from sourced institution facts. Needs facts entered. |
+| P2 | 10.3 | Banking and money setup guide | Built | S | `banking` country rule kind and a "Money and banking" block per destination on `/visas`. Needs rules entered. |
+| P2 | 10.4 | Course registration guide | Built | M | Course registration facts on the arrival guide. Needs facts entered. |
+| P2 | 13.4 | Application strategy optimizer | Partial | M | `shortlistAdvice` (deadline clusters, budget, funding, single country, band balance) and a presentational `ShortlistAdvice`; Developer B places it on the shortlist page. |
+| P2 | 13.5 | Trend insights | Built | S | Weekly job publishes admit share by destination (groups of 10 or more, enforced by the database) to `/insights`. |
+| P2 | 16.4 | Consultancy dashboard | Built | M | Owners add and remove members, a viewer role, and a CSV export of what students share. Members show as the last six characters of their id. |
+| P2 | 3.9 | Watchlist and change alerts | Built | S | Watch a course for changes without shortlisting it; watchers and shortlisters are notified once. |
+| P2 | 7.2 | Assistantship and work rules | Built | M | Sourced assistantships, on-campus jobs and the destination's part-time work hours on course pages, from `institution_facts` (admin and verifier entry at `/admin/institution-facts`). Needs facts entered per university. |
+| P2 | 7.3 | Campus living | Built | L | "Living there" section (housing, transit, parking, insurance) from sourced institution facts, shown as published and never converted. Needs facts entered. |
 | P2 | X7 | Hochschulkompass importer; France and New Zealand registers | To build | M | Waits on HRK partner access; the others are extraction only. |
 | P2 | X8 | Admission model go-live | To build | S | Needs two intakes of consented outcomes and a passing gate. |
 | P2 | X9 | Gulf visa links from the admin rules page | To build | S | Check official pages first. |
