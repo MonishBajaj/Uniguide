@@ -31,6 +31,13 @@ def test_shipped_us_seeds_are_valid_and_cover_thirty_universities() -> None:
     assert all(s.country == "US" for _, s in seeds)
 
 
+def test_shipped_german_seeds_are_valid_and_cover_twenty_universities() -> None:
+    seeds = read_index_seeds(INDEX_ROOT / "de")
+    assert len(seeds) == 20
+    assert len({s.official_domain for _, s in seeds}) == 20
+    assert all(s.country == "DE" for _, s in seeds)
+
+
 def test_nothing_ships_verified_before_a_person_has_checked_it() -> None:
     for path, s in read_index_seeds(INDEX_ROOT):
         assert all(i.verified_by is None for i in s.indexes), f"{path} claims a check nobody did"

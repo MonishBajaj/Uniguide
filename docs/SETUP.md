@@ -136,7 +136,7 @@ Locally, run it with `cd worker && uv run uniguide-worker serve` after `pnpm db:
 ### Turning on the course-index crawl
 
 1. Load the seed files (operator role): `cd worker && uv run uniguide-worker index load`. Everything loads **inactive**.
-2. For each university in `data/seed/indexes/us/`, open its `url`, confirm it is the university's own list of courses (fix the URL if not), then add `verified_by: "Your Name"` and `verified_at: YYYY-MM-DD` to that index and load again.
+2. For each university in `data/seed/indexes/us/` and `data/seed/indexes/de/`, open its `url`, confirm it is the university's own list of courses (fix the URL if not), then add `verified_by: "Your Name"` and `verified_at: YYYY-MM-DD` to that index and load again.
 3. Try one: `uv run uniguide-worker index crawl --country us --limit 1`, then look at the new courses in the catalog.
 4. Review model-suggested courses at `/admin/suggested`.
 

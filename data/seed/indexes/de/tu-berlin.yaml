@@ -1,0 +1,8 @@
+# UNVERIFIED: the index URL below was written from memory and has not been opened.
+# A person must open it, confirm it lists the university's courses, then add verified_by and verified_at.
+institution: "Technische Universität Berlin"
+country: DE
+official_domain: tu.berlin
+indexes:
+  - url: https://www.tu.berlin/en/studying/study-programs
+    kind: programs

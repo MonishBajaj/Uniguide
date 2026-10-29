@@ -25,7 +25,7 @@ official page that lists their courses in `data/seed/indexes/<country>/<slug>.ya
 - A listed course is kept only if its quote is on the page, its URL is one of that page's links, and that URL is on the university's own domain.
 - Unchanged pages (same content hash) are not sent to the model again. A page the model could not read is retried next run.
 - Courses the model merely *suggests* (the long-tail fallback) are saved hidden and appear only after an admin approves them at `/admin/suggested`.
-- The US list (30 universities) ships **unverified**: the URLs were written from memory.
+- The US list (30 universities) and the German list (20) ship **unverified**: the URLs were written from memory.
 
 ## Countries without a usable register
 

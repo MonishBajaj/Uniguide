@@ -15,7 +15,7 @@ Weeks 1–4 foundation; weeks 5–6 tracker, checklists, reminders, .ics, outcom
 | Hand-label 200 official pages for the extraction eval | Fixture format in `worker/evals` |
 | Replace placeholder human scores in the writing eval with two raters | `apps/web/lib/writing/eval` |
 | Confirm unverified importers against live responses | College Scorecard (needs a key), Discover Uni columns, OpenAlex (needs a key) |
-| **Verify the 30 US index URLs** (`data/seed/indexes/us`) | Written from memory, never opened; each needs a person to confirm it and add `verified_by` / `verified_at`. Then run the first live crawl and check its courses. Add Germany next (same format) |
+| **Verify the 50 index URLs** (`data/seed/indexes/us` 30, `data/seed/indexes/de` 20) | Written from memory, never opened; each needs a person to confirm it and add `verified_by` / `verified_at`. Then run the first live crawl and check its courses. Other countries next, same format |
 | Hochschulkompass importer | Waits for HRK partner access; the stub refuses to run |
 | France and New Zealand registers | Extraction only for now (API resets, bot challenge) |
 | Gulf visa links | Add from the admin rules page after checking the official pages |
