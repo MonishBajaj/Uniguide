@@ -15,7 +15,7 @@ const optionalNumber = z.preprocess((v) => (v === "" || v === null ? undefined :
 const RuleInput = z
   .object({
     destination: z.string().regex(/^[A-Za-z]{2}$/),
-    kind: z.enum(["aps_certificate", "visa_info", "proof_of_funds", "visa_step", "post_study_work", "work_hours", "banking", "other"]),
+    kind: z.enum(["aps_certificate", "visa_info", "proof_of_funds", "visa_step", "post_study_work", "work_hours", "banking", "credential_evaluation", "other"]),
     title: z.string().trim().min(3).max(200),
     details: z.string().trim().max(1000),
     source: z.url(),

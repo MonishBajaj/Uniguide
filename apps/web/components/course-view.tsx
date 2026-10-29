@@ -9,6 +9,7 @@ import { ProgramCard as SimilarCard } from "@/components/program-card";
 import { WatchButton } from "@/components/watch-button";
 import { ShortlistButton } from "@/components/shortlist-button";
 import { toProgramInput, type CycleFacts, type ProgramCard, type RequirementRow } from "@/lib/catalog";
+import { StudentLife } from "@/components/student-life";
 import { CampusLiving } from "@/components/campus-living";
 import { FundingAndWork } from "@/components/funding-and-work";
 import type { InstitutionFact } from "@/lib/institution-facts";
@@ -225,6 +226,7 @@ export function CourseView(props: {
 
       <FundingAndWork facts={props.facts ?? []} workRules={props.workRules ?? []} />
       <CampusLiving facts={props.facts ?? []} />
+      <StudentLife facts={props.facts ?? []} />
       {(props.facts ?? []).some((f) => ["airport", "arrival_support", "course_registration"].includes(f.kind)) ? (
         <p className="mt-8 text-sm"><Link href={`/courses/${card.slug}/arrival`} className="underline underline-offset-2">Arriving and registering: the guide</Link></p>
       ) : null}

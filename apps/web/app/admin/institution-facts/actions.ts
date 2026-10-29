@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 
 // Authorisation lives in the RPCs: admins and the verifiers of the institution's country.
 
-const KINDS = ["assistantship", "on_campus_work", "housing_on_campus", "housing_off_campus", "transit_pass", "parking", "airport", "arrival_support", "course_registration", "health_insurance"] as const;
+const KINDS = ["assistantship", "on_campus_work", "housing_on_campus", "housing_off_campus", "transit_pass", "parking", "airport", "arrival_support", "course_registration", "health_insurance", "international_office", "student_societies", "faith_and_culture_facilities"] as const;
 const num = z.preprocess((v) => (v === "" || v === null ? undefined : Number(v)), z.number().nonnegative().optional());
 const int = z.preprocess((v) => (v === "" || v === null ? undefined : Number(v)), z.number().int().min(1).max(80).optional());
 const blank = (v: unknown) => (v === "" ? undefined : v);

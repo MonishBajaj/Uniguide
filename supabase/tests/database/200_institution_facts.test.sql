@@ -25,6 +25,8 @@ select throws_ok(format($$ select public.add_institution_fact(%L, 'assistantship
 select throws_ok(format($$ select public.add_institution_fact(%L, 'free_lunch', 'Bad kind', 'https://test.ac.uk/x', 'quote text') $$, :'inst'),
   '23514', null, 'an unknown kind is refused');
 
+select lives_ok(format($$ select public.add_institution_fact(%L, 'student_societies', 'Societies list', 'https://test.ac.uk/societies', 'Over 200 student societies.') $$, :'inst'), 'a student life fact');
+
 select tests.authenticate_as(:'dev');
 select throws_ok(format($$ select public.add_institution_fact(%L, 'assistantship', 'x', 'https://test.ac.uk/x', 'quote text') $$, :'inst'),
   '42501', null, 'a verifier for another country cannot add');
@@ -36,7 +38,7 @@ select tests.as_postgres();
 select is((select status::text from public.institution_facts where kind = 'assistantship'), 'verified', 'a verifier verifies a fact');
 
 select tests.as_anon();
-select is((select count(*)::int from public.institution_facts where institution_id = :'inst'), 3, 'anon reads published facts');
+select is((select count(*)::int from public.institution_facts where institution_id = :'inst'), 4, 'anon reads published facts');
 select throws_ok($$ insert into public.institution_facts (institution_id, kind, title, evidence_quote) select id, 'airport', 'x', 'quote text' from public.institutions limit 1 $$,
   '42501', null, 'anon cannot insert');
 select tests.authenticate_as(:'dev');

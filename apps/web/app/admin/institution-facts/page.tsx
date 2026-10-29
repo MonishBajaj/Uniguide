@@ -9,7 +9,7 @@ import { addFact, verifyFact } from "./actions";
 
 export const metadata: Metadata = { title: "Institution facts" };
 
-const KINDS = ["assistantship", "on_campus_work", "housing_on_campus", "housing_off_campus", "transit_pass", "parking", "airport", "arrival_support", "course_registration", "health_insurance"];
+const KINDS = ["assistantship", "on_campus_work", "housing_on_campus", "housing_off_campus", "transit_pass", "parking", "airport", "arrival_support", "course_registration", "health_insurance", "international_office", "student_societies", "faith_and_culture_facilities"];
 
 export default async function InstitutionFactsAdmin() {
   const { supabase, user } = await getUser();

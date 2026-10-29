@@ -32,7 +32,7 @@ const PREP = [
 ];
 
 /** Kinds listed in their own blocks rather than in the general list. */
-const OWN_BLOCK = new Set(["visa_step", "post_study_work", "work_hours", "banking"]);
+const OWN_BLOCK = new Set(["visa_step", "post_study_work", "work_hours", "banking", "credential_evaluation"]);
 
 export default async function VisasPage({ searchParams }: PageProps<"/visas">) {
   const raw = (await searchParams).from;
@@ -109,6 +109,21 @@ export default async function VisasPage({ searchParams }: PageProps<"/visas">) {
                           {r.kind === "work_hours" && r.hours_per_week ? `Up to ${r.hours_per_week} hours a week during study` : null}
                           {r.kind === "post_study_work" && r.months ? `${r.months} months after graduating` : null}
                         </span>
+                        {r.evidence_quote ? <q className="text-muted italic">{r.evidence_quote}</q> : null}
+                        <span><FactBadge status={r.status} /></span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
+              {list.some((r) => r.kind === "credential_evaluation") ? (
+                <div className="grid gap-2">
+                  <h4 className="text-sm font-semibold">Getting your qualification assessed</h4>
+                  <p className="text-xs text-muted">We keep your grades on their own scale. This is the official service that assesses foreign qualifications here.</p>
+                  <ul className="grid gap-3 text-sm">
+                    {list.filter((r) => r.kind === "credential_evaluation").map((r) => (
+                      <li key={r.id} className="grid gap-1">
+                        {r.link ? <a href={r.link} target="_blank" rel="noreferrer" className="font-semibold underline underline-offset-2">{r.title}</a> : <span className="font-semibold">{r.title}</span>}
                         {r.evidence_quote ? <q className="text-muted italic">{r.evidence_quote}</q> : null}
                         <span><FactBadge status={r.status} /></span>
                       </li>

@@ -3,7 +3,7 @@ import { cache } from "react";
 import { factsFor, toInstitutionFact } from "@/lib/institution-facts";
 import { createClient } from "@/lib/supabase/server";
 
-const FACT_KINDS = ["assistantship", "on_campus_work", "housing_on_campus", "housing_off_campus", "transit_pass", "parking", "health_insurance", "airport", "arrival_support", "course_registration"] as const;
+const FACT_KINDS = ["assistantship", "on_campus_work", "housing_on_campus", "housing_off_campus", "transit_pass", "parking", "health_insurance", "airport", "arrival_support", "course_registration", "international_office", "student_societies", "faith_and_culture_facilities"] as const;
 
 export const loadCard = cache(async (slug: string) => {
   const supabase = await createClient();

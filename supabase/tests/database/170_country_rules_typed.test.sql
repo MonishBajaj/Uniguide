@@ -14,6 +14,8 @@ select lives_ok($$ select public.add_country_rule('XA', 'visa_step', 'Apply onli
 
 select lives_ok($$ select public.add_country_rule('XA', 'banking', 'Opening a student account', 'https://gov.example/bank', 'Students can open an account with a passport and a letter.') $$, 'a banking rule');
 
+select lives_ok($$ select public.add_country_rule('XA', 'credential_evaluation', 'Official credential evaluation', 'https://gov.example/eval', 'Foreign qualifications are assessed by the national agency.') $$, 'a credential evaluation link');
+
 select throws_ok($$ select public.add_country_rule('XA', 'proof_of_funds', 'Bad', 'https://gov.example/b', 'quote text', p_amount := 500) $$,
   '23514', null, 'a proof of funds amount needs a currency and period');
 select throws_ok($$ select public.add_country_rule('XA', 'post_study_work', 'Bad', 'https://gov.example/b', 'quote text') $$,
@@ -22,7 +24,7 @@ select throws_ok($$ select public.add_country_rule('XA', 'work_hours', 'Bad', 'h
   '23514', null, 'a work hours rule needs hours per week');
 
 select tests.as_anon();
-select is((select count(*)::int from public.country_rules where destination = 'XA'), 5, 'anon reads the published rules');
+select is((select count(*)::int from public.country_rules where destination = 'XA'), 6, 'anon reads the published rules');
 select is((select amount from public.country_rules where destination = 'XA' and kind = 'proof_of_funds'), 1000::numeric, 'the amount is stored');
 select throws_ok($$ insert into public.country_rules (destination, kind, title) values ('XA', 'visa_step', 'x') $$, '42501', null, 'anon cannot insert');
 
