@@ -20,7 +20,7 @@ class Insight:
 
 
 def compute_insights(rows: list[dict[str, Any]], min_n: int = DEFAULT_MIN_N) -> list[Insight]:
-    """Share of decided applicants admitted, by destination country, for countries with at least min_n decided outcomes."""
+    """Share of decided applicants admitted, by destination, for countries with at least min_n decided outcomes."""
     by_country: dict[str, list[dict[str, Any]]] = defaultdict(list)
     for r in rows:
         by_country[r["country"]].append(r)

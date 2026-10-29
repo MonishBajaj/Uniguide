@@ -277,6 +277,33 @@ def seed_check(
     typer.echo(f"{len(docs)} seed files valid ({sum(bool(d.get('placeholder')) for _, d in docs)} placeholders)")
 
 
+@seed.command("scaffold")
+def seed_scaffold(
+    country: Annotated[str, typer.Argument(help="Two-letter country code, e.g. 'de', 'us', 'gb', 'ca', 'au', 'ie'")],
+    slug: Annotated[str, typer.Argument(help="Course slug, e.g. 'tum-msc-informatics'")],
+    institution_name: Annotated[str | None, typer.Option("--name", "-n", help="Institution name")] = None,
+    program_title: Annotated[str | None, typer.Option("--title", "-t", help="Program title")] = None,
+    domain: Annotated[str | None, typer.Option("--domain", "-d", help="Official domain (e.g. tum.de)")] = None,
+    force: Annotated[bool, typer.Option("--force", "-f", help="Overwrite existing file")] = False,
+) -> None:
+    """Scaffold a new hand-verified course seed file."""
+    from .seed.scaffold import scaffold_course_file
+
+    try:
+        path = scaffold_course_file(
+            country,
+            slug,
+            institution_name=institution_name,
+            program_title=program_title,
+            official_domain=domain,
+            force=force,
+        )
+    except (FileExistsError, ValueError) as exc:
+        typer.echo(str(exc), err=True)
+        raise typer.Exit(1) from exc
+    typer.echo(f"Scaffolded new seed file: {path}")
+
+
 @seed.command("status")
 def seed_status_cmd(
     stale_days: Annotated[int, typer.Option(help="Re-check deadlines not verified in this many days.")] = 30,

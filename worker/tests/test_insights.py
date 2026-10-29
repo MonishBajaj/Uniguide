@@ -32,7 +32,7 @@ def test_one_row_per_country_and_nothing_identifying() -> None:
 
 def test_suppresses_when_too_few_outcomes_are_decided() -> None:
     waitlisted = [{"country": "GB", "decision": "waitlisted", "program_id": "p"} for _ in range(9)]
-    one_decided = waitlisted + [{"country": "GB", "decision": "admitted", "program_id": "p"}]
+    one_decided = [*waitlisted, {"country": "GB", "decision": "admitted", "program_id": "p"}]
     assert compute_insights(one_decided) == []
 
 

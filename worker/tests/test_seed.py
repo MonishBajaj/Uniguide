@@ -180,3 +180,16 @@ def test_extra_domain_needs_two_labels() -> None:
 def test_second_look_names_compare_case_and_space_insensitively() -> None:
     with pytest.raises(SeedError, match="second look"):
         check_second_look([_fact_doc("deadline", {"date": "2027-01-15"}, second=(" harman ", "2026-11-02"))])
+
+
+def test_scaffold_course_file(tmp_path: Path) -> None:
+    from uniguide_worker.seed.scaffold import scaffold_course_file
+
+    path = scaffold_course_file("DE", "tum-msc-informatics", target_dir=tmp_path)
+    assert path.exists()
+    docs = read_seed_files(tmp_path)
+    assert len(docs) == 1
+    _, doc = docs[0]
+    assert doc["institution"]["country"] == "DE"
+    assert doc["program"]["slug"] == "tum-msc-informatics"
+    check_second_look(docs)

@@ -1,0 +1,116 @@
+institution:
+  name: Technische Universität München
+  country: DE
+  city: Munich
+  region: BY
+  official_domain: tum.de
+  extra_official_domains:
+    - in.tum.de
+    - cit.tum.de
+  ids:
+    ror_id: https://ror.org/02kkvpp62
+
+program:
+  slug: tum-msc-informatics
+  title: M.Sc. Informatics
+  level: master
+  isced_level: 7
+  isced_f: "0613"
+  field_label: Computer Science
+  delivery_mode: on_campus
+  duration_months: 24
+  required_credits: 120
+  credit_system: ects
+  languages_of_instruction:
+    - en
+  official_url: https://www.tum.de/en/studies/degree-programs/detail/informatics-master-of-science-msc
+
+cycles:
+  - label: 2027-winter
+    intake_year: 2027
+    intake_term: winter
+    starts_on: 2027-10-01
+    facts:
+      - subject: requirement
+        fields:
+          kind: entry_qualification
+          applicant_category: all
+          qualification: bachelor_any
+          details: Recognized undergraduate degree and successful completion of the aptitude assessment procedure.
+        source_url: https://www.tum.de/en/studies/degree-programs/detail/informatics-master-of-science-msc
+        evidence_quote: "Minimum requirements to apply for a Master’s program at TUM are a recognized undergraduate degree (e.g. a Bachelor’s) and the successful completion of the aptitude assessment procedure."
+        verified_by: Harman
+        verified_at: 2026-10-28
+        second_checked_by: Reviewer2
+        second_checked_at: 2026-10-28
+
+      - subject: requirement
+        fields:
+          kind: language_test
+          applicant_category: international
+          exam: toefl_ibt
+          exam_version: legacy
+          min_total: 88
+        source_url: https://www.tum.de/en/studies/application/application-info-portal/admission-requirements/language-certificates
+        evidence_quote: "Internet based Test (iBT): 88. Only the Test Date Score is valid, MyBest Score will not be accepted."
+        verified_by: Harman
+        verified_at: 2026-10-28
+        second_checked_by: Reviewer2
+        second_checked_at: 2026-10-28
+
+      - subject: requirement
+        fields:
+          kind: language_test
+          applicant_category: international
+          exam: ielts_academic
+          min_total: 6.5
+        source_url: https://www.tum.de/en/studies/application/application-info-portal/admission-requirements/language-certificates
+        evidence_quote: "IELTS Academic with a minimum overall band score of 6.5."
+        verified_by: Harman
+        verified_at: 2026-10-28
+        second_checked_by: Reviewer2
+        second_checked_at: 2026-10-28
+
+      - subject: deadline
+        fields:
+          date: 2027-05-31
+          kind: application
+          owning_system: direct
+          original_text: "Application period for the winter semester: 01.02. – 31.05."
+          applicant_category: all
+        source_url: https://www.tum.de/en/studies/degree-programs/detail/informatics-master-of-science-msc
+        evidence_quote: "Application period for the winter semester: 01.02. – 31.05."
+        verified_by: Harman
+        verified_at: 2026-10-28
+        second_checked_by: Reviewer2
+        second_checked_at: 2026-10-28
+
+      - subject: cost_item
+        fields:
+          kind: tuition
+          basis: per_term
+          base: 6000
+          currency: EUR
+          fee_year: 2027-28
+          applicant_category: international
+          details: Tuition fees for international students from third countries
+        source_url: https://www.tum.de/en/studies/degree-programs/detail/informatics-master-of-science-msc
+        evidence_quote: "The tuition fees for international students from third countries for this degree program are 6,000 euros per semester. This amount is charged for full-time study."
+        verified_by: Harman
+        verified_at: 2026-10-28
+        second_checked_by: Reviewer2
+        second_checked_at: 2026-10-28
+
+      - subject: cost_item
+        fields:
+          kind: other
+          basis: per_term
+          base: 97
+          currency: EUR
+          fee_year: 2027-28
+          applicant_category: all
+          details: Semester fee / student union contribution
+        source_url: https://www.tum.de/en/studies/degree-programs/detail/informatics-master-of-science-msc
+        evidence_quote: "Costs Student Fees: 97.00 € Tuition fees for international students"
+        verified_by: Harman
+        verified_at: 2026-10-28
