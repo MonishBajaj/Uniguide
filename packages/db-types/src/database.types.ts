@@ -637,14 +637,14 @@ isOneToOne: false
                   ]
                 },"organizations": {
                   Row: {
-                    "country": string | null,"created_at": string,"id": string,"invite_code": string,"name": string,"website": string | null
+                    "country": string | null,"created_at": string,"id": string,"invite_code": string,"kind": string,"name": string,"website": string | null
                   }
                   ComputedFields: never
                   Insert: {
-                    "country"?: string | null,"created_at"?: string,"id"?: string,"invite_code"?: string,"name": string,"website"?: string | null
+                    "country"?: string | null,"created_at"?: string,"id"?: string,"invite_code"?: string,"kind"?: string,"name": string,"website"?: string | null
                   }
                   Update: {
-                    "country"?: string | null,"created_at"?: string,"id"?: string,"invite_code"?: string,"name"?: string,"website"?: string | null
+                    "country"?: string | null,"created_at"?: string,"id"?: string,"invite_code"?: string,"kind"?: string,"name"?: string,"website"?: string | null
                   }
                   Relationships: [
                     

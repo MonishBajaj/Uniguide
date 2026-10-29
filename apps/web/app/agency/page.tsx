@@ -76,6 +76,9 @@ export default async function AgencyPage() {
                         <>
                           {deadlineText(sum.next.d.due_at, sum.next.d.timezone, sum.next.d.precision)}
                           <span className="block text-muted">{sum.next.title} · {daysUntil(sum.next.d.due_at)} days</span>
+                          {daysUntil(sum.next.d.due_at) <= 7 && sum.done < sum.total ? (
+                            <span className="mt-1 inline-block rounded-full border border-unverified/40 px-2 py-0.5 text-xs text-unverified">Due within a week, checklist incomplete</span>
+                          ) : null}
                         </>
                       ) : "None open"}
                     </td>
