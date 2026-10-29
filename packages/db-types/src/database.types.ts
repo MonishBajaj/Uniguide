@@ -1179,6 +1179,9 @@ isOneToOne: false
 "is_org_member":
 { Args: { "p_org": string }; Returns: boolean
                            },
+"is_org_owner":
+{ Args: { "p_org": string }; Returns: boolean
+                           },
 "match_faculty":
 { Args: { "p_fields"?: (string)[],"p_institution_id": string,"p_limit"?: number,"p_query"?: string,"p_query_embedding"?: string }; Returns: {
               "cited_by_count": number,"id": string,"name": string,"openalex_id": string,"orcid": string,"recent_works": Json,"score": number,"topics": Json
@@ -1204,6 +1207,12 @@ isOneToOne: false
 { Args: { "p_code": string }; Returns: {
               "country": string,"id": string,"name": string,"website": string
             }[]
+                           },
+"owner_add_member":
+{ Args: { "p_email": string,"p_org": string,"p_role"?: string }; Returns: string
+                           },
+"owner_remove_member":
+{ Args: { "p_org": string,"p_user": string }; Returns: undefined
                            },
 "parent_can_see":
 { Args: { "p_student": string }; Returns: boolean

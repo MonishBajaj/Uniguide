@@ -39,6 +39,7 @@ export default async function AgencyPage() {
     <div className="mx-auto grid max-w-5xl gap-8 px-6 py-12">
       <header className="grid gap-2">
         <h1 className="text-4xl font-semibold">Your students</h1>
+        <p className="text-sm"><Link href="/agency/export" prefetch={false} className="underline underline-offset-2">Export as CSV</Link> · <Link href="/agency/team" className="underline underline-offset-2">Your team</Link></p>
         <p className="max-w-2xl text-muted">
           Students who chose to share with {roles.orgs.map((o) => o.name).join(" and ")}. Read only; a student can stop
           sharing at any time. Give students your invite code so they can share from their account.
