@@ -70,7 +70,10 @@ def _report(result: Any) -> None:
 def _with_run[T](job: str, work: Callable[[Connection], T]) -> T:
     with _worker_conn() as conn, _run(conn, job) as stats:
         result = work(conn)
-        stats.update(result.as_dict() if hasattr(result, "as_dict") else result.__dict__)
+        if isinstance(result, dict):
+            stats.update(result)
+        else:
+            stats.update(result.as_dict() if hasattr(result, "as_dict") else result.__dict__)
         return result
 
 

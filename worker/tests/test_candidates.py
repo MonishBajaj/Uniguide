@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 import uuid
 from collections.abc import Iterator
 
@@ -16,6 +17,7 @@ from uniguide_worker.enrich.candidates import (
     create_from_candidates,
     host_matches_domain,
     propose_candidates,
+    slugify,
 )
 
 from .conftest import FakeGenai, FakeGenaiResponse
@@ -218,4 +220,23 @@ def test_a_course_already_in_the_catalog_keeps_its_published_state(
         assert row == {"published": True, "suggestion_status": None}
     finally:
         operator.execute("delete from institutions where id = %s", (inst["id"],))
+        operator.commit()
+
+
+def test_slug_of_a_long_course_name_stays_valid() -> None:
+    slug = slugify("University of Illinois Urbana-Champaign Master of Science in Mechanical Science and Engineering")
+    assert re.fullmatch(r"[a-z0-9]+(-[a-z0-9]+)*", slug) and len(slug) <= 80
+    assert slugify("数学") == "course"
+    assert slugify("---") == "course"
+
+
+def test_a_rejected_suggestion_is_not_suggested_again(worker: Connection, operator: Connection, tag: str) -> None:
+    good = candidate(tag)
+    try:
+        first = create_from_candidates(worker, [good], verify_domain=YES)
+        operator.execute("update programs set suggestion_status = 'rejected' where id = %s", (first[0],))
+        operator.commit()
+        assert create_from_candidates(worker, [good], verify_domain=YES) == []
+    finally:
+        operator.execute("delete from institutions where official_domain = %s", (good.domain,))
         operator.commit()

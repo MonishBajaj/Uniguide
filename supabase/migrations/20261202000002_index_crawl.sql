@@ -27,7 +27,7 @@ create policy "worker" on public.institution_indexes for all to ingest_worker us
 alter table public.programs
   add column suggestion_status text check (suggestion_status in ('pending', 'approved', 'rejected'));
 create index programs_pending_suggestions_idx on public.programs (created_at) where suggestion_status = 'pending';
-create policy "admins read all programs" on public.programs for select to authenticated using (public.is_admin());
+-- Admins already read unpublished programs through the existing "published programs" policy.
 
 create function public.review_suggested_course(p_program uuid, p_approve boolean) returns void
 language plpgsql security definer set search_path = '' as $$

@@ -7,15 +7,19 @@ URL is on the institution's own domain. A page the model could not read is never
 from __future__ import annotations
 
 import hashlib
+import logging
 from dataclasses import dataclass, field
 from typing import Any
 
 from ..db import Connection
 from ..db_enums import ProgramLevel
 from ..enrich.candidates import host_matches_domain, slugify, unique_slug
+from ..extract.extractor import MAX_PAGE_CHARS
 from ..fetch.fetcher import Fetcher, FetchRefused
 from ..validate.quotes import normalise, quote_in_text
-from .lister import PROMPT_VERSION, CourseLister, ListedCourse
+from .lister import MAX_LINKS, PROMPT_VERSION, CourseLister, ListedCourse
+
+log = logging.getLogger(__name__)
 
 MAX_COURSES = 300
 LEVELS = {level.value for level in ProgramLevel}
@@ -27,6 +31,7 @@ class IndexReport:
     status: str  # crawled | unchanged | refused | failed
     created: int = 0
     existing: int = 0
+    promoted: int = 0
     rejected: list[str] = field(default_factory=list)
     detail: str = ""
 
@@ -101,23 +106,35 @@ def crawl_index(conn: Connection, fetcher: Fetcher, lister: CourseLister, index:
         return IndexReport(url, "failed", detail=run.error or "no list")
 
     report = IndexReport(url, "crawled")
+    if len(result.text) > MAX_PAGE_CHARS or len(result.links) > MAX_LINKS or len(run.courses) > MAX_COURSES:
+        report.detail = "Only part of this page was read; list its sections as separate index URLs."
     link_urls = {href.split("#")[0] for _, href in result.links}
-    seen: set[str] = set()
+    seen: set[tuple[str, str]] = set()
     for course in run.courses[:MAX_COURSES]:
         reason = _reject_reason(course, result.text, link_urls, domain)
         if reason:
             report.rejected.append(reason)
             continue
-        key = course.title.casefold()
+        key = (course.title.casefold(), course.level)
         if key in seen:
             continue
         seen.add(key)
         found = conn.execute(
-            "select id, official_url from programs where institution_id = %s and lower(title) = lower(%s) limit 1",
-            (index["institution_id"], course.title),
+            """
+            select id, official_url, suggestion_status from programs
+            where institution_id = %s and lower(title) = lower(%s) and level = %s limit 1
+            """,
+            (index["institution_id"], course.title, course.level),
         ).fetchone()
         if found:
-            report.existing += 1
+            if found["suggestion_status"] == "pending":
+                # The university's own list confirms what the model only suggested.
+                conn.execute(
+                    "update programs set published = true, suggestion_status = 'approved' where id = %s", (found["id"],)
+                )
+                report.promoted += 1
+            else:
+                report.existing += 1  # includes a rejected suggestion: an admin's decision stands
             if not found["official_url"]:
                 conn.execute("update programs set official_url = %s where id = %s", (course.url, found["id"]))
             continue
@@ -136,7 +153,9 @@ def crawl_index(conn: Connection, fetcher: Fetcher, lister: CourseLister, index:
             ),
         )
         report.created += 1
-    _touch(conn, index["id"], digest=result.content_hash)
+    # Remember the page only when it produced courses: an empty answer may be a weak one, so try again next time.
+    accepted = report.created + report.existing + report.promoted
+    _touch(conn, index["id"], digest=result.content_hash if accepted else None)
     return report
 
 
@@ -160,4 +179,13 @@ def crawl_all(
         """,
         {"c": country, "h": min_age_hours, "n": limit},
     ).fetchall()
-    return [crawl_index(conn, fetcher, lister, row) for row in rows]
+    reports: list[IndexReport] = []
+    for row in rows:
+        try:
+            reports.append(crawl_index(conn, fetcher, lister, row))
+        except Exception as exc:  # one broken site must not starve the others
+            conn.rollback()
+            log.exception("crawl of %s failed", row["url"])
+            _touch(conn, row["id"])  # moves it to the back of the queue; no hash, so it is read again
+            reports.append(IndexReport(row["url"], "failed", detail=f"{type(exc).__name__} while reading the page"))
+    return reports

@@ -125,3 +125,93 @@ def test_a_later_unverified_file_switches_the_index_off(operator: Connection, cl
     load_indexes(operator, [seed(institution=f"Index U {tag}", official_domain=domain, indexes=[{"url": url}])])
     row = operator.execute("select active from institution_indexes where url = %s", (url,)).fetchone()
     assert row == {"active": False}
+
+
+def _inst(operator: Connection, name: str, domain: str | None) -> Any:
+    row = operator.execute(
+        "insert into institutions (name, country, official_domain) values (%s, 'US', %s) returning id", (name, domain)
+    ).fetchone()
+    operator.commit()
+    assert row
+    return row["id"]
+
+
+def test_a_www_domain_recorded_by_a_register_still_matches(operator: Connection, cleanup: list[str]) -> None:
+    tag = uuid.uuid4().hex[:8]
+    domain = f"idx-{tag}.example.org"
+    cleanup.append(f"www.{domain}")
+    cleanup.append(domain)
+    _inst(operator, f"Register Name {tag}", f"www.{domain}")
+    report = load_indexes(
+        operator,
+        [seed(institution=f"Seed Name {tag}", official_domain=domain, indexes=[{"url": f"https://{domain}/p"}])],
+    )
+    assert report.institutions_new == 0
+
+
+def test_a_recorded_subdomain_is_widened_to_the_seed_domain(operator: Connection, cleanup: list[str]) -> None:
+    tag = uuid.uuid4().hex[:8]
+    domain = f"idx-{tag}.example.org"
+    cleanup.append(domain)
+    cleanup.append(f"campus.{domain}")
+    inst = _inst(operator, f"Index U {tag}", f"campus.{domain}")
+    load_indexes(
+        operator,
+        [seed(institution=f"Index U {tag}", official_domain=domain, indexes=[{"url": f"https://grad.{domain}/p"}])],
+    )
+    row = operator.execute("select official_domain from institutions where id = %s", (inst,)).fetchone()
+    assert row == {"official_domain": domain}
+
+
+def test_a_recorded_domain_unrelated_to_the_seed_is_an_error(operator: Connection, cleanup: list[str]) -> None:
+    tag = uuid.uuid4().hex[:8]
+    cleanup.append(f"other-{tag}.example.org")
+    _inst(operator, f"Index U {tag}", f"other-{tag}.example.org")
+    with pytest.raises(SeedError, match="differs"):
+        load_indexes(
+            operator,
+            [
+                seed(
+                    institution=f"Index U {tag}",
+                    official_domain=f"idx-{tag}.example.org",
+                    indexes=[{"url": f"https://idx-{tag}.example.org/p"}],
+                )
+            ],
+        )
+
+
+def test_the_row_with_the_matching_domain_beats_a_same_name_row_without_one(
+    operator: Connection, cleanup: list[str]
+) -> None:
+    tag = uuid.uuid4().hex[:8]
+    domain = f"idx-{tag}.example.org"
+    cleanup.append(domain)
+    nameless = _inst(operator, f"Index U {tag}", None)
+    right = _inst(operator, f"Something Else {tag}", domain)
+    load_indexes(
+        operator, [seed(institution=f"Index U {tag}", official_domain=domain, indexes=[{"url": f"https://{domain}/p"}])]
+    )
+    owner = operator.execute(
+        "select institution_id from institution_indexes where url = %s", (f"https://{domain}/p",)
+    ).fetchone()
+    assert owner == {"institution_id": right}
+    unchanged = operator.execute("select official_domain from institutions where id = %s", (nameless,)).fetchone()
+    assert unchanged == {"official_domain": None}
+    operator.execute("delete from institutions where id = %s", (nameless,))
+    operator.commit()
+
+
+def test_urls_removed_from_the_file_are_switched_off(operator: Connection, cleanup: list[str]) -> None:
+    tag = uuid.uuid4().hex[:8]
+    domain = f"idx-{tag}.example.org"
+    cleanup.append(domain)
+    both = [
+        {"url": f"https://{domain}/one", "verified_by": "A", "verified_at": "2026-10-29"},
+        {"url": f"https://{domain}/two", "verified_by": "A", "verified_at": "2026-10-29"},
+    ]
+    load_indexes(operator, [seed(institution=f"Index U {tag}", official_domain=domain, indexes=both)])
+    load_indexes(operator, [seed(institution=f"Index U {tag}", official_domain=domain, indexes=both[:1])])
+    rows = operator.execute(
+        "select url, active from institution_indexes where url like %s order by url", (f"https://{domain}/%",)
+    ).fetchall()
+    assert [(r["url"].rsplit("/", 1)[1], r["active"]) for r in rows] == [("one", True), ("two", False)]

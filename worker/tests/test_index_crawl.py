@@ -7,6 +7,7 @@ import uuid
 from collections.abc import Iterator
 from typing import Any
 
+import httpx
 import pytest
 
 from uniguide_worker.db import Connection
@@ -36,9 +37,11 @@ class Lister:
 
 
 class IndexFetcher:
-    def __init__(self, domain: str, text: str = PAGE, status: int = 200) -> None:
+    def __init__(
+        self, domain: str, text: str = PAGE, status: int = 200, links: tuple[tuple[str, str], ...] | None = None
+    ) -> None:
         self.domain, self.text, self.status = domain, text, status
-        self.links = (
+        self.links = links or (
             ("Robotics MS", f"https://www.{domain}/robotics"),
             ("Data Science MS", f"https://www.{domain}/data-science"),
             ("Physics PhD", f"https://www.{domain}/physics"),
@@ -223,3 +226,116 @@ def test_prompt_lists_the_links_and_the_model_output_is_parsed() -> None:
         "u", "t", ()
     )  # type: ignore[arg-type]
     assert bad.courses is None and bad.error
+
+
+def course_page(domain: str, titles: list[str], *slugs: str) -> IndexFetcher:
+    text = "Programs. " + ". ".join(titles) + "."
+    return IndexFetcher(
+        domain, text, links=tuple((t, f"https://www.{domain}/{sl}") for t, sl in zip(titles, slugs, strict=True))
+    )
+
+
+def test_a_long_course_name_does_not_stop_the_crawl(
+    worker: Connection, operator: Connection, index: dict[str, Any]
+) -> None:
+    d = index["domain"]
+    operator.execute(
+        "update institutions set name = %s where id = %s",
+        ("University of Illinois Urbana-Champaign", index["institution"]),
+    )
+    operator.commit()
+    title = "Master of Science in Mechanical Science and Engineering"
+    lister = Lister([listed(title, f"https://www.{d}/mechse")])
+    report = crawl_index(worker, course_page(d, [title], "mechse"), lister, index_row(worker, index))  # type: ignore[arg-type]
+    assert report.status == "crawled" and report.created == 1
+
+
+class FlakyFetcher(IndexFetcher):
+    def fetch(self, url: str, etag: str | None = None, last_modified: str | None = None) -> FetchResult:
+        if url.endswith("/bad"):
+            raise httpx.ConnectError("connection reset")
+        return super().fetch(url, etag, last_modified)
+
+
+def test_one_failing_index_does_not_stop_the_others(
+    worker: Connection, operator: Connection, index: dict[str, Any]
+) -> None:
+    d = index["domain"]
+    operator.execute(
+        "insert into institution_indexes (institution_id, url, active) values (%s, %s, true)",
+        (index["institution"], f"https://www.{d}/bad"),
+    )
+    operator.commit()
+    lister = Lister([listed("Master of Science in Robotics", f"https://www.{d}/robotics")])
+    reports = {r.url.rsplit("/", 1)[1]: r for r in crawl_all(worker, FlakyFetcher(d), lister, country="US", limit=50)}  # type: ignore[arg-type]
+    assert reports["bad"].status == "failed" and reports["programs"].status == "crawled"
+    checked = operator.execute(
+        "select last_checked_at from institution_indexes where url like %s", ("%/bad",)
+    ).fetchone()
+    assert checked and checked["last_checked_at"] is not None  # it moves to the back of the queue
+
+
+def test_the_same_title_at_two_levels_is_two_courses(
+    worker: Connection, operator: Connection, index: dict[str, Any]
+) -> None:
+    d = index["domain"]
+    fetcher = course_page(d, ["Computer Science MS", "Computer Science PhD"], "cs-ms", "cs-phd")
+    lister = Lister(
+        [
+            listed("Computer Science", f"https://www.{d}/cs-ms", quote="Computer Science MS"),
+            listed("Computer Science", f"https://www.{d}/cs-phd", level="doctorate", quote="Computer Science PhD"),
+        ]
+    )
+    report = crawl_index(worker, fetcher, lister, index_row(worker, index))  # type: ignore[arg-type]
+    assert report.created == 2
+    assert sorted(r["level"] for r in programs(operator, index)) == ["doctorate", "master"]
+
+
+def test_an_official_listing_publishes_a_pending_suggestion_but_respects_a_rejection(
+    worker: Connection, operator: Connection, index: dict[str, Any]
+) -> None:
+    d = index["domain"]
+    for title, status in (
+        ("Master of Science in Robotics", "pending"),
+        ("Master of Science in Data Science", "rejected"),
+    ):
+        operator.execute(
+            "insert into programs (institution_id, slug, title, level, published, suggestion_status) values (%s, %s, %s, 'master', false, %s)",
+            (index["institution"], f"sugg-{uuid.uuid4().hex[:8]}", title, status),
+        )
+    operator.commit()
+    lister = Lister(
+        [
+            listed("Master of Science in Robotics", f"https://www.{d}/robotics"),
+            listed("Master of Science in Data Science", f"https://www.{d}/data-science"),
+        ]
+    )
+    report = crawl_index(worker, IndexFetcher(d), lister, index_row(worker, index))  # type: ignore[arg-type]
+    by_title = {r["title"]: r for r in programs(operator, index)}
+    assert (
+        by_title["Master of Science in Robotics"]["published"],
+        by_title["Master of Science in Robotics"]["suggestion_status"],
+    ) == (True, "approved")
+    assert (
+        by_title["Master of Science in Data Science"]["published"],
+        by_title["Master of Science in Data Science"]["suggestion_status"],
+    ) == (False, "rejected")
+    assert report.promoted == 1 and report.created == 0
+
+
+def test_an_empty_or_fully_rejected_listing_is_tried_again_next_time(worker: Connection, index: dict[str, Any]) -> None:
+    d = index["domain"]
+    crawl_index(worker, IndexFetcher(d), Lister([]), index_row(worker, index))  # type: ignore[arg-type]
+    assert index_row(worker, index)["content_hash"] is None
+    bad = Lister([listed("Master of Science in Alchemy", f"https://www.{d}/robotics")])
+    crawl_index(worker, IndexFetcher(d), bad, index_row(worker, index))  # type: ignore[arg-type]
+    assert index_row(worker, index)["content_hash"] is None
+    ok = Lister([listed("Master of Science in Robotics", f"https://www.{d}/robotics")])
+    crawl_index(worker, IndexFetcher(d), ok, index_row(worker, index))  # type: ignore[arg-type]
+    assert index_row(worker, index)["content_hash"] is not None
+
+
+def test_a_cut_off_model_answer_says_the_index_is_too_long() -> None:
+    reply = FakeGenaiResponse('{"courses": [', finish_reason="MAX_TOKENS")
+    run = GeminiCourseLister(client=FakeGenai(reply), model="gemini-test").list_courses("u", "t", ())  # type: ignore[arg-type]
+    assert run.courses is None and run.error and "too long" in run.error

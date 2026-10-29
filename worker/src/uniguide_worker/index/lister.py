@@ -107,6 +107,10 @@ class GeminiCourseLister:
         tin = getattr(usage, "prompt_token_count", 0) or 0
         tout = getattr(usage, "candidates_token_count", 0) or 0
         cost = (tin * INPUT_PRICE + tout * OUTPUT_PRICE) / 1_000_000
+        finish = str(getattr(response.candidates[0], "finish_reason", "")) if response.candidates else ""
+        if finish.endswith("MAX_TOKENS"):
+            msg = "the answer was cut off: this index is too long for one answer, split it into several index URLs"
+            return CourseListRun(None, self.model, tin, tout, cost, msg, ms())
         try:
             courses = CourseList.model_validate_json(response.text or "").courses
         except ValidationError as exc:

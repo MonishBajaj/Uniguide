@@ -114,7 +114,9 @@ def propose_candidates(client: Any, model: str, snapshot: dict[str, Any], limit:
 
 
 def slugify(text: str) -> str:
-    return re.sub(r"-+", "-", re.sub(r"[^a-z0-9]+", "-", text.lower())).strip("-")[:80]
+    """A slug the database accepts: cut first, then trim hyphens, so the cut cannot leave one at the end."""
+    slug = re.sub(r"-+", "-", re.sub(r"[^a-z0-9]+", "-", text.lower()))[:80].strip("-")
+    return slug or "course"
 
 
 def unique_slug(conn: Connection, base: str) -> str:
@@ -168,9 +170,11 @@ def create_from_candidates(
             ).fetchone()
         assert inst is not None
         prog = conn.execute(
-            "select id from programs where institution_id = %s and lower(title) = lower(%s) limit 1",
+            "select id, suggestion_status from programs where institution_id = %s and lower(title) = lower(%s) limit 1",
             (inst["id"], c.programme),
         ).fetchone()
+        if prog is not None and prog["suggestion_status"] == "rejected":
+            continue  # an admin already turned this course down
         if prog is None:
             slug = unique_slug(conn, slugify(f"{c.institution} {c.programme}"))
             prog = conn.execute(

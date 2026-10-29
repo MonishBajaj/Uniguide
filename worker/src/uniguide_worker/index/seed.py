@@ -103,14 +103,25 @@ class IndexLoadReport:
     indexes_active: int = 0
 
 
+def _plain(domain: str) -> str:
+    return domain.lower().strip().removeprefix("www.")
+
+
 def load_indexes(conn: Connection, seeds: list[IndexSeed]) -> IndexLoadReport:
     """Upsert institutions and their index pages. The file is the source of truth for `active`."""
     report = IndexLoadReport()
     for s in seeds:
         inst = conn.execute(
-            "select id from institutions where official_domain = %s or (country = %s and lower(name) = lower(%s)) "
-            "order by (official_domain = %s) desc limit 1",
-            (s.official_domain, s.country, s.institution, s.official_domain),
+            """
+            select id, official_domain from institutions
+            where regexp_replace(lower(official_domain), '^www\\.', '') = %(d)s
+               or (%(ror)s::text is not null and ror_id = %(ror)s::text)
+               or (country = %(c)s and lower(name) = lower(%(n)s))
+            order by (regexp_replace(lower(coalesce(official_domain, '')), '^www\\.', '') = %(d)s) desc,
+                     (ror_id is not distinct from %(ror)s::text) desc, created_at
+            limit 1
+            """,
+            {"d": s.official_domain, "ror": s.ror_id, "c": s.country, "n": s.institution},
         ).fetchone()
         if inst is None:
             inst = conn.execute(
@@ -122,10 +133,15 @@ def load_indexes(conn: Connection, seeds: list[IndexSeed]) -> IndexLoadReport:
             ).fetchone()
             report.institutions_new += 1
         assert inst is not None
-        conn.execute(
-            "update institutions set official_domain = coalesce(official_domain, %s) where id = %s",
-            (s.official_domain, inst["id"]),
-        )
+        recorded = _plain(inst["official_domain"]) if inst.get("official_domain") else None
+        if recorded is None or recorded.endswith("." + s.official_domain):
+            # A register often records one campus host; the seed's broader domain is the one to trust.
+            conn.execute("update institutions set official_domain = %s where id = %s", (s.official_domain, inst["id"]))
+        elif recorded != s.official_domain and not s.official_domain.endswith("." + recorded):
+            raise SeedError(
+                f"{s.institution}: the domain recorded in the database ({recorded}) differs from the seed's "
+                f"({s.official_domain}); fix one of them before loading"
+            )
         for entry in s.indexes:
             row = conn.execute(
                 """
@@ -138,5 +154,10 @@ def load_indexes(conn: Connection, seeds: list[IndexSeed]) -> IndexLoadReport:
             assert row is not None
             report.indexes_new += int(row["inserted"])
             report.indexes_active += int(entry.verified)
+        # A URL taken out of the file must stop being crawled.
+        conn.execute(
+            "update institution_indexes set active = false where institution_id = %s and not (url = any(%s))",
+            (inst["id"], [e.url for e in s.indexes]),
+        )
     conn.commit()
     return report
