@@ -773,6 +773,26 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"institution_indexes": {
+                  Row: {
+                    "active": boolean,"content_hash": string | null,"created_at": string,"id": string,"institution_id": string,"kind": string,"last_changed_at": string | null,"last_checked_at": string | null,"url": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "active"?: boolean,"content_hash"?: string | null,"created_at"?: string,"id"?: string,"institution_id": string,"kind"?: string,"last_changed_at"?: string | null,"last_checked_at"?: string | null,"url": string
+                  }
+                  Update: {
+                    "active"?: boolean,"content_hash"?: string | null,"created_at"?: string,"id"?: string,"institution_id"?: string,"kind"?: string,"last_changed_at"?: string | null,"last_checked_at"?: string | null,"url"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "institution_indexes_institution_id_fkey"
+      columns: ["institution_id"]
+      isOneToOne: false
+      referencedRelation: "institutions"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"institutions": {
                   Row: {
                     "city": string | null,"country": string,"created_at": string,"cricos_provider_code": string | null,"id": string,"ipeds_unitid": string | null,"name": string,"official_domain": string | null,"other_ids": NonNullable<Json>,"region": string | null,"ror_id": string | null,"source_id": string | null,"ukprn": string | null,"updated_at": string,"verification_method": Database["public"]['Enums']["verification_method"]
@@ -1117,14 +1137,14 @@ isOneToOne: false
                   ]
                 },"programs": {
                   Row: {
-                    "cip": string | null,"coverage_tier": Database["public"]['Enums']["coverage_tier"],"created_at": string,"credit_system": Database["public"]['Enums']["credit_system"] | null,"delivery_mode": Database["public"]['Enums']["delivery_mode"],"duration_months": number | null,"field_label": string | null,"id": string,"institution_id": string,"isced_f": string | null,"isced_level": number | null,"languages_of_instruction": (string)[],"level": Database["public"]['Enums']["program_level"],"official_url": string | null,"published": boolean,"register_ids": NonNullable<Json>,"required_credits": number | null,"search_tsv": unknown,"slug": string,"source_id": string | null,"title": string,"track": string | null,"updated_at": string,"verification_method": Database["public"]['Enums']["verification_method"]
+                    "cip": string | null,"coverage_tier": Database["public"]['Enums']["coverage_tier"],"created_at": string,"credit_system": Database["public"]['Enums']["credit_system"] | null,"delivery_mode": Database["public"]['Enums']["delivery_mode"],"duration_months": number | null,"field_label": string | null,"id": string,"institution_id": string,"isced_f": string | null,"isced_level": number | null,"languages_of_instruction": (string)[],"level": Database["public"]['Enums']["program_level"],"official_url": string | null,"published": boolean,"register_ids": NonNullable<Json>,"required_credits": number | null,"search_tsv": unknown,"slug": string,"source_id": string | null,"suggestion_status": string | null,"title": string,"track": string | null,"updated_at": string,"verification_method": Database["public"]['Enums']["verification_method"]
                   }
                   ComputedFields: never
                   Insert: {
-                    "cip"?: string | null,"coverage_tier"?: Database["public"]['Enums']["coverage_tier"],"created_at"?: string,"credit_system"?: Database["public"]['Enums']["credit_system"] | null,"delivery_mode"?: Database["public"]['Enums']["delivery_mode"],"duration_months"?: number | null,"field_label"?: string | null,"id"?: string,"institution_id": string,"isced_f"?: string | null,"isced_level"?: number | null,"languages_of_instruction"?: (string)[],"level": Database["public"]['Enums']["program_level"],"official_url"?: string | null,"published"?: boolean,"register_ids"?: NonNullable<Json>,"required_credits"?: number | null,"search_tsv"?: never,"slug": string,"source_id"?: string | null,"title": string,"track"?: string | null,"updated_at"?: string,"verification_method"?: Database["public"]['Enums']["verification_method"]
+                    "cip"?: string | null,"coverage_tier"?: Database["public"]['Enums']["coverage_tier"],"created_at"?: string,"credit_system"?: Database["public"]['Enums']["credit_system"] | null,"delivery_mode"?: Database["public"]['Enums']["delivery_mode"],"duration_months"?: number | null,"field_label"?: string | null,"id"?: string,"institution_id": string,"isced_f"?: string | null,"isced_level"?: number | null,"languages_of_instruction"?: (string)[],"level": Database["public"]['Enums']["program_level"],"official_url"?: string | null,"published"?: boolean,"register_ids"?: NonNullable<Json>,"required_credits"?: number | null,"search_tsv"?: never,"slug": string,"source_id"?: string | null,"suggestion_status"?: string | null,"title": string,"track"?: string | null,"updated_at"?: string,"verification_method"?: Database["public"]['Enums']["verification_method"]
                   }
                   Update: {
-                    "cip"?: string | null,"coverage_tier"?: Database["public"]['Enums']["coverage_tier"],"created_at"?: string,"credit_system"?: Database["public"]['Enums']["credit_system"] | null,"delivery_mode"?: Database["public"]['Enums']["delivery_mode"],"duration_months"?: number | null,"field_label"?: string | null,"id"?: string,"institution_id"?: string,"isced_f"?: string | null,"isced_level"?: number | null,"languages_of_instruction"?: (string)[],"level"?: Database["public"]['Enums']["program_level"],"official_url"?: string | null,"published"?: boolean,"register_ids"?: NonNullable<Json>,"required_credits"?: number | null,"search_tsv"?: never,"slug"?: string,"source_id"?: string | null,"title"?: string,"track"?: string | null,"updated_at"?: string,"verification_method"?: Database["public"]['Enums']["verification_method"]
+                    "cip"?: string | null,"coverage_tier"?: Database["public"]['Enums']["coverage_tier"],"created_at"?: string,"credit_system"?: Database["public"]['Enums']["credit_system"] | null,"delivery_mode"?: Database["public"]['Enums']["delivery_mode"],"duration_months"?: number | null,"field_label"?: string | null,"id"?: string,"institution_id"?: string,"isced_f"?: string | null,"isced_level"?: number | null,"languages_of_instruction"?: (string)[],"level"?: Database["public"]['Enums']["program_level"],"official_url"?: string | null,"published"?: boolean,"register_ids"?: NonNullable<Json>,"required_credits"?: number | null,"search_tsv"?: never,"slug"?: string,"source_id"?: string | null,"suggestion_status"?: string | null,"title"?: string,"track"?: string | null,"updated_at"?: string,"verification_method"?: Database["public"]['Enums']["verification_method"]
                   }
                   Relationships: [
                     {
@@ -1761,6 +1781,9 @@ isOneToOne: false
                            },
 "revoke_parent_link":
 { Args: { "p_parent": string }; Returns: undefined
+                           },
+"review_suggested_course":
+{ Args: { "p_approve": boolean,"p_program": string }; Returns: undefined
                            },
 "search_programs":
 { Args: { "p_countries"?: (string)[],"p_deadline_open"?: boolean,"p_delivery"?: (Database["public"]['Enums']["delivery_mode"])[],"p_fields"?: (string)[],"p_levels"?: (Database["public"]['Enums']["program_level"])[],"p_limit"?: number,"p_max_tuition"?: number,"p_offset"?: number,"p_query"?: string,"p_tuition_currency"?: string }; Returns: {
