@@ -2,7 +2,7 @@
 
 Source: the Feature Bible (100 features), `BACKLOG.md`, and what the running app contains (checked October 2026). IDs match the Bible; `X` rows are work from the backlog or this session that the Bible does not number.
 
-**Totals (103 rows):** 34 built · 14 partly built · 35 to build · 6 need an owner decision · 4 deferred to year 2 · 10 cut on purpose.
+**Totals (103 rows):** 36 built · 16 partly built · 32 to build · 3 need an owner decision · 5 deferred · 11 cut on purpose.
 
 Status key: **Built** works today · **Partial** exists, listed gap remains · **To build** not started · **Decision** the owner must settle first · **Deferred** year 2 · **Cut** decided against (BACKLOG). Size: S about 2 days, M about a week, L two weeks or more. Priority: P0 needed for a real launch, P1 next, P2 later, P3 only if time allows.
 
@@ -121,12 +121,12 @@ The student app works end to end behind sign-in, but the catalogue holds six pla
 | P2 | X8 | Admission model go-live | To build | S | Needs two intakes of consented outcomes and a passing gate. |
 | P2 | X9 | Gulf visa links from the admin rules page | To build | S | Check official pages first. |
 | P3 | 13.3 | Career outcome predictor | To build | L | Only from official outcome data (Scorecard, Discover Uni). No invented numbers. |
-| P3 | 14.3 | WhatsApp / Telegram alerts | Decision | M | Not listed as cut. Needs consent and a provider. |
-| P3 | 16.1 | University partner dashboard | To build | L | Claim a profile, update facts. Needs a rule that universities cannot buy ranking. |
-| P3 | 16.5 | School counselor panel | To build | L | Roster, flags, aggregate stats. |
-| P3 | 2.4 | Score predictor and goal setter | Decision | M | Predicts exam scores, not admission. Owner decides if it fits the no-predictions stance. |
-| P3 | 2.7 | GPA converter | Decision | M | Conflicts with the rule that grades are kept on their own scale and never converted. Could be informational only. |
-| P3 | 7.5 | Student life and culture guide | To build | M | Needs a sourcing approach that avoids forums. |
+| P3 | 14.3 | WhatsApp / Telegram alerts | Deferred | M | Deferred until email open rates show a problem. If built: deadline reminders only, explicit opt-in, official WhatsApp Cloud API. |
+| P3 | 16.1 | University partner dashboard | Partial | L | Verified staff (`university_staff`, added by an admin) can propose corrections that wait in the normal review queue. Missing: the self-serve `/university` page. No paid placement. |
+| P3 | 16.5 | School counselor panel | Built | L | Organisations can be schools (`kind`), with the same student-granted, revocable, read-only sharing as consultancies and a "due within a week, checklist incomplete" flag on `/agency`. Open legal item: sharing terms. |
+| P3 | 2.4 | Score predictor and goal setter | Partial | M | Built as a goal setter, not a predictor: `scoreGoals` (gap to each course's published minimum, same exam and version) and a presentational `ScoreGoals`; Developer B places it. No score is predicted. |
+| P3 | 2.7 | GPA converter | Cut | M | Decided: no grade converter (grades stay on their own scale). Official credential evaluation links per destination are built (`credential_evaluation` rule kind on `/visas`). |
+| P3 | 7.5 | Student life and culture guide | Built | M | Student life and support section (international office, societies, faith and culture facilities) from sourced institution facts. Needs facts entered. |
 | P3 | 7.6 | City explorer | To build | L | Map-based; needs a data source. |
 
 ### Developer B: student experience
