@@ -63,7 +63,8 @@ begin
   if v_uid is null then
     raise exception 'not_signed_in' using errcode = '28000';
   end if;
-  if p_program_ids is null or cardinality(p_program_ids) = 0 or cardinality(p_program_ids) > 12 then
+  -- An empty list is fine: with an empty catalog the worker finds the courses itself.
+  if p_program_ids is null or cardinality(p_program_ids) > 12 then
     raise exception 'bad_program_list' using errcode = '22023';
   end if;
 

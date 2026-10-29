@@ -3,6 +3,7 @@ import { countryName, label } from "@/lib/format";
 import { profileChecklist } from "@/lib/profile-completeness";
 import { getUser } from "@/lib/supabase/server";
 import Link from "next/link";
+import { FindUniversitiesButton } from "../matching/find-button";
 import { deleteTestScore, removeTrack, setAiConsent } from "./actions";
 import { CvReader, ProfileForm, TestScoreForm, TrackForm } from "./forms";
 
@@ -54,6 +55,12 @@ export default async function ProfilePage() {
             ))}
           </ul>
         )}
+      </section>
+
+      <section aria-labelledby="find" className="grid gap-3 rounded-2xl border border-border bg-surface p-6 text-sm">
+        <h2 id="find" className="text-lg font-semibold">Find universities for me</h2>
+        <p className="text-muted">We choose courses that fit this profile and read their official pages for deadlines, requirements and fees. Save your profile first.</p>
+        <FindUniversitiesButton />
       </section>
 
       <section aria-labelledby="ai" className="grid gap-3 rounded-2xl border border-border bg-surface p-6 text-sm">

@@ -4,6 +4,7 @@ select no_plan();
 
 select tests.create_user('enrich-a@test.dev') as a \gset
 select tests.create_user('enrich-b@test.dev') as b \gset
+select tests.create_user('enrich-c@test.dev') as c \gset
 
 insert into public.institutions (id, name, country) values ('00000000-0000-4000-b000-0000000000a1', 'Enrich U', 'DE');
 insert into public.programs (id, institution_id, slug, title, level) values
@@ -12,7 +13,7 @@ insert into public.programs (id, institution_id, slug, title, level) values
 
 select tests.authenticate_as(:'a');
 select throws_ok($$ insert into public.enrichment_jobs (user_id) values (auth.uid()) $$, '42501', null, 'students cannot insert jobs directly');
-select throws_ok($$ select public.start_enrichment('{}'::uuid[], '{}'::jsonb) $$, null, null, 'an empty list is refused');
+select throws_ok($$ select public.start_enrichment(array(select gen_random_uuid() from generate_series(1, 13)), '{}'::jsonb) $$, '22023', null, 'more than twelve courses are refused');
 
 select public.start_enrichment(array['00000000-0000-4000-b000-0000000000b1','00000000-0000-4000-b000-0000000000b2']::uuid[], '{"target_countries":["DE"]}') as job \gset
 select is((select count(*)::int from public.enrichment_items where job_id = :'job'), 2, 'one item per course');
@@ -43,6 +44,11 @@ reset role;
 update public.enrichment_jobs set status = 'done' where user_id = :'a';
 select tests.authenticate_as(:'a');
 select throws_ok($$ select public.start_enrichment(array['00000000-0000-4000-b000-0000000000b1']::uuid[], '{}') $$, null, 'rate_limited', 'a fourth job in a day is refused');
+
+select tests.authenticate_as(:'c');
+select public.start_enrichment('{}'::uuid[], '{"target_countries":["DE"],"email":"c@test.dev"}') as jobc \gset
+select is((select count(*)::int from public.enrichment_items where job_id = :'jobc'), 0, 'an empty catalog still starts a job');
+select is((select profile_snapshot from public.enrichment_jobs where id = :'jobc'), '{"target_countries":["DE"],"target_levels":[],"target_fields":[]}'::jsonb, 'only the targets are kept');
 
 select * from finish();
 rollback;
