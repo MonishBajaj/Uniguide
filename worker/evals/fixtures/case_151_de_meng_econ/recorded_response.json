@@ -1,0 +1,62 @@
+{
+  "effective_intake": "Fall 2027",
+  "effective_intake_year": 2027,
+  "language_tests": [
+    {
+      "applicant_category": "international",
+      "exam": "ielts_academic",
+      "exam_version": null,
+      "min_total": 6.5,
+      "min_sections": [],
+      "quote": "English proficiency requirement: IELTS Academic 6.5 minimum overall score."
+    }
+  ],
+  "entry_qualifications": [],
+  "admissions_tests": [],
+  "deadlines": [
+    {
+      "applicant_category": "all",
+      "round": "Priority",
+      "kind": "priority",
+      "owning_system": "direct",
+      "date": "2027-01-15",
+      "time": null,
+      "timezone": "Europe/Berlin",
+      "original_text": "2027-01-15",
+      "quote": "Priority scholarship deadline: 2027-01-15"
+    },
+    {
+      "applicant_category": "all",
+      "round": "Final",
+      "kind": "application",
+      "owning_system": "direct",
+      "date": "2027-05-15",
+      "time": null,
+      "timezone": "Europe/Berlin",
+      "original_text": "2027-05-15",
+      "quote": "Final application deadline: 2027-05-15"
+    }
+  ],
+  "costs": [
+    {
+      "applicant_category": "all",
+      "kind": "tuition",
+      "basis": "per_year",
+      "amount": 29870.0,
+      "amount_high": null,
+      "currency": "EUR",
+      "fee_year": "2027-2028",
+      "quote": "Tuition fee: EUR 29,870 per year."
+    },
+    {
+      "applicant_category": "all",
+      "kind": "application_fee",
+      "basis": "one_off",
+      "amount": 115.0,
+      "amount_high": null,
+      "currency": "EUR",
+      "fee_year": null,
+      "quote": "A non-refundable application fee of EUR 115 is required."
+    }
+  ]
+}

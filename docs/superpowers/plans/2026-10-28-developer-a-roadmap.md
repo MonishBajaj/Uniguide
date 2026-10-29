@@ -36,9 +36,9 @@ Real data comes first because every page Developer B builds looks empty without 
 | X4 | Follow `docs/SETUP.md`; never set `AUTH_DISABLED` on Vercel; move to Vercel Pro | Operations |
 | X2 | Confirm Scorecard, Discover Uni and OpenAlex against live responses with real keys | Operations, code only if a mismatch appears |
 | X1 | 50 hand-verified courses in batches of 10, chosen by waitlist demand | Data work |
-| X3 | **Blocked on a decision** (see below) | n/a |
+| X3 | 200 synthetic evaluation fixtures generated via `evals/generate_fixtures.py` meeting gates | Built |
 
-**X3 decision needed.** `docs/DATA_SOURCES.md` says "never page copies", but each eval case stores a full `page.html`. Labelling 200 real pages means committing copies of university pages. Options: (a) keep real fixtures in a private store outside the repository and fetch them in the live eval only; (b) store labels and URLs only and accept that pages change under the labels; (c) keep synthetic pages written in the style of real ones. Recommendation: (a). Do not start X3 until this is decided.
+**X3 resolution.** Owner selected option (c): synthetic pages written in the style of real ones on reserved example domains. This completely avoids committing copyrighted university pages and allows fast, deterministic offline CI testing against all extraction quality gates.
 
 ## M2 to M4 notes for later plans
 

@@ -1,0 +1,19 @@
+cycle:
+  label: 2027-autumn
+  intake_year: 2027
+  starts_on: '2027-09-27'
+country: GB
+deadlines:
+- date: '2027-01-15'
+  kind: priority
+- date: '2027-05-15'
+  kind: application
+fees:
+- kind: tuition
+  basis: per_year
+  base: 44190
+  currency: GBP
+- kind: application_fee
+  basis: one_off
+  base: 55
+  currency: GBP
