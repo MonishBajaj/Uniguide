@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { LETTER_STATUSES } from "@/lib/recommendations";
 import { getUser } from "@/lib/supabase/server";
-import { addRecommender, addRequest, removeRecommender } from "./actions";
+import { addRecommender, addRequest, removeRecommender, saveBragNotes } from "./actions";
 import { RequestRow } from "./request-row";
 
 export const metadata: Metadata = { title: "Recommendation letters" };
@@ -12,7 +12,7 @@ export default async function RecommendersPage() {
   const [{ data: recommenders }, { data: apps }] = await Promise.all([
     supabase
       .from("recommenders")
-      .select("id, name, relationship, recommendation_requests(id, application_id, status, due_on, asked_on, submitted_on)")
+      .select("id, name, relationship, brag_notes, recommendation_requests(id, application_id, status, due_on, asked_on, submitted_on)")
       .order("created_at"),
     supabase.from("applications").select("id, program_cycles(programs(title, institutions(name)))").neq("status", "withdrawn"),
   ]);
@@ -71,6 +71,27 @@ export default async function RecommendersPage() {
                 <button className="btn btn-secondary">Add</button>
               </form>
             ) : null}
+            <details className="rounded-lg border border-border p-3 text-sm">
+              <summary className="cursor-pointer font-semibold">Brag sheet for {r.name}</summary>
+              <form action={saveBragNotes.bind(null, r.id)} className="mt-3 grid gap-2">
+                <label className="grid gap-1">
+                  What you hope {r.name} might mention, one point per line
+                  <textarea
+                    name="brag_notes"
+                    rows={4}
+                    maxLength={3000}
+                    defaultValue={r.brag_notes ?? ""}
+                    placeholder="For example: led the 4-person capstone and built its scheduling model"
+                    className="field"
+                  />
+                </label>
+                <p className="text-muted">Facts they can check, in your words. The sheet adds your CV and the courses and due dates for their letters.</p>
+                <div className="flex flex-wrap gap-2">
+                  <button className="btn btn-secondary btn-sm">Save notes</button>
+                  <Link href={`/app/recommenders/${r.id}/brag-sheet`} className="btn btn-secondary btn-sm">Open printable brag sheet</Link>
+                </div>
+              </form>
+            </details>
           </section>
         );
       })}

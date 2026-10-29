@@ -26,3 +26,11 @@ export function lettersNeeded(requirements: { kind: string; count_required: numb
   const counts = requirements.filter((r) => r.kind === "recommendation_letters" && r.count_required != null).map((r) => r.count_required!);
   return counts.length ? Math.max(...counts) : null;
 }
+
+/** 6.3 The student's "please mention" notes as points: one per line, list markers dropped. */
+export function bragPoints(notes: string | null): string[] {
+  return (notes ?? "")
+    .split(/\r?\n/)
+    .map((l) => l.replace(/^\s*(?:[-*•]|\d+[.)])\s*/, "").trim())
+    .filter(Boolean);
+}

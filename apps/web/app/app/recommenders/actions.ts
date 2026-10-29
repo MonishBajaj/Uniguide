@@ -65,3 +65,12 @@ export async function removeRequest(id: string) {
   await supabase.from("recommendation_requests").delete().eq("id", id);
   done();
 }
+
+/** 6.3 The points the student asks this recommender to mention. */
+export async function saveBragNotes(recommenderId: string, form: FormData) {
+  const notes = z.string().max(3000).safeParse(String(form.get("brag_notes") ?? "").trim());
+  if (!notes.success) return;
+  const { supabase } = await getUser();
+  await supabase.from("recommenders").update({ brag_notes: notes.data || null }).eq("id", recommenderId);
+  done();
+}

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { letterProgress, lettersNeeded } from "./recommendations";
+import { bragPoints, letterProgress, lettersNeeded } from "./recommendations";
 
 describe("recommendation letters", () => {
   it("reads the required count from the course's requirements", () => {
@@ -16,5 +16,12 @@ describe("recommendation letters", () => {
     expect(letterProgress([{ status: "asked" }], 2).short).toBe(1);
     expect(letterProgress([{ status: "asked" }, { status: "agreed" }, { status: "asked" }], 2).short).toBe(0);
     expect(letterProgress([], null).short).toBeNull();
+  });
+});
+
+describe("bragPoints", () => {
+  it("makes one point per line, without list markers or blank lines", () => {
+    expect(bragPoints("- Led the capstone\n\n• Top 5% in the course\n2) Tutored first-years  \n")).toEqual(["Led the capstone", "Top 5% in the course", "Tutored first-years"]);
+    expect(bragPoints(null)).toEqual([]);
   });
 });
