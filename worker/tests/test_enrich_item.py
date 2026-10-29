@@ -165,3 +165,61 @@ def test_discover_sources_stays_on_host() -> None:
     assert ("admissions", f"{HOST}/admissions") in found
     assert all(url.startswith(HOST) for _, url in found)
     assert len(found) == len(set(found)) == 3
+
+
+def test_404_course_page_registers_only_itself() -> None:
+    links = (("Apply", f"{HOST}/apply"), ("Tuition fees", f"{HOST}/fees"))
+    found = discover_sources(PageFetcher(status=404, links=links), f"{HOST}/gone")  # type: ignore[arg-type]
+    assert found == [("course", f"{HOST}/gone")]
+
+
+class MixedFetcher:
+    """One page refuses, the other is unchanged since the last read."""
+
+    def __init__(self, refused: str, text: str) -> None:
+        self.refused, self.text = refused, text
+
+    def fetch(self, url: str, etag: str | None = None, last_modified: str | None = None) -> FetchResult:
+        if url == self.refused:
+            raise FetchRefused(f"Disallowed by robots.txt: {url}")
+        return FetchResult(url, url, 200, self.text, content_hash(self.text), None, None, False)
+
+
+def test_unchanged_source_is_not_blamed_for_its_neighbours_refusal(
+    worker: Connection, operator: Connection, course: dict[str, Any]
+) -> None:
+    program = course["program"]
+    page = "Same text as last time."
+    for kind, url in (("course", f"{HOST}/a-{program}"), ("fees", f"{HOST}/b-{program}")):
+        operator.execute(
+            "insert into program_sources (program_id, kind, url, content_hash) values (%s, %s, %s, %s)",
+            (program, kind, url, content_hash(page)),
+        )
+    operator.commit()
+    item = make_item(operator, course)
+    result = process_item(worker, MixedFetcher(f"{HOST}/a-{program}", page), claude(), item, fresh_days=7)  # type: ignore[arg-type]
+    assert result == "skipped_fresh"
+    assert status_of(operator, item)["detail"] is None
+
+
+def test_heartbeat_is_called_before_each_source(
+    worker: Connection, operator: Connection, course: dict[str, Any]
+) -> None:
+    beats: list[int] = []
+    item = make_item(operator, course)
+    process_item(worker, PageFetcher(), claude(), item, fresh_days=7, heartbeat=lambda: beats.append(1))  # type: ignore[arg-type]
+    assert len(beats) >= 1
+
+
+class ExplodingFetcher:
+    def fetch(self, url: str, etag: str | None = None, last_modified: str | None = None) -> FetchResult:
+        raise RuntimeError("password=hunter2 host=db.internal")
+
+
+def test_unexpected_errors_are_not_shown_to_students(
+    worker: Connection, operator: Connection, course: dict[str, Any]
+) -> None:
+    item = make_item(operator, course)
+    assert process_item(worker, ExplodingFetcher(), claude(), item, fresh_days=7) == "failed"  # type: ignore[arg-type]
+    detail = status_of(operator, item)["detail"]
+    assert detail and "hunter2" not in detail and "db.internal" not in detail

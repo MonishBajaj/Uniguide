@@ -7,10 +7,12 @@ comes from reading the official page.
 from __future__ import annotations
 
 import re
+from collections.abc import Callable
 from typing import Any
 from urllib.parse import urlsplit
 from uuid import UUID
 
+import httpx
 from google.genai import types
 from pydantic import BaseModel
 
@@ -37,21 +39,60 @@ class CandidateList(BaseModel):
     candidates: list[Candidate]
 
 
+# A DNS name ending in letters: rules out IP addresses (including link-local ones) and bare names like "localhost".
+DOMAIN = re.compile(r"^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,}$")
+
+
+def _clean_domain(domain: str) -> str:
+    return domain.lower().strip().removeprefix("www.")
+
+
 def host_matches_domain(url: str, domain: str) -> bool:
     """True only when the URL's host is the institution's domain or one of its subdomains."""
     parts = urlsplit(url)
     host = (parts.hostname or "").lower()
-    domain = domain.lower().strip().removeprefix("www.")
-    if parts.scheme not in ("https", "http") or "." not in domain:
+    domain = _clean_domain(domain)
+    if parts.scheme not in ("https", "http") or not DOMAIN.match(domain):
         return False
     return host == domain or host.endswith("." + domain)
 
 
+class RorVerifier:
+    """Independent check that a university really uses a domain: the ROR registry must list it for that name."""
+
+    def __init__(self, client: httpx.Client | None = None) -> None:
+        self.client = client or httpx.Client(timeout=15.0, headers={"User-Agent": "UniguideBot/0.1 (domain check)"})
+
+    def __call__(self, institution: str, domain: str) -> bool:
+        domain = _clean_domain(domain)
+        if not DOMAIN.match(domain):
+            return False
+        try:
+            response = self.client.get("https://api.ror.org/v2/organizations", params={"query": institution})
+            response.raise_for_status()
+            items = response.json().get("items", [])[:5]
+        except (httpx.HTTPError, ValueError):
+            return False
+        for item in items:
+            known = [str(d) for d in item.get("domains", [])]
+            known += [urlsplit(str(link.get("value", ""))).hostname or "" for link in item.get("links", [])]
+            for k in map(_clean_domain, known):
+                if k and (k == domain or k.endswith("." + domain) or domain.endswith("." + k)):
+                    return True
+        return False
+
+
+_COUNTRY = re.compile(r"^[A-Z]{2}$")
+_FIELD = re.compile(r"^[a-z0-9_]{1,40}$")
+
+
 def propose_candidates(client: Any, model: str, snapshot: dict[str, Any], limit: int) -> list[Candidate]:
     """Ask Gemini for up to `limit` courses. Only the profile snapshot's targets are sent; errors give no candidates."""
-    countries = [str(c) for c in snapshot.get("target_countries", [])]
-    levels = [str(x) for x in snapshot.get("target_levels", [])]
-    fields = [str(f) for f in snapshot.get("target_fields", [])]
+    # Only well-formed codes reach the prompt; free text in a profile cannot steer the model.
+    levels_ok = {level.value for level in ProgramLevel}
+    countries = [c for c in map(str, snapshot.get("target_countries", [])) if _COUNTRY.match(c)]
+    levels = [x for x in map(str, snapshot.get("target_levels", [])) if x in levels_ok]
+    fields = [f for f in map(str, snapshot.get("target_fields", [])) if _FIELD.match(f)]
     prompt = (
         f"Suggest up to {limit} courses.\nCountries (ISO codes): {', '.join(countries) or 'any'}\n"
         f"Levels: {', '.join(levels) or 'any'}\nFields: {', '.join(fields) or 'any'}"
@@ -83,22 +124,38 @@ def _unique_slug(conn: Connection, base: str) -> str:
     return slug
 
 
-def create_from_candidates(conn: Connection, candidates: list[Candidate]) -> list[UUID]:
-    """Add the accepted candidates to the catalog and return their program ids (existing courses are reused)."""
+def create_from_candidates(
+    conn: Connection,
+    candidates: list[Candidate],
+    *,
+    verify_domain: Callable[[str, str], bool] | None = None,
+) -> list[UUID]:
+    """Add the accepted candidates to the catalog and return their program ids (existing courses are reused).
+
+    Gemini's own claim about a domain is never enough. A known institution keeps the domain recorded for it; any
+    other institution must be confirmed by `verify_domain` (the ROR registry by default).
+    """
+    verify = verify_domain or RorVerifier()
     levels = {level.value for level in ProgramLevel}
     ids: list[UUID] = []
     for c in candidates:
         if c.level not in levels or not host_matches_domain(c.url, c.domain):
             continue
         country = c.country.upper()
-        domain = c.domain.lower().strip().removeprefix("www.")
+        domain = _clean_domain(c.domain)
         inst = conn.execute(
             """
-            select id from institutions
+            select id, official_domain from institutions
             where country = %s and (official_domain = %s or lower(name) = lower(%s)) limit 1
             """,
             (country, domain, c.institution),
         ).fetchone()
+        recorded = inst["official_domain"] if inst else None
+        if recorded:
+            if not host_matches_domain(c.url, recorded):
+                continue
+        elif not verify(c.institution, domain):
+            continue
         if inst is None:
             inst = conn.execute(
                 """

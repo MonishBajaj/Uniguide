@@ -136,7 +136,7 @@ def test_fallback_runs_when_allowed_and_short(worker: Connection, world: dict[st
         ]
     }
     client = FakeGenai(FakeGenaiResponse(json.dumps(reply)))
-    run(world, worker, job, client=client)
+    run(world, worker, job, client=client, verify_domain=lambda _i, _d: True)
     assert len(client.models.calls) == 1
     assert len(item_statuses(world, job)) == 3
     assert job_row(world, job)["status"] == "done"
@@ -224,3 +224,42 @@ def test_waiting_item_gives_up_with_a_clear_message(worker: Connection, world: d
     row = op.execute("select status, detail from enrichment_items where job_id = %s", (job,)).fetchone()
     assert row["status"] == "failed" and "still" in row["detail"]
     assert job_row(world, job)["status"] == "done"
+
+
+def test_reclaimed_job_resumes_its_running_item(worker: Connection, world: dict[str, Any]) -> None:
+    op: Connection = world["operator"]
+    job = make_job(world, 1)
+    op.execute("update enrichment_items set status = 'running' where job_id = %s", (job,))
+    op.execute(
+        "update enrichment_jobs set status = 'running', heartbeat_at = now() - interval '20 minutes' where id = %s",
+        (job,),
+    )
+    op.commit()
+    assert claim_job(worker) == job
+    run(world, worker, job)
+    assert item_statuses(world, job) == ["extracted"]
+
+
+def test_a_dead_workers_item_does_not_block_the_course_for_other_students(
+    worker: Connection, world: dict[str, Any]
+) -> None:
+    op: Connection = world["operator"]
+    dead = make_job(world, 1)
+    program = op.execute("select program_id from enrichment_items where job_id = %s", (dead,)).fetchone()
+    op.execute("update enrichment_items set status = 'running' where job_id = %s", (dead,))
+    op.execute(
+        "update enrichment_jobs set status = 'running', heartbeat_at = now() - interval '20 minutes' where id = %s",
+        (dead,),
+    )
+    later = op.execute("insert into enrichment_jobs (user_id) values (%s) returning id", (world["user"],)).fetchone()
+    op.execute(
+        "insert into enrichment_items (job_id, program_id) values (%s, %s)", (later["id"], program["program_id"])
+    )
+    op.commit()
+    # The stale job is the oldest, so it is claimed and resumed first; afterwards the course is free.
+    first = claim_job(worker)
+    assert first == dead
+    run(world, worker, first)
+    assert claim_job(worker) == later["id"]
+    run(world, worker, later["id"])
+    assert item_statuses(world, later["id"]) == ["skipped_fresh"]

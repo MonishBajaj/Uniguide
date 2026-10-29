@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import logging
+from collections.abc import Callable
 from datetime import date
 from typing import Any
 from uuid import UUID
@@ -13,6 +15,8 @@ from ..extract.base import PageExtractor
 from ..fetch.fetcher import Fetcher
 from ..monitor import MonitorReport, check_source, intake_cycle
 from .sources import discover_sources
+
+log = logging.getLogger(__name__)
 
 
 def ensure_current_cycle(conn: Connection, program_id: UUID) -> UUID:
@@ -92,6 +96,7 @@ def _enrich(
     program_id: UUID,
     official_url: str | None,
     fresh_days: int,
+    heartbeat: Callable[[], None] | None,
 ) -> tuple[str, str | None]:
     ensure_current_cycle(conn, program_id)
     sources = conn.execute(
@@ -111,12 +116,21 @@ def _enrich(
     problems: list[str] = []
     statuses: list[str] = []
     for source in sources:
+        if heartbeat:
+            heartbeat()
+        unchanged_before, pages_before = report.unchanged, len(report.pages)
         page = check_source(conn, fetcher, extractor, source, report)
         if page is None:
-            last: dict[str, Any] = report.pages[-1] if report.pages else {}
-            statuses.append(last.get("status", "unchanged"))
-            if last.get("status") == "refused":
-                problems.append(str(last.get("detail", source["url"])))
+            # check_source adds a report entry only when it refuses or skips the page for another reason.
+            if report.unchanged > unchanged_before:
+                statuses.append("unchanged")
+            elif len(report.pages) > pages_before:
+                last: dict[str, Any] = report.pages[-1]
+                statuses.append(last.get("status", "failed"))
+                if last.get("status") == "refused":
+                    problems.append(str(last.get("detail", source["url"])))
+            else:
+                statuses.append("failed")
         else:
             statuses.append(page.status)
             if page.status == "failed":
@@ -135,7 +149,13 @@ def _enrich(
 
 
 def process_item(
-    conn: Connection, fetcher: Fetcher, extractor: PageExtractor, item_id: UUID, *, fresh_days: int
+    conn: Connection,
+    fetcher: Fetcher,
+    extractor: PageExtractor,
+    item_id: UUID,
+    *,
+    fresh_days: int,
+    heartbeat: Callable[[], None] | None = None,
 ) -> str:
     """Run one enrichment item to a final status (or `waiting` while another search reads the same course)."""
     item = conn.execute(
@@ -157,8 +177,14 @@ def process_item(
         conn.rollback()
         return _finish(conn, item_id, "waiting", "Another search is reading this course.")
     try:
-        status, detail = _enrich(conn, fetcher, extractor, item["program_id"], item["official_url"], fresh_days)
-    except Exception as exc:  # one broken course must not stop the rest of the job
+        status, detail = _enrich(
+            conn, fetcher, extractor, item["program_id"], item["official_url"], fresh_days, heartbeat
+        )
+    except Exception:  # one broken course must not stop the rest of the job
         conn.rollback()
-        status, detail = "failed", f"{type(exc).__name__}: {exc}"[:300]
+        log.exception("enrichment of item %s failed", item_id)
+        status, detail = (
+            "failed",
+            "Something went wrong while reading this course. We will try again on the next search.",
+        )
     return _finish(conn, item_id, status, detail)

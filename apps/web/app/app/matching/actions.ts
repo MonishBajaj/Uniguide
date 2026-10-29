@@ -37,14 +37,8 @@ export async function findUniversities(): Promise<FindState> {
     }
   }
 
-  const { error } = await supabase.rpc("start_enrichment", {
-    p_program_ids: programIds,
-    p_profile: {
-      target_countries: inputs.profile.target_countries,
-      target_levels: inputs.profile.target_levels,
-      target_fields: inputs.profile.target_fields,
-    },
-  });
+  // The database reads the targets from the stored profile, so nothing the browser sends can change them.
+  const { error } = await supabase.rpc("start_enrichment", { p_program_ids: programIds });
   if (error) {
     return {
       ok: false,

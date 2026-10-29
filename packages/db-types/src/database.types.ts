@@ -1835,7 +1835,7 @@ isOneToOne: false
         isSetofReturn: true
       } },
 "start_enrichment":
-{ Args: { "p_profile": Json,"p_program_ids": (string)[] }; Returns: string
+{ Args: { "p_program_ids": (string)[] }; Returns: string
                            },
 "unsubscribe":
 { Args: { "p_kind": string,"p_token": string }; Returns: boolean

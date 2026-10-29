@@ -61,9 +61,10 @@ def _process_with_backoff(
     item_id: UUID,
     fresh_days: int,
     sleep: Callable[[float], None],
+    heartbeat: Callable[[], None],
 ) -> str:
     delay = 5.0
-    status = process_item(conn, fetcher, extractor, item_id, fresh_days=fresh_days)
+    status = process_item(conn, fetcher, extractor, item_id, fresh_days=fresh_days, heartbeat=heartbeat)
     for _ in range(MAX_RETRIES):
         if status != "failed":
             break
@@ -72,7 +73,7 @@ def _process_with_backoff(
             break
         sleep(delay)
         delay = min(delay * 2, 60.0)
-        status = process_item(conn, fetcher, extractor, item_id, fresh_days=fresh_days)
+        status = process_item(conn, fetcher, extractor, item_id, fresh_days=fresh_days, heartbeat=heartbeat)
     return status
 
 
@@ -88,17 +89,23 @@ def run_job(
     sleep: Callable[[float], None] = time.sleep,
     wait_rounds: int = 30,
     wait_seconds: float = 10.0,
+    verify_domain: Callable[[str, str], bool] | None = None,
 ) -> None:
     try:
         job = conn.execute("select * from enrichment_jobs where id = %s", (job_id,)).fetchone()
         assert job is not None
+        # A worker that died mid-course left its item "running", which would block the course for everyone.
+        conn.execute(
+            "update enrichment_items set status = 'pending' where job_id = %s and status = 'running'", (job_id,)
+        )
+        conn.commit()
         set_stage(conn, job_id, "optimizing_profile")
         set_stage(conn, job_id, "selecting_universities")
         have = conn.execute("select count(*) as n from enrichment_items where job_id = %s", (job_id,)).fetchone()
         assert have is not None
         if client is not None and job["allow_fallback"] and have["n"] < TARGET_COURSES:
             found = propose_candidates(client, model, job["profile_snapshot"], TARGET_COURSES - have["n"])
-            for program_id in create_from_candidates(conn, found):
+            for program_id in create_from_candidates(conn, found, verify_domain=verify_domain):
                 conn.execute(
                     "insert into enrichment_items (job_id, program_id) values (%s, %s) on conflict do nothing",
                     (job_id, program_id),
@@ -111,7 +118,8 @@ def run_job(
                 break
             waiting = 0
             for item_id in items:
-                if _process_with_backoff(conn, fetcher, extractor, item_id, fresh_days, sleep) == "waiting":
+                beat = lambda: _heartbeat(conn, job_id)  # noqa: E731
+                if _process_with_backoff(conn, fetcher, extractor, item_id, fresh_days, sleep, beat) == "waiting":
                     waiting += 1
                 _heartbeat(conn, job_id)
             if not waiting:
@@ -121,7 +129,7 @@ def run_job(
             """
             update enrichment_items set status = 'failed', finished_at = now(),
               detail = 'Another search is still reading this course. Try again in a minute.'
-            where job_id = %s and status in ('pending', 'waiting')
+            where job_id = %s and status in ('pending', 'waiting', 'running')
             """,
             (job_id,),
         )
@@ -131,6 +139,12 @@ def run_job(
         conn.commit()
     except Exception as exc:
         conn.rollback()
+        # Never leave an item "running": it would hold the course and block every later search.
+        conn.execute(
+            "update enrichment_items set status = 'failed', detail = 'The search stopped early.', finished_at = now() "
+            "where job_id = %s and status = 'running'",
+            (job_id,),
+        )
         conn.execute(
             "update enrichment_jobs set status = 'failed', error = %s, finished_at = now() where id = %s",
             (f"{type(exc).__name__}: {exc}"[:500], job_id),

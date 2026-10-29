@@ -14,5 +14,9 @@ def make_extractor(settings: Settings) -> PageExtractor:
     if settings.extractor == "gemini":
         from .gemini import GeminiExtractor
 
-        return GeminiExtractor(model=settings.gemini_model)
+        if not settings.gemini_api_key:
+            raise ValueError(
+                "EXTRACTOR=gemini needs GEMINI_API_KEY (or set EXTRACTOR=anthropic with ANTHROPIC_API_KEY)"
+            )
+        return GeminiExtractor(model=settings.gemini_model, api_key=settings.gemini_api_key)
     raise ValueError(f"Unknown EXTRACTOR {settings.extractor!r}; use 'gemini' or 'anthropic'")

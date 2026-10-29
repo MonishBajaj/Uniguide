@@ -1,5 +1,8 @@
+import pytest
 from google.genai import errors
 
+from uniguide_worker.config import Settings
+from uniguide_worker.extract.factory import make_extractor
 from uniguide_worker.extract.gemini import GeminiExtractor
 from uniguide_worker.extract.schema import PageExtraction
 
@@ -48,3 +51,30 @@ def test_unparseable_or_truncated_output_yields_no_extraction() -> None:
 def test_version_names_model_and_prompt() -> None:
     extractor = GeminiExtractor(client=FakeGenai(FakeGenaiResponse("{}")), model="gemini-test")
     assert extractor.version.startswith("gemini-test/")
+
+
+def test_default_client_has_a_request_timeout(monkeypatch: pytest.MonkeyPatch) -> None:
+    seen: dict[str, object] = {}
+
+    def spy(**kwargs: object) -> object:
+        seen.update(kwargs)
+        return object()
+
+    monkeypatch.setattr("uniguide_worker.extract.gemini.genai.Client", spy)
+    GeminiExtractor(api_key="k")
+    assert seen["api_key"] == "k"
+    assert seen["http_options"].timeout == 60_000  # type: ignore[attr-defined]
+
+
+def test_gemini_without_a_key_fails_with_a_clear_message() -> None:
+    with pytest.raises(ValueError, match="GEMINI_API_KEY"):
+        make_extractor(
+            Settings(
+                worker_database_url=None,
+                operator_database_url=None,
+                data_gov_api_key=None,
+                crawler_contact="x",
+                extractor="gemini",
+                gemini_api_key=None,
+            )
+        )

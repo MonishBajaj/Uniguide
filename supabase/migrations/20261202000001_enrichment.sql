@@ -10,7 +10,7 @@ create table public.enrichment_jobs (
   status public.enrichment_status not null default 'queued',
   stage text not null default 'optimizing_profile'
     check (stage in ('optimizing_profile', 'selecting_universities', 'fetching_details', 'done')),
-  -- Target countries, levels and fields only: the worker role cannot read profiles.
+  -- Target countries, levels and fields only, copied from the profile: the worker role cannot read profiles.
   profile_snapshot jsonb not null default '{}',
   -- True only when the student switched on AI features; without it nothing goes to Gemini.
   allow_fallback boolean not null default false,
@@ -54,11 +54,12 @@ grant select, insert, update on public.enrichment_items to ingest_worker;
 create policy "worker" on public.enrichment_jobs for all to ingest_worker using (true) with check (true);
 create policy "worker" on public.enrichment_items for all to ingest_worker using (true) with check (true);
 
-create function public.start_enrichment(p_program_ids uuid[], p_profile jsonb) returns uuid
+create function public.start_enrichment(p_program_ids uuid[]) returns uuid
 language plpgsql security definer set search_path = '' as $$
 declare
   v_uid uuid := (select auth.uid());
   v_job uuid;
+  v_profile public.profiles;
 begin
   if v_uid is null then
     raise exception 'not_signed_in' using errcode = '28000';
@@ -67,6 +68,9 @@ begin
   if p_program_ids is null or cardinality(p_program_ids) > 12 then
     raise exception 'bad_program_list' using errcode = '22023';
   end if;
+
+  -- One start at a time per student, so parallel calls cannot get past the checks below together.
+  perform pg_advisory_xact_lock(hashtextextended(v_uid::text, 0));
 
   select id into v_job from public.enrichment_jobs
   where user_id = v_uid and status in ('queued', 'running')
@@ -79,21 +83,23 @@ begin
     raise exception 'rate_limited';
   end if;
 
+  -- The targets come from the stored profile, never from the caller, so they cannot be made up.
+  select * into v_profile from public.profiles where user_id = v_uid;
   insert into public.enrichment_jobs (user_id, profile_snapshot, allow_fallback)
   values (
     v_uid,
     jsonb_build_object(
-      'target_countries', coalesce(p_profile -> 'target_countries', '[]'::jsonb),
-      'target_levels', coalesce(p_profile -> 'target_levels', '[]'::jsonb),
-      'target_fields', coalesce(p_profile -> 'target_fields', '[]'::jsonb)
+      'target_countries', to_jsonb(coalesce(v_profile.target_countries, '{}')),
+      'target_levels', to_jsonb(coalesce(v_profile.target_levels, '{}')),
+      'target_fields', to_jsonb(coalesce(v_profile.target_fields, '{}'))
     ),
     public.has_consent(v_uid, 'ai_processing')
   ) returning id into v_job;
 
   insert into public.enrichment_items (job_id, program_id)
-  select v_job, p.id from public.programs p where p.id = any (p_program_ids);
+  select v_job, p.id from public.programs p where p.id = any (p_program_ids) and p.published;
   return v_job;
 end;
 $$;
-revoke execute on function public.start_enrichment(uuid[], jsonb) from public, anon;
-grant execute on function public.start_enrichment(uuid[], jsonb) to authenticated;
+revoke execute on function public.start_enrichment(uuid[]) from public, anon;
+grant execute on function public.start_enrichment(uuid[]) to authenticated;

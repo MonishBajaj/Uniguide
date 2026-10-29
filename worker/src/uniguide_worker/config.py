@@ -34,6 +34,7 @@ class Settings:
     site_url: str = "http://localhost:3000"
     extractor: str = "gemini"
     gemini_model: str | None = None
+    gemini_api_key: str | None = None
     enrich_fresh_days: int = 7
 
     @property
@@ -53,5 +54,6 @@ def get_settings() -> Settings:
         site_url=os.environ.get("SITE_URL") or os.environ.get("NEXT_PUBLIC_SITE_URL") or "http://localhost:3000",
         extractor=(os.environ.get("EXTRACTOR") or "gemini").lower(),
         gemini_model=os.environ.get("GEMINI_MODEL") or None,
+        gemini_api_key=os.environ.get("GEMINI_API_KEY") or None,
         enrich_fresh_days=int(os.environ.get("ENRICH_FRESH_DAYS") or 7),
     )

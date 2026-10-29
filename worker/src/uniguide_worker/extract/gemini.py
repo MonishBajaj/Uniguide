@@ -15,14 +15,21 @@ from .prompt import PROMPT_VERSION, SYSTEM, user_message
 from .schema import PageExtraction
 
 DEFAULT_MODEL = "gemini-2.5-flash"
+# A stalled request must not hold a worker (and its job's heartbeat) forever.
+TIMEOUT_MS = 60_000
 # USD per million tokens, approximate list price for the Flash tier; only used for the cost log.
 INPUT_PRICE = 0.30
 OUTPUT_PRICE = 2.50
 
 
 class GeminiExtractor:
-    def __init__(self, client: genai.Client | None = None, model: str | None = None) -> None:
-        self.client = client or genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
+    def __init__(
+        self, client: genai.Client | None = None, model: str | None = None, api_key: str | None = None
+    ) -> None:
+        self.client = client or genai.Client(
+            api_key=api_key or os.environ.get("GEMINI_API_KEY"),
+            http_options=types.HttpOptions(timeout=TIMEOUT_MS),
+        )
         self.model = model or DEFAULT_MODEL
         self.version = f"{self.model}/{PROMPT_VERSION}"
 

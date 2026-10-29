@@ -30,6 +30,8 @@ def discover_sources(fetcher: Fetcher, official_url: str) -> list[tuple[str, str
         result = fetcher.fetch(official_url)
     except FetchRefused:
         return found
+    if result.status >= 400:  # an error page's navigation says nothing about this course
+        return found
     host = (urlsplit(official_url).hostname or "").lower()
     for text, url in result.links:
         if (urlsplit(url).hostname or "").lower() != host or url == official_url:
