@@ -4,7 +4,7 @@ Source: the Feature Bible (100 features), `BACKLOG.md`, and what the running app
 
 **Totals (103 rows):** 16 built · 15 partly built · 53 to build · 5 need an owner decision · 4 deferred to year 2 · 10 cut on purpose.
 
-**Developer B progress (developer-b, October 2026):** 21 more rows built, and 3.3 and 3.4 finished except for A's data. Totals now: 37 built · 8 partly built · 38 to build · 5 need a decision · 5 deferred (14.4 added) · 10 cut. X10 and 13.2 wait on payments.
+**Developer B progress (developer-b, October 2026):** 22 more rows built, and 3.3 and 3.4 finished except for A's data. Totals now: 38 built · 8 partly built · 37 to build · 5 need a decision · 5 deferred (14.4 added) · 10 cut. X10 and 13.2 wait on payments.
 
 Status key: **Built** works today · **Partial** exists, listed gap remains · **To build** not started · **Decision** the owner must settle first · **Deferred** year 2 · **Cut** decided against (BACKLOG). Size: S about 2 days, M about a week, L two weeks or more. Priority: P0 needed for a real launch, P1 next, P2 later, P3 only if time allows.
 
@@ -162,7 +162,7 @@ The student app works end to end behind sign-in, but the catalogue holds six pla
 | P2 | 15.2 | Accessibility options | Built | M | Built on developer-b: text size, high contrast and reduced motion on `/accessibility` (cookie, works signed out); an axe WCAG 2.1 AA audit of 28 pages runs in CI and fails on serious issues. |
 | P2 | 5.7 | Research statement workshop | Built | M | Built on developer-b: research statement documents with their own outline, the course's researchers beside the draft, and checks for a stated question and named methods. |
 | P2 | 6.3 | Brag sheet | Built | S | Built on developer-b: "please mention" notes per recommender and a printable sheet with the courses and letter due dates and the student's CV. |
-| P3 | 11.1 | Reviews and ratings | To build | L | Needs moderation. Not in BACKLOG. |
+| P3 | 11.1 | Reviews and ratings | Built | L | Built on developer-b behind `COMMUNITY_ENABLED` (off until legal review): reviews on course pages from students with a recorded admission, labelled self-reported, pre-moderated, one per course; averages from five reviews. |
 | P3 | 11.3 | Ask an alum | To build | L | Not in BACKLOG; needs moderation and legal review. |
 | P3 | 11.4 | Application journey stories | Built | M | Built on developer-b behind `COMMUNITY_ENABLED` (off until legal review): pseudonymous stories, pre-moderated, filterable by destination and level, reportable. |
 | P3 | 11.6 | Seasonal AMAs | To build | M | Low priority. |

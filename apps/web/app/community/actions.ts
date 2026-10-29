@@ -75,3 +75,17 @@ export async function submitStory(_prev: PostState, form: FormData): Promise<Pos
   if (!parsed.success) return { ok: false, message: parsed.error.issues[0]!.message, values: typed(form) };
   return submit({ kind: "story", ...parsed.data }, typed(form));
 }
+
+const Score = z.coerce.number().int().min(1, "Rate teaching, support and value from 1 to 5.").max(5);
+
+export async function submitReview(programId: string, _prev: PostState, form: FormData): Promise<PostState> {
+  const parsed = Base.extend({
+    body: z.string().trim().min(100, "Say a little more: at least 100 characters.").max(6000),
+    teaching: Score,
+    support: Score,
+    value: Score,
+  }).safeParse(Object.fromEntries(form));
+  if (!parsed.success) return { ok: false, message: parsed.error.issues[0]!.message, values: typed(form) };
+  const { pseudonym, body, teaching, support, value } = parsed.data;
+  return submit({ kind: "review", program_id: programId, pseudonym, body, ratings: { teaching, support, value } }, typed(form));
+}
