@@ -131,16 +131,34 @@ def due_lifecycle(conn: Connection, site_url: str, now: datetime) -> list[Lifecy
 
 
 def send_lifecycle(conn: Connection, mailer: Mailer, site_url: str, now: datetime | None = None) -> NotifyReport:
+    """Claim each message in the log, send it, and release the claim if the send fails.
+
+    Claiming first means two overlapping runs cannot both send, and a crash or a provider outage never loses the
+    record of what was already sent: each claim is committed on its own.
+    """
     now = now or datetime.now(UTC)
     report = NotifyReport(dry_run=mailer.dry_run)
     for m in due_lifecycle(conn, site_url, now):
-        if mailer.send(Message(to=m.email, subject=m.subject, text=m.body)):
-            conn.execute(
-                "insert into lifecycle_log (user_id, kind, period_key) values (%s, %s, %s) on conflict do nothing",
-                (m.user_id, m.kind, m.period_key),
-            )
+        claimed = conn.execute(
+            "insert into lifecycle_log (user_id, kind, period_key) values (%s, %s, %s) "
+            "on conflict do nothing returning user_id",
+            (m.user_id, m.kind, m.period_key),
+        ).fetchone()
+        conn.commit()
+        if not claimed:
+            continue  # another run already took it
+        try:
+            sent = mailer.send(Message(to=m.email, subject=m.subject, text=m.body))
+        except Exception as exc:  # a provider error must not stop the rest of the run
+            sent = False
+            report.notes.append(f"{m.kind} to {m.user_id}: {exc}")
+        if sent:
             report.updates += 1
         else:
+            conn.execute(
+                "delete from lifecycle_log where user_id = %s and kind = %s and period_key = %s",
+                (m.user_id, m.kind, m.period_key),
+            )
+            conn.commit()
             report.failures += 1
-    conn.commit()
     return report

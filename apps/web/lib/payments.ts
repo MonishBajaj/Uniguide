@@ -15,27 +15,40 @@ export function verifyRazorpaySignature(body: string, signature: string, secret:
   return safeEqualHex(signature, hex(secret, body));
 }
 
-/** Stripe's header is `t=<unix>,v1=<hex>`; the signed payload is `<t>.<body>`. Old timestamps are refused. */
+/** Stripe's header is `t=<unix>,v1=<hex>[,v1=<hex>]`; any v1 may match (several are sent while a secret is rolled). */
 export function verifyStripeSignature(body: string, header: string, secret: string, now = Math.floor(Date.now() / 1000), toleranceSeconds = 300): boolean {
-  const parts = Object.fromEntries(header.split(",").map((p) => p.split("=") as [string, string]));
-  const t = Number(parts.t);
-  if (!parts.v1 || !Number.isFinite(t) || Math.abs(now - t) > toleranceSeconds) return false;
-  return safeEqualHex(parts.v1, hex(secret, `${t}.${body}`));
+  const pairs = header.split(",").map((p) => p.split("=") as [string, string]);
+  const t = Number(pairs.find(([k]) => k === "t")?.[1]);
+  const signatures = pairs.filter(([k]) => k === "v1").map(([, v]) => v);
+  if (signatures.length === 0 || !Number.isFinite(t) || Math.abs(now - t) > toleranceSeconds) return false;
+  const expected = hex(secret, `${t}.${body}`);
+  return signatures.some((sig) => safeEqualHex(sig, expected));
 }
 
-/** The payment in a webhook event, or null when the event is not a completed payment. */
-export function toPaymentRecord(provider: Provider, event: unknown): PaymentRecord | null {
+export type Prices = { usd: number; inr: number };
+
+/**
+ * The payment in a webhook event: a record, null when the event is not a payment, or "invalid" when it is a
+ * payment that is not a pass purchase (wrong amount, currency or product, or no user). Razorpay's user id comes
+ * from the order we created, never from the browser.
+ */
+export function toPaymentRecord(provider: Provider, event: unknown, prices: Prices): PaymentRecord | null | "invalid" {
   const e = event as Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
   if (provider === "stripe") {
     const s = e?.data?.object;
-    if (e?.type !== "checkout.session.completed" || s?.payment_status !== "paid") return null;
+    const handled = e?.type === "checkout.session.completed" || e?.type === "checkout.session.async_payment_succeeded";
+    if (!handled || s?.payment_status !== "paid") return null;
     const userId = s.client_reference_id ?? s.metadata?.user_id;
-    if (!s.id || !userId || typeof s.amount_total !== "number" || !s.currency) return null;
-    return { externalId: s.id, userId, amount: s.amount_total / 100, currency: String(s.currency).toUpperCase() };
+    const forPass = s.metadata?.product === "season_pass" && s.amount_total === prices.usd && String(s.currency).toLowerCase() === "usd";
+    if (!s.id || !userId || !forPass) return "invalid";
+    return { externalId: s.id, userId, amount: s.amount_total / 100, currency: "USD" };
   }
-  const p = e?.payload?.payment?.entity;
-  if (e?.event !== "payment.captured" || !p?.id || !p.notes?.user_id || typeof p.amount !== "number") return null;
-  return { externalId: p.id, userId: p.notes.user_id, amount: p.amount / 100, currency: String(p.currency).toUpperCase() };
+  if (e?.event !== "order.paid") return null;
+  const order = e.payload?.order?.entity;
+  const payment = e.payload?.payment?.entity;
+  const forPass = order?.amount_paid === prices.inr && String(order?.currency).toUpperCase() === "INR";
+  if (!payment?.id || !order?.notes?.user_id || !forPass) return "invalid";
+  return { externalId: payment.id, userId: order.notes.user_id, amount: order.amount_paid / 100, currency: "INR" };
 }
 
 /**
@@ -46,7 +59,7 @@ export async function handleWebhook(
   provider: Provider,
   rawBody: string,
   signature: string,
-  deps: { secret: string; rpc: (record: PaymentRecord) => Promise<{ error: { message: string } | null }> },
+  deps: { secret: string; prices: Prices; rpc: (record: PaymentRecord) => Promise<{ error: { message: string } | null }> },
 ): Promise<{ status: number; body: string }> {
   const valid = provider === "stripe" ? verifyStripeSignature(rawBody, signature, deps.secret) : verifyRazorpaySignature(rawBody, signature, deps.secret);
   if (!valid) return { status: 400, body: "Invalid signature" };
@@ -56,7 +69,12 @@ export async function handleWebhook(
   } catch {
     return { status: 400, body: "Invalid body" };
   }
-  const record = toPaymentRecord(provider, event);
+  const record = toPaymentRecord(provider, event, deps.prices);
+  if (record === "invalid") {
+    // Never a silent 200: a payment we cannot match to the pass needs a person to look at it.
+    console.error(`[payments] ${provider} payment event did not match the season pass`);
+    return { status: 422, body: "Payment does not match the season pass" };
+  }
   if (!record) return { status: 200, body: "Ignored" };
   const { error } = await deps.rpc(record);
   return error ? { status: 500, body: "Could not record the payment" } : { status: 200, body: "Recorded" };

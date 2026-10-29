@@ -114,13 +114,14 @@ Any job can also be started by hand from the Actions tab (Run workflow).
 
 ## 7. Before charging money
 
-Payments are not built. Work through the "Needs a decision or review before launch" list in BACKLOG.md: counsel review of the parental consent flow and consent ages, terms and privacy policy (both pages are drafts), F-1/OPT confirmation with your DSO, and a final product name.
+Payments are built (see the Payments section below); you still need provider accounts and keys. Work through the "Needs a decision or review before launch" list in BACKLOG.md: counsel review of the parental consent flow and consent ages, terms and privacy policy (both pages are drafts), F-1/OPT confirmation with your DSO, and a final product name.
 
 ## Payments (season pass)
 
-1. In Stripe, create a webhook endpoint `https://<your-domain>/api/webhooks/stripe` for `checkout.session.completed`. In Razorpay, create one at `/api/webhooks/razorpay` for `payment.captured`.
+1. In Stripe, create a webhook endpoint `https://<your-domain>/api/webhooks/stripe` for `checkout.session.completed` and `checkout.session.async_payment_succeeded`. In Razorpay, create one at `/api/webhooks/razorpay` for `order.paid`. A payment event that does not match the pass answers 422 and is logged; check for those after launch.
 2. Set `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, `RAZORPAY_WEBHOOK_SECRET`, `PASS_PRICE_USD` and `PASS_PRICE_INR` on Vercel (Production).
-3. Pick a long random `PAYMENT_WEBHOOK_TOKEN`, set it on Vercel, and store its hash in the database (SQL editor):
+3. Pick a `PAYMENT_WEBHOOK_TOKEN` of at least 32 random bytes (for example `openssl rand -hex 32`); it is the only guard on a function the web app calls without a session.
+   Set it set it on Vercel, and store its hash in the database (SQL editor):
 
    ```sql
    insert into public.payment_config (webhook_token_hash)
