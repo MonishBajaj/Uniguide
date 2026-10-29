@@ -34,6 +34,7 @@ export const hi: Dict = {
     guide: "यह कैसे काम करता है",
     visas: "वीज़ा",
     blog: "ब्लॉग",
+    learn: "वेबिनार",
     accessibility: "सुगम्यता",
     sources: "डेटा के स्रोत",
     switchTo: "View in English",

@@ -663,6 +663,20 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
+                },"media_items": {
+                  Row: {
+                    "created_at": string,"description": string | null,"id": string,"kind": string,"published": boolean,"published_at": string | null,"registration_url": string | null,"starts_at": string | null,"title": string,"url": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"description"?: string | null,"id"?: string,"kind": string,"published"?: boolean,"published_at"?: string | null,"registration_url"?: string | null,"starts_at"?: string | null,"title": string,"url"?: string | null
+                  }
+                  Update: {
+                    "created_at"?: string,"description"?: string | null,"id"?: string,"kind"?: string,"published"?: boolean,"published_at"?: string | null,"registration_url"?: string | null,"starts_at"?: string | null,"title"?: string,"url"?: string | null
+                  }
+                  Relationships: [
+                    
+                  ]
                 },"notifications": {
                   Row: {
                     "body": string | null,"created_at": string,"emailed_at": string | null,"id": string,"kind": Database["public"]['Enums']["notification_kind"],"program_id": string | null,"read_at": string | null,"title": string,"user_id": string

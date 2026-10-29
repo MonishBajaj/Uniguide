@@ -28,6 +28,7 @@ export function SiteFooter({ lite = false, locale = "en" }: { lite?: boolean; lo
           <li><Link href="/guide" className="hover:text-foreground">{t.guide}</Link></li>
           <li><Link href="/visas" className="hover:text-foreground">{t.visas}</Link></li>
           <li><Link href="/blog" className="hover:text-foreground">{t.blog}</Link></li>
+          <li><Link href="/learn" className="hover:text-foreground">{t.learn}</Link></li>
           <li><Link href="/accessibility" className="hover:text-foreground">{t.accessibility}</Link></li>
           <li><Link href="/requirements" className="hover:text-foreground">{t.sources}</Link></li>
         </ul>

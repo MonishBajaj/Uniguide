@@ -5,7 +5,7 @@ import { audit, resetStudent, signIn, sql, STUDENT } from "./helpers";
 
 test("15.2 public pages have no serious accessibility violations", async ({ page }) => {
   const found: string[] = [];
-  for (const path of ["/", "/courses", "/courses/exampleton-msc-data-science", "/requirements", "/visas", "/guide", "/accessibility", "/blog", "/blog/verified-facts-pipeline", "/login", "/signup"]) {
+  for (const path of ["/", "/courses", "/courses/exampleton-msc-data-science", "/requirements", "/visas", "/guide", "/accessibility", "/learn", "/blog", "/blog/verified-facts-pipeline", "/login", "/signup"]) {
     found.push(...(await audit(page, path)));
   }
   expect(found, found.join("\n")).toEqual([]);

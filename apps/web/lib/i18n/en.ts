@@ -31,6 +31,7 @@ export const en = {
     guide: "How it works",
     visas: "Visas",
     blog: "Blog",
+    learn: "Webinars",
     accessibility: "Accessibility",
     sources: "Data sources",
     switchTo: "हिन्दी में देखें",

@@ -32,7 +32,7 @@ export async function SiteHeader() {
         ]
       : []),
     ...(roles.admin || roles.verifier ? [{ href: "/admin/review", label: "Review queue" }] : []),
-    ...(roles.admin ? [{ href: "/admin/rules", label: "Rules" }, { href: "/admin/team", label: "Team" }] : []),
+    ...(roles.admin ? [{ href: "/admin/rules", label: "Rules" }, { href: "/admin/team", label: "Team" }, { href: "/admin/media", label: "Media" }] : []),
     ...(roles.admin && COMMUNITY_ENABLED ? [{ href: "/admin/community", label: "Community" }] : []),
     ...(roles.orgs.length ? [{ href: "/agency", label: "Students" }] : []),
   ];
