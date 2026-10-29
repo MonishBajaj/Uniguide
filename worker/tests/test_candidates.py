@@ -78,14 +78,15 @@ def test_create_skips_bad_host_and_duplicates(worker: Connection, operator: Conn
         assert len(ids) == 1
         row = operator.execute(
             """
-            select p.coverage_tier, p.published, p.official_url, i.official_domain
+            select p.coverage_tier, p.published, p.suggestion_status, p.official_url, i.official_domain
             from programs p join institutions i on i.id = p.institution_id where p.id = %s
             """,
             (ids[0],),
         ).fetchone()
         assert row == {
             "coverage_tier": "extracted",
-            "published": True,
+            "published": False,  # a suggestion stays hidden until an admin approves it
+            "suggestion_status": "pending",
             "official_url": good.url,
             "official_domain": good.domain,
         }
@@ -193,3 +194,28 @@ def test_snapshot_values_are_checked_before_they_reach_the_prompt() -> None:
     prompt = client.models.calls[0]["contents"]
     assert "DE" in prompt and "master" in prompt and "0613" in prompt
     assert "ignore" not in prompt.lower() and "evil" not in prompt
+
+
+def test_a_course_already_in_the_catalog_keeps_its_published_state(
+    worker: Connection, operator: Connection, tag: str
+) -> None:
+    real = f"known-{tag}.example.org"
+    inst = operator.execute(
+        "insert into institutions (name, country, official_domain) values (%s, 'DE', %s) returning id",
+        (f"Candidate University {tag}", real),
+    ).fetchone()
+    operator.execute(
+        "insert into programs (institution_id, slug, title, level, published) values (%s, %s, 'MSc Robotics', 'master', true)",
+        (inst["id"], f"known-{tag}"),
+    )
+    operator.commit()
+    try:
+        ok = candidate(tag, url=f"https://www.{real}/robotics", domain=real)
+        assert len(create_from_candidates(worker, [ok], verify_domain=YES)) == 1
+        row = operator.execute(
+            "select published, suggestion_status from programs where institution_id = %s", (inst["id"],)
+        ).fetchone()
+        assert row == {"published": True, "suggestion_status": None}
+    finally:
+        operator.execute("delete from institutions where id = %s", (inst["id"],))
+        operator.commit()

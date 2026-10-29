@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { describeItem } from "@/lib/enrichment";
 import { startSearch } from "@/lib/start-search";
 import { getUser } from "@/lib/supabase/server";
 
@@ -40,12 +41,9 @@ export async function jobProgress(jobId: string): Promise<Progress | null> {
     error: job.error,
     createdAt: job.created_at,
     heartbeatAt: job.heartbeat_at,
-    items: (items ?? []).map((i) => ({
-      programId: i.program_id,
-      title: i.programs?.title ?? "Course",
-      institution: i.programs?.institutions?.name ?? "",
-      status: i.status,
-      detail: i.detail,
-    })),
+    items: (items ?? []).map((i) => {
+      const named = describeItem(i.programs);
+      return { programId: i.program_id, title: named.title, institution: named.subtitle, status: i.status, detail: i.detail };
+    }),
   };
 }

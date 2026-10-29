@@ -58,3 +58,9 @@ export function waitNotice(status: string, createdAt: string, heartbeatAt: strin
   }
   return null;
 }
+
+/** How a course is named on the progress page. A course still waiting for approval is hidden from the student by row security. */
+export function describeItem(program: { title: string; institutions: { name: string } | null } | null): { title: string; subtitle: string } {
+  if (!program) return { title: "Suggested course", subtitle: "Our team is checking it before it appears in your matches." };
+  return { title: program.title, subtitle: program.institutions?.name ?? "" };
+}

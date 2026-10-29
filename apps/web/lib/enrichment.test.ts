@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { itemLabel, pickCourses, readyForFirstSearch, STAGES, stageIndex, waitNotice } from "./enrichment";
+import { itemLabel, pickCourses, readyForFirstSearch, STAGES, describeItem, stageIndex, waitNotice } from "./enrichment";
 
 describe("stageIndex", () => {
   it("numbers the stages in the order the worker runs them", () => {
@@ -73,5 +73,16 @@ describe("waitNotice", () => {
   it("says nothing once the search is finished", () => {
     expect(waitNotice("done", ago(9999), ago(9999), now)).toBeNull();
     expect(waitNotice("failed", ago(9999), null, now)).toBeNull();
+  });
+});
+
+describe("describeItem", () => {
+  it("names a course the student can see", () => {
+    expect(describeItem({ title: "MSc Robotics", institutions: { name: "TUM" } })).toEqual({ title: "MSc Robotics", subtitle: "TUM" });
+  });
+  it("explains a suggested course the student cannot see yet", () => {
+    const d = describeItem(null);
+    expect(d.title).toBe("Suggested course");
+    expect(d.subtitle).toMatch(/team is checking/i);
   });
 });

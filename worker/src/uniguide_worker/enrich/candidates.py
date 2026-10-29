@@ -132,6 +132,8 @@ def create_from_candidates(
 ) -> list[UUID]:
     """Add the accepted candidates to the catalog and return their program ids (existing courses are reused).
 
+    New courses are saved hidden (`suggestion_status = pending`) until an admin approves them.
+
     Gemini's own claim about a domain is never enough. A known institution keeps the domain recorded for it; any
     other institution must be confirmed by `verify_domain` (the ROR registry by default).
     """
@@ -174,8 +176,8 @@ def create_from_candidates(
             prog = conn.execute(
                 """
                 insert into programs (institution_id, slug, title, level, official_url, coverage_tier, published,
-                                      verification_method)
-                values (%s, %s, %s, %s, %s, 'extracted', true, 'automated_extraction') returning id
+                                      suggestion_status, verification_method)
+                values (%s, %s, %s, %s, %s, 'extracted', false, 'pending', 'automated_extraction') returning id
                 """,
                 (
                     inst["id"],
