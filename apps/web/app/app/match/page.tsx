@@ -7,6 +7,8 @@ import { ProgramCard } from "@/components/program-card";
 import { daysUntil, deadlineText, money } from "@/lib/format";
 import { asJson } from "@/lib/json";
 import { loadMatchInputs } from "@/lib/match-data";
+import { listSize } from "@/lib/display";
+import { readDisplay } from "@/lib/display-server";
 import { getUser } from "@/lib/supabase/server";
 import { selectedTrack } from "@/lib/tracks";
 import { TrackSwitcher } from "@/components/track-switcher";
@@ -34,6 +36,7 @@ export default async function MatchPage({ searchParams }: PageProps<"/app/match"
   const { data: tracks } = await supabase.from("tracks").select("*").order("created_at");
   const track = selectedTrack((await searchParams).track, tracks ?? []);
   const inputs = await loadMatchInputs(supabase, user!.id, track);
+  const { lite } = await readDisplay();
   if (!inputs) {
     return (
       <div className="rounded-2xl border border-border bg-surface p-8">
@@ -119,7 +122,7 @@ export default async function MatchPage({ searchParams }: PageProps<"/app/match"
         </div>
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
-          {feasible.slice(0, 40).map((r) => {
+          {feasible.slice(0, listSize(40, lite)).map((r) => {
             const card = byId.get(r.programId)!;
             const cost = r.cost;
             const base = cost.converted ?? (cost.currency ? { amount: cost.base, currency: cost.currency } : null);
@@ -187,6 +190,12 @@ export default async function MatchPage({ searchParams }: PageProps<"/app/match"
           })}
         </div>
       )}
+
+      {lite && feasible.length > listSize(40, lite) ? (
+        <p className="text-sm text-muted">
+          Showing your top {listSize(40, lite)} because data saver is on. <Link href="/accessibility" className="underline underline-offset-2">Show more</Link>
+        </p>
+      ) : null}
 
       {excluded.length ? (
         <section aria-labelledby="excluded">

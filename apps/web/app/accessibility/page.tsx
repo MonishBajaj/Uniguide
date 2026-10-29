@@ -13,6 +13,7 @@ const LABELS: { [K in keyof Display]: { legend: string; options: Record<Display[
   text: { legend: "Text size", options: { normal: "Normal", large: "Large", larger: "Larger" } },
   contrast: { legend: "Contrast", options: { normal: "Normal", high: "High" } },
   motion: { legend: "Motion", options: { normal: "Normal", reduce: "Reduce motion" } },
+  data: { legend: "Data saver", options: { auto: "Automatic", saver: "Always save data", full: "Off" } },
 };
 
 export default async function AccessibilityPage() {
@@ -39,7 +40,11 @@ export default async function AccessibilityPage() {
             </div>
           </fieldset>
         ))}
-        <p className="text-sm text-muted">Your device&apos;s own &ldquo;reduce motion&rdquo; setting is always respected as well.</p>
+        <p className="text-sm text-muted">
+          Your device&apos;s own &ldquo;reduce motion&rdquo; setting is always respected as well. The data saver drops
+          animations and preloading and shows shorter lists; &ldquo;Automatic&rdquo; turns it on when your browser&apos;s
+          own data saver is on.
+        </p>
         <button className="btn btn-primary justify-self-start">Save display settings</button>
       </form>
 

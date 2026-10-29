@@ -133,10 +133,12 @@ html[data-contrast="high"] {
   --accent: #1f4d3e;
 }
 html[data-contrast="high"] a { text-decoration-thickness: 2px; }
-html[data-motion="reduce"] *, html[data-motion="reduce"] *::before, html[data-motion="reduce"] *::after {
+/* Reduced motion, and 15.3 low-bandwidth mode, which also drops motion. */
+html[data-motion="reduce"] *, html[data-motion="reduce"] *::before, html[data-motion="reduce"] *::after,
+html[data-lite="on"] *, html[data-lite="on"] *::before, html[data-lite="on"] *::after {
   animation: none !important;
   transition: none !important;
   scroll-behavior: auto !important;
 }
-html[data-motion="reduce"] .reveal { opacity: 1; transform: none; }
-html[data-motion="reduce"] [data-word] { opacity: 1 !important; }
+html[data-motion="reduce"] .reveal, html[data-lite="on"] .reveal { opacity: 1; transform: none; }
+html[data-motion="reduce"] [data-word], html[data-lite="on"] [data-word] { opacity: 1 !important; }

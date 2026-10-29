@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { AppLink as Link } from "./lite";
 import type { DeadlineFact } from "@uniguide/matching";
 import { closesInText } from "@/lib/card-deadline";
 import type { ProgramCard as Card } from "@/lib/catalog";

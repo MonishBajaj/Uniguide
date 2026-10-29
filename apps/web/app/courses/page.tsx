@@ -4,6 +4,8 @@ import { ProgramCard } from "@/components/program-card";
 import { cardDeadline } from "@/lib/card-deadline";
 import { loadCurrentCycles } from "@/lib/catalog";
 import { CURRENCIES } from "@/lib/fields";
+import { listSize } from "@/lib/display";
+import { readDisplay } from "@/lib/display-server";
 import { getUser } from "@/lib/supabase/server";
 import { COUNTRIES, LEVELS, countryName, label } from "@/lib/format";
 import type { Enums } from "@uniguide/db-types";
@@ -13,7 +15,7 @@ export const metadata: Metadata = {
   description: "Search courses abroad by level, country and subject. Every listed course comes from an official register.",
 };
 
-const PAGE_SIZE = 30;
+const FULL_PAGE = 30;
 
 export default async function Courses({ searchParams }: PageProps<"/courses">) {
   const params = await searchParams;
@@ -25,6 +27,7 @@ export default async function Courses({ searchParams }: PageProps<"/courses">) {
   const open = one(params.open) === "1";
   const maxTuition = Number(one(params.max)) > 0 ? Math.round(Number(one(params.max))) : undefined;
   const currency = CURRENCIES.find((c) => c === one(params.cur)) ?? "USD";
+  const PAGE_SIZE = listSize(FULL_PAGE, (await readDisplay()).lite);
 
   const { supabase, user } = await getUser();
   const { data: cards, error } = await supabase.rpc("search_programs", {

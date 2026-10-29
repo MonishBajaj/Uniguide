@@ -1,10 +1,18 @@
 import Link from "next/link";
 
-export function SiteFooter() {
+export function SiteFooter({ lite = false }: { lite?: boolean }) {
   return (
     <footer className="mt-24 border-t border-border print:hidden">
       <div className="mx-auto flex max-w-5xl flex-col gap-4 px-6 py-8 text-sm text-muted sm:flex-row sm:items-center sm:justify-between">
-        <p className="sm:max-w-sm">Uniguide shows facts from official pages. Always confirm on the official page before you apply.</p>
+        <div className="grid gap-1 sm:max-w-sm">
+          <p>Uniguide shows facts from official pages. Always confirm on the official page before you apply.</p>
+          {lite ? (
+            <p>
+              Data saver is on: no animations, no preloading, shorter lists.{" "}
+              <Link href="/accessibility" className="underline underline-offset-2">Change</Link>
+            </p>
+          ) : null}
+        </div>
         <ul className="flex flex-wrap gap-x-4 gap-y-2 whitespace-nowrap sm:justify-end">
           <li><Link href="/legal/privacy" className="hover:text-foreground">Privacy</Link></li>
           <li><Link href="/legal/terms" className="hover:text-foreground">Terms</Link></li>
