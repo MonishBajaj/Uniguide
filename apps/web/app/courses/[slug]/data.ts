@@ -33,6 +33,7 @@ export async function loadCourseExtras(programId: string, institutionId: string,
     ? (await supabase.from("profiles").select("research_interests").eq("user_id", user.id).maybeSingle()).data?.research_interests ?? null
     : null;
   const similar = await loadSimilarCards(supabase, programId);
+  const watching = user ? Boolean((await supabase.from("watches").select("program_id").eq("program_id", programId).maybeSingle()).data) : false;
   const [{ data: factRows }, { data: workRows }] = await Promise.all([
     supabase.from("institution_facts").select("*").eq("institution_id", institutionId).order("created_at"),
     supabase.from("country_rules").select("*").eq("destination", country).eq("kind", "work_hours").order("verified_at", { ascending: false, nullsFirst: false }),
@@ -41,5 +42,5 @@ export async function loadCourseExtras(programId: string, institutionId: string,
   const workRules = (workRows ?? []).filter((r) => r.applies_to.length === 0).slice(0, 1).map((r) => ({
     id: r.id, title: r.title, hoursPerWeek: r.hours_per_week, status: r.status, evidenceQuote: r.evidence_quote, link: r.link,
   }));
-  return { supabase, user, cycles: cycles ?? [], admin: admin.data ? { sources } : null, interests, similar, facts, workRules };
+  return { supabase, user, cycles: cycles ?? [], admin: admin.data ? { sources } : null, interests, similar, facts, workRules, watching };
 }

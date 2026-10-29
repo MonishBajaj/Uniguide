@@ -6,6 +6,7 @@ import { Evidence, FactBadge, TierBadge } from "@/components/facts";
 import { CourseQuestion } from "@/components/course-question";
 import { ReportForm } from "@/components/report-form";
 import { ProgramCard as SimilarCard } from "@/components/program-card";
+import { WatchButton } from "@/components/watch-button";
 import { ShortlistButton } from "@/components/shortlist-button";
 import { toProgramInput, type CycleFacts, type ProgramCard, type RequirementRow } from "@/lib/catalog";
 import { CampusLiving } from "@/components/campus-living";
@@ -55,6 +56,7 @@ export function CourseView(props: {
   admin: { sources: Tables<"program_sources">[] } | null;
   similar?: ProgramCard[];
   facts?: InstitutionFact[];
+  watching?: boolean;
   workRules?: Parameters<typeof FundingAndWork>[0]["workRules"];
   children?: React.ReactNode;
 }) {
@@ -91,6 +93,7 @@ export function CourseView(props: {
       <p className="mt-2 text-lg text-muted">{card.institution_name}, {countryName(card.country)}</p>
       <div className="mt-6 flex flex-wrap items-start gap-3">
         <ShortlistButton programId={card.id!} signedIn={signedIn} />
+        {signedIn ? <WatchButton programId={card.id!} watching={props.watching ?? false} /> : null}
         {signedIn ? (
           <form action={trackProgram.bind(null, card.id!)}>
             <button className="btn btn-secondary btn-sm">Track this application</button>

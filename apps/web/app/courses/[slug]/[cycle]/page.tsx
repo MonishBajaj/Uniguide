@@ -22,11 +22,11 @@ export default async function CourseCyclePage({ params }: PageProps<"/courses/[s
   const { slug, cycle: label } = await params;
   const card = await loadCard(slug);
   if (!card || !/^\d{4}-[a-z0-9_]+$/.test(label)) notFound();
-  const { supabase, user, cycles, admin, interests, similar, facts, workRules } = await loadCourseExtras(card.id!, card.institution_id!, card.country!);
+  const { supabase, user, cycles, admin, interests, similar, facts, workRules, watching } = await loadCourseExtras(card.id!, card.institution_id!, card.country!);
   const cycle = await loadCycle(supabase, card.id!, label);
   if (!cycle) notFound();
   return (
-    <CourseView card={card} cycle={cycle} cycles={cycles} fx={await loadFx(supabase)} signedIn={Boolean(user)} admin={admin} similar={similar} facts={facts} workRules={workRules}>
+    <CourseView card={card} cycle={cycle} cycles={cycles} fx={await loadFx(supabase)} signedIn={Boolean(user)} admin={admin} similar={similar} facts={facts} workRules={workRules} watching={watching}>
       <FacultyDossier supabase={supabase} card={card} interests={interests} />
     </CourseView>
   );

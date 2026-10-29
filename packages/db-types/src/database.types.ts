@@ -1045,6 +1045,32 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
+                },"watches": {
+                  Row: {
+                    "created_at": string,"program_id": string,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"program_id": string,"user_id": string
+                  }
+                  Update: {
+                    "created_at"?: string,"program_id"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "watches_program_id_fkey"
+      columns: ["program_id"]
+isOneToOne: false
+      referencedRelation: "program_cards"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "watches_program_id_fkey"
+      columns: ["program_id"]
+isOneToOne: false
+      referencedRelation: "programs"
+      referencedColumns: ["id"]
+    }
+                  ]
                 }
           }
           Views: {
