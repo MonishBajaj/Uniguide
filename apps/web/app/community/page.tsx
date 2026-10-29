@@ -43,6 +43,10 @@ export default async function CommunityPage() {
           <span className="font-semibold">Application stories</span>
           <span className="text-sm text-muted">How other students applied, and what they would change.</span>
         </Link>
+        <Link href="/community/ama" className="grid gap-1 rounded-2xl border border-border bg-surface p-5 hover:bg-surface-2">
+          <span className="font-semibold">Ask me anything</span>
+          <span className="text-sm text-muted">Seasonal sessions with admissions staff, visa advisers and alumni.</span>
+        </Link>
       </nav>
 
       {mine?.length ? (

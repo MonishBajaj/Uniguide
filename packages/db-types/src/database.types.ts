@@ -191,19 +191,39 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
-                },"community_posts": {
+                },"community_amas": {
                   Row: {
-                    "author_id": string,"badge": string | null,"body": string,"country": string | null,"created_at": string,"id": string,"kind": Database["public"]['Enums']["community_kind"],"level": Database["public"]['Enums']["program_level"] | null,"moderated_at": string | null,"moderated_by": string | null,"moderation_note": string | null,"parent_id": string | null,"program_id": string | null,"pseudonym": string,"ratings": Json | null,"staff_answer": string | null,"status": Database["public"]['Enums']["community_status"],"title": string | null
+                    "created_at": string,"created_by": string | null,"ends_at": string,"host_name": string,"host_role": string | null,"id": string,"published": boolean,"starts_at": string,"title": string,"topic": string | null
                   }
                   ComputedFields: never
                   Insert: {
-                    "author_id": string,"badge"?: string | null,"body": string,"country"?: string | null,"created_at"?: string,"id"?: string,"kind": Database["public"]['Enums']["community_kind"],"level"?: Database["public"]['Enums']["program_level"] | null,"moderated_at"?: string | null,"moderated_by"?: string | null,"moderation_note"?: string | null,"parent_id"?: string | null,"program_id"?: string | null,"pseudonym": string,"ratings"?: Json | null,"staff_answer"?: string | null,"status"?: Database["public"]['Enums']["community_status"],"title"?: string | null
+                    "created_at"?: string,"created_by"?: string | null,"ends_at": string,"host_name": string,"host_role"?: string | null,"id"?: string,"published"?: boolean,"starts_at": string,"title": string,"topic"?: string | null
                   }
                   Update: {
-                    "author_id"?: string,"badge"?: string | null,"body"?: string,"country"?: string | null,"created_at"?: string,"id"?: string,"kind"?: Database["public"]['Enums']["community_kind"],"level"?: Database["public"]['Enums']["program_level"] | null,"moderated_at"?: string | null,"moderated_by"?: string | null,"moderation_note"?: string | null,"parent_id"?: string | null,"program_id"?: string | null,"pseudonym"?: string,"ratings"?: Json | null,"staff_answer"?: string | null,"status"?: Database["public"]['Enums']["community_status"],"title"?: string | null
+                    "created_at"?: string,"created_by"?: string | null,"ends_at"?: string,"host_name"?: string,"host_role"?: string | null,"id"?: string,"published"?: boolean,"starts_at"?: string,"title"?: string,"topic"?: string | null
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"community_posts": {
+                  Row: {
+                    "ama_id": string | null,"author_id": string,"badge": string | null,"body": string,"country": string | null,"created_at": string,"id": string,"kind": Database["public"]['Enums']["community_kind"],"level": Database["public"]['Enums']["program_level"] | null,"moderated_at": string | null,"moderated_by": string | null,"moderation_note": string | null,"parent_id": string | null,"program_id": string | null,"pseudonym": string,"ratings": Json | null,"staff_answer": string | null,"status": Database["public"]['Enums']["community_status"],"title": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "ama_id"?: string | null,"author_id": string,"badge"?: string | null,"body": string,"country"?: string | null,"created_at"?: string,"id"?: string,"kind": Database["public"]['Enums']["community_kind"],"level"?: Database["public"]['Enums']["program_level"] | null,"moderated_at"?: string | null,"moderated_by"?: string | null,"moderation_note"?: string | null,"parent_id"?: string | null,"program_id"?: string | null,"pseudonym": string,"ratings"?: Json | null,"staff_answer"?: string | null,"status"?: Database["public"]['Enums']["community_status"],"title"?: string | null
+                  }
+                  Update: {
+                    "ama_id"?: string | null,"author_id"?: string,"badge"?: string | null,"body"?: string,"country"?: string | null,"created_at"?: string,"id"?: string,"kind"?: Database["public"]['Enums']["community_kind"],"level"?: Database["public"]['Enums']["program_level"] | null,"moderated_at"?: string | null,"moderated_by"?: string | null,"moderation_note"?: string | null,"parent_id"?: string | null,"program_id"?: string | null,"pseudonym"?: string,"ratings"?: Json | null,"staff_answer"?: string | null,"status"?: Database["public"]['Enums']["community_status"],"title"?: string | null
                   }
                   Relationships: [
                     {
+      foreignKeyName: "community_posts_ama_id_fkey"
+      columns: ["ama_id"]
+isOneToOne: false
+      referencedRelation: "community_amas"
+      referencedColumns: ["id"]
+    },{
       foreignKeyName: "community_posts_parent_id_fkey"
       columns: ["parent_id"]
 isOneToOne: false
@@ -1279,6 +1299,12 @@ isOneToOne: false
                            },
 "age_in_years":
 { Args: { "p_birth_month": string,"p_on"?: string }; Returns: number
+                           },
+"ama_open":
+{ Args: { "p_ama": string }; Returns: boolean
+                           },
+"answer_ama_question":
+{ Args: { "p_answer": string,"p_post": string }; Returns: undefined
                            },
 "can_answer":
 { Args: { "p_parent": string,"uid": string }; Returns: boolean

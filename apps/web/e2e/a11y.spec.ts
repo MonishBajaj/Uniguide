@@ -1,16 +1,7 @@
-import AxeBuilder from "@axe-core/playwright";
-import { expect, test, type Page } from "@playwright/test";
-import { resetStudent, signIn, sql, STUDENT } from "./helpers";
+import { expect, test } from "@playwright/test";
+import { audit, resetStudent, signIn, sql, STUDENT } from "./helpers";
 
 // 15.2 Automated accessibility audit: no serious or critical WCAG 2.1 AA violations on key pages.
-async function audit(page: Page, path: string) {
-  await page.goto(path);
-  const { violations } = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"]).analyze();
-  const bad = violations
-    .filter((v) => v.impact === "serious" || v.impact === "critical")
-    .map((v) => `${path} ${v.id} (${v.impact}): ${v.help}\n    ${v.nodes.slice(0, 3).map((n) => n.target.join(" ")).join("\n    ")}`);
-  return bad;
-}
 
 test("15.2 public pages have no serious accessibility violations", async ({ page }) => {
   const found: string[] = [];

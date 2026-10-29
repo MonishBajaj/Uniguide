@@ -4,7 +4,9 @@ import { CONTACT_MESSAGES, findContactDetails, REPORT_REASONS } from "@/lib/comm
 import { COMMUNITY_ENABLED } from "@/lib/env";
 import { label, shortDate } from "@/lib/format";
 import { getUser } from "@/lib/supabase/server";
-import { moderatePost, resolveReport, reviewAlum } from "./actions";
+import Link from "next/link";
+import { amaPhase, amaWhen } from "@/lib/ama";
+import { createAma, moderatePost, resolveReport, reviewAlum, setAmaPublished } from "./actions";
 
 export const metadata: Metadata = { title: "Community moderation" };
 
@@ -13,7 +15,7 @@ export default async function CommunityAdmin() {
   const { supabase, user } = await getUser();
   const { data: admin } = await supabase.from("admins").select("user_id").eq("user_id", user!.id).maybeSingle();
   if (!admin) notFound();
-  const [{ data: pending, error: e1 }, { data: reports, error: e2 }, { data: alumni, error: e3 }] = await Promise.all([
+  const [{ data: pending, error: e1 }, { data: reports, error: e2 }, { data: alumni, error: e3 }, { data: amas, error: e4 }] = await Promise.all([
     supabase
       .from("community_posts")
       .select("id, kind, parent_id, pseudonym, title, body, ratings, badge, moderation_note, created_at, programs(title)")
@@ -21,9 +23,10 @@ export default async function CommunityAdmin() {
       .order("created_at"),
     supabase.from("community_reports").select("id, reason, note, created_at, community_posts(id, kind, pseudonym, title, body, status)").eq("status", "open").order("created_at"),
     supabase.from("community_alumni").select("id, graduation_year, evidence, created_at, programs(title)").eq("status", "pending").order("created_at"),
+    supabase.from("community_amas").select("id, title, host_name, starts_at, ends_at, published").order("starts_at", { ascending: false }).limit(20),
   ]);
   // An empty queue must mean empty, not a failed query.
-  const failed = e1 ?? e2 ?? e3;
+  const failed = e1 ?? e2 ?? e3 ?? e4;
   if (failed) throw new Error(failed.message);
   const parentIds = (pending ?? []).flatMap((p) => (p.parent_id ? [p.parent_id] : []));
   const { data: parents } = parentIds.length ? await supabase.from("community_posts").select("id, body").in("id", parentIds) : { data: [] };
@@ -97,6 +100,35 @@ export default async function CommunityAdmin() {
             </div>
           </article>
         ))}
+      </section>
+
+      <section aria-labelledby="amas" className="grid gap-3">
+        <h2 id="amas" className="text-2xl font-semibold">AMAs</h2>
+        <p className="text-sm text-muted">Questions arrive in the queue above. Post the host&apos;s answers on each AMA&apos;s page.</p>
+        <ul className="grid gap-2">
+          {(amas ?? []).map((a) => (
+            <li key={a.id} className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-surface p-4 text-sm">
+              <span>
+                <Link href={`/community/ama/${a.id}`} className="font-semibold underline-offset-2 hover:underline">{a.title}</Link>
+                <span className="text-muted"> · {a.host_name} · {amaWhen(a)} · {a.published ? (amaPhase(a) === "past" ? "past" : "published") : "draft"}</span>
+              </span>
+              <form action={setAmaPublished.bind(null, a.id, !a.published)}>
+                <button className="btn btn-secondary btn-sm">{a.published ? "Unpublish" : "Publish"}</button>
+              </form>
+            </li>
+          ))}
+        </ul>
+        <form action={createAma} aria-label="New AMA" className="grid gap-3 rounded-2xl border border-border bg-surface p-5 text-sm sm:grid-cols-2">
+          <h3 className="font-semibold sm:col-span-2">New AMA</h3>
+          <label className="grid gap-1">Title<input name="title" required minLength={3} maxLength={140} className="field" /></label>
+          <label className="grid gap-1">Host&apos;s name<input name="host_name" required minLength={2} maxLength={80} className="field" /></label>
+          <label className="grid gap-1">Host&apos;s role<input name="host_role" maxLength={140} placeholder="For example: International admissions, University of Exampleton" className="field" /></label>
+          <label className="grid gap-1">Topic<input name="topic" maxLength={1000} className="field" /></label>
+          <label className="grid gap-1">Starts (UTC)<input name="starts_at" type="datetime-local" required className="field" /></label>
+          <label className="grid gap-1">Ends (UTC)<input name="ends_at" type="datetime-local" required className="field" /></label>
+          <label className="flex items-center gap-2"><input type="checkbox" name="published" className="accent-[var(--accent)]" /> Publish now</label>
+          <button className="btn btn-primary justify-self-start sm:col-span-2">Create AMA</button>
+        </form>
       </section>
     </div>
   );

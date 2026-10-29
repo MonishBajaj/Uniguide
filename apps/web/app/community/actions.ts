@@ -120,3 +120,10 @@ export async function requestAlum(programId: string, _prev: PostState, form: For
   revalidatePath("/", "layout");
   return { ok: true, message: "Thank you. A moderator will check and let you answer questions about this course." };
 }
+
+export async function submitAmaQuestion(amaId: string, _prev: PostState, form: FormData): Promise<PostState> {
+  const parsed = Base.extend({ body: z.string().trim().min(15, "Ask a full question: at least 15 characters.").max(1000) }).safeParse(Object.fromEntries(form));
+  if (!parsed.success) return { ok: false, message: parsed.error.issues[0]!.message, values: typed(form) };
+  const result = await submit({ kind: "ama_question", ama_id: amaId, ...parsed.data }, typed(form));
+  return result?.ok ? { ok: true, message: "Thank you. A moderator will pass it to the host; answers appear here." } : result;
+}

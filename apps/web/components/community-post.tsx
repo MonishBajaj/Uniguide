@@ -13,7 +13,7 @@ export interface PublicPost {
 }
 
 /** A published community post: pseudonym, the database's label, the text, and a way to report it. */
-export function CommunityPost({ post, signedIn, headingLevel = 3, children }: { post: PublicPost; signedIn: boolean; headingLevel?: 2 | 3 | 4; children?: React.ReactNode }) {
+export function CommunityPost({ post, signedIn, headingLevel = 3, answerBy, children }: { post: PublicPost; signedIn: boolean; headingLevel?: 2 | 3 | 4; answerBy?: string; children?: React.ReactNode }) {
   const Heading = `h${headingLevel}` as const;
   return (
     <article aria-label={post.title ?? `Post by ${post.pseudonym}`} className="grid gap-2 rounded-2xl border border-border bg-surface p-5 text-sm">
@@ -26,7 +26,7 @@ export function CommunityPost({ post, signedIn, headingLevel = 3, children }: { 
       <div className="grid gap-2">{post.body.split(/\n{2,}/).map((p, i) => <p key={i} className="whitespace-pre-line">{p}</p>)}</div>
       {post.staff_answer ? (
         <div className="mt-1 grid gap-1 rounded-lg bg-background p-3">
-          <p className="font-semibold">Answer</p>
+          <p className="font-semibold">{answerBy ? `Answer from ${answerBy}` : "Answer"}</p>
           <p className="whitespace-pre-line">{post.staff_answer}</p>
         </div>
       ) : null}
