@@ -93,7 +93,10 @@ def create_from_candidates(conn: Connection, candidates: list[Candidate]) -> lis
         country = c.country.upper()
         domain = c.domain.lower().strip().removeprefix("www.")
         inst = conn.execute(
-            "select id from institutions where country = %s and (official_domain = %s or lower(name) = lower(%s)) limit 1",
+            """
+            select id from institutions
+            where country = %s and (official_domain = %s or lower(name) = lower(%s)) limit 1
+            """,
             (country, domain, c.institution),
         ).fetchone()
         if inst is None:
