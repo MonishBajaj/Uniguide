@@ -11,7 +11,9 @@ from typing import Any
 import pytest
 import yaml
 
+from uniguide_worker.extract.base import PageExtractor
 from uniguide_worker.extract.extractor import Extractor
+from uniguide_worker.extract.gemini import GeminiExtractor
 from uniguide_worker.extract.schema import PageExtraction
 from uniguide_worker.fetch.fetcher import html_to_text
 from uniguide_worker.proposals import Proposal, from_extraction
@@ -73,11 +75,18 @@ def test_offline_suite_meets_gates() -> None:
     assert_gates(total)
 
 
+def live_extractor(name: str) -> PageExtractor:
+    """Build the named extractor, skipping the test when its API key is not set."""
+    key = {"anthropic": "ANTHROPIC_API_KEY", "gemini": "GEMINI_API_KEY"}[name]
+    if not os.environ.get(key):
+        pytest.skip(f"{key} not set")
+    return Extractor() if name == "anthropic" else GeminiExtractor(model=os.environ.get("GEMINI_MODEL"))
+
+
 @pytest.mark.live
-def test_live_suite_meets_gates() -> None:
-    if not os.environ.get("ANTHROPIC_API_KEY"):
-        pytest.skip("ANTHROPIC_API_KEY not set")
-    extractor = Extractor()
+@pytest.mark.parametrize("extractor_name", ["anthropic", "gemini"])
+def test_live_suite_meets_gates(extractor_name: str) -> None:
+    extractor = live_extractor(extractor_name)
     total = Score()
     report = {}
     for case in CASES:
@@ -91,5 +100,5 @@ def test_live_suite_meets_gates() -> None:
             "fees": result.fee_exact_match,
         }
         total = total.add(result)
-    print(json.dumps(report, indent=2))
+    print(json.dumps({extractor_name: report}, indent=2))
     assert_gates(total)
