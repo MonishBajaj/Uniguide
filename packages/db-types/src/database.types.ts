@@ -817,6 +817,20 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
+                },"portfolio_items": {
+                  Row: {
+                    "created_at": string,"description": string | null,"id": string,"kind": string,"mime": string | null,"path": string | null,"sort": number,"title": string,"url": string | null,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"description"?: string | null,"id"?: string,"kind": string,"mime"?: string | null,"path"?: string | null,"sort"?: number,"title": string,"url"?: string | null,"user_id": string
+                  }
+                  Update: {
+                    "created_at"?: string,"description"?: string | null,"id"?: string,"kind"?: string,"mime"?: string | null,"path"?: string | null,"sort"?: number,"title"?: string,"url"?: string | null,"user_id"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
                 },"profiles": {
                   Row: {
                     "age_band": Database["public"]['Enums']["age_band"],"birth_month": string,"budget_amount": number | null,"budget_currency": string | null,"class_percentile": number | null,"consent_state": Database["public"]['Enums']["consent_state"],"created_at": string,"display_name": string | null,"grade_scale": string | null,"grade_text": string | null,"grade_value": number | null,"home_qualification": string | null,"intake_year": number | null,"preferences": NonNullable<Json>,"prior_credit_system": Database["public"]['Enums']["credit_system"] | null,"prior_credits": number | null,"reminder_days": (number)[],"reminders_enabled": boolean,"research_interests": string | null,"residence_country": string,"target_countries": (string)[],"target_fields": (string)[],"target_levels": (Database["public"]['Enums']["program_level"])[],"updated_at": string,"user_id": string
@@ -1410,6 +1424,9 @@ isOneToOne: false
                            },
 "parental_consent_age":
 { Args: { "p_country": string }; Returns: number
+                           },
+"portfolio_owner":
+{ Args: { "p_name": string }; Returns: string
                            },
 "promote_fact_version":
 { Args: { "p_method"?: Database["public"]['Enums']["verification_method"],"p_reviewer_name"?: string,"p_status"?: Database["public"]['Enums']["fact_status"],"p_verified_at"?: string,"p_version_id": string }; Returns: string
