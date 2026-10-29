@@ -128,6 +128,13 @@ class DocumentKind(StrEnum):
     RESEARCH_STATEMENT = "research_statement"
 
 
+class EnrichmentStatus(StrEnum):
+    QUEUED = "queued"
+    RUNNING = "running"
+    DONE = "done"
+    FAILED = "failed"
+
+
 class ExamKind(StrEnum):
     IELTS_ACADEMIC = "ielts_academic"
     IELTS_UKVI = "ielts_ukvi"

@@ -18,3 +18,4 @@ __pycache__/
 # supabase
 supabase/.branches
 supabase/.temp
+.superpowers/

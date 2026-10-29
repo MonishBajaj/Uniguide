@@ -505,6 +505,46 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
+                },"enrichment_items": {
+                  Row: {
+                    "detail": string | null,"finished_at": string | null,"id": string,"job_id": string,"program_id": string,"started_at": string | null,"status": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "detail"?: string | null,"finished_at"?: string | null,"id"?: string,"job_id": string,"program_id": string,"started_at"?: string | null,"status"?: string
+                  }
+                  Update: {
+                    "detail"?: string | null,"finished_at"?: string | null,"id"?: string,"job_id"?: string,"program_id"?: string,"started_at"?: string | null,"status"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "enrichment_items_job_id_fkey"
+      columns: ["job_id"]
+      isOneToOne: false
+      referencedRelation: "enrichment_jobs"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "enrichment_items_program_id_fkey"
+      columns: ["program_id"]
+      isOneToOne: false
+      referencedRelation: "programs"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"enrichment_jobs": {
+                  Row: {
+                    "allow_fallback": boolean,"created_at": string,"error": string | null,"finished_at": string | null,"heartbeat_at": string | null,"id": string,"profile_snapshot": Json,"stage": string,"started_at": string | null,"status": Database["public"]['Enums']["enrichment_status"],"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "allow_fallback"?: boolean,"created_at"?: string,"error"?: string | null,"finished_at"?: string | null,"heartbeat_at"?: string | null,"id"?: string,"profile_snapshot"?: Json,"stage"?: string,"started_at"?: string | null,"status"?: Database["public"]['Enums']["enrichment_status"],"user_id": string
+                  }
+                  Update: {
+                    "allow_fallback"?: boolean,"created_at"?: string,"error"?: string | null,"finished_at"?: string | null,"heartbeat_at"?: string | null,"id"?: string,"profile_snapshot"?: Json,"stage"?: string,"started_at"?: string | null,"status"?: Database["public"]['Enums']["enrichment_status"],"user_id"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
                 },"entitlements": {
                   Row: {
                     "amount": number,"created_at": string,"currency": string,"ends_at": string,"external_id": string,"id": string,"kind": string,"provider": string,"refunded_at": string | null,"starts_at": string,"user_id": string
@@ -1794,6 +1834,9 @@ isOneToOne: false
         isOneToOne: false
         isSetofReturn: true
       } },
+"start_enrichment":
+{ Args: { "p_profile": Json,"p_program_ids": (string)[] }; Returns: string
+                           },
 "unsubscribe":
 { Args: { "p_kind": string,"p_token": string }; Returns: boolean
                            },
@@ -1829,7 +1872,7 @@ isOneToOne: false
                            }
           }
           Enums: {
-            "age_band": "under_13"|"age_13_15"|"age_16_17"|"adult","applicant_category": "all"|"domestic"|"international"|"eu_eea"|"uk_home","application_status": "shortlisted"|"preparing"|"submitted"|"decided"|"withdrawn","community_kind": "story"|"review"|"question"|"answer"|"ama_question","community_status": "pending"|"published"|"rejected"|"removed","consent_kind": "terms"|"privacy"|"parental"|"ai_processing"|"outcomes_research"|"marketing"|"agency_sharing","consent_state": "not_required"|"pending_parental"|"granted"|"revoked","cost_basis": "per_credit"|"per_term"|"per_year"|"per_month"|"total"|"one_off","cost_kind": "tuition"|"fees"|"insurance"|"living"|"application_fee"|"other","coverage_tier": "listed"|"extracted"|"verified","credit_system": "us_credit"|"ects"|"uk_cats"|"other","date_precision": "exact_time"|"date"|"month","deadline_kind": "application"|"priority"|"funding"|"scholarship"|"documents"|"deposit","decision": "admitted"|"rejected"|"waitlisted"|"withdrawn"|"deferred","delivery_mode": "on_campus"|"online"|"hybrid","document_kind": "statement_of_purpose"|"personal_statement"|"why_this_university"|"other"|"continued_interest"|"supplemental"|"research_statement","exam_kind": "ielts_academic"|"ielts_ukvi"|"toefl_ibt"|"toefl_ibt_home"|"pte_academic"|"duolingo"|"cambridge_c1_c2"|"testdaf"|"dsh"|"goethe"|"delf_dalf"|"tcf"|"gre"|"gmat"|"sat"|"act","fact_status": "verified"|"unverified"|"conflicting"|"unknown","fact_subject": "requirement"|"deadline"|"cost_item"|"fee_waiver","notification_kind": "fact_changed"|"reminder"|"report_resolved"|"agency","owning_system": "direct"|"ucas"|"uni_assist"|"common_app"|"ouac"|"uac"|"cao"|"other","program_level": "foundation"|"diploma"|"bachelor"|"master"|"doctorate","requirement_kind": "entry_qualification"|"language_test"|"admissions_test"|"prerequisite"|"recommendation_letters"|"statement"|"portfolio"|"interview"|"other","review_state": "pending"|"approved"|"rejected"|"superseded"|"auto_rejected","signup_interest": "verified_tracker"|"writing_coach","source_kind": "course"|"admissions"|"requirements"|"international"|"fees"|"deadlines","test_policy": "required"|"recommended"|"optional"|"not_accepted"|"waived_conditional"|"unknown"|"conflicting","verification_method": "human_review"|"seed_manual"|"official_register"|"automated_extraction"
+            "age_band": "under_13"|"age_13_15"|"age_16_17"|"adult","applicant_category": "all"|"domestic"|"international"|"eu_eea"|"uk_home","application_status": "shortlisted"|"preparing"|"submitted"|"decided"|"withdrawn","community_kind": "story"|"review"|"question"|"answer"|"ama_question","community_status": "pending"|"published"|"rejected"|"removed","consent_kind": "terms"|"privacy"|"parental"|"ai_processing"|"outcomes_research"|"marketing"|"agency_sharing","consent_state": "not_required"|"pending_parental"|"granted"|"revoked","cost_basis": "per_credit"|"per_term"|"per_year"|"per_month"|"total"|"one_off","cost_kind": "tuition"|"fees"|"insurance"|"living"|"application_fee"|"other","coverage_tier": "listed"|"extracted"|"verified","credit_system": "us_credit"|"ects"|"uk_cats"|"other","date_precision": "exact_time"|"date"|"month","deadline_kind": "application"|"priority"|"funding"|"scholarship"|"documents"|"deposit","decision": "admitted"|"rejected"|"waitlisted"|"withdrawn"|"deferred","delivery_mode": "on_campus"|"online"|"hybrid","document_kind": "statement_of_purpose"|"personal_statement"|"why_this_university"|"other"|"continued_interest"|"supplemental"|"research_statement","enrichment_status": "queued"|"running"|"done"|"failed","exam_kind": "ielts_academic"|"ielts_ukvi"|"toefl_ibt"|"toefl_ibt_home"|"pte_academic"|"duolingo"|"cambridge_c1_c2"|"testdaf"|"dsh"|"goethe"|"delf_dalf"|"tcf"|"gre"|"gmat"|"sat"|"act","fact_status": "verified"|"unverified"|"conflicting"|"unknown","fact_subject": "requirement"|"deadline"|"cost_item"|"fee_waiver","notification_kind": "fact_changed"|"reminder"|"report_resolved"|"agency","owning_system": "direct"|"ucas"|"uni_assist"|"common_app"|"ouac"|"uac"|"cao"|"other","program_level": "foundation"|"diploma"|"bachelor"|"master"|"doctorate","requirement_kind": "entry_qualification"|"language_test"|"admissions_test"|"prerequisite"|"recommendation_letters"|"statement"|"portfolio"|"interview"|"other","review_state": "pending"|"approved"|"rejected"|"superseded"|"auto_rejected","signup_interest": "verified_tracker"|"writing_coach","source_kind": "course"|"admissions"|"requirements"|"international"|"fees"|"deadlines","test_policy": "required"|"recommended"|"optional"|"not_accepted"|"waived_conditional"|"unknown"|"conflicting","verification_method": "human_review"|"seed_manual"|"official_register"|"automated_extraction"
           }
           CompositeTypes: {
             [_ in never]: never
@@ -1945,7 +1988,7 @@ export type CompositeTypes<
 export const Constants = {
   "public": {
           Enums: {
-            "age_band": ["under_13", "age_13_15", "age_16_17", "adult"],"applicant_category": ["all", "domestic", "international", "eu_eea", "uk_home"],"application_status": ["shortlisted", "preparing", "submitted", "decided", "withdrawn"],"community_kind": ["story", "review", "question", "answer", "ama_question"],"community_status": ["pending", "published", "rejected", "removed"],"consent_kind": ["terms", "privacy", "parental", "ai_processing", "outcomes_research", "marketing", "agency_sharing"],"consent_state": ["not_required", "pending_parental", "granted", "revoked"],"cost_basis": ["per_credit", "per_term", "per_year", "per_month", "total", "one_off"],"cost_kind": ["tuition", "fees", "insurance", "living", "application_fee", "other"],"coverage_tier": ["listed", "extracted", "verified"],"credit_system": ["us_credit", "ects", "uk_cats", "other"],"date_precision": ["exact_time", "date", "month"],"deadline_kind": ["application", "priority", "funding", "scholarship", "documents", "deposit"],"decision": ["admitted", "rejected", "waitlisted", "withdrawn", "deferred"],"delivery_mode": ["on_campus", "online", "hybrid"],"document_kind": ["statement_of_purpose", "personal_statement", "why_this_university", "other", "continued_interest", "supplemental", "research_statement"],"exam_kind": ["ielts_academic", "ielts_ukvi", "toefl_ibt", "toefl_ibt_home", "pte_academic", "duolingo", "cambridge_c1_c2", "testdaf", "dsh", "goethe", "delf_dalf", "tcf", "gre", "gmat", "sat", "act"],"fact_status": ["verified", "unverified", "conflicting", "unknown"],"fact_subject": ["requirement", "deadline", "cost_item", "fee_waiver"],"notification_kind": ["fact_changed", "reminder", "report_resolved", "agency"],"owning_system": ["direct", "ucas", "uni_assist", "common_app", "ouac", "uac", "cao", "other"],"program_level": ["foundation", "diploma", "bachelor", "master", "doctorate"],"requirement_kind": ["entry_qualification", "language_test", "admissions_test", "prerequisite", "recommendation_letters", "statement", "portfolio", "interview", "other"],"review_state": ["pending", "approved", "rejected", "superseded", "auto_rejected"],"signup_interest": ["verified_tracker", "writing_coach"],"source_kind": ["course", "admissions", "requirements", "international", "fees", "deadlines"],"test_policy": ["required", "recommended", "optional", "not_accepted", "waived_conditional", "unknown", "conflicting"],"verification_method": ["human_review", "seed_manual", "official_register", "automated_extraction"]
+            "age_band": ["under_13", "age_13_15", "age_16_17", "adult"],"applicant_category": ["all", "domestic", "international", "eu_eea", "uk_home"],"application_status": ["shortlisted", "preparing", "submitted", "decided", "withdrawn"],"community_kind": ["story", "review", "question", "answer", "ama_question"],"community_status": ["pending", "published", "rejected", "removed"],"consent_kind": ["terms", "privacy", "parental", "ai_processing", "outcomes_research", "marketing", "agency_sharing"],"consent_state": ["not_required", "pending_parental", "granted", "revoked"],"cost_basis": ["per_credit", "per_term", "per_year", "per_month", "total", "one_off"],"cost_kind": ["tuition", "fees", "insurance", "living", "application_fee", "other"],"coverage_tier": ["listed", "extracted", "verified"],"credit_system": ["us_credit", "ects", "uk_cats", "other"],"date_precision": ["exact_time", "date", "month"],"deadline_kind": ["application", "priority", "funding", "scholarship", "documents", "deposit"],"decision": ["admitted", "rejected", "waitlisted", "withdrawn", "deferred"],"delivery_mode": ["on_campus", "online", "hybrid"],"document_kind": ["statement_of_purpose", "personal_statement", "why_this_university", "other", "continued_interest", "supplemental", "research_statement"],"enrichment_status": ["queued", "running", "done", "failed"],"exam_kind": ["ielts_academic", "ielts_ukvi", "toefl_ibt", "toefl_ibt_home", "pte_academic", "duolingo", "cambridge_c1_c2", "testdaf", "dsh", "goethe", "delf_dalf", "tcf", "gre", "gmat", "sat", "act"],"fact_status": ["verified", "unverified", "conflicting", "unknown"],"fact_subject": ["requirement", "deadline", "cost_item", "fee_waiver"],"notification_kind": ["fact_changed", "reminder", "report_resolved", "agency"],"owning_system": ["direct", "ucas", "uni_assist", "common_app", "ouac", "uac", "cao", "other"],"program_level": ["foundation", "diploma", "bachelor", "master", "doctorate"],"requirement_kind": ["entry_qualification", "language_test", "admissions_test", "prerequisite", "recommendation_letters", "statement", "portfolio", "interview", "other"],"review_state": ["pending", "approved", "rejected", "superseded", "auto_rejected"],"signup_interest": ["verified_tracker", "writing_coach"],"source_kind": ["course", "admissions", "requirements", "international", "fees", "deadlines"],"test_policy": ["required", "recommended", "optional", "not_accepted", "waived_conditional", "unknown", "conflicting"],"verification_method": ["human_review", "seed_manual", "official_register", "automated_extraction"]
           }
         }
 } as const
