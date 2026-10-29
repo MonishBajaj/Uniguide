@@ -15,6 +15,18 @@ Only official sources. Never aggregators (Yocket, Studyportals, Leverage Edu, ..
 | [OpenAlex](https://openalex.org/) | All | Faculty, topics and recent works for research degrees | CC0; API key for regular use | `import openalex-faculty`. Written to the documented shape; **confirm against a live response** (the free budget was exhausted during the build) |
 | University pages | All | Requirements, fees, deadlines (Extracted, then Verified) | Copyright of the institution | Facts, short evidence quotes and content hashes only; never page copies |
 
+## Curated course indexes
+
+Registers rarely name individual courses with their own pages. For the main universities of a country we keep the
+official page that lists their courses in `data/seed/indexes/<country>/<slug>.yaml`.
+
+- An index is **crawled only after a person has opened it** and filled in `verified_by` and `verified_at`. Until then it loads switched off.
+- `uniguide-worker index load` loads the files; `uniguide-worker index crawl --country us` (daily from the scheduled workflow) reads each active index with Gemini.
+- A listed course is kept only if its quote is on the page, its URL is one of that page's links, and that URL is on the university's own domain.
+- Unchanged pages (same content hash) are not sent to the model again. A page the model could not read is retried next run.
+- Courses the model merely *suggests* (the long-tail fallback) are saved hidden and appear only after an admin approves them at `/admin/suggested`.
+- The US list (30 universities) ships **unverified**: the URLs were written from memory.
+
 ## Countries without a usable register
 
 | Country | Why | How courses arrive |

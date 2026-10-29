@@ -109,6 +109,7 @@ Run imports from your machine (`uv run uniguide-worker import --help`).
 | `notify`: deadline reminders and update emails | hourly at :07 | `NOTIFIER_DATABASE_URL`, `RESEND_API_KEY` | `EMAIL_FROM`, `SITE_URL` |
 | `monitor`: re-check official pages by demand | daily 03:17 | `WORKER_DATABASE_URL`, and `GEMINI_API_KEY` or `ANTHROPIC_API_KEY` | `CRAWLER_CONTACT`, `EXTRACTOR` (`gemini` by default) |
 | `research`: outcome report and admission model gate | Mondays 04:23 | `ANALYST_DATABASE_URL` | |
+| `index`: crawl verified course-index pages | daily 05:41 | `WORKER_DATABASE_URL`, `GEMINI_API_KEY` | `CRAWLER_CONTACT`, `GEMINI_MODEL` |
 
 Any job can also be started by hand from the Actions tab (Run workflow).
 
@@ -131,6 +132,13 @@ Deploy that image on Fly.io, Railway, Render or any host that keeps a process ru
 | `ENRICH_FRESH_DAYS` | optional, default `7`: courses read within this many days are not fetched again |
 
 Locally, run it with `cd worker && uv run uniguide-worker serve` after `pnpm db:start`. One worker is enough; it handles one course at a time so the free Gemini limits hold. A job whose worker stops is picked up again after 15 minutes without a heartbeat.
+
+### Turning on the course-index crawl
+
+1. Load the seed files (operator role): `cd worker && uv run uniguide-worker index load`. Everything loads **inactive**.
+2. For each university in `data/seed/indexes/us/`, open its `url`, confirm it is the university's own list of courses (fix the URL if not), then add `verified_by: "Your Name"` and `verified_at: YYYY-MM-DD` to that index and load again.
+3. Try one: `uv run uniguide-worker index crawl --country us --limit 1`, then look at the new courses in the catalog.
+4. Review model-suggested courses at `/admin/suggested`.
 
 ## 8. Before charging money
 
