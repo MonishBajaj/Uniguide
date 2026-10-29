@@ -56,6 +56,7 @@ export default async function RulesAdmin() {
               <option value="visa_step">Visa step</option>
               <option value="post_study_work">Work after graduation</option>
               <option value="work_hours">Part time work hours</option>
+              <option value="banking">Money and banking</option>
               <option value="other">Other</option>
             </select>
           </label>
