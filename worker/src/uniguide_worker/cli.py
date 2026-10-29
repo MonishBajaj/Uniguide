@@ -19,7 +19,9 @@ app = typer.Typer(help="Uniguide ingestion, extraction and seed tools.", no_args
 importer = typer.Typer(help="Import official registers (Listed tier).", no_args_is_help=True)
 seed = typer.Typer(help="Hand-verified seed courses.", no_args_is_help=True)
 research = typer.Typer(help="Consented outcomes: analytics and the admission model.", no_args_is_help=True)
+index_app = typer.Typer(help="Curated course-index pages: load them and crawl them.", no_args_is_help=True)
 app.add_typer(research, name="research")
+app.add_typer(index_app, name="index")
 app.add_typer(importer, name="import")
 app.add_typer(seed, name="seed")
 
@@ -327,6 +329,29 @@ def seed_status_cmd(
         typer.echo(f"  {country}: {count}")
     for fact in status.stale:
         typer.echo(f"Stale: {fact.path} · {fact.slug} · {fact.cycle} · verified {fact.verified_at}")
+
+
+@index_app.command("load")
+def index_load(
+    check: Annotated[bool, typer.Option(help="Only validate the files; do not touch the database.")] = False,
+) -> None:
+    """Load data/seed/indexes: institutions and the official pages that list their courses (operator role)."""
+    from .index.seed import INDEX_ROOT, SeedError, load_indexes, read_index_seeds
+
+    try:
+        seeds = [s for _, s in read_index_seeds(INDEX_ROOT)]
+    except SeedError as exc:
+        typer.echo(str(exc), err=True)
+        raise typer.Exit(1) from exc
+    if check:
+        verified = sum(i.verified for s in seeds for i in s.indexes)
+        typer.echo(f"{len(seeds)} institutions valid; {verified} index pages verified, the rest stay switched off")
+        return
+    url = get_settings().operator_database_url
+    if not url:
+        raise typer.BadParameter("Set OPERATOR_DATABASE_URL (see .env.example)")
+    with connect(url) as conn:
+        _report(load_indexes(conn, seeds))
 
 
 @app.command()
