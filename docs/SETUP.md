@@ -107,12 +107,32 @@ Run imports from your machine (`uv run uniguide-worker import --help`).
 | Job | When (UTC) | Secrets | Variables |
 |---|---|---|---|
 | `notify`: deadline reminders and update emails | hourly at :07 | `NOTIFIER_DATABASE_URL`, `RESEND_API_KEY` | `EMAIL_FROM`, `SITE_URL` |
-| `monitor`: re-check official pages by demand | daily 03:17 | `WORKER_DATABASE_URL`, `ANTHROPIC_API_KEY` | `CRAWLER_CONTACT` |
+| `monitor`: re-check official pages by demand | daily 03:17 | `WORKER_DATABASE_URL`, and `GEMINI_API_KEY` or `ANTHROPIC_API_KEY` | `CRAWLER_CONTACT`, `EXTRACTOR` (`gemini` by default) |
 | `research`: outcome report and admission model gate | Mondays 04:23 | `ANALYST_DATABASE_URL` | |
 
 Any job can also be started by hand from the Actions tab (Run workflow).
 
-## 7. Before charging money
+## 7. Enrichment worker (on-demand course facts)
+
+When a student presses "Find universities for me", the web app queues a job and the progress page follows it. A long-running process has to pick the job up, because Vercel functions are too short for fetching and reading ten sets of official pages. It is the same worker image as everything else:
+
+```bash
+docker build -t uniguide-worker worker
+```
+
+Deploy that image on Fly.io, Railway, Render or any host that keeps a process running, with these environment variables:
+
+| Variable | Value |
+|---|---|
+| `WORKER_DATABASE_URL` | the `ingest_worker` connection string from step 2 |
+| `GEMINI_API_KEY` | a Google AI Studio key (or set `EXTRACTOR=anthropic` and `ANTHROPIC_API_KEY`) |
+| `GEMINI_MODEL` | optional, defaults to a Flash model |
+| `CRAWLER_CONTACT` | an address that officials of the sites we read can write to |
+| `ENRICH_FRESH_DAYS` | optional, default `7`: courses read within this many days are not fetched again |
+
+Locally, run it with `cd worker && uv run uniguide-worker serve` after `pnpm db:start`. One worker is enough; it handles one course at a time so the free Gemini limits hold. A job whose worker stops is picked up again after 15 minutes without a heartbeat.
+
+## 8. Before charging money
 
 Payments are built (see the Payments section below); you still need provider accounts and keys. Work through the "Needs a decision or review before launch" list in BACKLOG.md: counsel review of the parental consent flow and consent ages, terms and privacy policy (both pages are drafts), F-1/OPT confirmation with your DSO, and a final product name.
 

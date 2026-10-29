@@ -9,3 +9,5 @@ uv run pytest
 ```
 
 See `docs/SETUP.md` for credentials and `docs/ARCHITECTURE.md` for how facts move from a page to a student.
+
+`uv run uniguide-worker serve` runs the on-demand enrichment worker (see `docs/SETUP.md`, step 7).

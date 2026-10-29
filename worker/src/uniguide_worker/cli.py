@@ -330,6 +330,14 @@ def seed_status_cmd(
 
 
 @app.command()
+def serve(poll_seconds: Annotated[float, typer.Option(help="Seconds to wait when no job is queued.")] = 3.0) -> None:
+    """Run the enrichment worker: fetch the facts of the courses students asked for, while they watch."""
+    from .enrich.serve import serve as run_worker
+
+    run_worker(poll_seconds)
+
+
+@app.command()
 def notify(
     only: Annotated[str | None, typer.Option(help="Run only 'reminders' or 'lifecycle'.")] = None,
 ) -> None:

@@ -125,6 +125,12 @@ def _enrich(
         return "extracted", None
     if "unchanged" in statuses:
         return "skipped_fresh", None
+    # A failed read must not look "unchanged" to the next search: forget the hashes so the pages are read again.
+    conn.execute(
+        "update program_sources set content_hash = null, etag = null, last_modified = null where program_id = %s",
+        (program_id,),
+    )
+    conn.commit()
     return "failed", "; ".join(problems)[:500] or "No readable official page."
 
 

@@ -45,17 +45,19 @@ jobs:
     env:
       WORKER_DATABASE_URL: ${{ secrets.WORKER_DATABASE_URL }}
       ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      EXTRACTOR: ${{ vars.EXTRACTOR }}
       CRAWLER_CONTACT: ${{ vars.CRAWLER_CONTACT }}
     defaults:
       run:
         working-directory: worker
     steps:
       - uses: actions/checkout@v4
-        if: env.WORKER_DATABASE_URL != '' && env.ANTHROPIC_API_KEY != ''
+        if: env.WORKER_DATABASE_URL != '' && (env.ANTHROPIC_API_KEY != '' || env.GEMINI_API_KEY != '')
       - uses: astral-sh/setup-uv@v5
-        if: env.WORKER_DATABASE_URL != '' && env.ANTHROPIC_API_KEY != ''
+        if: env.WORKER_DATABASE_URL != '' && (env.ANTHROPIC_API_KEY != '' || env.GEMINI_API_KEY != '')
       - run: uv sync --frozen && uv run uniguide-worker monitor --limit 50
-        if: env.WORKER_DATABASE_URL != '' && env.ANTHROPIC_API_KEY != ''
+        if: env.WORKER_DATABASE_URL != '' && (env.ANTHROPIC_API_KEY != '' || env.GEMINI_API_KEY != '')
 
   research:
     if: (github.event.schedule == '23 4 * * 1' || inputs.job == 'research')
