@@ -16,7 +16,7 @@ update public.applications set status = 'submitted' where id = :'app';
 update public.applications set decision = 'admitted', status = 'decided' where id = :'app';
 update public.applications set notes = 'only notes changed' where id = :'app';
 select results_eq(
-  format($$ select kind, from_value, to_value from public.application_events where application_id = %L and kind in ('status', 'decision') order by created_at, kind desc $$, :'app'),
+  format($$ select kind, from_value, to_value from public.application_events where application_id = %L and kind in ('status', 'decision') order by kind desc, from_value $$, :'app'),
   $$ values ('status'::text, 'shortlisted'::text, 'submitted'::text), ('status', 'submitted', 'decided'), ('decision', null, 'admitted') $$,
   'status and decision changes are logged with before and after, other edits are not');
 
