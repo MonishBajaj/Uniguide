@@ -83,10 +83,13 @@ async function logRun(supabase: Awaited<ReturnType<typeof getUser>>["supabase"],
 
 async function checkAllowance(supabase: Awaited<ReturnType<typeof getUser>>["supabase"], kind: "rubric" | "comparison") {
   if (!process.env.ANTHROPIC_API_KEY) return "Writing feedback is not configured on this server.";
+  // A season pass makes reviews and comparisons free, whatever the credit balance.
+  const { data: entitlement } = await supabase.rpc("my_entitlement");
+  if (entitlement === "season_pass") return null;
   const { data } = await supabase.rpc("writing_allowance").single();
   if (!data) return "Could not check your credits.";
   if ((kind === "comparison" || !data.free_review) && data.balance < 1) {
-    return "You have used your free review. Credits come with the season pass (coming soon) or from correct reports of outdated information.";
+    return "You have used your free review. Credits come with the season pass or from correct reports of outdated information.";
   }
   return null;
 }

@@ -8,6 +8,7 @@ export async function POST(request: Request) {
   const supabase = await createClient();
   const res = await handleWebhook("stripe", await request.text(), request.headers.get("stripe-signature") ?? "", {
     secret,
+    prices: { usd: Number(process.env.PASS_PRICE_USD ?? "1900"), inr: Number(process.env.PASS_PRICE_INR ?? "149900") },
     rpc: async (r) =>
       supabase.rpc("record_payment", {
         p_token: token, p_provider: "stripe", p_external_id: r.externalId, p_user_id: r.userId, p_amount: r.amount, p_currency: r.currency,

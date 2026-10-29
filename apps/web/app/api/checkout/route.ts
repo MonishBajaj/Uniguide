@@ -6,8 +6,14 @@ const PRODUCT = "Uniguide season pass";
 
 /** Starts a season pass purchase for the signed-in user. Card details never reach this server. */
 export async function POST(request: Request) {
-  const { user } = await getUser();
+  const { supabase, user } = await getUser();
   if (!user) return NextResponse.json({ error: "Sign in first." }, { status: 401 });
+  const { data: profile } = await supabase.from("profiles").select("consent_state").eq("user_id", user.id).maybeSingle();
+  if (!profile || !["not_required", "granted"].includes(profile.consent_state)) {
+    return NextResponse.json({ error: "A parent or guardian needs to confirm your account before you can buy a pass." }, { status: 403 });
+  }
+  const { data: entitlement } = await supabase.rpc("my_entitlement");
+  if (entitlement === "season_pass") return NextResponse.json({ error: "You already have an active season pass." }, { status: 409 });
   const { currency } = (await request.json().catch(() => ({}))) as { currency?: string };
   if (currency !== "usd" && currency !== "inr") return NextResponse.json({ error: "Choose usd or inr." }, { status: 400 });
 
@@ -20,6 +26,8 @@ export async function POST(request: Request) {
       cancel_url: `${SITE_URL}/app/writing`,
       client_reference_id: user.id,
       "metadata[user_id]": user.id,
+      "metadata[product]": "season_pass",
+      "payment_method_types[0]": "card",
       "line_items[0][quantity]": "1",
       "line_items[0][price_data][currency]": "usd",
       "line_items[0][price_data][unit_amount]": process.env.PASS_PRICE_USD ?? "1900",

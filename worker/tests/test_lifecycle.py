@@ -1,5 +1,6 @@
 """Welcome, digest and re-engagement emails against the local database, with a recording mailer."""
 
+# ruff: noqa: F811  (pytest fixtures are redefined as test parameters)
 from __future__ import annotations
 
 import uuid
@@ -110,24 +111,24 @@ def run(conn: Connection, now: datetime, email: str) -> list[str]:
     return [m.subject for m in mailer.sent if m.to == email]
 
 
-def test_welcome_emails_follow_the_signup_day(notifier: Connection, make_student: Make) -> None:  # noqa: F811
+def test_welcome_emails_follow_the_signup_day(notifier: Connection, make_student: Make) -> None:
     s = make_student(age_days=4)
     first = run(notifier, MONDAY, s["email"])
     assert len(first) == 2  # day 0 and day 3, not yet day 7
     assert run(notifier, MONDAY, s["email"]) == []  # each goes out once
 
 
-def test_old_accounts_get_no_welcome_series(notifier: Connection, make_student: Make) -> None:  # noqa: F811
+def test_old_accounts_get_no_welcome_series(notifier: Connection, make_student: Make) -> None:
     s = make_student(age_days=100)
     assert run(notifier, MONDAY, s["email"]) == []
 
 
-def test_unsubscribed_students_get_reminders_not_digests(notifier: Connection, make_student: Make) -> None:  # noqa: F811
+def test_unsubscribed_students_get_reminders_not_digests(notifier: Connection, make_student: Make) -> None:
     s = make_student(deadline_in_days=10, digest=False)
     assert run(notifier, MONDAY, s["email"]) == []
 
 
-def test_digest_lists_deadlines_and_links_the_unsubscribe(notifier: Connection, make_student: Make) -> None:  # noqa: F811
+def test_digest_lists_deadlines_and_links_the_unsubscribe(notifier: Connection, make_student: Make) -> None:
     s = make_student(deadline_in_days=10)
     mailer = Mailer()
     send_lifecycle(notifier, mailer, "https://uniguide.example", MONDAY)
@@ -136,35 +137,74 @@ def test_digest_lists_deadlines_and_links_the_unsubscribe(notifier: Connection, 
     assert "MSc Life" in mine[0].text and "/unsubscribe/" in mine[0].text
 
 
-def test_one_digest_per_student_per_week(notifier: Connection, make_student: Make) -> None:  # noqa: F811
+def test_one_digest_per_student_per_week(notifier: Connection, make_student: Make) -> None:
     s = make_student(deadline_in_days=10)
     assert len(run(notifier, MONDAY, s["email"])) == 1
     assert run(notifier, MONDAY, s["email"]) == []
 
 
-def test_digest_only_on_mondays(notifier: Connection, make_student: Make) -> None:  # noqa: F811
+def test_digest_only_on_mondays(notifier: Connection, make_student: Make) -> None:
     s = make_student(deadline_in_days=10)
     assert run(notifier, TUESDAY, s["email"]) == []
 
 
-def test_empty_digest_is_not_sent(notifier: Connection, make_student: Make) -> None:  # noqa: F811
+def test_empty_digest_is_not_sent(notifier: Connection, make_student: Make) -> None:
     s = make_student(deadline_in_days=None, shortlist=False)
     assert run(notifier, MONDAY, s["email"]) == []
 
 
-def test_pending_parental_consent_gets_nothing(notifier: Connection, make_student: Make) -> None:  # noqa: F811
+def test_pending_parental_consent_gets_nothing(notifier: Connection, make_student: Make) -> None:
     s = make_student(age_days=1, deadline_in_days=10, consent="pending_parental")
     assert run(notifier, MONDAY, s["email"]) == []
 
 
-def test_reengagement_goes_out_once(notifier: Connection, make_student: Make) -> None:  # noqa: F811
+def test_reengagement_goes_out_once(notifier: Connection, make_student: Make) -> None:
     s = make_student(last_seen_days=20, shortlist=True, digest=False)
     assert len(run(notifier, TUESDAY, s["email"])) == 1
     assert run(notifier, TUESDAY, s["email"]) == []
 
 
-def test_no_reengagement_without_a_shortlist_or_with_tips_off(notifier: Connection, make_student: Make) -> None:  # noqa: F811
+def test_no_reengagement_without_a_shortlist_or_with_tips_off(notifier: Connection, make_student: Make) -> None:
     a = make_student(last_seen_days=20, shortlist=False)
     b = make_student(last_seen_days=20, shortlist=True, tips=False)
     assert run(notifier, TUESDAY, a["email"]) == []
     assert run(notifier, TUESDAY, b["email"]) == []
+
+
+class FlakyMailer(Mailer):
+    """Raises for one recipient, as a network error from the mail provider would."""
+
+    def __init__(self, fail_for: str) -> None:
+        super().__init__()
+        self.fail_for = fail_for
+
+    def send(self, message: Any) -> bool:
+        if message.to == self.fail_for:
+            raise ConnectionError("mail provider unreachable")
+        return super().send(message)
+
+
+def test_a_failed_send_is_retried_and_does_not_repeat_the_others(notifier: Connection, make_student: Make) -> None:
+    ok = make_student(age_days=0)
+    bad = make_student(age_days=0)
+    flaky = FlakyMailer(bad["email"])
+    report = send_lifecycle(notifier, flaky, "https://uniguide.example", MONDAY)
+    assert report.failures >= 1
+    assert [m for m in flaky.sent if m.to == ok["email"]] != []
+
+    # The next run retries the failed one and does not repeat what was already sent.
+    again = Mailer()
+    send_lifecycle(notifier, again, "https://uniguide.example", MONDAY)
+    assert [m for m in again.sent if m.to == ok["email"]] == []
+    assert [m for m in again.sent if m.to == bad["email"]] != []
+
+
+def test_a_message_claimed_by_another_run_is_not_sent_twice(
+    notifier: Connection, make_student: Make, operator: Connection
+) -> None:
+    s = make_student(age_days=0)
+    operator.execute(
+        "insert into lifecycle_log (user_id, kind, period_key) values (%s, 'welcome_1', 'welcome_1')", (s["uid"],)
+    )
+    operator.commit()
+    assert run(notifier, MONDAY, s["email"]) == []
