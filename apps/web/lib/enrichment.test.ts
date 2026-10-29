@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { itemLabel, pickCourses, readyForFirstSearch, STAGES, stageIndex } from "./enrichment";
+import { itemLabel, pickCourses, readyForFirstSearch, STAGES, stageIndex, waitNotice } from "./enrichment";
 
 describe("stageIndex", () => {
   it("numbers the stages in the order the worker runs them", () => {
@@ -54,5 +54,24 @@ describe("readyForFirstSearch", () => {
     expect(readyForFirstSearch({ ...ready, target_levels: [] })).toBe(false);
     expect(readyForFirstSearch({ ...ready, target_countries: [] })).toBe(false);
     expect(readyForFirstSearch({ ...ready, target_fields: [] })).toBe(false);
+  });
+});
+
+describe("waitNotice", () => {
+  const now = new Date("2026-10-29T12:00:00Z");
+  const ago = (s: number) => new Date(now.getTime() - s * 1000).toISOString();
+  it("stays quiet while the worker is picking the search up", () => {
+    expect(waitNotice("queued", ago(20), null, now)).toBeNull();
+  });
+  it("says the search is saved when nothing has started it for a minute", () => {
+    expect(waitNotice("queued", ago(90), null, now)).toMatch(/saved/i);
+  });
+  it("flags a running search whose worker stopped reporting", () => {
+    expect(waitNotice("running", ago(600), ago(30), now)).toBeNull();
+    expect(waitNotice("running", ago(600), ago(400), now)).toMatch(/longer than usual/i);
+  });
+  it("says nothing once the search is finished", () => {
+    expect(waitNotice("done", ago(9999), ago(9999), now)).toBeNull();
+    expect(waitNotice("failed", ago(9999), null, now)).toBeNull();
   });
 });

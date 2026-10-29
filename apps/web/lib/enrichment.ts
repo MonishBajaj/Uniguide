@@ -43,3 +43,18 @@ export function pickCourses(ranked: { programId: string; institutionId: string }
 export function readyForFirstSearch(p: { target_levels: string[]; target_countries: string[]; target_fields: string[] }): boolean {
   return p.target_levels.length > 0 && p.target_countries.length > 0 && p.target_fields.length > 0;
 }
+
+const QUEUED_NOTICE_AFTER_S = 60;
+const STALLED_AFTER_S = 180;
+
+/** A note for the progress page when nothing has moved for a while, so a stopped worker never looks like a hang. */
+export function waitNotice(status: string, createdAt: string, heartbeatAt: string | null, now: Date): string | null {
+  const age = (iso: string) => (now.getTime() - new Date(iso).getTime()) / 1000;
+  if (status === "queued" && age(createdAt) > QUEUED_NOTICE_AFTER_S) {
+    return "Your search is saved, but our worker has not picked it up yet. It will start as soon as it is free. You can leave this page and come back.";
+  }
+  if (status === "running" && heartbeatAt && age(heartbeatAt) > STALLED_AFTER_S) {
+    return "This is taking longer than usual. The search is still saved and will carry on.";
+  }
+  return null;
+}

@@ -79,7 +79,9 @@ def check_source(
         return None
 
     page = extract_page(conn, fetcher, extractor, source["url"], cycle_id, result=result)
-    _record(conn, source, etag=result.etag, modified=result.last_modified, digest=result.content_hash or None)
+    # A page we could not read must not be remembered as "seen": the next run has to try it again.
+    digest = None if page.status == "failed" else result.content_hash or None
+    _record(conn, source, etag=result.etag, modified=result.last_modified, digest=digest)
     report.extracted += 1
     report.pages.append(
         {"url": source["url"], "status": page.status, "proposed": page.proposed, "changes": page.changes}

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { itemLabel, STAGES, stageIndex } from "@/lib/enrichment";
+import { itemLabel, STAGES, stageIndex, waitNotice } from "@/lib/enrichment";
 import { jobProgress, type Progress } from "./actions";
 
 const TONE = { pending: "text-muted", working: "text-accent", ok: "text-verified", warn: "text-unverified" } as const;
@@ -10,16 +10,19 @@ const TONE = { pending: "text-muted", working: "text-accent", ok: "text-verified
 export function ProgressView({ jobId, initial }: { jobId: string; initial: Progress }) {
   const [progress, setProgress] = useState(initial);
   const finished = progress.status === "done" || progress.status === "failed";
+  const [now, setNow] = useState(() => new Date());
 
   useEffect(() => {
     if (finished) return;
     const timer = setInterval(async () => {
       const next = await jobProgress(jobId);
       if (next) setProgress(next);
+      setNow(new Date());
     }, 2000);
     return () => clearInterval(timer);
   }, [jobId, finished]);
 
+  const notice = waitNotice(progress.status, progress.createdAt, progress.heartbeatAt, now);
   const current = progress.status === "done" ? STAGES.length : stageIndex(progress.stage);
   return (
     <div className="grid gap-8">
@@ -39,6 +42,7 @@ export function ProgressView({ jobId, initial }: { jobId: string; initial: Progr
         })}
       </ol>
 
+      {notice ? <p role="status" className="rounded-lg bg-surface-2 p-3 text-sm">{notice}</p> : null}
       {progress.status === "failed" ? (
         <p role="alert" className="text-conflicting">The search stopped before it finished. Try again from your profile page.</p>
       ) : null}

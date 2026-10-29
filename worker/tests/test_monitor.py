@@ -9,7 +9,7 @@ from typing import Any
 import pytest
 
 from uniguide_worker.db import Connection
-from uniguide_worker.extract.extractor import Extractor
+from uniguide_worker.extract.extractor import ExtractionRun, Extractor
 from uniguide_worker.fetch.fetcher import FetchResult, content_hash
 from uniguide_worker.monitor import MonitorReport, check_source
 
@@ -87,3 +87,24 @@ def test_unchanged_page_is_skipped_and_change_notifies(
     assert report.notified == 1
     note = operator.execute("select title, body from notifications where user_id = %s", (watched["user"],)).fetchone()
     assert note and note["title"].startswith("Information changed: MSc M") and "due_at" in note["body"]
+
+
+class FailingExtractor:
+    version = "test/1"
+
+    def extract(self, url: str, cycle_label: str, page_text: str) -> ExtractionRun:
+        return ExtractionRun(None, "test", "p1", None, 0, 0, 0.0, 1, "connection error: down")
+
+
+def test_failed_extraction_is_retried_not_remembered_as_unchanged(
+    worker: Connection, operator: Connection, watched: dict[str, Any]
+) -> None:
+    report = MonitorReport()
+    check_source(worker, PageFetcher(PAGE), FailingExtractor(), source_row(worker, watched["source"]), report)  # type: ignore[arg-type]
+    assert source_row(worker, watched["source"])["content_hash"] is None
+
+    good = Extractor(client=FakeAnthropic(FakeResponse(extraction())))  # type: ignore[arg-type]
+    check_source(worker, PageFetcher(PAGE), good, source_row(worker, watched["source"]), report)  # type: ignore[arg-type]
+    assert report.unchanged == 0
+    assert report.pages[-1]["status"] == "extracted"
+    assert source_row(worker, watched["source"])["content_hash"] is not None

@@ -9,6 +9,8 @@ export type Progress = {
   stage: string;
   status: string;
   error: string | null;
+  createdAt: string;
+  heartbeatAt: string | null;
   items: { programId: string; title: string; institution: string; status: string; detail: string | null }[];
 };
 
@@ -25,7 +27,7 @@ export async function findUniversities(): Promise<FindState> {
 export async function jobProgress(jobId: string): Promise<Progress | null> {
   const { supabase, user } = await getUser();
   if (!user) return null;
-  const { data: job } = await supabase.from("enrichment_jobs").select("id, status, stage, error").eq("id", jobId).maybeSingle();
+  const { data: job } = await supabase.from("enrichment_jobs").select("id, status, stage, error, created_at, heartbeat_at").eq("id", jobId).maybeSingle();
   if (!job) return null;
   const { data: items } = await supabase
     .from("enrichment_items")
@@ -36,6 +38,8 @@ export async function jobProgress(jobId: string): Promise<Progress | null> {
     stage: job.stage,
     status: job.status,
     error: job.error,
+    createdAt: job.created_at,
+    heartbeatAt: job.heartbeat_at,
     items: (items ?? []).map((i) => ({
       programId: i.program_id,
       title: i.programs?.title ?? "Course",
