@@ -58,7 +58,8 @@ jobs:
           cache: pnpm
       - uses: astral-sh/setup-uv@v5
       - run: pnpm install --frozen-lockfile
-      - run: pnpm exec supabase db start
+      # Storage too: migrations create the portfolio bucket and its policies (6.4).
+      - run: pnpm exec supabase start -x studio,imgproxy,vector,logflare,edge-runtime,realtime,supavisor,postgres-meta
       - run: pnpm db:test
       - name: Generated types match the migrations
         run: |
@@ -85,7 +86,7 @@ jobs:
       - uses: astral-sh/setup-uv@v5
       - run: pnpm install --frozen-lockfile
       - name: Start Supabase (database, auth, API, mail)
-        run: pnpm exec supabase start -x studio,imgproxy,vector,logflare,edge-runtime,realtime,storage-api
+        run: pnpm exec supabase start -x studio,imgproxy,vector,logflare,edge-runtime,realtime
       - name: Load the placeholder seed courses
         working-directory: worker
         run: uv sync --frozen && uv run uniguide-worker seed load --publish-placeholders
@@ -99,6 +100,10 @@ jobs:
           } > apps/web/.env.local
       - run: pnpm --filter web exec playwright install --with-deps chromium
       - run: pnpm --filter web e2e
+      - name: Demo mode (sign-in switched off)
+        run: pnpm --filter web e2e:demo
+      - name: Community features (switched on)
+        run: pnpm --filter web e2e:community
       - uses: actions/upload-artifact@v4
         if: failure()
         with:

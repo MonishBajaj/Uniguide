@@ -7,13 +7,22 @@ import { signUp, type SignupState } from "./actions";
 const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
 // Country names come from the server so they match between server render and hydration.
-export function SignupForm({ currentYear, countries }: { currentYear: number; countries: { code: string; name: string }[] }) {
+export function SignupForm({
+  currentYear,
+  countries,
+  next,
+}: {
+  currentYear: number;
+  countries: { code: string; name: string }[];
+  next?: string;
+}) {
   const [state, action, pending] = useActionState<SignupState, FormData>(signUp, null);
   if (state?.done) return <p role="status" className="rounded-2xl border border-border bg-surface p-6">{state.message}</p>;
   const years = Array.from({ length: 80 }, (_, i) => currentYear - i);
 
   return (
     <form action={action} className="grid gap-4 rounded-2xl border border-border bg-surface p-6">
+      {next ? <input type="hidden" name="next" value={next} /> : null}
       <fieldset className="grid gap-2">
         <legend className="mb-2 text-sm font-semibold">When were you born?</legend>
         <p className="text-sm text-muted">We only ask for the month. It decides whether a parent needs to confirm first.</p>

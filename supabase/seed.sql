@@ -40,8 +40,8 @@ where u.email like '%@uniguide.local';
 
 insert into public.admins (user_id) values ('00000000-0000-4000-a000-000000000001');
 insert into public.verifiers (user_id, display_name, countries) values ('00000000-0000-4000-a000-000000000003', 'Local verifier', '{DE}');
-insert into public.parent_links (parent_id, student_id, student_name)
-values ('00000000-0000-4000-a000-000000000005', '00000000-0000-4000-a000-000000000002', 'Local student');
+insert into public.parent_links (parent_id, student_id, student_name, parent_name)
+values ('00000000-0000-4000-a000-000000000005', '00000000-0000-4000-a000-000000000002', 'Local student', 'Local parent');
 insert into public.organizations (id, name, country, invite_code)
 values ('00000000-0000-4000-b000-000000000001', 'Example Consultancy (local)', 'IN', 'local-agency');
 insert into public.org_members (org_id, user_id, role)

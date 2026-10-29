@@ -17,6 +17,15 @@ export async function trackProgram(programId: string) {
   redirect(id ? `/app/tracker/${id}` : "/app/tracker?error=no-intake");
 }
 
+/** Moves an application to one of the student's tracks, or back to Main (1.4). */
+export async function setApplicationTrack(applicationId: string, form: FormData) {
+  const value = form.get("track_id");
+  const trackId = typeof value === "string" && z.uuid().safeParse(value).success ? value : null;
+  const { supabase } = await getUser();
+  await supabase.from("applications").update({ track_id: trackId }).eq("id", applicationId);
+  revalidatePath("/app/tracker", "layout");
+}
+
 const STATUSES = ["shortlisted", "preparing", "submitted", "decided", "withdrawn"] as const;
 
 export async function setStatus(applicationId: string, form: FormData) {
@@ -115,4 +124,65 @@ export async function deleteApplication(applicationId: string) {
   await supabase.from("applications").delete().eq("id", applicationId);
   revalidatePath("/app/tracker");
   redirect("/app/tracker");
+}
+
+/** "Checked the portal today" (with an optional note) or a plain note, added to the application's history. */
+export async function logPortal(applicationId: string, kind: "portal_check" | "note", form: FormData) {
+  const note = String(form.get("note") ?? "").trim().slice(0, 1000);
+  if (kind === "note" && !note) return;
+  const { supabase, user } = await getUser();
+  if (!user) return;
+  await supabase.from("application_events").insert({ application_id: applicationId, user_id: user.id, kind, note: note || null });
+  revalidatePath("/app/tracker", "layout");
+}
+
+const ScoreSent = z.object({ test_score_id: z.string().uuid(), sent_on: z.iso.date() });
+
+/** Records that one of the student's own scores was sent to this application. */
+export async function recordScoreSent(applicationId: string, form: FormData) {
+  const parsed = ScoreSent.safeParse(Object.fromEntries(form));
+  if (!parsed.success) return;
+  const { supabase, user } = await getUser();
+  if (!user) return;
+  await supabase.from("score_reports").insert({ user_id: user.id, application_id: applicationId, ...parsed.data });
+  revalidatePath("/app/tracker", "layout");
+}
+
+export async function markScoreReceived(reportId: string, form: FormData) {
+  const received = z.iso.date().safeParse(form.get("received_on"));
+  if (!received.success) return;
+  const { supabase } = await getUser();
+  await supabase.from("score_reports").update({ received_on: received.data }).eq("id", reportId);
+  revalidatePath("/app/tracker", "layout");
+}
+
+export async function removeScoreReport(reportId: string) {
+  const { supabase } = await getUser();
+  await supabase.from("score_reports").delete().eq("id", reportId);
+  revalidatePath("/app/tracker", "layout");
+}
+
+const Cost = z.object({
+  kind: z.enum(["application_fee", "score_send", "exam", "deposit", "other"]),
+  amount: z.coerce.number().positive().lt(1_000_000),
+  currency: z.string().regex(/^[A-Z]{3}$/),
+  paid_on: z.preprocess((v) => v || null, z.iso.date().nullable()),
+  application_id: z.preprocess((v) => v || null, z.string().uuid().nullable()),
+  note: z.preprocess((v) => (typeof v === "string" && v.trim() ? v.trim().slice(0, 300) : null), z.string().nullable()),
+});
+
+/** Records something the student paid while applying, optionally against one application. */
+export async function addCost(form: FormData) {
+  const parsed = Cost.safeParse(Object.fromEntries(form));
+  if (!parsed.success) return;
+  const { supabase, user } = await getUser();
+  if (!user) return;
+  await supabase.from("application_costs").insert({ user_id: user.id, ...parsed.data });
+  revalidatePath("/app/tracker", "layout");
+}
+
+export async function removeCost(costId: string) {
+  const { supabase } = await getUser();
+  await supabase.from("application_costs").delete().eq("id", costId);
+  revalidatePath("/app/tracker", "layout");
 }

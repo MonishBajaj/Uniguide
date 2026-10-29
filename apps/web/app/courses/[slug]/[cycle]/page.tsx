@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { CourseView } from "@/components/course-view";
+import { CourseCommunity } from "@/components/course-community";
 import { FacultyDossier } from "@/components/faculty-dossier";
 import { loadCycle, loadFx } from "@/lib/catalog";
 import { loadCard, loadCourseExtras } from "../data";
@@ -28,6 +29,7 @@ export default async function CourseCyclePage({ params }: PageProps<"/courses/[s
   return (
     <CourseView card={card} cycle={cycle} cycles={cycles} fx={await loadFx(supabase)} signedIn={Boolean(user)} admin={admin} similar={similar} facts={facts} workRules={workRules} watching={watching}>
       <FacultyDossier supabase={supabase} card={card} interests={interests} />
+      <CourseCommunity supabase={supabase} programId={card.id!} userId={user?.id ?? null} />
     </CourseView>
   );
 }

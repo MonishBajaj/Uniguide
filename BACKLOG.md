@@ -20,6 +20,8 @@ Weeks 1–4 foundation; weeks 5–6 tracker, checklists, reminders, .ics, outcom
 | Gulf visa links | Add from the admin rules page after checking the official pages |
 | Admission model goes live | Needs at least two intakes of consented outcomes and a passing gate; runs weekly and stays hidden until then |
 | Hosted setup | Follow docs/SETUP.md: Supabase, Vercel, role passwords, Actions secrets |
+| **Native-speaker review of the Hindi interface** (15.4) | `apps/web/lib/i18n/hi.ts`, written plainly but not yet reviewed; the footer says so in Hindi. Not yet translated: the profile forms, application pages, writing coach and server messages. Country and level names, and dates, are still in English |
+| **Legal review before switching on community features** (11.1, 11.3, 11.4, 11.6) | Built behind `COMMUNITY_ENABLED` (off). Before turning it on: terms for user posts, moderation policy and response times, takedown contact, defamation risk in reviews, and a privacy-policy update. Every post is pre-moderated, adults only, pseudonymous, with contact details blocked |
 
 ## Follow-ups
 

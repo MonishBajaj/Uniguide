@@ -3,7 +3,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { ageFromBirthMonth } from "@/lib/age";
+import { ageFromBirthMonth, safeNext } from "@/lib/age";
 import { isCountryCode } from "@/lib/countries";
 import { AUTH_DISABLED, POLICY_VERSION, SITE_URL } from "@/lib/env";
 import { createClient } from "@/lib/supabase/server";
@@ -55,12 +55,13 @@ export async function signUp(_prev: SignupState, form: FormData): Promise<Signup
     return { message: UNDER_13 };
   }
 
+  const next = safeNext(form.get("next"));
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signUp({
     email: parsed.data.email,
     password: parsed.data.password,
     options: {
-      emailRedirectTo: `${SITE_URL}/auth/callback?next=/app/profile`,
+      emailRedirectTo: `${SITE_URL}/auth/callback?next=${encodeURIComponent(next)}`,
       data: {
         birth_month: parsed.data.birth_month,
         residence_country: parsed.data.residence_country,
@@ -72,5 +73,5 @@ export async function signUp(_prev: SignupState, form: FormData): Promise<Signup
   if (!data.session) return { done: true, message: "Check your email for a link to confirm your account." };
 
   const { data: profile } = await supabase.from("profiles").select("consent_state").eq("user_id", data.user!.id).single();
-  redirect(profile?.consent_state === "pending_parental" ? "/consent" : "/app/profile");
+  redirect(profile?.consent_state === "pending_parental" ? "/consent" : next);
 }

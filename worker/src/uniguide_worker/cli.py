@@ -326,10 +326,10 @@ def seed_status_cmd(
 def notify(
     only: Annotated[str | None, typer.Option(help="Run only 'reminders' or 'lifecycle'.")] = None,
 ) -> None:
-    """Send deadline reminders, update emails and lifecycle emails (connects as the notifier role)."""
+    """Send reminders, update emails, letter nudges, the weekly parent email and lifecycle emails (notifier role)."""
     from .lifecycle import send_lifecycle
     from .mailer import Mailer
-    from .notify import send_reminders
+    from .notify import send_letter_nudges, send_parent_digests, send_reminders
 
     if only not in (None, "reminders", "lifecycle"):
         raise typer.BadParameter("--only must be 'reminders' or 'lifecycle'")
@@ -339,7 +339,10 @@ def notify(
     mailer = Mailer.from_env()
     with connect(settings.notifier_database_url) as conn:
         if only in (None, "reminders"):
-            _report(send_reminders(conn, mailer, settings.site_url))
+            report = send_reminders(conn, mailer, settings.site_url)
+            report.parent_digests = send_parent_digests(conn, mailer, settings.site_url)
+            report.letter_nudges = send_letter_nudges(conn, mailer, settings.site_url)
+            _report(report)
         if only in (None, "lifecycle"):
             _report(send_lifecycle(conn, mailer, settings.site_url))
     if mailer.dry_run:

@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { AppLink as Link } from "./lite";
 import { usePathname } from "next/navigation";
 
 export function NavLinks({ links }: { links: { href: string; label: string }[] }) {
