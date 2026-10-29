@@ -89,3 +89,34 @@ export async function submitReview(programId: string, _prev: PostState, form: Fo
   const { pseudonym, body, teaching, support, value } = parsed.data;
   return submit({ kind: "review", program_id: programId, pseudonym, body, ratings: { teaching, support, value } }, typed(form));
 }
+
+export async function submitQuestion(programId: string, _prev: PostState, form: FormData): Promise<PostState> {
+  const parsed = Base.extend({ body: z.string().trim().min(20, "Ask a full question: at least 20 characters.").max(1000) }).safeParse(Object.fromEntries(form));
+  if (!parsed.success) return { ok: false, message: parsed.error.issues[0]!.message, values: typed(form) };
+  return submit({ kind: "question", program_id: programId, ...parsed.data }, typed(form));
+}
+
+export async function submitAnswer(questionId: string, _prev: PostState, form: FormData): Promise<PostState> {
+  const parsed = Base.extend({ body: z.string().trim().min(20, "Answer in a little more detail: at least 20 characters.").max(4000) }).safeParse(Object.fromEntries(form));
+  if (!parsed.success) return { ok: false, message: parsed.error.issues[0]!.message, values: typed(form) };
+  return submit({ kind: "answer", parent_id: questionId, ...parsed.data }, typed(form));
+}
+
+/** 11.3 Someone who studied a course asks to answer questions about it; a moderator checks first. */
+export async function requestAlum(programId: string, _prev: PostState, form: FormData): Promise<PostState> {
+  const parsed = z
+    .object({
+      graduation_year: z.coerce.number().int().min(1950).max(new Date().getFullYear() + 1),
+      evidence: z.string().trim().max(500),
+    })
+    .safeParse(Object.fromEntries(form));
+  if (!parsed.success) return { ok: false, message: "Give the year you finished (or will finish) the course.", values: typed(form) };
+  const { supabase, user } = await getUser();
+  if (!user) return { ok: false, message: "Sign in first." };
+  const { data: allowed } = await supabase.rpc("can_post_community", { uid: user.id });
+  if (!allowed) return { ok: false, message: "Alumni answers are open to adults whose account is fully set up.", values: typed(form) };
+  const { error } = await supabase.from("community_alumni").insert({ user_id: user.id, program_id: programId, graduation_year: parsed.data.graduation_year, evidence: parsed.data.evidence || null });
+  if (error) return { ok: false, message: error.code === "23505" ? "You have already asked about this course." : "Could not send your request.", values: typed(form) };
+  revalidatePath("/", "layout");
+  return { ok: true, message: "Thank you. A moderator will check and let you answer questions about this course." };
+}
