@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { cookies } from "next/headers";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
+import { DISPLAY_COOKIE, displayAttributes, parseDisplay } from "@/lib/display";
 import { SITE_URL } from "@/lib/env";
 import "./globals.css";
 
@@ -16,9 +18,10 @@ export const metadata: Metadata = {
   openGraph: { type: "website", siteName: "Uniguide" },
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const display = parseDisplay((await cookies()).get(DISPLAY_COOKIE)?.value);
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
+    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`} {...displayAttributes(display)}>
       <body className="flex min-h-full flex-col">
         <a
           href="#main"

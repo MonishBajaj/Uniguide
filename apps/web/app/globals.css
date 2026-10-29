@@ -120,3 +120,23 @@ p, li, dd {
 .post table { display: block; overflow-x: auto; border-collapse: collapse; font-size: 0.9rem; line-height: 1.5; }
 .post th, .post td { border: 1px solid var(--border); padding: 0.5rem 0.75rem; text-align: left; vertical-align: top; }
 .post th { background: var(--surface-2); font-weight: 600; }
+
+/* 15.2 Display settings (see lib/display.ts). Tailwind sizes are in rem, so text size scales everything. */
+html[data-text="large"] { font-size: 112.5%; }
+html[data-text="larger"] { font-size: 125%; }
+html[data-contrast="high"] {
+  --muted: #33332f;
+  --border: #6b6b66;
+  --surface-2: #e4e4df;
+  --unverified: #6b4500;
+  --unknown: #3f3f3b;
+  --accent: #1f4d3e;
+}
+html[data-contrast="high"] a { text-decoration-thickness: 2px; }
+html[data-motion="reduce"] *, html[data-motion="reduce"] *::before, html[data-motion="reduce"] *::after {
+  animation: none !important;
+  transition: none !important;
+  scroll-behavior: auto !important;
+}
+html[data-motion="reduce"] .reveal { opacity: 1; transform: none; }
+html[data-motion="reduce"] [data-word] { opacity: 1 !important; }

@@ -94,37 +94,39 @@ export default async function OffersPage() {
                   <p className="text-sm text-muted">{card?.institution_name}</p>
                 </div>
                 {cost?.currency ? (
-                  <dl className="grid content-start gap-2 text-sm">
-                    <div>
-                      <dt className="text-muted">Expected total (low to high)</dt>
-                      <dd className="text-2xl font-semibold">{money(cost.base, cost.currency)}</dd>
-                      <dd className="text-muted">{money(cost.low, cost.currency)} to {money(cost.high, cost.currency)}</dd>
-                    </div>
-                    {cost.converted ? (
+                  <div className="grid content-start gap-2 text-sm">
+                    <dl className="grid content-start gap-2">
                       <div>
-                        <dt className="text-muted">About, in {cost.converted.currency}</dt>
-                        <dd className="font-semibold">
-                          {money(cost.converted.amount, cost.converted.currency)}
-                          {budget && budget.currency === cost.converted.currency && cost.converted.amount > budget.amount ? (
-                            <span className="ml-2 text-conflicting">over your budget</span>
-                          ) : null}
-                        </dd>
-                        <dd className="text-xs text-muted">Rate from {cost.converted.rate.source}, {shortDate(cost.converted.rate.asOf)}. Approximate.</dd>
+                        <dt className="text-muted">Expected total (low to high)</dt>
+                        <dd className="text-2xl font-semibold">{money(cost.base, cost.currency)}</dd>
+                        <dd className="text-muted">{money(cost.low, cost.currency)} to {money(cost.high, cost.currency)}</dd>
                       </div>
-                    ) : null}
-                    {cost.aidApplied > 0 ? (
-                      <div>
-                        <dt className="text-muted">Funding in your offer, subtracted</dt>
-                        <dd>{money(cost.aidApplied, cost.currency)}</dd>
-                      </div>
-                    ) : null}
-                    {app.deposit_due_at ? (
-                      <div>
-                        <dt className="text-muted">Reply or <Term id="deposit">deposit</Term> due</dt>
-                        <dd className="font-semibold">{shortDate(app.deposit_due_at)}</dd>
-                        <dd className="text-muted">{replyText(daysToReply(app.deposit_due_at))}</dd>
-                      </div>
-                    ) : null}
+                      {cost.converted ? (
+                        <div>
+                          <dt className="text-muted">About, in {cost.converted.currency}</dt>
+                          <dd className="font-semibold">
+                            {money(cost.converted.amount, cost.converted.currency)}
+                            {budget && budget.currency === cost.converted.currency && cost.converted.amount > budget.amount ? (
+                              <span className="ml-2 text-conflicting">over your budget</span>
+                            ) : null}
+                          </dd>
+                          <dd className="text-xs text-muted">Rate from {cost.converted.rate.source}, {shortDate(cost.converted.rate.asOf)}. Approximate.</dd>
+                        </div>
+                      ) : null}
+                      {cost.aidApplied > 0 ? (
+                        <div>
+                          <dt className="text-muted">Funding in your offer, subtracted</dt>
+                          <dd>{money(cost.aidApplied, cost.currency)}</dd>
+                        </div>
+                      ) : null}
+                      {app.deposit_due_at ? (
+                        <div>
+                          <dt className="text-muted">Reply or <Term id="deposit">deposit</Term> due</dt>
+                          <dd className="font-semibold">{shortDate(app.deposit_due_at)}</dd>
+                          <dd className="text-muted">{replyText(daysToReply(app.deposit_due_at))}</dd>
+                        </div>
+                      ) : null}
+                    </dl>
                     <div className="flex flex-wrap gap-1">
                       {[...new Set(cost.lines.map((l) => l.status))].map((s) => <FactBadge key={s} status={s} />)}
                     </div>
@@ -132,7 +134,7 @@ export default async function OffersPage() {
                       <p className="text-xs text-unverified">Lower bound: missing {cost.missing.join(", ")}.</p>
                     ) : null}
                     {cost.assumptions.map((a) => <p key={a} className="text-xs text-muted">{a}</p>)}
-                  </dl>
+                  </div>
                 ) : (
                   <p className="text-sm text-muted">No published fees for this intake yet, so we cannot total it. Check the official page.</p>
                 )}

@@ -46,6 +46,9 @@ export async function SiteHeader() {
         <div className="min-w-0 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           <NavLinks links={links} />
         </div>
+        <Link href="/accessibility" className="btn btn-secondary btn-sm whitespace-nowrap">
+          Display
+        </Link>
         {DEMO_SWITCHER ? (
           <ModeSwitcher mode={mode} />
         ) : user ? (
