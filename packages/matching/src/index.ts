@@ -10,6 +10,7 @@ export { matchPrograms } from "./match";
 export { ALGORITHM_VERSION } from "./version";
 export { buildChecklist, type ChecklistDeadline, type ChecklistItem, type CountryRule } from "./checklist";
 export { rulesFor } from "./country-rules";
+export { scoreGoals, type ScoreGoal, type ScoreGoalRequirement } from "./score-goals";
 export { shortlistAdvice, type ShortlistAdvice, type ShortlistItem } from "./shortlist-advice";
 export { compareProfile, type CompareVerdict, type ProfileComparison } from "./profile-compare";
 export { admissionBand, type AdmitStats, type Band } from "./bands";
