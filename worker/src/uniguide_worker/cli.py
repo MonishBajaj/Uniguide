@@ -338,6 +338,17 @@ def research_outcomes(
         _report(build_report(load_rows(conn), min_n=min_n))
 
 
+@research.command("insights")
+def research_insights() -> None:
+    """Publish suppressed trend insights for /insights (connects as the analyst role)."""
+    from .research.insights import compute_insights, publish_insights
+    from .research.outcomes import load_rows
+
+    with _analyst_conn() as conn:
+        insights = compute_insights(load_rows(conn))
+        typer.echo(f"Published {publish_insights(conn, insights)} insight(s).")
+
+
 @research.command("train-admission")
 def research_train_admission(
     dry_run: Annotated[bool, typer.Option(help="Evaluate without storing the run.")] = False,

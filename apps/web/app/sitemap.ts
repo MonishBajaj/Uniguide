@@ -15,6 +15,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${SITE_URL}/courses`, changeFrequency: "daily" },
     { url: `${SITE_URL}/requirements`, changeFrequency: "daily" },
     { url: `${SITE_URL}/compare/countries`, changeFrequency: "weekly" },
+    { url: `${SITE_URL}/insights`, changeFrequency: "weekly" },
     { url: `${SITE_URL}/deadlines`, changeFrequency: "daily" },
     { url: `${SITE_URL}/english-tests`, changeFrequency: "weekly" },
     { url: `${SITE_URL}/visas`, changeFrequency: "monthly" },

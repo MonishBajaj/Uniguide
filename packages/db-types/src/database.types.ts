@@ -859,6 +859,20 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"public_insights": {
+                  Row: {
+                    "computed_at": string,"dimension": NonNullable<Json>,"group_size": number,"id": string,"metric": string,"value": number
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "computed_at"?: string,"dimension": NonNullable<Json>,"group_size": number,"id"?: string,"metric": string,"value": number
+                  }
+                  Update: {
+                    "computed_at"?: string,"dimension"?: NonNullable<Json>,"group_size"?: number,"id"?: string,"metric"?: string,"value"?: number
+                  }
+                  Relationships: [
+                    
+                  ]
                 },"reminder_log": {
                   Row: {
                     "application_id": string,"days_before": number,"due_at": string,"id": string,"sent_at": string,"user_id": string
