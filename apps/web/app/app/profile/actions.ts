@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { z } from "zod";
 import type { Enums } from "@uniguide/db-types";
 import { CURRENCIES, EXAMS, FIELDS, GRADE_SCALES, QUALIFICATIONS } from "@/lib/fields";
@@ -8,6 +9,7 @@ import { POLICY_VERSION } from "@/lib/env";
 import { asJson } from "@/lib/json";
 import { LEVELS, DESTINATIONS } from "@/lib/format";
 import { extractProfile, MAX_CV_CHARS, PROFILE_MODEL, PROFILE_PROMPT_VERSION, type ProfileExtraction } from "@/lib/profile-extract";
+import { startFirstSearch } from "@/lib/start-search";
 import { getUser } from "@/lib/supabase/server";
 
 export type FormState = { ok: boolean; message: string } | null;
@@ -88,6 +90,8 @@ export async function saveProfile(_prev: FormState, form: FormData): Promise<For
     .eq("user_id", user.id);
   if (error) return failed(error.code);
   revalidatePath("/app", "layout");
+  // The first time the profile can drive a search, start it and show the student what is happening.
+  if (await startFirstSearch(supabase, user.id)) redirect("/app/matching");
   return { ok: true, message: "Profile saved." };
 }
 

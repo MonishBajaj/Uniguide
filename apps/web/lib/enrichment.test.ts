@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { itemLabel, pickCourses, STAGES, stageIndex } from "./enrichment";
+import { itemLabel, pickCourses, readyForFirstSearch, STAGES, stageIndex } from "./enrichment";
 
 describe("stageIndex", () => {
   it("numbers the stages in the order the worker runs them", () => {
@@ -44,5 +44,15 @@ describe("pickCourses", () => {
   });
   it("is empty for an empty catalog", () => {
     expect(pickCourses([], 10)).toEqual([]);
+  });
+});
+
+describe("readyForFirstSearch", () => {
+  const ready = { target_levels: ["master"], target_countries: ["DE"], target_fields: ["0613"] };
+  it("needs a level, a country and a subject", () => {
+    expect(readyForFirstSearch(ready)).toBe(true);
+    expect(readyForFirstSearch({ ...ready, target_levels: [] })).toBe(false);
+    expect(readyForFirstSearch({ ...ready, target_countries: [] })).toBe(false);
+    expect(readyForFirstSearch({ ...ready, target_fields: [] })).toBe(false);
   });
 });

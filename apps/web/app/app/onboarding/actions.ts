@@ -1,12 +1,14 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import type { Enums, TablesUpdate } from "@uniguide/db-types";
 import { aiBlocked, logRun } from "@/lib/ai-usage";
 import { onboardingTurn, type OnboardingTurn } from "@/lib/assistant";
 import { CURRENCIES, FIELDS, GRADE_SCALES, QUALIFICATIONS } from "@/lib/fields";
 import { LEVELS } from "@/lib/format";
 import { isCountryCode } from "@/lib/countries";
+import { startFirstSearch } from "@/lib/start-search";
 import { getUser } from "@/lib/supabase/server";
 
 export type Message = { role: "student" | "assistant"; text: string };
@@ -59,5 +61,6 @@ export async function applyUpdates(updates: OnboardingTurn["updates"]): Promise<
   const { error } = await supabase.from("profiles").update(patch).eq("user_id", user!.id);
   if (error) return { ok: false, message: error.code === "42501" ? "A parent or guardian needs to confirm your account first." : "Could not save." };
   revalidatePath("/app", "layout");
+  if (await startFirstSearch(supabase, user!.id)) redirect("/app/matching");
   return { ok: true, message: "Saved to your profile." };
 }

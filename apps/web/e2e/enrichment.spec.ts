@@ -37,3 +37,17 @@ test("a second search while one is running does not start another job", async ({
   await page.waitForURL("**/app/matching");
   expect(sql(`select count(*) from enrichment_jobs where user_id = '${STUDENT}'`)).toBe("1");
 });
+
+test("the first complete profile save starts the search by itself, later saves do not", async ({ browser }) => {
+  sql(`update profiles set target_fields = '{0613}' where user_id = '${STUDENT}'`);
+  const page = await signIn(browser, "student@uniguide.local");
+  await page.goto("/app/profile");
+  await page.click('button:has-text("Save profile")');
+  await page.waitForURL("**/app/matching");
+  expect(sql(`select count(*) from enrichment_jobs where user_id = '${STUDENT}'`)).toBe("1");
+
+  await page.goto("/app/profile");
+  await page.click('button:has-text("Save profile")');
+  await expect(page.getByText("Profile saved.")).toBeVisible();
+  expect(sql(`select count(*) from enrichment_jobs where user_id = '${STUDENT}'`)).toBe("1");
+});

@@ -38,3 +38,8 @@ export function pickCourses(ranked: { programId: string; institutionId: string }
   }
   return picked;
 }
+
+/** Enough to search with: a level, a country and a subject. Anything less would pick courses at random. */
+export function readyForFirstSearch(p: { target_levels: string[]; target_countries: string[]; target_fields: string[] }): boolean {
+  return p.target_levels.length > 0 && p.target_countries.length > 0 && p.target_fields.length > 0;
+}
