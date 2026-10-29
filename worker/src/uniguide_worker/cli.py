@@ -58,7 +58,12 @@ def _run(conn: Connection, job: str) -> Iterator[dict[str, Any]]:
 
 
 def _report(result: Any) -> None:
-    data = result.as_dict() if hasattr(result, "as_dict") else result.__dict__
+    if isinstance(result, dict):
+        data = result
+    elif hasattr(result, "as_dict"):
+        data = result.as_dict()
+    else:
+        data = result.__dict__
     typer.echo(json.dumps(data, indent=2, default=str))
 
 
@@ -352,6 +357,34 @@ def index_load(
         raise typer.BadParameter("Set OPERATOR_DATABASE_URL (see .env.example)")
     with connect(url) as conn:
         _report(load_indexes(conn, seeds))
+
+
+@index_app.command("crawl")
+def index_crawl(
+    country: Annotated[str | None, typer.Option(help="Two-letter country code, for example US.")] = None,
+    limit: Annotated[int, typer.Option(help="Index pages to crawl this run.")] = 30,
+) -> None:
+    """Read the active index pages, list their courses with Gemini and add the ones that check out."""
+    from .index.crawl import crawl_all
+    from .index.lister import GeminiCourseLister
+
+    settings = get_settings()
+    if not settings.gemini_api_key:
+        raise typer.BadParameter("Set GEMINI_API_KEY (see .env.example)")
+    fetcher = Fetcher(settings.user_agent)
+    lister = GeminiCourseLister(model=settings.gemini_model, api_key=settings.gemini_api_key)
+
+    def work(conn: Connection) -> dict[str, Any]:
+        reports = crawl_all(
+            conn, fetcher, lister, country=country.upper() if country else None, limit=limit, min_age_hours=20
+        )
+        return {
+            "indexes": len(reports),
+            "created": sum(r.created for r in reports),
+            "pages": [{k: v for k, v in r.__dict__.items() if v not in ([], "", 0)} for r in reports],
+        }
+
+    _report(_with_run("index-crawl", work))
 
 
 @app.command()

@@ -7,12 +7,13 @@ on:
     - cron: "7 * * * *"     # notify: hourly, deadline reminders and update emails
     - cron: "17 3 * * *"    # monitor: daily, re-check official pages by demand
     - cron: "23 4 * * 1"    # research: weekly, outcome report and admission model gate
+    - cron: "41 5 * * *"    # index: daily, crawl verified course-index pages
   workflow_dispatch:
     inputs:
       job:
         description: Job to run
         type: choice
-        options: [notify, monitor, research]
+        options: [notify, monitor, research, index]
 
 concurrency:
   group: scheduled-${{ github.event.schedule || inputs.job }}
@@ -75,3 +76,23 @@ jobs:
         if: env.ANALYST_DATABASE_URL != ''
       - run: uv sync --frozen && uv run uniguide-worker research outcomes && uv run uniguide-worker research train-admission && uv run uniguide-worker research insights
         if: env.ANALYST_DATABASE_URL != ''
+
+  index:
+    if: (github.event.schedule == '41 5 * * *' || inputs.job == 'index')
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      WORKER_DATABASE_URL: ${{ secrets.WORKER_DATABASE_URL }}
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      GEMINI_MODEL: ${{ vars.GEMINI_MODEL }}
+      CRAWLER_CONTACT: ${{ vars.CRAWLER_CONTACT }}
+    defaults:
+      run:
+        working-directory: worker
+    steps:
+      - uses: actions/checkout@v4
+        if: env.WORKER_DATABASE_URL != '' && env.GEMINI_API_KEY != ''
+      - uses: astral-sh/setup-uv@v5
+        if: env.WORKER_DATABASE_URL != '' && env.GEMINI_API_KEY != ''
+      - run: uv sync --frozen && uv run uniguide-worker index crawl --limit 30
+        if: env.WORKER_DATABASE_URL != '' && env.GEMINI_API_KEY != ''

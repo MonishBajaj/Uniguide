@@ -113,11 +113,11 @@ def propose_candidates(client: Any, model: str, snapshot: dict[str, Any], limit:
     return [c for c in found if not countries or c.country.upper() in countries][:limit]
 
 
-def _slugify(text: str) -> str:
+def slugify(text: str) -> str:
     return re.sub(r"-+", "-", re.sub(r"[^a-z0-9]+", "-", text.lower())).strip("-")[:80]
 
 
-def _unique_slug(conn: Connection, base: str) -> str:
+def unique_slug(conn: Connection, base: str) -> str:
     slug, n = base, 2
     while conn.execute("select 1 from programs where slug = %s", (slug,)).fetchone():
         slug, n = f"{base}-{n}", n + 1
@@ -170,7 +170,7 @@ def create_from_candidates(
             (inst["id"], c.programme),
         ).fetchone()
         if prog is None:
-            slug = _unique_slug(conn, _slugify(f"{c.institution} {c.programme}"))
+            slug = unique_slug(conn, slugify(f"{c.institution} {c.programme}"))
             prog = conn.execute(
                 """
                 insert into programs (institution_id, slug, title, level, official_url, coverage_tier, published,
