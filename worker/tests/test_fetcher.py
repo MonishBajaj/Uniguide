@@ -79,3 +79,13 @@ def test_rate_limiter_spaces_requests_per_host() -> None:
 
 def test_html_to_text_drops_scripts_and_styles() -> None:
     assert html_to_text("<style>p{}</style><p>Hello <b>there</b></p><script>x()</script>") == "Hello there"
+
+
+def test_page_links_are_returned_absolute(httpserver: HTTPServer) -> None:
+    httpserver.expect_request("/robots.txt").respond_with_data("", status=404)
+    httpserver.expect_request("/course").respond_with_data(
+        '<body><a href="/fees">Tuition fees</a><a href="mailto:a@b.c">Mail</a><a href="https://x.org/y">Out</a></body>',
+        content_type="text/html",
+    )
+    result = fetcher().fetch(httpserver.url_for("/course"))
+    assert result.links == (("Tuition fees", httpserver.url_for("/fees")), ("Out", "https://x.org/y"))

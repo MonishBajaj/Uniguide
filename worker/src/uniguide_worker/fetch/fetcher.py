@@ -11,7 +11,7 @@ import hashlib
 import re
 import unicodedata
 from dataclasses import dataclass
-from urllib.parse import urlsplit
+from urllib.parse import urljoin, urlsplit
 
 import httpx
 from selectolax.lexbor import LexborHTMLParser
@@ -60,6 +60,8 @@ class FetchResult:
     etag: str | None
     last_modified: str | None
     not_modified: bool
+    # (link text, absolute URL) of the page's anchors; lets callers find its sibling pages.
+    links: tuple[tuple[str, str], ...] = ()
 
 
 def is_blocked(url: str) -> bool:
@@ -78,6 +80,15 @@ def html_to_text(html: str) -> str:
         node.decompose()
     body = tree.body or tree.root
     return normalise_text(body.text(separator=" ") if body else "")
+
+
+def page_links(html: str, base_url: str) -> tuple[tuple[str, str], ...]:
+    links: list[tuple[str, str]] = []
+    for node in LexborHTMLParser(html).css("a[href]"):
+        href = urljoin(base_url, (node.attributes.get("href") or "").strip())
+        if href.startswith(("https://", "http://")):
+            links.append((normalise_text(node.text())[:120], href.split("#")[0]))
+    return tuple(links)
 
 
 def content_hash(text: str) -> str:
@@ -138,4 +149,5 @@ class Fetcher:
             etag=response.headers.get("ETag"),
             last_modified=response.headers.get("Last-Modified"),
             not_modified=not_modified,
+            links=() if not_modified else page_links(response.text, final_url),
         )
