@@ -2,7 +2,7 @@
 
 Source: the Feature Bible (100 features), `BACKLOG.md`, and what the running app contains (checked October 2026). IDs match the Bible; `X` rows are work from the backlog or this session that the Bible does not number.
 
-**Totals (103 rows):** 33 built · 15 partly built · 35 to build · 6 need an owner decision · 4 deferred to year 2 · 10 cut on purpose.
+**Totals (103 rows):** 34 built · 14 partly built · 35 to build · 6 need an owner decision · 4 deferred to year 2 · 10 cut on purpose.
 
 Status key: **Built** works today · **Partial** exists, listed gap remains · **To build** not started · **Decision** the owner must settle first · **Deferred** year 2 · **Cut** decided against (BACKLOG). Size: S about 2 days, M about a week, L two weeks or more. Priority: P0 needed for a real launch, P1 next, P2 later, P3 only if time allows.
 
