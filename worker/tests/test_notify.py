@@ -13,7 +13,14 @@ import pytest
 
 from uniguide_worker.db import Connection, connect
 from uniguide_worker.mailer import Mailer
-from uniguide_worker.notify import days_until, local_date, send_reminders
+from uniguide_worker.notify import (
+    days_until,
+    local_date,
+    send_letter_nudges,
+    send_parent_digests,
+    send_reminders,
+    week_start,
+)
 
 LOCAL_NOTIFIER = "postgresql://notifier:notifier_local@127.0.0.1:54322/postgres"
 
@@ -119,3 +126,87 @@ def test_notifier_cannot_read_profiles_or_scores(notifier: Connection) -> None:
     with pytest.raises(psycopg.errors.InsufficientPrivilege):
         notifier.execute("select email from auth.users")
     notifier.rollback()
+
+
+def test_week_start_is_monday() -> None:
+    assert str(week_start(datetime(2027, 1, 7, 15, tzinfo=UTC))) == "2027-01-04"
+    assert str(week_start(datetime(2027, 1, 4, 0, 1, tzinfo=UTC))) == "2027-01-04"
+
+
+@pytest.fixture
+def parent(operator: Connection, scenario: dict[str, Any]) -> Iterator[dict[str, Any]]:
+    """A parent linked to the scenario student."""
+    email = f"parent-{uuid.uuid4().hex[:8]}@example.com"
+    row = operator.execute(
+        """
+        insert into auth.users (id, instance_id, aud, role, email, raw_user_meta_data)
+        values (gen_random_uuid(), '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', %s,
+                '{"birth_month": "1970-01", "residence_country": "IN"}')
+        returning id
+        """,
+        (email,),
+    ).fetchone()
+    assert row
+    operator.execute(
+        "insert into parent_links (parent_id, student_id, student_name, parent_name) values (%s, %s, 'Asha', 'Dad')",
+        (row["id"], scenario["uid"]),
+    )
+    operator.commit()
+    yield {"id": row["id"], "email": email}
+    operator.execute("delete from auth.users where id = %s", (row["id"],))
+    operator.commit()
+
+
+def test_parent_gets_one_summary_a_week(notifier: Connection, operator: Connection, parent: dict[str, Any]) -> None:
+    mailer = Mailer()
+    send_parent_digests(notifier, mailer, "https://uniguide.example")
+    mine = [m for m in mailer.sent if m.to == parent["email"]]
+    assert [m.subject for m in mine] == ["This week: Asha's applications"]
+    text = mine[0].text
+    assert "MSc N, Notify U: Shortlisted, 0 of 1 steps done. Next: Submit the application" in text
+    assert "https://uniguide.example/parent" in text
+    assert "score" not in text.lower() and "grade" not in text.lower()
+
+    again = Mailer()
+    send_parent_digests(notifier, again, "https://uniguide.example")
+    assert [m for m in again.sent if m.to == parent["email"]] == []
+
+    # Next week, with the email turned off, nothing is sent.
+    operator.execute("update parent_links set digest_enabled = false where parent_id = %s", (parent["id"],))
+    operator.commit()
+    later = Mailer()
+    send_parent_digests(notifier, later, "https://uniguide.example", now=datetime.now(UTC) + timedelta(days=7))
+    assert [m for m in later.sent if m.to == parent["email"]] == []
+
+
+def test_letter_nudge_reaches_the_student_once(
+    notifier: Connection, operator: Connection, scenario: dict[str, Any]
+) -> None:
+    app = operator.execute("select id from applications where user_id = %s", (scenario["uid"],)).fetchone()
+    assert app
+    rec = operator.execute(
+        "insert into recommenders (user_id, name) values (%s, 'Dr Mehta') returning id", (scenario["uid"],)
+    ).fetchone()
+    assert rec
+    due = (datetime.now(UTC) + timedelta(days=14)).date()
+    operator.execute(
+        "insert into recommendation_requests (user_id, recommender_id, application_id, status, due_on) "
+        "values (%s, %s, %s, 'agreed', %s)",
+        (scenario["uid"], rec["id"], app["id"], due),
+    )
+    operator.commit()
+
+    mailer = Mailer()
+    send_letter_nudges(notifier, mailer, "https://uniguide.example")
+    mine = [m for m in mailer.sent if m.to == scenario["email"]]
+    assert [m.subject for m in mine] == ["Letter due in 14 days: Dr Mehta for MSc N"]
+    assert "has agreed to write" in mine[0].text and "/app/recommenders" in mine[0].text
+
+    again = Mailer()
+    send_letter_nudges(notifier, again, "https://uniguide.example")
+    assert [m for m in again.sent if m.to == scenario["email"]] == []
+
+    # Not due in 14 or 3 days: nothing.
+    later = Mailer()
+    send_letter_nudges(notifier, later, "https://uniguide.example", now=datetime.now(UTC) + timedelta(days=2))
+    assert [m for m in later.sent if m.to == scenario["email"]] == []

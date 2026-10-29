@@ -15,12 +15,13 @@ const PENDING = "A parent or guardian needs to confirm your account before we ca
 export async function createDocument(form: FormData) {
   const parsed = z
     .object({
-      kind: z.enum(["statement_of_purpose", "personal_statement", "why_this_university", "other"]),
+      kind: z.enum(["statement_of_purpose", "personal_statement", "why_this_university", "continued_interest", "supplemental", "research_statement", "other"]),
       title: z.string().trim().min(1).max(200),
       word_limit: z.preprocess((v) => (v ? Number(v) : null), z.number().int().min(50).max(5000).nullable()),
       question: z.preprocess((v) => (v ? String(v).trim() : null), z.string().max(2000).nullable()),
       application_id: z.preprocess((v) => v || null, z.uuid().nullable()),
     })
+    .refine((d) => d.kind !== "supplemental" || d.question, { path: ["question"] })
     .safeParse(Object.fromEntries(form));
   if (!parsed.success) redirect("/app/writing/new?error=1");
   const { supabase, user } = await getUser();
@@ -37,6 +38,78 @@ const Authorship = z.object({
   session_started_at: z.string(),
   active_seconds: z.number().int().min(0),
 });
+
+/**
+ * Opens the student's document of this kind for an application, creating it the first time: a
+ * "why this university" statement for any application, a letter of continued interest only when
+ * the application is waitlisted.
+ */
+export async function startLinkedDocument(applicationId: string, kind: "why_this_university" | "continued_interest" | "research_statement") {
+  const { supabase, user } = await getUser();
+  const { data: existing } = await supabase
+    .from("documents")
+    .select("id")
+    .eq("application_id", applicationId)
+    .eq("kind", kind)
+    .limit(1)
+    .maybeSingle();
+  if (existing) redirect(`/app/writing/${existing.id}`);
+  const { data: app } = await supabase
+    .from("applications")
+    .select("decision, program_cycles(programs(title, institutions(name)))")
+    .eq("id", applicationId)
+    .maybeSingle();
+  if (!app || (kind === "continued_interest" && app.decision !== "waitlisted")) redirect(`/app/tracker/${applicationId}`);
+  const program = app.program_cycles?.programs;
+  const title =
+    kind === "continued_interest"
+      ? `Letter of continued interest: ${program?.title ?? "course"}`
+      : kind === "research_statement"
+        ? `Research statement: ${program?.title ?? "course"}`
+        : `Why ${program?.institutions?.name ?? "this university"}: ${program?.title ?? "course"}`;
+  const { data, error } = await supabase
+    .from("documents")
+    .insert({
+      user_id: user!.id,
+      application_id: applicationId,
+      kind,
+      title: title.slice(0, 200),
+      word_limit: kind === "continued_interest" ? 300 : null,
+    })
+    .select("id")
+    .single();
+  if (error || !data) redirect(`/app/tracker/${applicationId}?error=${error?.code === "42501" ? "consent" : "1"}`);
+  redirect(`/app/writing/${data.id}`);
+}
+
+/** A supplemental essay for one of the school's own questions. An application can have several. */
+export async function startSupplemental(applicationId: string, form: FormData) {
+  const parsed = z
+    .object({
+      question: z.string().trim().min(1).max(2000),
+      word_limit: z.preprocess((v) => (v ? Number(v) : null), z.number().int().min(50).max(5000).nullable()),
+    })
+    .safeParse({ question: form.get("question"), word_limit: form.get("word_limit") });
+  if (!parsed.success) redirect(`/app/tracker/${applicationId}`);
+  const { supabase, user } = await getUser();
+  const { data: app } = await supabase.from("applications").select("program_cycles(programs(title))").eq("id", applicationId).maybeSingle();
+  if (!app) redirect("/app/tracker");
+  const question = parsed.data.question;
+  const { data, error } = await supabase
+    .from("documents")
+    .insert({
+      user_id: user!.id,
+      application_id: applicationId,
+      kind: "supplemental",
+      title: `${app.program_cycles?.programs?.title ?? "Course"}: ${question.length > 80 ? `${question.slice(0, 79)}…` : question}`.slice(0, 200),
+      question,
+      word_limit: parsed.data.word_limit,
+    })
+    .select("id")
+    .single();
+  if (error || !data) redirect(`/app/tracker/${applicationId}?error=${error?.code === "42501" ? "consent" : "1"}`);
+  redirect(`/app/writing/${data.id}`);
+}
 
 export async function saveVersion(documentId: string, _prev: ActionState, form: FormData): Promise<ActionState> {
   const body = String(form.get("body") ?? "");

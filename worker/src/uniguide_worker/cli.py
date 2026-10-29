@@ -263,9 +263,9 @@ def seed_check(
 
 @app.command()
 def notify() -> None:
-    """Send due deadline reminders and update emails (connects as the notifier role)."""
+    """Send deadline reminders, update emails, letter nudges and the weekly parent email (as the notifier role)."""
     from .mailer import Mailer
-    from .notify import send_reminders
+    from .notify import send_letter_nudges, send_parent_digests, send_reminders
 
     settings = get_settings()
     if not settings.notifier_database_url:
@@ -273,6 +273,8 @@ def notify() -> None:
     mailer = Mailer.from_env()
     with connect(settings.notifier_database_url) as conn:
         report = send_reminders(conn, mailer, settings.site_url)
+        report.parent_digests = send_parent_digests(conn, mailer, settings.site_url)
+        report.letter_nudges = send_letter_nudges(conn, mailer, settings.site_url)
     if mailer.dry_run:
         for m in mailer.sent:
             typer.echo(f"[dry run] to {m.to}: {m.subject}")

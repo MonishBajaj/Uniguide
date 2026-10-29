@@ -13,6 +13,13 @@ export default defineConfig({
   // First visits compile pages on demand, so allow more than the default per test.
   timeout: 90_000,
   use: { baseURL: `http://localhost:${port}`, trace: "retain-on-failure" },
+  // "demo" runs only with sign-in switched off (AUTH_DISABLED=true, `pnpm e2e:demo`); "community" only with
+  // COMMUNITY_ENABLED=true (`pnpm e2e:community`); "app" covers everything else.
+  projects: [
+    { name: "app", testIgnore: /(demo-mode|community-[\w-]+)\.spec\.ts/ },
+    { name: "demo", testMatch: /demo-mode\.spec\.ts/ },
+    { name: "community", testMatch: /community-[\w-]+\.spec\.ts/ },
+  ],
   webServer: {
     // The dev server: without an email provider it shows the parental consent link instead of
     // sending it, which production rightly refuses to do. The CI web job checks the production build.

@@ -1,6 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ProgramCard } from "@/components/program-card";
+import { cardDeadline } from "@/lib/card-deadline";
+import { loadCurrentCycles } from "@/lib/catalog";
+import { CURRENCIES } from "@/lib/fields";
+import { listSize } from "@/lib/display";
+import { readDisplay } from "@/lib/display-server";
 import { getUser } from "@/lib/supabase/server";
 import { COUNTRIES, LEVELS, countryName, label } from "@/lib/format";
 import type { Enums } from "@uniguide/db-types";
@@ -10,7 +15,7 @@ export const metadata: Metadata = {
   description: "Search courses abroad by level, country and subject. Every listed course comes from an official register.",
 };
 
-const PAGE_SIZE = 30;
+const FULL_PAGE = 30;
 
 export default async function Courses({ searchParams }: PageProps<"/courses">) {
   const params = await searchParams;
@@ -19,6 +24,10 @@ export default async function Courses({ searchParams }: PageProps<"/courses">) {
   const level = LEVELS.find((l) => l === one(params.level));
   const country = one(params.country)?.toUpperCase();
   const page = Math.max(1, Number(one(params.page)) || 1);
+  const open = one(params.open) === "1";
+  const maxTuition = Number(one(params.max)) > 0 ? Math.round(Number(one(params.max))) : undefined;
+  const currency = CURRENCIES.find((c) => c === one(params.cur)) ?? "USD";
+  const PAGE_SIZE = listSize(FULL_PAGE, (await readDisplay()).lite);
 
   const { supabase, user } = await getUser();
   const { data: cards, error } = await supabase.rpc("search_programs", {
@@ -27,14 +36,23 @@ export default async function Courses({ searchParams }: PageProps<"/courses">) {
     p_countries: country && /^[A-Z]{2}$/.test(country) ? [country] : undefined,
     p_limit: PAGE_SIZE + 1,
     p_offset: (page - 1) * PAGE_SIZE,
+    p_deadline_open: open,
+    p_max_tuition: maxTuition,
+    p_tuition_currency: maxTuition ? currency : undefined,
   });
   const results = (cards ?? []).slice(0, PAGE_SIZE);
   const hasMore = (cards?.length ?? 0) > PAGE_SIZE;
+  const cycles = await loadCurrentCycles(supabase, results.map((c) => c.id!));
   const pageHref = (p: number) => {
     const sp = new URLSearchParams();
     if (q) sp.set("q", q);
     if (level) sp.set("level", level);
     if (country) sp.set("country", country);
+    if (open) sp.set("open", "1");
+    if (maxTuition) {
+      sp.set("max", String(maxTuition));
+      sp.set("cur", currency);
+    }
     sp.set("page", String(p));
     return `/courses?${sp}`;
   };
@@ -61,7 +79,28 @@ export default async function Courses({ searchParams }: PageProps<"/courses">) {
           {Object.keys(COUNTRIES).map((c) => <option key={c} value={c}>{countryName(c)}</option>)}
         </select>
         <button className="btn btn-primary">Search</button>
+        <fieldset className="flex flex-wrap items-center gap-x-6 gap-y-3 text-sm sm:col-span-4">
+          <legend className="sr-only">More filters</legend>
+          <label className="flex items-center gap-2">
+            <input type="checkbox" name="open" value="1" defaultChecked={open} className="accent-[var(--accent)]" />
+            Application deadline still open
+          </label>
+          <span className="flex flex-wrap items-center gap-2">
+            <label htmlFor="max">Published yearly tuition up to</label>
+            <input id="max" name="max" type="number" min="1" step="any" defaultValue={maxTuition ?? ""} className="field py-1" style={{ width: "8rem" }} />
+            <label className="sr-only" htmlFor="cur">Currency</label>
+            <select id="cur" name="cur" defaultValue={currency} className="field py-1" style={{ width: "6rem" }}>
+              {CURRENCIES.map((c) => <option key={c} value={c}>{c}</option>)}
+            </select>
+          </span>
+        </fieldset>
       </form>
+      {open || maxTuition ? (
+        <p className="mt-3 text-sm text-muted">
+          Filters use the current intake&apos;s published facts. Courses whose deadline or yearly tuition is not published yet are hidden while a filter is on
+          {maxTuition ? "; fees in other currencies are compared at the latest stored exchange rate" : ""}.
+        </p>
+      ) : null}
 
       {error ? (
         <p role="alert" className="mt-8 text-conflicting">Search failed. Please try again.</p>
@@ -75,7 +114,9 @@ export default async function Courses({ searchParams }: PageProps<"/courses">) {
         </div>
       ) : (
         <div className="mt-8 grid gap-4 md:grid-cols-2">
-          {results.map((card) => <ProgramCard key={card.id} card={card} signedIn={Boolean(user)} />)}
+          {results.map((card) => (
+            <ProgramCard key={card.id} card={card} signedIn={Boolean(user)} deadline={cardDeadline(cycles.get(card.id!)?.deadlines)} />
+          ))}
         </div>
       )}
 

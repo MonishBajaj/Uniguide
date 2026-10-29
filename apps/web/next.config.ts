@@ -4,6 +4,8 @@ import type { NextConfig } from "next";
 // request read to sit behind <Suspense>) is left off; pages render per request.
 const nextConfig: NextConfig = {
   transpilePackages: ["@uniguide/matching", "@uniguide/db-types"],
+  // The blog reads its Markdown at request time for the sitemap.
+  outputFileTracingIncludes: { "/sitemap.xml": ["./content/blog/**"], "/blog/**": ["./content/blog/**"] },
   turbopack: {
     rules: {
       "*.css": {

@@ -25,3 +25,19 @@ export async function saveMatrix(input: unknown): Promise<{ ok: boolean; message
   revalidatePath("/app/offers");
   return { ok: true, message: "Saved." };
 }
+
+const Gut = z.object({ application_id: z.string().uuid(), reaction: z.enum(["relieved", "disappointed", "unsure"]) });
+
+/** Saves how the student felt when the coin picked an offer. Keeps the latest 50. */
+export async function recordGutCheck(input: unknown): Promise<{ ok: boolean }> {
+  const parsed = Gut.safeParse(input);
+  if (!parsed.success) return { ok: false };
+  const { supabase, user } = await getUser();
+  if (!user) return { ok: false };
+  const { data: row } = await supabase.from("decision_matrices").select("gut_checks").maybeSingle();
+  const previous = Array.isArray(row?.gut_checks) ? row.gut_checks : [];
+  const gut_checks = [...previous, { ...parsed.data, at: new Date().toISOString() }].slice(-50);
+  const { error } = await supabase.from("decision_matrices").upsert({ user_id: user.id, gut_checks: asJson(gut_checks), updated_at: new Date().toISOString() });
+  revalidatePath("/app/offers");
+  return { ok: !error };
+}

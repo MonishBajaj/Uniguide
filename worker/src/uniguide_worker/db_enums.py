@@ -26,6 +26,21 @@ class ApplicationStatus(StrEnum):
     WITHDRAWN = "withdrawn"
 
 
+class CommunityKind(StrEnum):
+    STORY = "story"
+    REVIEW = "review"
+    QUESTION = "question"
+    ANSWER = "answer"
+    AMA_QUESTION = "ama_question"
+
+
+class CommunityStatus(StrEnum):
+    PENDING = "pending"
+    PUBLISHED = "published"
+    REJECTED = "rejected"
+    REMOVED = "removed"
+
+
 class ConsentKind(StrEnum):
     TERMS = "terms"
     PRIVACY = "privacy"
@@ -108,6 +123,9 @@ class DocumentKind(StrEnum):
     PERSONAL_STATEMENT = "personal_statement"
     WHY_THIS_UNIVERSITY = "why_this_university"
     OTHER = "other"
+    CONTINUED_INTEREST = "continued_interest"
+    SUPPLEMENTAL = "supplemental"
+    RESEARCH_STATEMENT = "research_statement"
 
 
 class ExamKind(StrEnum):

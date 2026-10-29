@@ -1,20 +1,24 @@
 import type { Metadata } from "next";
-import { label } from "@/lib/format";
+import { countryName, label } from "@/lib/format";
+import { profileChecklist } from "@/lib/profile-completeness";
 import { getUser } from "@/lib/supabase/server";
 import Link from "next/link";
-import { deleteTestScore, setAiConsent } from "./actions";
-import { CvReader, ProfileForm, TestScoreForm } from "./forms";
+import { deleteTestScore, removeTrack, setAiConsent } from "./actions";
+import { CvReader, ProfileForm, TestScoreForm, TrackForm } from "./forms";
 
 export const metadata: Metadata = { title: "Profile" };
 
 export default async function ProfilePage() {
   const { supabase, user } = await getUser();
-  const [{ data: profile }, { data: scores }, { data: consent }] = await Promise.all([
+  const [{ data: profile }, { data: scores }, { data: consent }, { data: tracks }] = await Promise.all([
     supabase.from("profiles").select("*").eq("user_id", user!.id).single(),
     supabase.from("test_scores").select("*").order("taken_on", { ascending: false }),
     supabase.from("consents").select("id").eq("kind", "ai_processing").is("withdrawn_at", null).limit(1).maybeSingle(),
+    supabase.from("tracks").select("*").order("created_at"),
   ]);
   if (!profile) return <p>Profile not found.</p>;
+  const checklist = profileChecklist(profile, (scores ?? []).length);
+  const done = checklist.filter((i) => i.done).length;
 
   return (
     <div className="grid gap-12">
@@ -22,6 +26,35 @@ export default async function ProfilePage() {
         <h1 className="text-4xl font-semibold">Your profile</h1>
         <p className="mt-2 text-muted">Used to check requirements and rank courses. Nothing here is shared with universities, or with anyone else unless you choose to.</p>
       </header>
+
+      <section aria-labelledby="complete" className="grid gap-3 rounded-2xl border border-border bg-surface p-6 text-sm">
+        <div className="flex flex-wrap items-baseline justify-between gap-2">
+          <h2 id="complete" className="text-lg font-semibold">What matching needs from you</h2>
+          <p className="font-semibold">{done} of {checklist.length} done</p>
+        </div>
+        <div className="h-1.5 overflow-hidden rounded-full bg-surface-2" aria-hidden="true">
+          <div className="h-full rounded-full bg-accent" style={{ width: `${Math.round((done / checklist.length) * 100)}%` }} />
+        </div>
+        {done === checklist.length ? (
+          <p className="text-muted">Everything matching uses is filled in. Keep it current as your plans change.</p>
+        ) : (
+          <ul className="grid gap-1">
+            {checklist.map((item) => (
+              <li key={item.key} className="flex items-baseline gap-2">
+                <span aria-hidden="true" className={item.done ? "text-verified" : "text-muted"}>{item.done ? "✓" : "○"}</span>
+                {item.done ? (
+                  <span className="text-muted">{item.label}<span className="sr-only"> (done)</span></span>
+                ) : (
+                  <span>
+                    <a href={item.href} className="underline underline-offset-2">{item.label}</a>
+                    <span className="text-muted"> · {item.why}</span>
+                  </span>
+                )}
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
 
       <section aria-labelledby="ai" className="grid gap-3 rounded-2xl border border-border bg-surface p-6 text-sm">
         <h2 id="ai" className="text-lg font-semibold">AI features</h2>
@@ -43,7 +76,7 @@ export default async function ProfilePage() {
 
       <ProfileForm profile={profile} />
 
-      <section aria-labelledby="scores" className="grid gap-4 rounded-2xl border border-border bg-surface p-6">
+      <section id="scores-section" aria-labelledby="scores" className="grid scroll-mt-24 gap-4 rounded-2xl border border-border bg-surface p-6">
         <h2 id="scores" className="text-lg font-semibold">Test scores</h2>
         {(scores ?? []).length === 0 ? (
           <p className="text-sm text-muted">No scores yet. Add language tests and admissions tests with their date and version.</p>
@@ -67,6 +100,39 @@ export default async function ProfilePage() {
           </ul>
         )}
         <TestScoreForm />
+      </section>
+
+      <section id="tracks" aria-labelledby="tracks-title" className="grid scroll-mt-24 gap-4 rounded-2xl border border-border bg-surface p-6">
+        <div>
+          <h2 id="tracks-title" className="text-lg font-semibold">Application tracks</h2>
+          <p className="text-sm text-muted">
+            Applying for two different things, such as an MS and an MBA? Give each its own levels, countries, subjects and
+            budget. The targets above are your Main track. Matches and the tracker can then be viewed one track at a time.
+          </p>
+        </div>
+        {(tracks ?? []).length ? (
+          <ul className="grid gap-2">
+            {tracks!.map((t) => (
+              <li key={t.id} className="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-background p-3 text-sm">
+                <span>
+                  <Link href={`/app/match?track=${t.id}`} className="font-semibold underline-offset-2 hover:underline">{t.name}</Link>
+                  <span className="text-muted">
+                    {" · "}{t.target_levels.map(label).join(", ")}
+                    {" · "}{t.target_countries.length ? t.target_countries.map(countryName).join(", ") : "any country"}
+                    {t.budget_amount && t.budget_currency ? ` · budget ${Number(t.budget_amount).toLocaleString("en")} ${t.budget_currency}` : ""}
+                  </span>
+                </span>
+                <form action={removeTrack.bind(null, t.id)}>
+                  <button className="btn btn-secondary btn-sm" aria-label={`Remove the ${t.name} track`}>Remove</button>
+                </form>
+              </li>
+            ))}
+          </ul>
+        ) : null}
+        <details className="rounded-lg border border-border p-4">
+          <summary className="cursor-pointer font-semibold">Add a track</summary>
+          <div className="mt-4"><TrackForm /></div>
+        </details>
       </section>
 
       <section aria-labelledby="sharing" className="grid gap-2 rounded-2xl border border-border bg-surface p-6 text-sm">

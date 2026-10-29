@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { promptUrl } from "@/lib/demo-mode";
 import { AUTH_DISABLED, SUPABASE_KEY, SUPABASE_URL } from "@/lib/env";
 
 /** Refreshes the Supabase session cookie and keeps signed-out visitors out of /app and /admin. */
@@ -19,11 +20,9 @@ export async function proxy(request: NextRequest) {
 
   const path = request.nextUrl.pathname;
   if (!data.user && ["/app", "/admin", "/agency", "/parent"].some((p) => path.startsWith(p))) {
-    const url = request.nextUrl.clone();
-    // With sign-in switched off the guest goes home, where the navbar offers the mode switch.
-    url.pathname = AUTH_DISABLED ? "/" : "/login";
-    url.search = AUTH_DISABLED ? "" : `?next=${encodeURIComponent(path)}`;
-    return NextResponse.redirect(url);
+    // With sign-in switched off the guest goes home, where a banner says which mode opens the page.
+    const target = AUTH_DISABLED ? promptUrl(path) : `/login?next=${encodeURIComponent(path + request.nextUrl.search)}`;
+    return NextResponse.redirect(new URL(target, request.url));
   }
   return response;
 }

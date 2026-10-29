@@ -7,7 +7,11 @@ import { ProgramCard } from "@/components/program-card";
 import { daysUntil, deadlineText, money } from "@/lib/format";
 import { asJson } from "@/lib/json";
 import { loadMatchInputs } from "@/lib/match-data";
+import { listSize } from "@/lib/display";
+import { readDisplay } from "@/lib/display-server";
 import { getUser } from "@/lib/supabase/server";
+import { selectedTrack } from "@/lib/tracks";
+import { TrackSwitcher } from "@/components/track-switcher";
 
 export const metadata: Metadata = { title: "My matches" };
 
@@ -27,9 +31,12 @@ const RULES: Record<Exclusion["rule"], string> = {
   ineligible: "A published requirement you do not meet",
 };
 
-export default async function MatchPage() {
+export default async function MatchPage({ searchParams }: PageProps<"/app/match">) {
   const { supabase, user } = await getUser();
-  const inputs = await loadMatchInputs(supabase, user!.id);
+  const { data: tracks } = await supabase.from("tracks").select("*").order("created_at");
+  const track = selectedTrack((await searchParams).track, tracks ?? []);
+  const inputs = await loadMatchInputs(supabase, user!.id, track);
+  const { lite } = await readDisplay();
   if (!inputs) {
     return (
       <div className="rounded-2xl border border-border bg-surface p-8">
@@ -90,11 +97,21 @@ export default async function MatchPage() {
   return (
     <div className="grid gap-10">
       <header>
-        <h1 className="text-4xl font-semibold">Your matches</h1>
+        <h1 className="text-4xl font-semibold">Your matches{track ? `: ${track.name}` : ""}</h1>
+        {tracks?.length ? (
+          <div className="mt-4">
+            <TrackSwitcher
+              href={(v) => (v === "main" ? "/app/match" : `/app/match?track=${v}`)}
+              options={[{ value: "main", label: "Main (your profile)" }, ...tracks.map((t) => ({ value: t.id, label: t.name }))]}
+              current={track?.id ?? "main"}
+            />
+          </div>
+        ) : null}
         <p className="mt-2 text-sm"><Link href="/app/match/what-if" className="underline underline-offset-2">Try what if: change your grades, budget or scores and see what moves</Link></p>
         <p className="mt-2 max-w-[680px] text-muted">
-          {feasible.length} courses fit your limits, ordered by suitability to your preferences. Suitability is not your
-          chance of admission. {excluded.length} courses were set aside; the reasons are below.
+          {feasible.length} {feasible.length === 1 ? "course fits" : "courses fit"} your limits, ordered by suitability to your preferences. Suitability is not your
+          chance of admission.{" "}
+          {excluded.length ? `${excluded.length} ${excluded.length === 1 ? "course was" : "courses were"} set aside; the reasons are below.` : ""}
         </p>
       </header>
 
@@ -105,7 +122,7 @@ export default async function MatchPage() {
         </div>
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
-          {feasible.slice(0, 40).map((r) => {
+          {feasible.slice(0, listSize(40, lite)).map((r) => {
             const card = byId.get(r.programId)!;
             const cost = r.cost;
             const base = cost.converted ?? (cost.currency ? { amount: cost.base, currency: cost.currency } : null);
@@ -173,6 +190,12 @@ export default async function MatchPage() {
           })}
         </div>
       )}
+
+      {lite && feasible.length > listSize(40, lite) ? (
+        <p className="text-sm text-muted">
+          Showing your top {listSize(40, lite)} because data saver is on. <Link href="/accessibility" className="underline underline-offset-2">Show more</Link>
+        </p>
+      ) : null}
 
       {excluded.length ? (
         <section aria-labelledby="excluded">

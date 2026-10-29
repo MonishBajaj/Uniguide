@@ -16,5 +16,8 @@ export const AUTH_DISABLED = process.env.AUTH_DISABLED === "true";
 export const DEMO_SWITCHER = demoSwitcherEnabled(AUTH_DISABLED, SUPABASE_URL);
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
+/** Part 3 community features (stories, reviews, alumni, AMAs). Off until legal review; see BACKLOG.md. */
+export const COMMUNITY_ENABLED = process.env.COMMUNITY_ENABLED === "true";
+
 /** Bumped whenever the terms or privacy policy change; stored on every consent row. */
 export const POLICY_VERSION = "2026-10-draft";

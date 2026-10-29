@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ProgramCard } from "@/components/program-card";
+import { cardDeadline } from "@/lib/card-deadline";
 import { loadCurrentCycles } from "@/lib/catalog";
-import { daysUntil, deadlineText } from "@/lib/format";
 import { getUser } from "@/lib/supabase/server";
 import { removeFromShortlist } from "./actions";
 import { MergeLocalShortlist } from "./merge-local";
@@ -37,19 +37,9 @@ export default async function ShortlistPage() {
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
           {cards!.map((card) => {
-            const upcoming = cycles
-              .get(card.id!)
-              ?.deadlines.filter((d) => new Date(d.due_at) >= new Date())
-              .sort((a, b) => a.due_at.localeCompare(b.due_at))[0];
             return (
               <div key={card.id} className="grid gap-2">
-                <ProgramCard card={card} signedIn showShortlist={false}>
-                  <p className="text-sm">
-                    {upcoming
-                      ? `Next deadline: ${deadlineText(upcoming.due_at, upcoming.timezone, upcoming.precision)} (${daysUntil(upcoming.due_at)} days)`
-                      : "No upcoming deadline known yet"}
-                  </p>
-                </ProgramCard>
+                <ProgramCard card={card} signedIn showShortlist={false} deadline={cardDeadline(cycles.get(card.id!)?.deadlines)} />
                 <form action={removeFromShortlist.bind(null, card.id!)}>
                   <button className="btn btn-secondary btn-sm">Remove</button>
                 </form>

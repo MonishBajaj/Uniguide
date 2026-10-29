@@ -32,7 +32,8 @@ export function TaglineReveal({ lines }: { lines: string[] }) {
             <span
               key={j}
               data-word
-              style={{ opacity: 0.3 }}
+              // Dimmed words still meet 3:1 for large text (WCAG 1.4.3) before they brighten.
+              style={{ opacity: 0.55 }}
               className="transition-opacity duration-500 ease-soft motion-reduce:transition-none"
             >
               {word}{" "}

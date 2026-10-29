@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { getPosts } from "@/lib/blog";
 import { SITE_URL } from "@/lib/env";
 import { createClient } from "@/lib/supabase/server";
 
@@ -15,6 +16,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${SITE_URL}/courses`, changeFrequency: "daily" },
     { url: `${SITE_URL}/requirements`, changeFrequency: "daily" },
     { url: `${SITE_URL}/visas`, changeFrequency: "monthly" },
+    { url: `${SITE_URL}/guide`, changeFrequency: "monthly" },
+    { url: `${SITE_URL}/learn`, changeFrequency: "weekly" },
+    { url: `${SITE_URL}/accessibility`, changeFrequency: "yearly" },
+    { url: `${SITE_URL}/blog`, changeFrequency: "weekly" },
+    ...getPosts().map((p) => ({ url: `${SITE_URL}/blog/${p.slug}`, lastModified: p.date, changeFrequency: "yearly" as const })),
   ];
   for (const p of data ?? []) {
     pages.push({ url: `${SITE_URL}/courses/${p.slug}`, lastModified: p.updated_at, changeFrequency: "weekly" });

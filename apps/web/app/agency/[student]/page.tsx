@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { PortfolioList } from "@/components/portfolio-list";
 import { GRADE_SCALES } from "@/lib/fields";
 import { countryName, daysUntil, deadlineText, label, money } from "@/lib/format";
 import { getUser } from "@/lib/supabase/server";
@@ -83,6 +84,11 @@ export default async function AgencyStudent({ params }: PageProps<"/agency/[stud
             </li>
           ) : null)}
         </ul>
+      </section>
+
+      <section aria-labelledby="portfolio" className="grid gap-3">
+        <h2 id="portfolio" className="text-2xl font-semibold">Portfolio</h2>
+        <PortfolioList supabase={supabase} userId={student} editable={false} />
       </section>
     </div>
   );

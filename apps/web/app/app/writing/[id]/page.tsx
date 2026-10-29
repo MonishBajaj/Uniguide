@@ -3,7 +3,11 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { label, shortDate } from "@/lib/format";
 import { getUser } from "@/lib/supabase/server";
-import { outlineFor } from "@/lib/writing/prompts";
+import { loadFaculty } from "@/lib/faculty";
+import { courseMaterial, namedInDraft, WHY_QUESTIONS, type MaterialItem } from "@/lib/why-helper";
+import { outlineFor, STORY_QUESTIONS } from "@/lib/writing/prompts";
+import { researchChecks } from "@/lib/writing/research";
+import { classifyPrompt, PROMPT_TYPES } from "@/lib/writing/supplemental";
 import { segment } from "@/lib/writing/segment";
 import type { RubricResult, ComparisonResult } from "@/lib/writing/review";
 import { deleteDocument } from "../actions";
@@ -22,7 +26,7 @@ const CRITERION: Record<string, string> = {
 
 export default async function DocumentPage({ params }: PageProps<"/app/writing/[id]">) {
   const { id } = await params;
-  const { supabase } = await getUser();
+  const { supabase, user } = await getUser();
   const [{ data: doc }, { data: versions }, { data: reviews }, { data: allowance }] = await Promise.all([
     supabase.from("documents").select("*").eq("id", id).maybeSingle(),
     supabase.from("document_versions").select("id, body, word_count, created_at").eq("document_id", id).order("created_at", { ascending: false }),
@@ -33,7 +37,31 @@ export default async function DocumentPage({ params }: PageProps<"/app/writing/[
   const ids = new Set((versions ?? []).map((v) => v.id));
   const mine = (reviews ?? []).filter((r) => ids.has(r.version_id));
   const latest = versions?.[0];
-  const outline = outlineFor(doc.kind, doc.word_limit);
+  const outline = outlineFor(doc.kind, doc.word_limit, doc.question);
+  const promptType = doc.kind === "supplemental" && doc.question ? classifyPrompt(doc.question) : null;
+  const guide = promptType ? PROMPT_TYPES[promptType] : null;
+
+  // "Why this university": material from this course's stored facts and its researchers.
+  let material: MaterialItem[] = [];
+  let institution: string | null = null;
+  const isResearch = doc.kind === "research_statement";
+  if ((doc.kind === "why_this_university" || promptType === "why_us" || isResearch) && doc.application_id) {
+    const { data: app } = await supabase.from("applications").select("program_cycles(program_id)").eq("id", doc.application_id).maybeSingle();
+    const programId = app?.program_cycles?.program_id;
+    const [{ data: card }, { data: profile }] = await Promise.all([
+      programId ? supabase.from("program_cards").select("*").eq("id", programId).maybeSingle() : Promise.resolve({ data: null }),
+      supabase.from("profiles").select("research_interests").eq("user_id", user!.id).single(),
+    ]);
+    if (card) {
+      institution = card.institution_name;
+      const faculty = card.level === "master" || card.level === "doctorate" ? await loadFaculty(supabase, card, profile?.research_interests ?? null, 6) : [];
+      // A research statement needs the people, not the city or the format.
+      material = courseMaterial(card, faculty).filter((m) => !isResearch || m.group === "Researchers");
+    }
+  }
+  const named = namedInDraft(latest?.body ?? "", material);
+  const checks = isResearch && latest ? researchChecks(latest.body) : null;
+  const countable = material.filter((m) => m.terms.length);
 
   return (
     <div className="grid gap-8">
@@ -56,6 +84,92 @@ export default async function DocumentPage({ params }: PageProps<"/app/writing/[
         </ol>
         <p className="mt-3 text-sm text-muted"><Link href="/app/writing/stories" className="underline underline-offset-2">Your story bank</Link> holds the material for each part.</p>
       </details>
+
+      {guide ? (
+        <section aria-labelledby="strategy" className="grid gap-3 rounded-2xl border border-border bg-surface p-6 text-sm">
+          <div>
+            <h2 id="strategy" className="text-lg font-semibold">How to approach this question</h2>
+            <p className="text-muted">
+              {guide.about
+                ? <>This looks like a question about <span className="font-semibold text-foreground">{guide.about}</span>. If it is really asking something else, follow the question, not this guess.</>
+                : "We could not tell what kind of question this is, so these are general. Work from the question itself."}
+            </p>
+          </div>
+          <ul className="grid list-disc gap-1 pl-5">{guide.strategy.map((q) => <li key={q}>{q}</li>)}</ul>
+          <div className="grid gap-1">
+            <h3 className="font-semibold">From your story bank</h3>
+            <ul className="grid gap-1 text-muted">
+              {guide.stories.map((sid) => {
+                const q = STORY_QUESTIONS.find((s) => s.id === sid)!;
+                return <li key={sid}>{q.question}</li>;
+              })}
+            </ul>
+            <Link href="/app/writing/stories" className="justify-self-start underline underline-offset-2">Answer these in your story bank</Link>
+          </div>
+        </section>
+      ) : null}
+
+      {isResearch ? (
+        <section aria-labelledby="research-checks" className="grid gap-3 rounded-2xl border border-border bg-surface p-6 text-sm">
+          <h2 id="research-checks" className="text-lg font-semibold">Research statement checks</h2>
+          {checks ? (
+            <ul className="grid gap-2">
+              <li>
+                <span aria-hidden="true" className={checks.questionSentences.length ? "text-verified" : "text-unverified"}>{checks.questionSentences.length ? "✓ " : "○ "}</span>
+                {checks.questionSentences.length
+                  ? `States a research question (${checks.questionSentences.join(", ")}). Could someone else tell when it has been answered?`
+                  : "No research question found yet. What exactly do you want to find out?"}
+              </li>
+              <li>
+                <span aria-hidden="true" className={checks.methods.length ? "text-verified" : "text-unverified"}>{checks.methods.length ? "✓ " : "○ "}</span>
+                {checks.methods.length
+                  ? `Names how you would answer it: ${checks.methods.join(", ")}. Have you used these before, and on what?`
+                  : "No method named yet. How would you answer the question, and with what data?"}
+              </li>
+            </ul>
+          ) : (
+            <p className="text-muted">Save a draft to check whether it states a question and names how you would answer it.</p>
+          )}
+        </section>
+      ) : null}
+
+      {material.length ? (
+        <section aria-labelledby="material" className="grid gap-4 rounded-2xl border border-border bg-surface p-6 text-sm">
+          <div>
+            <h2 id="material" className="text-lg font-semibold">Material from this course</h2>
+            <p className="text-muted">
+              Facts we hold about {institution}, from official pages and OpenAlex. Check each one on the official page,
+              and use only what connects to something you have really done. The words are yours to write.
+            </p>
+          </div>
+          {latest ? (
+            <p role="status" className={named.size ? "font-semibold" : "font-semibold text-unverified"}>
+              {named.size
+                ? `Your latest draft names ${named.size} of ${countable.length} specific things about this course.`
+                : "Your latest draft does not name anything specific to this course yet. Could a reader tell which university it was written for?"}
+            </p>
+          ) : null}
+          {(["Researchers", "Place", "Course"] as const).map((group) => {
+            const list = material.filter((m) => m.group === group);
+            return list.length ? (
+              <div key={group} className="grid gap-2">
+                <h3 className="font-semibold">{group}</h3>
+                <ul className="grid gap-1">
+                  {list.map((m) => (
+                    <li key={m.key}>
+                      <span aria-hidden="true" className={named.has(m.key) ? "text-verified" : "text-muted"}>{named.has(m.key) ? "✓ " : "· "}</span>
+                      <span className="font-semibold">{m.label}</span>
+                      {m.detail ? <span className="text-muted"> · {m.detail}</span> : null}
+                      {named.has(m.key) ? <span className="sr-only"> (named in your draft)</span> : null}
+                    </li>
+                  ))}
+                </ul>
+                <p className="text-muted italic">{WHY_QUESTIONS[group]}</p>
+              </div>
+            ) : null;
+          })}
+        </section>
+      ) : null}
 
       <Editor documentId={doc.id} initial={latest?.body ?? ""} wordLimit={doc.word_limit} />
 

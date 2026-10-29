@@ -252,3 +252,42 @@ export async function setAiConsent(on: boolean) {
   }
   revalidatePath("/app", "layout");
 }
+
+const Track = z.object({
+  name: z.string().trim().min(1).max(60),
+  target_levels: z.array(z.enum(LEVELS)).min(1),
+  target_countries: z.array(z.enum(DESTINATIONS)),
+  target_fields: z.array(z.enum(Object.keys(FIELDS) as [string, ...string[]])),
+  budget_amount: optionalNumber.refine((v) => v == null || v > 0),
+  budget_currency: z.enum(CURRENCIES).nullable(),
+});
+
+/** 1.4 A separate set of targets, such as an MBA alongside an MS. */
+export async function addTrack(_prev: FormState, form: FormData): Promise<FormState> {
+  const parsed = Track.safeParse({
+    name: form.get("name"),
+    target_levels: form.getAll("target_levels"),
+    target_countries: form.getAll("target_countries"),
+    target_fields: form.getAll("target_fields"),
+    budget_amount: form.get("budget_amount"),
+    budget_currency: form.get("budget_currency") || null,
+  });
+  if (!parsed.success) return { ok: false, message: "Give the track a name and at least one level." };
+  const { budget_amount, budget_currency } = parsed.data;
+  if ((budget_amount == null) !== (budget_currency == null)) return { ok: false, message: "Give a budget with its currency, or neither." };
+  const { supabase, user } = await getUser();
+  const { error } = await supabase.from("tracks").insert({
+    ...parsed.data,
+    user_id: user!.id,
+    target_levels: parsed.data.target_levels as Enums<"program_level">[],
+  });
+  if (error) return error.code === "23505" ? { ok: false, message: "You already have a track with that name." } : failed(error.code);
+  revalidatePath("/app", "layout");
+  return { ok: true, message: `Added ${parsed.data.name}.` };
+}
+
+export async function removeTrack(id: string) {
+  const { supabase } = await getUser();
+  await supabase.from("tracks").delete().eq("id", id);
+  revalidatePath("/app", "layout");
+}
