@@ -25,7 +25,10 @@ export function compareProfile(
   ctx: Pick<MatchContext, "now">,
 ): ProfileComparison[] {
   return programs.map(({ program, title, admitRate }) => {
-    const { checks } = checkEligibility(program, profile, ctx);
+    // Credits are a separate requirement: left in, an unmet or unknown credits check replaces the grade check
+    // in the result and the grade would show as unknown. Judge the grade and the test on their own.
+    const withoutCredits = { ...program, requirements: program.requirements.map((r) => ({ ...r, minCredits: null })) };
+    const { checks } = checkEligibility(withoutCredits, profile, ctx);
     return {
       programId: program.id,
       title,

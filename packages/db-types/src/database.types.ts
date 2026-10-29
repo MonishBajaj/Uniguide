@@ -637,14 +637,14 @@ isOneToOne: false
                   ]
                 },"organizations": {
                   Row: {
-                    "country": string | null,"created_at": string,"id": string,"invite_code": string,"name": string,"website": string | null
+                    "country": string | null,"created_at": string,"id": string,"invite_code": string,"kind": string,"name": string,"website": string | null
                   }
                   ComputedFields: never
                   Insert: {
-                    "country"?: string | null,"created_at"?: string,"id"?: string,"invite_code"?: string,"name": string,"website"?: string | null
+                    "country"?: string | null,"created_at"?: string,"id"?: string,"invite_code"?: string,"kind"?: string,"name": string,"website"?: string | null
                   }
                   Update: {
-                    "country"?: string | null,"created_at"?: string,"id"?: string,"invite_code"?: string,"name"?: string,"website"?: string | null
+                    "country"?: string | null,"created_at"?: string,"id"?: string,"invite_code"?: string,"kind"?: string,"name"?: string,"website"?: string | null
                   }
                   Relationships: [
                     
@@ -1045,6 +1045,32 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
+                },"university_staff": {
+                  Row: {
+                    "institution_id": string,"user_id": string,"verified_at": string,"verified_by": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "institution_id": string,"user_id": string,"verified_at"?: string,"verified_by"?: string | null
+                  }
+                  Update: {
+                    "institution_id"?: string,"user_id"?: string,"verified_at"?: string,"verified_by"?: string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "university_staff_institution_id_fkey"
+      columns: ["institution_id"]
+isOneToOne: false
+      referencedRelation: "institutions"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "university_staff_institution_id_fkey"
+      columns: ["institution_id"]
+isOneToOne: false
+      referencedRelation: "program_cards"
+      referencedColumns: ["institution_id"]
+    }
+                  ]
                 },"verifiers": {
                   Row: {
                     "active": boolean,"countries": (string)[],"created_at": string,"display_name": string,"user_id": string
@@ -1128,6 +1154,9 @@ isOneToOne: false
 "_can_edit_institution":
 { Args: { "p_institution": string }; Returns: boolean
                            },
+"_url_on_domain":
+{ Args: { "p_domain": string,"p_url": string }; Returns: boolean
+                           },
 "add_country_rule":
 { Args: { "p_amount"?: number,"p_applies_to"?: (string)[],"p_currency"?: string,"p_destination": string,"p_details"?: string,"p_hours_per_week"?: number,"p_kind": string,"p_link"?: string,"p_months"?: number,"p_period"?: string,"p_quote": string,"p_region"?: string,"p_source_url": string,"p_step"?: number,"p_title": string }; Returns: string
                            },
@@ -1142,6 +1171,9 @@ isOneToOne: false
                            },
 "add_program_stat":
 { Args: { "p_admit_rate": number,"p_admitted"?: number,"p_applicants"?: number,"p_cycle_label": string,"p_program_id": string,"p_quote": string,"p_source_url": string }; Returns: string
+                           },
+"add_university_staff":
+{ Args: { "p_email": string,"p_institution": string }; Returns: string
                            },
 "add_verifier":
 { Args: { "p_countries": (string)[],"p_display_name": string,"p_email": string }; Returns: string
@@ -1236,6 +1268,9 @@ isOneToOne: false
                            },
 "promote_fact_version":
 { Args: { "p_method"?: Database["public"]['Enums']["verification_method"],"p_reviewer_name"?: string,"p_status"?: Database["public"]['Enums']["fact_status"],"p_verified_at"?: string,"p_version_id": string }; Returns: string
+                           },
+"propose_university_correction":
+{ Args: { "p_cycle": string,"p_proposed": Json,"p_quote": string,"p_source_url": string,"p_subject": Database["public"]['Enums']["fact_subject"] }; Returns: string
                            },
 "publish_extracted_version":
 { Args: { "p_version_id": string }; Returns: string

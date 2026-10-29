@@ -25,6 +25,10 @@ select throws_ok(format($$ select public.add_institution_fact(%L, 'assistantship
 select throws_ok(format($$ select public.add_institution_fact(%L, 'free_lunch', 'Bad kind', 'https://test.ac.uk/x', 'quote text') $$, :'inst'),
   '23514', null, 'an unknown kind is refused');
 
+select throws_ok(format($$ select public.add_institution_fact(%L, 'assistantship', 'Spoof', 'https://evil.com\.test.ac.uk/x', 'quote text') $$, :'inst'), '22023', null, 'a backslash cannot smuggle another host');
+select throws_ok(format($$ select public.add_institution_fact(%L, 'assistantship', 'Spoof', 'https://x.test.ac.uk@evil.com/x', 'quote text') $$, :'inst'), '22023', null, 'userinfo cannot smuggle another host');
+select throws_ok(format($$ select public.add_institution_fact(%L, 'assistantship', 'Off link', 'https://test.ac.uk/ok', 'quote text', p_link := 'https://anything.example/x') $$, :'inst'), '22023', null, 'the official page link must be on the domain too');
+
 select tests.authenticate_as(:'dev');
 select throws_ok(format($$ select public.add_institution_fact(%L, 'assistantship', 'x', 'https://test.ac.uk/x', 'quote text') $$, :'inst'),
   '42501', null, 'a verifier for another country cannot add');
