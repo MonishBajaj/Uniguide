@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Noto_Sans_Devanagari } from "next/font/google";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { LiteProvider } from "@/components/lite";
+import { LocaleProvider } from "@/components/locale";
+import { getLocale } from "@/lib/i18n/server";
 import { displayAttributes } from "@/lib/display";
 import { readDisplay } from "@/lib/display-server";
 import { SITE_URL } from "@/lib/env";
@@ -10,6 +12,8 @@ import "./globals.css";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
+// 15.4 Hindi. Its unicode-range means browsers download it only when Devanagari text is on screen.
+const devanagari = Noto_Sans_Devanagari({ variable: "--font-devanagari", subsets: ["devanagari"], preload: false });
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -20,11 +24,11 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {
-  const { display, lite } = await readDisplay();
+  const [{ display, lite }, { locale, t }] = await Promise.all([readDisplay(), getLocale()]);
   return (
     <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      lang={locale}
+      className={`${geistSans.variable} ${geistMono.variable} ${devanagari.variable} h-full antialiased`}
       {...displayAttributes(display)}
       {...(lite ? { "data-lite": "on" } : {})}
     >
@@ -33,15 +37,17 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
           href="#main"
           className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-accent focus:px-3 focus:py-2 focus:text-accent-foreground"
         >
-          Skip to content
+          {t.skip}
         </a>
+        <LocaleProvider locale={locale}>
         <LiteProvider lite={lite}>
           <SiteHeader />
           <main id="main" className="flex-1">
             {children}
           </main>
-          <SiteFooter lite={lite} />
+          <SiteFooter lite={lite} locale={locale} />
         </LiteProvider>
+        </LocaleProvider>
       </body>
     </html>
   );

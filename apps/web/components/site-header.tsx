@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { COMMUNITY_ENABLED, DEMO_SWITCHER } from "@/lib/env";
 import { modeOf } from "@/lib/demo-mode";
+import { getLocale } from "@/lib/i18n/server";
 import { getRoles } from "@/lib/roles";
 import { getUser } from "@/lib/supabase/server";
 import { ModeSwitcher } from "./mode-switcher";
@@ -13,20 +14,21 @@ export async function SiteHeader() {
     : 0;
   const roles = await getRoles(supabase, user?.id);
   const mode = modeOf(Boolean(user), roles.parentOf.length > 0);
+  const { t } = await getLocale();
 
   const links = [
-    { href: "/courses", label: "Courses" },
-    { href: "/requirements", label: "Requirements table" },
-    ...(mode === "parent" ? [{ href: "/parent", label: "My child" }] : []),
+    { href: "/courses", label: t.nav.courses },
+    { href: "/requirements", label: t.nav.requirements },
+    ...(mode === "parent" ? [{ href: "/parent", label: t.nav.myChild }] : []),
     ...(user && mode !== "parent"
       ? [
-          { href: "/app/match", label: "My matches" },
-          { href: "/app/shortlist", label: "Shortlist" },
-          { href: "/app/tracker", label: "Tracker" },
-          { href: "/app/offers", label: "Offers" },
-          { href: "/app/writing", label: "Writing" },
-          { href: "/app/profile", label: "Profile" },
-          { href: "/app/notifications", label: unread ? `Updates (${unread})` : "Updates" },
+          { href: "/app/match", label: t.nav.matches },
+          { href: "/app/shortlist", label: t.nav.shortlist },
+          { href: "/app/tracker", label: t.nav.tracker },
+          { href: "/app/offers", label: t.nav.offers },
+          { href: "/app/writing", label: t.nav.writing },
+          { href: "/app/profile", label: t.nav.profile },
+          { href: "/app/notifications", label: unread ? t.nav.updatesCount(unread) : t.nav.updates },
         ]
       : []),
     ...(roles.admin || roles.verifier ? [{ href: "/admin/review", label: "Review queue" }] : []),
@@ -48,17 +50,17 @@ export async function SiteHeader() {
           <NavLinks links={links} />
         </div>
         <Link href="/accessibility" className="btn btn-secondary btn-sm whitespace-nowrap">
-          Display
+          {t.nav.display}
         </Link>
         {DEMO_SWITCHER ? (
           <ModeSwitcher mode={mode} />
         ) : user ? (
           <form action="/auth/signout" method="post">
-            <button className="btn btn-secondary btn-sm whitespace-nowrap">Sign out</button>
+            <button className="btn btn-secondary btn-sm whitespace-nowrap">{t.nav.signOut}</button>
           </form>
         ) : (
           <Link href="/login" className="btn btn-secondary btn-sm whitespace-nowrap">
-            Sign in
+            {t.nav.signIn}
           </Link>
         )}
       </nav>
