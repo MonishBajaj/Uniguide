@@ -52,7 +52,6 @@ Catalogue steps written but switched off until the piece they need exists:
   - `course-filters.spec.ts` "3.4 filter by open deadline and by published yearly tuition" (3 cards instead of 2)
   - `enrichment.spec.ts` "the first complete profile save starts the search by itself" (never reaches `/app/matching`)
   - `suggested-courses.spec.ts`, two specs: the test reads booleans as `t`/`f`, but the query returns `true`/`false`
-- **CI can't run the demo suite as configured:** `playwright.config.ts` starts its server with `AUTH_DISABLED=false`, but the demo specs need sign-in off, so the CI step `pnpm --filter web e2e:demo` would fail. Locally the demo specs pass against a server started with `AUTH_DISABLED=true` (checked at the end of M2). Predates M2; fix before relying on CI for demo mode.
 
 ## Follow-ups
 

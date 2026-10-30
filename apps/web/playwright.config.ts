@@ -26,9 +26,9 @@ export default defineConfig({
     // sending it, which production rightly refuses to do. The CI web job checks the production build.
     command: `pnpm dev --port ${port}`,
     url: `http://localhost:${port}`,
-    // A server Playwright starts always has real sign-in; the specs sign in through /login.
+    // A server Playwright starts has real sign-in, except for `pnpm e2e:demo`, which sets AUTH_DISABLED=true.
     // E2E=1 lets the error-state specs set a test-only cookie that makes the journey read fail (journey M2).
-    env: { AUTH_DISABLED: "false", E2E: "1" },
+    env: { AUTH_DISABLED: process.env.AUTH_DISABLED === "true" ? "true" : "false", E2E: "1" },
     reuseExistingServer: !process.env.CI,
     timeout: 180_000,
   },
