@@ -1,0 +1,4 @@
+# QS institution name: our institution name, for names the importer cannot match on its own.
+# Both sides are compared after normalising (accents, punctuation, brackets and "-Main Campus" are ignored).
+# `uniguide-worker import qs-rankings` lists unmatched institutions ranked 200 or better, so add them here.
+{}

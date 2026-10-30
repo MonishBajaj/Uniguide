@@ -7,11 +7,19 @@ characters).
 
 from __future__ import annotations
 
+import hashlib
 import re
 import unicodedata
 import zipfile
+from collections import defaultdict
 from dataclasses import dataclass
+from pathlib import Path
 from xml.etree import ElementTree as ET
+
+import yaml
+
+from ..db import Connection
+from .base import ImportStats, register_source
 
 _NS = "{http://schemas.openxmlformats.org/spreadsheetml/2006/main}"
 _REL_NS = "{http://schemas.openxmlformats.org/package/2006/relationships}"
@@ -136,3 +144,68 @@ def read_workbook(path: str) -> Workbook:
                     ranked.append(RankedRow(name, country, low, high))
             sheets.append(SubjectSheet(subject, ranked))
     return Workbook(edition, sheets)
+
+
+SOURCE_URL = "https://www.topuniversities.com/subject-rankings"
+RIGHTS = "QS World University Rankings by Subject; used only to order courses, never displayed or redistributed."
+# Unmatched institutions at or better than this rank are listed so an alias can be added.
+REPORT_RANK = 200
+
+
+def _aliases(path: str | None) -> dict[str, str]:
+    """QS name -> institution name, both reduced to comparison keys."""
+    if not path or not Path(path).exists():
+        return {}
+    raw = yaml.safe_load(Path(path).read_text()) or {}
+    return {normalize_name(qs): normalize_name(ours) for qs, ours in raw.items()}
+
+
+def run(conn: Connection, *, file: str, aliases_file: str | None = None) -> ImportStats:
+    """Replace this edition's rankings. Does not commit: the CLI's run wrapper does, so a failure rolls it all back."""
+    book = read_workbook(file)
+    aliases = _aliases(aliases_file)
+    countries = sorted({r.country for s in book.sheets for r in s.rows})
+    known: dict[tuple[str, str], list[str]] = defaultdict(list)
+    for inst in conn.execute("select id, name, country from institutions where country = any(%s)", (countries,)):
+        known[(inst["country"], normalize_name(inst["name"]))].append(str(inst["id"]))
+
+    ranks: dict[tuple[str, str], tuple[int, int]] = {}
+    best: dict[tuple[str, str], int] = {}
+    unmatched: set[tuple[str, str]] = set()
+    ambiguous: set[tuple[str, str]] = set()
+    for sheet in book.sheets:
+        for row in sheet.rows:
+            key = normalize_name(row.institution)
+            ids = known.get((row.country, aliases.get(key, key)), [])
+            who = (row.institution, row.country)
+            if len(ids) > 1:
+                ambiguous.add(who)
+            elif not ids:
+                unmatched.add(who)
+                best[who] = min(best.get(who, row.rank_low), row.rank_low)
+            else:
+                current = ranks.get((ids[0], sheet.subject))
+                if current is None or row.rank_low < current[0]:
+                    ranks[(ids[0], sheet.subject)] = (row.rank_low, row.rank_high)
+
+    source_id = register_source(
+        conn, url=SOURCE_URL, owner="QS Quacquarelli Symonds", rights_note=RIGHTS,
+        content_hash=hashlib.sha256(Path(file).read_bytes()).hexdigest(),
+    )
+    conn.execute("delete from institution_rankings where edition = %s", (book.edition,))
+    for (institution_id, subject), (low, high) in ranks.items():
+        conn.execute(
+            """
+            insert into institution_rankings (institution_id, subject, rank_low, rank_high, edition, source_id)
+            values (%s, %s, %s, %s, %s, %s)
+            """,
+            (institution_id, subject, low, high, book.edition, source_id),
+        )
+
+    stats = ImportStats(institutions=len({i for i, _ in ranks}), programs=len(ranks), skipped=len(unmatched))
+    stats.notes = [f"ambiguous: {name} ({country})" for name, country in sorted(ambiguous)] + [
+        f"{name} ({country}) best rank {best[(name, country)]}"
+        for name, country in sorted(unmatched, key=lambda w: best[w])
+        if best[(name, country)] <= REPORT_RANK
+    ]
+    return stats

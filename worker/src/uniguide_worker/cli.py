@@ -11,7 +11,7 @@ from typing import Annotated, Any
 import typer
 from psycopg.types.json import Jsonb
 
-from .config import get_settings
+from .config import REPO_ROOT, get_settings
 from .db import Connection, connect, is_local
 from .fetch.fetcher import Fetcher
 
@@ -139,6 +139,18 @@ def import_uk_discover_uni(
             ),
         )
     )
+
+
+@importer.command("qs-rankings")
+def import_qs_rankings(
+    file: Annotated[Path, typer.Option(help="QS World University Rankings by Subject workbook (.xlsx)")],
+    aliases: Annotated[Path | None, typer.Option(help="QS name to institution name YAML")] = None,
+) -> None:
+    """QS subject rankings, used only to order courses (never shown to students)."""
+    from .importers import qs_rankings
+
+    path = aliases or REPO_ROOT / "data" / "seed" / "rankings" / "aliases.yaml"
+    _report(_with_run("import:qs_rankings", lambda conn: qs_rankings.run(conn, file=str(file), aliases_file=str(path))))
 
 
 @importer.command("nl-duo")

@@ -12,7 +12,7 @@ def _col(i: int) -> str:
     return "ABCDEFGHIJKLMNOPQRSTUVWXYZ"[i]
 
 
-def write_workbook(path: str, sheets: dict[str, tuple[str, list[list[str]]]]) -> None:
+def write_workbook(path: str, sheets: dict[str, tuple[str, list[list[str]]]], edition: str = "2026") -> None:
     """sheets maps a (possibly truncated) tab name to (full subject name, data rows).
 
     Each data row is [rank, previous rank, institution, country, ...]. The layout follows QS: a title row, a row
@@ -36,7 +36,7 @@ def write_workbook(path: str, sheets: dict[str, tuple[str, list[list[str]]]]) ->
         )
 
     parts: list[tuple[str, str]] = [
-        ("Index", sheet_xml([["", "2026 QS World University Rankings by Subject"], [""], ["Index"]])),
+        ("Index", sheet_xml([["", f"{edition} QS World University Rankings by Subject"], [""], ["Index"]])),
         ("methodology", sheet_xml([["How the rankings work"]])),
     ]
     for tab, (subject, data) in sheets.items():
