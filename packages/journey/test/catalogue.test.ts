@@ -28,7 +28,7 @@ function everything(): JourneyInput {
   const req = (id: string, kind: never | string, extra = {}) => ({ id, kind, exam: null, testPolicy: null, countRequired: null, status: "verified", ...extra }) as never;
   return base({
     today: "2027-08-25",
-    profile: { ...readyProfile, gradeValue: null, gradeScale: null, budgetAmount: null, targetLevels: ["bachelor", "master", "doctorate"], consentState: "pending_parental" },
+    profile: { ...readyProfile, gradeValue: null, gradeScale: null, budgetAmount: null, targetLevels: ["bachelor", "master", "doctorate"] },
     matchRuns: { latestAt: "2027-01-01T00:00:00Z", feasibleCount: 2 },
     testScores: [{ id: "t1", exam: "ielts_academic", examVersion: null, total: 7, takenOn: null }],
     countryRules: rules,
@@ -80,6 +80,7 @@ function scenarios(): JourneyInput[] {
   return [
     everything(),
     base(),
+    STAGE_FIXTURES["edge-pending-consent"]!.input,
     STAGE_FIXTURES["edge-rejected-everywhere"]!.input,
     STAGE_FIXTURES["stage-2-exploring"]!.input,
     STAGE_FIXTURES["stage-4-preparing"]!.input,
@@ -218,6 +219,8 @@ describe("steps by situation", () => {
     const s = evaluateCatalogue(STAGE_FIXTURES["edge-pending-consent"]!.input).open.find((x) => x.catalogueId === "S1.06")!;
     expect(s.href).toBe("/consent");
     expect(s.dismissable).toBe(false);
+    // Nothing else can be saved until a parent confirms, so nothing else is asked for.
+    expect(ids(STAGE_FIXTURES["edge-pending-consent"]!.input)).toEqual(["S1.06"]);
     expect(evaluateCatalogue(base({ profile: { ...readyProfile, consentState: "granted" } })).completed).toContain("S1.06");
   });
 

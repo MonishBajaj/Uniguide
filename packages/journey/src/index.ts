@@ -6,3 +6,5 @@ export { checklistFields, matchingMinimumMet, profileChecklist, type ProfileChec
 export { variantsFor } from "./variants";
 export { CATALOGUE, ROUTES, buildCtx, evaluateCatalogue, resolveHref, type Candidate, type Ctx, type StepDef, type Subject } from "./catalogue";
 export { COPY, REASON_MAX, TITLE_MAX, fit, formatDate, render } from "./copy";
+export { STALL_DUE_DAYS, STALL_IDLE_DAYS, URGENT_DAYS, applyStepState, bandFor, isStalled, rankSteps, urgentLabel } from "./rank";
+export { stageProgress } from "./engine";

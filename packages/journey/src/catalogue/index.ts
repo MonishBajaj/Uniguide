@@ -51,6 +51,8 @@ export function evaluateCatalogue(input: JourneyInput, stage: Stage = computeSta
   const ctx = buildCtx(input, stage);
   const open: Candidate[] = [];
   const completed: string[] = [];
+  // Without parental consent nothing personal can be saved, so the only step is getting it (spec 4.4).
+  const blocked = input.profile.consentState === "pending_parental" || input.profile.consentState === "revoked";
   CATALOGUE.forEach((def, order) => {
     if (!def.available) return;
     if (def.variants && !def.variants.some((v) => ctx.variants.includes(v))) return;
@@ -63,6 +65,7 @@ export function evaluateCatalogue(input: JourneyInput, stage: Stage = computeSta
         completed.push(id);
         continue;
       }
+      if (blocked && def.id !== "S1.06") continue;
       const params = def.params?.(ctx, s) ?? {};
       const { title, reason } = render(def.copyKey?.(ctx, s) ?? def.id, params);
       const app = s.app;

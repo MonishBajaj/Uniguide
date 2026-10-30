@@ -274,6 +274,9 @@ export const STAGE4: StepDef[] = [
     parentTitle: "Recording the {course} application fee",
     subjects: (ctx) => appSubjects(preparing(ctx)),
     done: (_, s) => s.app!.costCount > 0,
+    // The fee is paid when submitting, so it is due with the application.
+    dueAt: due,
+    factRefs: (ctx, s) => deadlineRefs(s.app!, ctx.today),
     href: (_, s) => tracker(s, "#costs"),
     params: course,
   },
