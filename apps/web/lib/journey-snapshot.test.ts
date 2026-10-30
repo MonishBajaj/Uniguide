@@ -5,8 +5,9 @@ import { type JourneyRpc, loadJourney, parseSnapshot, utcToday } from "./journey
 
 /** A fixture as journey_snapshot returns it: JSON, without the date. */
 const asSnapshot = (input: (typeof STAGE_FIXTURES)[string]["input"]) => {
-  const { today: _today, ...rest } = input;
-  return JSON.parse(JSON.stringify(rest));
+  const json = JSON.parse(JSON.stringify(input));
+  delete json.today;
+  return json;
 };
 
 function fakeClient(snapshot: unknown, saveError: string | null = null) {
@@ -25,8 +26,9 @@ describe("parseSnapshot", () => {
   });
 
   it("fills missing optional blocks with empty values", () => {
-    const { tracks: _t, countryRules: _r, stepState: _s, matchRuns: _m, ...rest } = asSnapshot(STAGE_FIXTURES["stage-1-new-account"]!.input);
-    const input = parseSnapshot(rest, TODAY);
+    const snapshot = asSnapshot(STAGE_FIXTURES["stage-1-new-account"]!.input);
+    for (const block of ["tracks", "countryRules", "stepState", "matchRuns"]) delete snapshot[block];
+    const input = parseSnapshot(snapshot, TODAY);
     expect(input.tracks).toEqual([]);
     expect(input.countryRules).toEqual([]);
     expect(input.stepState).toEqual([]);
