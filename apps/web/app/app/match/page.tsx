@@ -12,6 +12,9 @@ import { readDisplay } from "@/lib/display-server";
 import { getUser } from "@/lib/supabase/server";
 import { selectedTrack } from "@/lib/tracks";
 import { TrackSwitcher } from "@/components/track-switcher";
+import { WelcomePrompt } from "@/components/journey/welcome-prompt";
+import { welcomeOf } from "@/lib/onboarding";
+import { getLocale } from "@/lib/i18n/server";
 
 export const metadata: Metadata = { title: "My matches" };
 
@@ -34,7 +37,9 @@ const RULES: Record<Exclusion["rule"], string> = {
 export default async function MatchPage({ searchParams }: PageProps<"/app/match">) {
   const { supabase, user } = await getUser();
   const { data: tracks } = await supabase.from("tracks").select("*").order("created_at");
-  const track = selectedTrack((await searchParams).track, tracks ?? []);
+  const params = await searchParams;
+  const track = selectedTrack(params.track, tracks ?? []);
+  const { t: all } = await getLocale();
   const inputs = await loadMatchInputs(supabase, user!.id, track);
   const { lite } = await readDisplay();
   if (!inputs) {
@@ -96,6 +101,7 @@ export default async function MatchPage({ searchParams }: PageProps<"/app/match"
 
   return (
     <div className="grid gap-10">
+      <WelcomePrompt welcome={welcomeOf(params.welcome)} t={all.journey.onboarding} />
       <header>
         <h1 className="text-4xl font-semibold">Your matches{track ? `: ${track.name}` : ""}</h1>
         {tracks?.length ? (

@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { WelcomePrompt } from "@/components/journey/welcome-prompt";
+import { welcomeOf } from "@/lib/onboarding";
 import Link from "next/link";
 import { costScenarios } from "@uniguide/matching";
 import { FactBadge } from "@/components/facts";
@@ -21,7 +23,8 @@ const DEFAULT_CRITERIA = [
   { id: "funding", label: "Funding certainty", weight: 3 },
 ];
 
-export default async function OffersPage() {
+export default async function OffersPage({ searchParams }: PageProps<"/app/offers">) {
+  const welcome = welcomeOf((await searchParams).welcome);
   const { supabase, user } = await getUser();
   const { t: all } = await getLocale();
   const t = all.offers;
@@ -61,6 +64,7 @@ export default async function OffersPage() {
 
   return (
     <div className="grid gap-10">
+      <WelcomePrompt welcome={welcome} t={all.journey.onboarding} />
       <header className="grid gap-2">
         <h1 className="text-4xl font-semibold">{t.title}</h1>
         <p className="max-w-2xl text-muted">

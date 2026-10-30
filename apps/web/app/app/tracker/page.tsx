@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { WelcomePrompt } from "@/components/journey/welcome-prompt";
+import { welcomeOf } from "@/lib/onboarding";
 import Link from "next/link";
 import { checkedAgo } from "@/lib/application-events";
 import { daysUntil, deadlineText } from "@/lib/format";
@@ -46,6 +48,7 @@ export default async function TrackerPage({ searchParams }: PageProps<"/app/trac
 
   return (
     <div className="grid gap-8">
+      <WelcomePrompt welcome={welcomeOf(params.welcome)} t={all.journey.onboarding} />
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 className="text-4xl font-semibold">{t.title}</h1>
