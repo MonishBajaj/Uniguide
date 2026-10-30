@@ -27,7 +27,8 @@ database and by an e2e test.
 - Reading official pages for courses that have no link, skipping incomplete courses and finding replacements (Part 2).
 - Pre-warming popular universities (Part 3).
 - Showing a QS rank anywhere in the UI. QS is a hidden ordering signal only.
-- Changing `packages/matching`. Eligibility, cost and the suitability score are untouched.
+- Changing `packages/matching`'s eligibility, cost or suitability score. Only the final tie-break changed: programs that
+  tie now keep the order they were given instead of being sorted by id, so the pool's QS order survives (version 0.3.0).
 
 ## Decisions already made
 
@@ -80,18 +81,18 @@ more, restrict it then.
 ### 3. Subject mapping
 
 New `apps/web/lib/ranking-subjects.ts` maps each of the ten broad fields to QS subject names. The best (lowest) rank
-among a field's subjects is used. Broad faculty sheets, such as `Engineering & Technology`, are included so a
-university ranked only at faculty level still counts.
+among a field's subjects is used. Fields 02, 03, 05 and 07 use their broad QS faculty subject alone: with every narrow
+subject included, a specialist (Colorado School of Mines, first in mining) ranked above MIT for Engineering when checked on the real data.
 
 | Field | QS subjects |
 |---|---|
 | 01 Education | Education |
-| 02 Arts and humanities | Arts & Humanities, Archaeology, Art & Design, Classics & Ancient History, English Language & Literature, History, History of Art, Linguistics, Modern Languages, Music, Performing Arts, Philosophy, Theology, Divinity & Religious Studies |
-| 03 Social sciences, journalism, information | Social Sciences & Management, Anthropology, Communication & Media Studies, Development Studies, Economics & Econometrics, Library & Information Management, Politics & International Studies, Psychology, Social Policy & Administration, Sociology |
+| 02 Arts and humanities | Arts & Humanities |
+| 03 Social sciences, journalism, information | Social Sciences & Management |
 | 04 Business, administration and law | Business & Management Studies, Accounting & Finance, Marketing, Law, Economics & Econometrics |
-| 05 Natural sciences, mathematics, statistics | Natural Sciences, Biological Sciences, Chemistry, Earth & Marine Sciences, Environmental Sciences, Geography, Geology, Geophysics, Materials Science, Mathematics, Physics & Astronomy, Statistics & Operational Research |
+| 05 Natural sciences, mathematics, statistics | Natural Sciences |
 | 06 ICT | Computer Science & Information Systems, Data Science and Artificial Intelligence |
-| 07 Engineering, manufacturing, construction | Engineering & Technology, Engineering - Chemical, Engineering - Civil & Structural, Engineering - Electrical & Electronic, Engineering - Mechanical, Aeronautical & Manufacturing, Engineering - Mineral & Mining, Petroleum Engineering, Architecture / Built Environment, Materials Science |
+| 07 Engineering, manufacturing, construction | Engineering & Technology |
 | 08 Agriculture, forestry, fisheries, veterinary | Agriculture & Forestry, Veterinary Science |
 | 09 Health and welfare | Life Sciences & Medicine, Medicine, Nursing, Dentistry, Pharmacy & Pharmacology, Anatomy & Physiology |
 | 10 Services | Hospitality & Leisure Management, Sports-related Subjects |
@@ -109,6 +110,9 @@ New migration `20270101000003_search_programs_ranking.sql` replaces the function
 - `coverage_tier` stays the first key, so courses with real read facts still beat register-only ones.
 - When it is null, the order is exactly today's. Other callers (the explore page) are unchanged.
 - A supporting index: `institution_rankings (institution_id, subject)`.
+- A second new argument, `p_per_institution integer default null`, keeps at most that many courses of each institution
+  (best coverage, then title) before the limit, so 200 courses cover about 40 universities instead of about 10. The web
+  passes 5. Migration `20270101000004_search_programs_per_institution.sql`.
 
 ### 5. Web
 
@@ -141,8 +145,9 @@ needed for any use beyond a demo.
   `coverage_tier` still first, field filter applied, null `p_rank_subjects` keeps the old order.
 - **Web unit:** every one of the ten fields maps to at least one subject; `rankingSubjects` merges and de-duplicates.
 - **Mapping guard:** every mapped subject exists in a committed list of the 2026 subject names (names only, no data).
-- **e2e (Playwright):** the seeded student saves US, master's, Engineering; the picked courses all have field 07 and
-  the first university is a QS-ranked one.
+- **SQL check on real data (replaces e2e, since the CI seed has six placeholder courses and cannot show ranking):**
+  `search_programs` for US, master's, field 07 returns field-07 courses with MIT, Stanford and Berkeley first, 40+
+  universities, 5 courses each at most.
 - **Manual check:** run the import on your workbook, print the unmatched top-200 list, add aliases for the ones that
   matter.
 

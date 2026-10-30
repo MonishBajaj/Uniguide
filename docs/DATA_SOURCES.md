@@ -1,6 +1,8 @@
 # Data sources
 
-Only official sources. Never aggregators (Yocket, Studyportals, Leverage Edu, ...), rankings sites (QS, THE, US News), forums or GradCafe, and nothing behind a login. The fetcher enforces a blocklist and robots.txt.
+Only official sources. Never aggregators (Yocket, Studyportals, Leverage Edu, ...), forums or GradCafe, and nothing behind a login. The fetcher enforces a blocklist and robots.txt.
+
+Rankings are not a source of facts. The one exception is the QS World University Rankings by Subject workbook, loaded by hand with `import qs-rankings` and used only to order a student's candidate courses by their university's subject rank. It is never shown to students or redistributed, and any use beyond a demo needs a licence from QS.
 
 ## Registers and open data
 

@@ -89,6 +89,7 @@ courses ends with "Couldn't read the official page". For a convincing demo load 
   university's courses (fix the URL if not), add `verified_by: "Your Name"` and `verified_at: 2026-10-30` to the
   entry, run `uv run uniguide-worker index load` again, then `uv run uniguide-worker index crawl --country us --limit 3`.
 - **UK (bachelor's):** download the Discover Uni zip from [hesa.ac.uk/kisdata](https://www.hesa.ac.uk/kisdata), unzip it and run `uv run uniguide-worker import uk-discover-uni --institution-file INSTITUTION.csv --course-file KISCOURSE.csv --subject-file SBJ.csv`.
+- **QS subject rankings (order of the matches):** download the QS World University Rankings by Subject workbook and run `uv run uniguide-worker import qs-rankings --file <the .xlsx>`. Without it matches come back in name order. Unmatched universities ranked 200 or better are printed; add them to `data/seed/rankings/aliases.yaml` and run it again.
 - **Registers:** `uv run uniguide-worker import au-cricos` (and `nl-duo`, `us-scorecard`, `uk-discover-uni`; some need
   files or keys, see `--help` and `docs/DATA_SOURCES.md`).
 
