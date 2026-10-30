@@ -24,15 +24,14 @@ Weeks 1–4 foundation; weeks 5–6 tracker, checklists, reminders, .ics, outcom
 | **Native-speaker review of the Hindi interface** (15.4) | `apps/web/lib/i18n/hi.ts`, written plainly but not yet reviewed; the footer says so in Hindi. Not yet translated: the profile forms, application pages, writing coach and server messages. Country and level names, and dates, are still in English |
 | **Legal review before switching on community features** (11.1, 11.3, 11.4, 11.6) | Built behind `COMMUNITY_ENABLED` (off). Before turning it on: terms for user posts, moderation policy and response times, takedown contact, defamation risk in reviews, and a privacy-policy update. Every post is pre-moderated, adults only, pseudonymous, with contact details blocked |
 
-## Journey system (after M1)
+## Journey system (after M2)
 
-M1 (the engine) is built; see `docs/superpowers/plans/2026-10-30-journey-m1-engine.md`. Decisions taken by the owner on 30 October 2026: students can explore without a test score; "opened" and "viewed" steps are marked done by the student; "today" is the UTC date until profiles store a time zone; the daily recompute is a token-guarded route called by GitHub Actions. The spec's open questions keep their defaults (no paywall, "UniGuide" in one constant, advise 6 to 10 shortlisted courses and never require it, lead times 21/30/21 for ranking only and never shown).
+M1 (the engine) and M2 (navigation, home, steps page, onboarding) are built; see `docs/superpowers/plans/2026-10-30-journey-m1-engine.md` and `2026-10-30-journey-m2-shell.md`. Decisions taken by the owner on 30 October 2026: students can explore without a test score; "opened" and "viewed" steps are marked done by the student; "today" is the UTC date until profiles store a time zone; the daily recompute is a token-guarded route called by GitHub Actions. The spec's open questions keep their defaults (no paywall, "UniGuide" in one constant, advise 6 to 10 shortlisted courses and never require it, lead times 21/30/21 for ranking only and never shown).
 
 Catalogue steps written but switched off until the piece they need exists:
 
 | Steps | Waiting for | Milestone |
 |---|---|---|
-| S1.03 Choose your intake | An intake field on the profile (no student control writes `intake_year` today) | M3 (J3.6) |
 | S2.05, S3.01, S3.02 | Score goals, shortlist advice and profile comparison panels placed on pages (G8) | M3 |
 | S3.03, S3.04 | Cost scenarios on the shortlist; a cycle chosen per shortlisted course | M3 |
 | S1.05 "not taken yet", S4.11 | Test bookings (G11) | M3 |
@@ -45,6 +44,11 @@ Catalogue steps written but switched off until the piece they need exists:
 
 - Own applications (G1) never become catalogue courses; a reviewer cannot convert one (spec open question 4). Record any request for that here.
 - "Today" in the student's own time zone needs a time zone on the profile.
+- **Accepted limits from M2 (owner, 30 October 2026):** Hindi users see English step titles and reasons until M6 translates them by copy key; on phones, Offers sits under More even in stage 6 (the step cards link straight to it).
+- **Waiting for later milestones:** the full "Get help" panel with per-page help (G4, M4); adding a course that isn't in the catalogue from onboarding and the tracker (G1, M3).
+- **Consent again after a withdrawal:** a student whose parental consent was revoked sees a banner and no steps, but there is no way yet for a parent to confirm again. Needs a flow (and a decision on who can start it) before any withdrawal flow goes live.
+- **Native-speaker review of the journey Hindi** (`apps/web/lib/i18n/hi.ts`, the `journey` section), along with the rest of the Hindi interface. Still English on Hindi journey pages: step titles and reasons and the stage progress line (engine text, M6), and the fact status labels ("Verified", "Unverified, confirm on the official page") from the shared `FactBadge`, which the 15.4 first pass didn't cover.
+- **CI can't run the demo suite as configured:** `playwright.config.ts` starts its server with `AUTH_DISABLED=false`, but the demo specs need sign-in off, so the CI step `pnpm --filter web e2e:demo` would fail. Locally the demo specs pass against a server started with `AUTH_DISABLED=true` (checked at the end of M2). Predates M2; fix before relying on CI for demo mode.
 
 ## Follow-ups
 

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Dict } from "@/lib/i18n/en";
 import { type HeaderJourney, reachedSections, type NavSection } from "@/lib/journey-nav";
+import { AccountMenu } from "./account-menu";
 import { BottomBar } from "./bottom-bar";
 import { HelpContent, type HelpCopy } from "./help-panel";
 import type { NavItem } from "./nav-items";
@@ -52,22 +53,16 @@ export function StudentHeader({
   };
 
   const account = (
-    <details className="relative">
-      <summary className="btn btn-secondary btn-sm cursor-pointer list-none whitespace-nowrap [&::-webkit-details-marker]:hidden">
-        {nav.account}
-      </summary>
-      <ul className="absolute right-0 z-50 mt-2 grid w-56 gap-1 rounded-xl border border-border bg-surface p-2 text-sm shadow-lg">
-        <li><Link href="/app/profile" className="block rounded-lg px-3 py-2 hover:bg-surface-2">{t.nav.profile}</Link></li>
-        <li><Link href="/app/sharing" className="block rounded-lg px-3 py-2 hover:bg-surface-2">{nav.sharing}</Link></li>
-        <li>
-          <Link href="/app/notifications" className="block rounded-lg px-3 py-2 hover:bg-surface-2">
-            {unread ? t.nav.updatesCount(unread) : t.nav.updates}
-          </Link>
-        </li>
-        <li><Link href="/accessibility" className="block rounded-lg px-3 py-2 hover:bg-surface-2">{t.nav.display}</Link></li>
-        <li className="border-t border-border px-1 pt-2">{accountEnd}</li>
-      </ul>
-    </details>
+    <AccountMenu
+      label={nav.account}
+      items={[
+        { href: "/app/profile", label: t.nav.profile },
+        { href: "/app/sharing", label: nav.sharing },
+        { href: "/app/notifications", label: unread ? t.nav.updatesCount(unread) : t.nav.updates },
+        { href: "/accessibility", label: t.nav.display },
+      ]}
+      end={accountEnd}
+    />
   );
 
   return (

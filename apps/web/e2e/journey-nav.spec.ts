@@ -57,3 +57,44 @@ test("on a phone the bottom bar carries the sections, and More opens and closes 
   await bar.getByRole("button", { name: "Get help" }).click();
   await expect(bar.getByText("Stage 4 of 7: Prepare")).toBeVisible();
 });
+
+// J2.7: every student page in the spec's navigation table (6.1) has the journey navigation, with
+// exactly one current item; the account pages mark theirs in the account menu.
+test("every /app page has the journey navigation with exactly one current item", async ({ browser }) => {
+  const appId = sql(`select id from applications where user_id = '${STUDENT}' limit 1`);
+  const page = await signIn(browser, "student@uniguide.local");
+  const expected: [string, RegExp][] = [
+    ["/app", /^Home/],
+    ["/app/match", /^Explore/],
+    ["/app/match/what-if", /^Explore/],
+    ["/app/matching", /^Explore/],
+    ["/app/shortlist", /^Shortlist/],
+    ["/app/tracker", /^Applications/],
+    [`/app/tracker/${appId}`, /^Applications/],
+    ["/app/tracker/costs", /^Applications/],
+    ["/app/writing", /^Applications/],
+    ["/app/recommenders", /^Applications/],
+    ["/app/cv", /^Applications/],
+    ["/app/portfolio", /^Applications/],
+    ["/app/offers", /^Offers/],
+    ["/app/departure", /^Visa and departure/],
+    ["/app/profile", /^Profile/],
+    ["/app/sharing", /^Sharing/],
+    ["/app/notifications", /^Updates/],
+  ];
+  for (const [path, name] of expected) {
+    await page.goto(path);
+    const current = page.getByRole("navigation", { name: "Main" }).locator('[aria-current="page"]');
+    await expect(current, path).toHaveCount(1);
+    // Text, not accessible name: account pages mark a link inside the closed account menu.
+    await expect(current, path).toHaveText(name);
+  }
+});
+
+test("a linked parent who opens /app is sent to the parent view", async ({ browser }) => {
+  const page = await signIn(browser, "parent@uniguide.local");
+  await page.goto("/app");
+  await expect(page).toHaveURL(/\/parent$/);
+  await page.goto("/app/steps");
+  await expect(page).toHaveURL(/\/parent$/);
+});

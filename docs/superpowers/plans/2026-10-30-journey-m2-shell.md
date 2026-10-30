@@ -193,7 +193,7 @@ The review page for this plan has mockups of each screen.
   - **Test-only failure switch:** `getJourney()` throws when `failureInjected(env, cookie)` is true, which needs both `process.env.E2E === "1"` and the cookie `ug_e2e_journey_fail=1`. The Playwright web server runs with `E2E=1` (set in `playwright.config.ts` and the CI env file); production never sets it. This replaces revoking database grants in the error-state tests, which would break specs running alongside and leave the grant revoked if a run is killed.
   - `loadJourney` stays for the daily recompute.
 
-- [ ] **Step 1: Write failing tests:**
+- [x] **Step 1: Write failing tests:**
   - **Engine and catalogue:**
     - `source` is set exactly when `factRefs` is non-empty. It is the fact's `sourceUrl` when there is one, otherwise a `/courses/[slug]` or `/visas` route that resolves in `ROUTES`.
     - `markable` matches the catalogue.
@@ -209,13 +209,13 @@ The review page for this plan has mockups of each screen.
     - `sourceUrl` is the source's URL for a requirement and deadline, and the rule's link for a country rule.
   - **Request loader:** `getJourney` called twice and `saveJourney` called once in one request make one `journey_snapshot` call and one `save_journey_state` call with the same result. `getJourney` with a failing snapshot rejects, and the caller decides what to show (J2.2).
   - **Failure switch:** `failureInjected` is true only with `E2E=1` and the cookie set to `1`. With the cookie but no `E2E` (or `E2E` set to anything else), it is false and the loader reads the snapshot normally.
-- [ ] **Step 2: Implement**, bump the version, and regenerate `expected.json`.
-- [ ] **Step 3: Check the change by hand.** `expected.json` holds only the stage and top three ids, so a link change doesn't show in it. Compare the full `computeJourney` output for every fixture before and after with a throwaway script. The only allowed differences are:
+- [x] **Step 2: Implement**, bump the version, and regenerate `expected.json`.
+- [x] **Step 3: Check the change by hand.** `expected.json` holds only the stage and top three ids, so a link change doesn't show in it. Compare the full `computeJourney` output for every fixture before and after with a throwaway script. The only allowed differences are:
   - S1.03 appearing (and the steps it moves down)
   - S1.01's `href` and reason
   - the new `source`, `markable`, `hidden` and `marked` fields
-- [ ] **Step 4: Run** `pnpm db:reset && pnpm db:test`, `pnpm db:types` and `pnpm -r test`.
-- [ ] **Step 5: Commit** `J2.1 Engine, snapshot and request loader for the shell`.
+- [x] **Step 4: Run** `pnpm db:reset && pnpm db:test`, `pnpm db:types` and `pnpm -r test`.
+- [x] **Step 5: Commit** `J2.1 Engine, snapshot and request loader for the shell`.
 
 ---
 
@@ -242,7 +242,7 @@ The review page for this plan has mockups of each screen.
 - **Unknown stage** (public pages, or a failed read): every section shows at normal weight, with no badge.
 - **Labels and sentences** come from new `t.journey.nav` keys from the first commit, never inline strings.
 
-- [ ] **Step 1: Write failing unit tests:**
+- [x] **Step 1: Write failing unit tests:**
   - every route in the spec 6.1 table maps to its section
   - `/app/tracker/abc` and `/app/writing/x` map to applications
   - `/courses/foo` maps to explore
@@ -251,18 +251,18 @@ The review page for this plan has mockups of each screen.
   - `headerJourney("/courses/x", true, spy)` never calls `spy` and gives no badge
   - `headerJourney("/app/tracker", true, failing)` gives no badge and doesn't throw
   - `withPathHeader(request)` (the proxy's header step, exported from `lib/request-path.ts` so it can be tested) sets `x-ug-path` to the request's real path, and replaces a client-sent `x-ug-path: /app` on a `/courses/x` request
-- [ ] **Step 2: Implement:**
+- [x] **Step 2: Implement:**
   - Unreached sections use `text-muted`, with no badge, and stay links.
   - The badge is `aria-hidden`; its sentence (`urgentLabel`) is in visually hidden text inside the link.
   - "Get help" opens a disclosure panel: stage explainer, `/guide`, glossary.
   - Add the skip link.
   - Guests, parents, counselors and staff keep today's header unchanged.
-- [ ] **Step 3: Playwright:**
+- [x] **Step 3: Playwright:**
   - a signed-in student on `/courses/[slug]` sees the student links and no badge
   - the same request sent with `x-ug-path: /app` still shows no badge
   - the same student on `/app/tracker` sees the badge
-- [ ] **Step 4: Screenshots** at 1280 and 390 px wide, for stages 1, 4 and 6.
-- [ ] **Step 5: Commit** `J2.2 Journey navigation on desktop and phone`.
+- [x] **Step 4: Screenshots** at 1280 and 390 px wide, for stages 1, 4 and 6.
+- [x] **Step 5: Commit** `J2.2 Journey navigation on desktop and phone`.
 
 ---
 
@@ -309,7 +309,7 @@ The review page for this plan has mockups of each screen.
 - **When `getJourney()` fails:** the page catches it, logs it and shows an error state ("We couldn't load your next steps just now.") with a "Try again" link to the same URL. Nothing is saved. The rest of the layout, including the navigation without a badge, still renders. The shared `JourneyError` component (in `components/journey/`) is reused by `/app/steps`.
 - **Copy:** every string through `t.journey` keys from the first commit.
 
-- [ ] **Step 1: Write the Playwright spec first** (`journey-home.spec.ts`):
+- [x] **Step 1: Write the Playwright spec first** (`journey-home.spec.ts`):
   - `applicant@uniguide.local`, after `resetApplicant()`, lands on `/app` after sign-in
   - the page shows stage 4 and three cards, each with a link that responds with 200
   - a student with `consent_state = pending_parental` and no `entry_path` opens `/app`, stays on `/app`, and sees one card, S1.06, with no snooze or dismiss, and no second consent banner
@@ -318,9 +318,9 @@ The review page for this plan has mockups of each screen.
   - with the test-only cookie `ug_e2e_journey_fail=1` set on that browser context only, `/app` shows the error state and a working "Try again" link, and the navigation renders without a badge; after clearing the cookie, "Try again" loads the home
   - the seed student (`student@uniguide.local`) lands on `/app` in stage 1 and is not sent to onboarding
   - an unverified deadline shows its label and a source link
-- [ ] **Step 2: Implement** the components and the page, change the three landing targets, and update the seed: the seed student's `entry_path`, and the new applicant account. Update existing e2e specs that expect `/app/profile` after sign-in.
-- [ ] **Step 3: Screenshots** of stages 1, 2, 4, 6 and 7, pending consent, revoked consent and the error state, at both widths.
-- [ ] **Step 4: Commit** `J2.3 Journey home`.
+- [x] **Step 2: Implement** the components and the page, change the three landing targets, and update the seed: the seed student's `entry_path`, and the new applicant account. Update existing e2e specs that expect `/app/profile` after sign-in.
+- [x] **Step 3: Screenshots** of stages 1, 2, 4, 6 and 7, pending consent, revoked consent and the error state, at both widths.
+- [x] **Step 4: Commit** `J2.3 Journey home`.
 
 ---
 
@@ -352,7 +352,7 @@ The review page for this plan has mockups of each screen.
   - a `role="status"` message with Undo (restore) after snooze, dismiss or mark done
   - undoing mark done reopens the step; its `step_done` event stays (Deviations)
 
-- [ ] **Step 1: Write failing tests:**
+- [x] **Step 1: Write failing tests:**
   - **Unit (`allowedAction`):**
     - unknown ids are refused for every action
     - undismissable steps refuse snooze and dismiss
@@ -365,8 +365,8 @@ The review page for this plan has mockups of each screen.
     - mark S2.03 done, then a `step_done` event is recorded; Undo reopens it
     - after dismissing an urgent step, the Applications badge count drops on the next page
     - with the test-only failure cookie set (as in J2.3), `/app/steps` shows the error state and a "Try again" link to `/app/steps`
-- [ ] **Step 2: Implement.**
-- [ ] **Step 3: Commit** `J2.4 All steps with snooze, dismiss and mark done`.
+- [x] **Step 2: Implement.**
+- [x] **Step 3: Commit** `J2.4 All steps with snooze, dismiss and mark done`.
 
 ---
 
@@ -384,7 +384,7 @@ The review page for this plan has mockups of each screen.
 - **This task writes the Hindi strings for everything above**, marked "needs native-speaker review". J2.2–J2.4 may use the English text for Hindi until then.
 - **Step titles and reasons stay the engine's English** until M6 translates by copy key (Decisions 6).
 
-- [ ] **Step 1: Write failing tests:**
+- [x] **Step 1: Write failing tests:**
   - en/hi key parity, with no empty strings (existing test, now covering `t.journey`)
   - Hindi `t.journey` strings differ from the English ones, so none were left untranslated. An exception list in the test allows identical strings for:
     - brand names (UniGuide)
@@ -392,8 +392,8 @@ The review page for this plan has mockups of each screen.
     - strings made only of placeholders, numbers and punctuation (for example `{count}` or `{done} / {total}`)
     - any other entry needs a comment saying why
   - no hard-coded English in `components/journey` (a grep test for text nodes outside `t.`)
-- [ ] **Step 2: Write the Hindi strings.**
-- [ ] **Step 3: Commit** `J2.5 Hindi journey copy and copy checks`.
+- [x] **Step 2: Write the Hindi strings.**
+- [x] **Step 3: Commit** `J2.5 Hindi journey copy and copy checks`.
 
 ---
 
@@ -425,7 +425,7 @@ The review page for this plan has mockups of each screen.
 - **Consent:** a student whose consent is `pending_parental` or `revoked` who opens `/app/onboarding` is sent to `/app` (N12).
 - **Screen URLs:** `?screen=1|2|3`. A student who already has an `entry_path` can still revisit them from the profile.
 
-- [ ] **Step 1: Write the Playwright spec first** (`journey-onboarding.spec.ts`):
+- [x] **Step 1: Write the Playwright spec first** (`journey-onboarding.spec.ts`):
   - a new sign-up lands on screen 1, and Back works between screens
   - "Just exploring" plus a complete short form ends on `/app/match` with a search started
   - "Just exploring" plus a short form without a budget ends on `/app`, showing "Set your budget"
@@ -433,9 +433,9 @@ The review page for this plan has mockups of each screen.
   - "Skip for now" on screen 1, and separately on screen 2, ends on `/app` with `entry_path = exploring`, and a second visit to `/app` doesn't redirect
   - `entry_path` and `intake_year` are stored
   - a pending-consent student opening `/app/onboarding` is sent to `/app`
-- [ ] **Step 2: Implement.**
-- [ ] **Step 3: Screenshots** of all three screens at both widths.
-- [ ] **Step 4: Commit** `J2.6 Onboarding with the entry question`.
+- [x] **Step 2: Implement.**
+- [x] **Step 3: Screenshots** of all three screens at both widths.
+- [x] **Step 4: Commit** `J2.6 Onboarding with the entry question`.
 
 ---
 
@@ -444,28 +444,41 @@ The review page for this plan has mockups of each screen.
 **Files:**
 - Modify: `apps/web/e2e/a11y.spec.ts`, `journey-nav.spec.ts` (new), `docs/FEATURES.md`, `BACKLOG.md`, `README.md`
 
-- [ ] **Step 1: Navigation spec:**
+- [x] **Step 1: Navigation spec:**
   - for every `/app` route in the spec 6.1 table, the page has the journey navigation and exactly one `aria-current="page"` item
   - at 390 px the bottom bar shows, and More opens and closes with the keyboard
   - a linked parent opening `/app` lands on `/parent`
-- [ ] **Step 2: Axe audit:** add `/app`, `/app/steps` and the onboarding screens at both widths.
-- [ ] **Step 2b: Fixture comparison script for M3:** add `pnpm --filter @uniguide/journey diff-fixtures`, which writes the full engine output for every fixture and compares it with the last saved copy (the J2.1 check, kept for M3).
-- [ ] **Step 3: Spec 9 "done when" check:**
+- [x] **Step 2: Axe audit:** add `/app`, `/app/steps` and the onboarding screens at both widths.
+- [x] **Step 2b: Fixture comparison script for M3:** add `pnpm --filter @uniguide/journey diff-fixtures`, which writes the full engine output for every fixture and compares it with the last saved copy (the J2.1 check, kept for M3).
+- [x] **Step 3: Spec 9 "done when" check:**
   - every `/app` page has navigation
   - a new student goes from sign-up to first matches
   - a student with a preparing application lands on a home showing stage 4
-- [ ] **Step 4: Run every suite** (Global Constraints).
-- [ ] **Step 5: Docs:**
+- [x] **Step 4: Run every suite** (Global Constraints).
+- [x] **Step 5: Docs:**
   - **FEATURES.md:** journey rows G2, G3, G5, G6 Built; G18 Built.
   - **BACKLOG.md:** S1.03 on, N5/N7 waiting for M4/M3, the two accepted limits from Decisions 6 and 7 (English step titles for Hindi users until M6; Offers under More on phones), and the missing flow for a parent to consent again after revoking (N17).
   - **README.md:** the student area line.
-- [ ] **Step 6: Commit** `J2.7 Journey shell audit and docs`.
+- [x] **Step 6: Commit** `J2.7 Journey shell audit and docs`.
 
 ---
 
 ## Finishing M2 and handing over to M3
 
-Status on 30 October 2026: J2.1 is built and pushed (`e09d334`). J2.2 to J2.7 remain.
+Status on 30 October 2026: all seven tasks are built and pushed (J2.1 `e09d334`, J2.2 `2b344ea`, J2.3 `aab5736` and `8b7be67`, J2.4 `f6dc01d`, J2.6 `08d56a5` and `f28ad3f`, J2.5 `3324e7f`, J2.7 with this commit). Reviews 1 and 2 signed off; Review 3 screenshots sent.
+
+**Exit gate check (30 October 2026):**
+- **Spec "done when":** met. Every `/app` page in the 6.1 table has the journey navigation with one current item (`journey-nav.spec.ts`), and students land on the home.
+- **Suites:**
+  - pgTAP 603, unit tests (journey 109, matching 124, web 275), typecheck, lint and worker pytest 386 pass
+  - `e2e` 69 pass, 4 fail; `e2e:community` 6 pass; `e2e:demo` 3 pass against a server with sign-in off
+  - the axe audit has no serious or critical issues on the journey pages at 1280 and 390 px, in English and Hindi
+- **Tests already failing on `develop`:**
+  - the same four as on `develop`: `course-filters`, `enrichment` (first save), and two `suggested-courses` specs
+  - none of them is fixed yet; owner to decide whether they are fixed first or accepted as known failures
+- **CI:** not run on this branch. Needs a draft pull request into `develop`, if the owner agrees. Note that CI's demo step can't pass as configured (BACKLOG.md).
+- **Docs:** FEATURES.md, BACKLOG.md and README.md updated; checkboxes ticked.
+- **Owner sign-off:** Review 3 pending.
 
 ### Build order and review points
 

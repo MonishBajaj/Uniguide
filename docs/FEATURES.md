@@ -179,9 +179,12 @@ Built on `Updated-developer-b`, milestone by milestone. Gap IDs (G…) are the s
 
 | Milestone | ID | Feature | Status | Scope |
 |---|---|---|---|---|
-| M1 | G7 | Journey engine and step catalogue | Built | `packages/journey`: stage 1 to 7 from the student's own data, 60 catalogue steps (39 on in M1; the rest wait for the features listed in BACKLOG.md), ranked urgent, long lead, stage and carry-over, and a stalled flag. One snapshot RPC, results stored in `journey_state` with `journey_events`, and a daily recompute through a token-guarded route. No page shows it yet. |
-| M1 | G18 | Snooze, dismiss and mark done | Partial | Table and engine rules built (`journey_step_state`; three steps can't be dismissed). The buttons come with the home page in M2. |
-| M2 | | Navigation, journey home, step list | To build | Next milestone. |
+| M1 | G7 | Journey engine and step catalogue | Built | `packages/journey`: stage 1 to 7 from the student's own data, 60 catalogue steps (40 on after M2; the rest wait for the features listed in BACKLOG.md), ranked urgent, long lead, stage and carry-over, and a stalled flag. One snapshot RPC, results stored in `journey_state` with `journey_events`, and a daily recompute through a token-guarded route. |
+| M2 | G2 | Journey home | Built | `/app` is where a student lands after signing in: stage path with progress, the next three steps (each with its reason, the fact it relies on with its status and source, and one button to the exact place), and a side column with the stage explainer, coming deadlines, other open steps and who the plans are shared with. Pending consent shows only the consent step; revoked consent shows a banner; a failed read shows an error with "Try again". |
+| M2 | G3 | Student navigation | Built | Home, Explore, Shortlist, Applications (urgent badge), Offers, Visa and departure, "Get help" and an account menu; a bottom bar on phones. Sections not reached yet are quieter. Only `/app` pages read the journey, once per request. |
+| M2 | G5 | Stage explainers and journey copy | Built | Stage explainers in the home, the help panel and the steps page, through `lib/i18n` in English and Hindi. Step titles stay English until M6. Hindi awaits native review. "Get help" is a small stage panel until the full help panel (G4, M4). |
+| M2 | G6 | Onboarding and entry question | Built | Three screens (how UniGuide works, "Where are you right now?", short profile or chat), ending where the answer points; "Skip for now" on screens 1 and 2. Adds the profile's start-year field, so step S1.03 is on. Courses outside the catalogue wait for own applications (G1, M3). |
+| M1/M2 | G18 | Snooze, dismiss and mark done | Built | `/app/steps` lists every step by band, with snooze (7 days), dismiss, mark done where allowed, Undo, and a "Snoozed and dismissed" list to bring steps back. |
 
 ### Working agreement
 

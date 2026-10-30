@@ -37,3 +37,26 @@ test("15.2 the parent view has no serious accessibility violations", async ({ br
   const found = await audit(page, "/parent");
   expect(found, found.join("\n")).toEqual([]);
 });
+
+// Journey M2 (J2.7): the journey home, the steps page and onboarding, at desktop and phone widths.
+for (const [width, height] of [[1280, 900], [390, 844]]) {
+  test(`journey pages have no serious accessibility violations at ${width}px`, async ({ browser }) => {
+    resetStudent();
+    sql(`insert into applications (user_id, cycle_id, status)
+         select '${STUDENT}', c.id, 'preparing' from program_cycles c join programs p on p.id = c.program_id
+         where p.slug = 'exampleton-msc-data-science' and c.is_current`);
+    const page = await signIn(browser, "student@uniguide.local");
+    await page.setViewportSize({ width, height });
+    const found: string[] = [];
+    for (const path of ["/app", "/app/steps"]) found.push(...(await audit(page, path)));
+    // Onboarding is for students who haven't answered the entry question.
+    sql(`delete from applications where user_id = '${STUDENT}'; update profiles set entry_path = null where user_id = '${STUDENT}'`);
+    for (const path of ["/app/onboarding", "/app/onboarding?screen=2", "/app/onboarding?screen=3"]) found.push(...(await audit(page, path)));
+    // The same pages in Hindi.
+    await page.context().addCookies([{ name: "ug_locale", value: "hi", url: page.url() }]);
+    for (const path of ["/app/onboarding?screen=2", "/app/onboarding?screen=3"]) found.push(...(await audit(page, path)));
+    sql(`update profiles set entry_path = 'exploring' where user_id = '${STUDENT}'`);
+    found.push(...(await audit(page, "/app")));
+    expect(found, found.join("\n")).toEqual([]);
+  });
+}
