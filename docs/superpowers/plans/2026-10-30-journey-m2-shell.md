@@ -475,7 +475,7 @@ Status on 30 October 2026: all seven tasks are built and pushed (J2.1 `e09d334`,
   - the axe audit has no serious or critical issues on the journey pages at 1280 and 390 px, in English and Hindi
 - **Tests already failing on `develop`:**
   - the same four as on `develop`: `course-filters`, `enrichment` (first save), and two `suggested-courses` specs
-  - none of them is fixed yet; owner to decide whether they are fixed first or accepted as known failures
+  - **accepted by the owner as known failures on 30 October 2026**; listed in BACKLOG.md, not fixed in M2
 - **CI:** not run on this branch. Needs a draft pull request into `develop`, if the owner agrees. Note that CI's demo step can't pass as configured (BACKLOG.md).
 - **Docs:** FEATURES.md, BACKLOG.md and README.md updated; checkboxes ticked.
 - **Owner sign-off:** Review 3 pending.

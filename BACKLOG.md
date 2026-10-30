@@ -48,6 +48,10 @@ Catalogue steps written but switched off until the piece they need exists:
 - **Waiting for later milestones:** the full "Get help" panel with per-page help (G4, M4); adding a course that isn't in the catalogue from onboarding and the tracker (G1, M3).
 - **Consent again after a withdrawal:** a student whose parental consent was revoked sees a banner and no steps, but there is no way yet for a parent to confirm again. Needs a flow (and a decision on who can start it) before any withdrawal flow goes live.
 - **Native-speaker review of the journey Hindi** (`apps/web/lib/i18n/hi.ts`, the `journey` section), along with the rest of the Hindi interface. Still English on Hindi journey pages: step titles and reasons and the stage progress line (engine text, M6), and the fact status labels ("Verified", "Unverified, confirm on the official page") from the shared `FactBadge`, which the 15.4 first pass didn't cover.
+- **Known failing e2e specs (accepted by the owner, 30 October 2026).** These fail on `develop` without any journey code and were accepted as known failures at the M2 exit gate:
+  - `course-filters.spec.ts` "3.4 filter by open deadline and by published yearly tuition" (3 cards instead of 2)
+  - `enrichment.spec.ts` "the first complete profile save starts the search by itself" (never reaches `/app/matching`)
+  - `suggested-courses.spec.ts`, two specs: the test reads booleans as `t`/`f`, but the query returns `true`/`false`
 - **CI can't run the demo suite as configured:** `playwright.config.ts` starts its server with `AUTH_DISABLED=false`, but the demo specs need sign-in off, so the CI step `pnpm --filter web e2e:demo` would fail. Locally the demo specs pass against a server started with `AUTH_DISABLED=true` (checked at the end of M2). Predates M2; fix before relying on CI for demo mode.
 
 ## Follow-ups
