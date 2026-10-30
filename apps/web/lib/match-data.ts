@@ -1,7 +1,7 @@
 import "server-only";
 import { DEFAULT_WEIGHTS, type Weights } from "@uniguide/matching";
-import type { Enums } from "@uniguide/db-types";
 import { loadCurrentCycles, loadFx, toProgramInput, toStudentProfile } from "@/lib/catalog";
+import { candidateFilters } from "@/lib/ranking-subjects";
 import type { createClient } from "@/lib/supabase/server";
 import { applyTrack, type TrackTargets } from "@/lib/tracks";
 
@@ -18,11 +18,7 @@ export async function loadMatchInputs(supabase: Supabase, userId: string, track:
   ]);
   const profile = stored ? applyTrack(stored, track) : null;
   if (!profile || profile.target_levels.length === 0) return null;
-  const { data: cards } = await supabase.rpc("search_programs", {
-    p_levels: profile.target_levels as Enums<"program_level">[],
-    p_countries: profile.target_countries.length ? profile.target_countries : undefined,
-    p_limit: 200,
-  });
+  const { data: cards } = await supabase.rpc("search_programs", { ...candidateFilters(profile), p_limit: 200 });
   const candidates = cards ?? [];
   const cycles = await loadCurrentCycles(supabase, candidates.map((c) => c.id!));
   const weights: Weights = { ...DEFAULT_WEIGHTS, ...((profile.preferences as { weights?: Partial<Weights> })?.weights ?? {}) };
