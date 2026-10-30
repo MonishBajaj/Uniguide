@@ -18,8 +18,8 @@ describe("ageFromBirthMonth", () => {
 describe("safeNext", () => {
   it("allows only same-site paths", () => {
     expect(safeNext("/app/match")).toBe("/app/match");
-    expect(safeNext("//evil.example")).toBe("/app/profile");
-    expect(safeNext("https://evil.example")).toBe("/app/profile");
+    expect(safeNext("//evil.example")).toBe("/app");
+    expect(safeNext("https://evil.example")).toBe("/app");
   });
 });
 

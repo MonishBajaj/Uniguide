@@ -10,7 +10,7 @@ export default async function ConsentPage() {
   const { supabase, user } = await getUser();
   if (!user) redirect("/login?next=/consent");
   const { data: profile } = await supabase.from("profiles").select("consent_state").eq("user_id", user.id).single();
-  if (profile?.consent_state !== "pending_parental") redirect("/app/profile");
+  if (profile?.consent_state !== "pending_parental") redirect("/app");
 
   return (
     <div className="mx-auto max-w-md px-6 py-16">
