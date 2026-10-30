@@ -20,7 +20,8 @@ MAX_LINKS = 250
 # rejects the course because its quote does not contain the title.
 SYSTEM_FOR_SMALL_MODELS = (
     SYSTEM
-    + "\n- Copy each title exactly as the page writes it in your quote: never add or expand degree wording (do not turn "
+    + "\n- Copy each title exactly as the page writes it in your quote: never add or expand degree wording "
+    "(do not turn "
     "'Computer Science' into 'Master of Science in Computer Science'). The quote must contain the whole title."
 )
 
