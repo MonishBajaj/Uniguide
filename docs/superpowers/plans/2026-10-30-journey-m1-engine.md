@@ -51,11 +51,11 @@ Checked against `develop` at `6b755ce` on 30 October 2026. Each row says what M1
 | D1 | `profile.level` (one level) picks the degree variant | `profiles.target_levels` and `tracks.target_levels` are arrays of `foundation`, `diploma`, `bachelor`, `master`, `doctorate`. There is no "research" or "MRes" level. | Engine helper `variantsFor(levels)`: `foundation`/`diploma`/`bachelor` → undergraduate, `master` → master's, `doctorate` → research. A student can be in more than one variant; their steps are combined, without duplicates. |
 | D2 | `fields`, `countries` | `target_fields`, `target_countries` | Use the real names in `JourneyInput`. |
 | D3 | `consentState: 'active' \| 'pending_parental'` | Enum `not_required \| pending_parental \| granted \| revoked` | Pass the enum through. Only `pending_parental` triggers S1.06. |
-| D4 | Stage 2 starts when "the 'what matching needs' list is empty" | `profileChecklist` (`apps/web/lib/profile-completeness.ts`) also requires "at least one test score", plus research interests for doctorate. | Read literally, a student without a score stays in stage 1. That contradicts S1.05 ("only when a target course lists a test") and G11. The engine uses the checklist without the test-score item, and tests become S1.05. The checklist logic moves into `packages/journey` so the page and the engine share it. **Decision needed; default as described.** |
+| D4 | Stage 2 starts when "the 'what matching needs' list is empty" | `profileChecklist` (`apps/web/lib/profile-completeness.ts`) also requires "at least one test score", plus research interests for doctorate. | Read literally, a student without a score stays in stage 1. That contradicts S1.05 ("only when a target course lists a test") and G11. The engine uses the checklist without the test-score item, and tests become S1.05. The checklist logic moves into `packages/journey` so the page and the engine share it. **Decided: default accepted.** |
 | D5 | Stage rules use `shortlisted`, `preparing`, `submitted` | Recording a decision sets `status = 'decided'` (`app/app/tracker/actions.ts`). | Read literally, a student rejected everywhere matches no rule and drops to stage 3. Stage 5 treats `decided` like `submitted`. Applications with status `withdrawn`, or decision `withdrawn` or `deferred`, are ignored. |
 | D6 | "today, in the student's time zone" | Profiles have no time zone. | M1 uses the UTC date. Deadlines keep their own time zones when compared. Noted as an open question. |
 | D7 | S4.02 is done "when the checklist item is done", only for verified rules | `lib/tracker.ts` adds checklist items for every published rule, verified or not, as `kind = 'system_step'` with no rule id. | J1.5 adds nullable `checklist_items.country_rule_id`. `ensureApplication` sets it for new items, and older items are matched by `link`. S4.02 only uses rules with `status = 'verified'`; any other rule gives the "check this with the university" step. |
-| D8 | Several steps are done when something is "opened" or "viewed": S2.03, S2.04, S2.06, S3.02, S3.03, S4.04, S6.02; S2.07 "viewed a course twice"; S3.06 "parent opened" | Nothing records page or panel views, and section 8 adds no table for them. | `journey_step_state.state` gets a third value, `done`, meaning "the student marked it done". M2 records it when the step's own button is used. S2.07 and S3.06 stay unavailable: they need view tracking, which the spec never defines. **Decision needed.** |
+| D8 | Several steps are done when something is "opened" or "viewed": S2.03, S2.04, S2.06, S3.02, S3.03, S4.04, S6.02; S2.07 "viewed a course twice"; S3.06 "parent opened" | Nothing records page or panel views, and section 8 adds no table for them. | `journey_step_state.state` gets a third value, `done`, meaning "the student marked it done". M2 records it when the step's own button is used. S2.07 and S3.06 stay unavailable: they need view tracking, which the spec never defines. **Decided: default accepted.** |
 | D9 | S5.02 "portal check noted 'missing'… note resolved" | Portal notes are free text in `application_events`, with no resolved flag. | S5.02 stays unavailable. Flagged for M5 (G26 work). |
 | D10 | S6.09 "research consent not answered" | Only granted consents are stored; declining leaves no record. | Shown until shared, or dismissed (dismissable). |
 | D11 | S3.04 "more than one open cycle → cycle chosen" | `shortlists` stores `program_id` only. The cycle is fixed when the student tracks the course. | S3.04 unavailable; needs a cycle on shortlist rows (M3). |
@@ -352,12 +352,12 @@ Checked with the ui-ux-pro-max skill (`ui-ux-pro-max/scripts/search.py`, UX doma
 
 ---
 
-## Decisions for the owner (defaults used if there is no answer)
+## Decisions (settled by the owner on 30 October 2026: all four defaults accepted)
 
-1. Matching minimum without the test-score item (D4). **Default: yes.**
-2. "Opened/viewed" done conditions become a student-marked `done` state; S2.07 and S3.06 stay off until view tracking is designed (D8). **Default: yes.**
-3. "Today" is the UTC date until profiles store a time zone (D6). **Default: yes.**
-4. The daily recompute is a token-guarded route called by GitHub Actions rather than a host cron (I1). **Default: yes.**
+1. Matching minimum without the test-score item (D4). **Decided: yes.**
+2. "Opened/viewed" done conditions become a student-marked `done` state; S2.07 and S3.06 stay off until view tracking is designed (D8). **Decided: yes.**
+3. "Today" is the UTC date until profiles store a time zone (D6). **Decided: yes.**
+4. The daily recompute is a token-guarded route called by GitHub Actions rather than a host cron (I1). **Decided: yes.**
 5. The spec's open questions in section 10 keep their bracketed defaults (no paywall, keep "UniGuide" in one constant, advise 6 to 10 shortlisted and never require it, lead times 21/30/21 for ranking only).
 
 ## Verification
