@@ -34,6 +34,11 @@ def test_names_match_without_brackets_accents_or_campus_suffix() -> None:
     )
 
 
+def test_unicode_dashes_and_apostrophes_separate_words_like_ascii_ones() -> None:
+    assert normalize_name("Rutgers University\u2013New Brunswick") == normalize_name("Rutgers University-New Brunswick")
+    assert normalize_name("City St George\u2019s, University of London") == normalize_name("City St George's, University of London")
+
+
 def test_different_institutions_do_not_collide() -> None:
     assert normalize_name("University of Washington") != normalize_name("Washington University in St. Louis")
 

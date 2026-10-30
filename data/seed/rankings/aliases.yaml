@@ -1,4 +1,50 @@
 # QS institution name: our institution name, for names the importer cannot match on its own.
 # Both sides are compared after normalising (accents, punctuation, brackets and "-Main Campus" are ignored).
 # `uniguide-worker import qs-rankings` lists unmatched institutions ranked 200 or better, so add them here.
-{}
+# Where the register holds several campuses of one system, the flagship campus is used.
+# United States
+"Columbia University": "Columbia University in the City of New York"
+"University of Washington": "University of Washington-Seattle Campus"
+"Texas A&M University": "Texas A&M University-College Station"
+"University of Pittsburgh": "University of Pittsburgh-Pittsburgh Campus"
+"Colorado State University": "Colorado State University-Fort Collins"
+"Arizona State University": "Arizona State University Campus Immersion"
+"North Carolina State University": "North Carolina State University at Raleigh"
+"University of Minnesota (System)": "University of Minnesota-Twin Cities"
+"University of Oklahoma": "University of Oklahoma-Norman Campus"
+"Louisiana State University": "Louisiana State University and Agricultural & Mechanical College"
+"University of South Carolina": "University of South Carolina-Columbia"
+"Stony Brook University, State University of New York": "Stony Brook University"
+"University at Buffalo SUNY": "University at Buffalo"
+"Pratt Institute": "Pratt Institute-Main"
+"The New School, New York City and Paris": "The New School"
+"The University of Texas Southwestern Medical Center at Dallas": "University of Texas Southwestern Medical Center"
+"The University of Texas M. D. Anderson Cancer Center": "The University of Texas MD Anderson Cancer Center"
+"Tulane University": "Tulane University of Louisiana"
+"California Polytechnic State University": "California Polytechnic State University-San Luis Obispo"
+# United Kingdom
+"UCL": "University College London"
+"Imperial College London": "Imperial College of Science, Technology and Medicine"
+"Durham University": "University of Durham"
+"Newcastle University": "University of Newcastle Upon Tyne"
+"SOAS University of London": "School of Oriental and African Studies"
+"Royal Holloway, University of London": "Royal Holloway and Bedford New College"
+"Goldsmiths, University of London": "Goldsmiths College, University of London"
+"Courtauld Institute": "Courtauld Institute of Art"
+"Royal Veterinary College , University of London": "The Royal Veterinary College"
+"University of Glasgow": "University of Glasgow Court"
+"Architectural Association School of Architecture": "Architectural Association (Incorporated)"
+"The Royal Central School of Speech and Drama": "Central School of Speech and Drama"
+# Netherlands
+"University of Amsterdam": "Universiteit van Amsterdam"
+"Wageningen University & Research": "Wageningen University"
+"Delft University of Technology": "Technische Universiteit Delft"
+"Leiden University": "Universiteit Leiden"
+"Utrecht University": "Universiteit Utrecht"
+"University of Groningen": "Rijksuniversiteit Groningen"
+"Vrije Universiteit Amsterdam": "VU - Vrije Universiteit Amsterdam"
+"University of Twente": "Universiteit Twente"
+"Eindhoven University of Technology": "Technische Universiteit Eindhoven"
+"Maastricht University": "Universiteit Maastricht"
+# Australia
+"The University of New South Wales (UNSW Sydney)": "UNSW Sydney"

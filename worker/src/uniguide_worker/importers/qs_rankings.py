@@ -82,8 +82,11 @@ def parse_rank(text: str) -> tuple[int, int]:
 def normalize_name(name: str) -> str:
     """A comparison key: no accents, punctuation, bracketed text, campus suffix or filler words."""
     text = re.sub(r"\s*-\s*main campus$", "", name.strip(), flags=re.IGNORECASE)
-    text = unicodedata.normalize("NFKD", text).encode("ascii", "ignore").decode().lower()
-    text = re.sub(r"\([^)]*\)", " ", text).replace("&", " and ")
+    text = re.sub(r"\([^)]*\)", " ", text)
+    # Punctuation of any script (en dashes, curly apostrophes) separates words, as an ASCII one does.
+    text = "".join(" " if unicodedata.category(c)[0] in "PSZ" else c for c in unicodedata.normalize("NFKD", text))
+    text = text.encode("ascii", "ignore").decode().lower()
+    text = text.replace("&", " and ")
     text = re.sub(r"[^a-z0-9 ]", " ", text)
     return " ".join(w for w in text.split() if w not in {"the", "of", "and", "at"})
 
