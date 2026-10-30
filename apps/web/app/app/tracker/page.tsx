@@ -78,9 +78,13 @@ export default async function TrackerPage({ searchParams }: PageProps<"/app/trac
 
       {apps.length === 0 ? (
         <div className="rounded-2xl border border-border bg-surface p-8">
-          <h2 className="text-xl font-semibold">{t.emptyTitle}</h2>
-          <p className="mt-2 text-muted">{t.emptyBody}</p>
-          <Link href="/app/match" className="btn btn-primary mt-6">{t.seeMatches}</Link>
+          <h2 className="text-xl font-semibold">{all.journey.empty.trackerTitle}</h2>
+          <p className="mt-2 text-muted">{all.journey.empty.trackerBody}</p>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <Link href="/courses" className="btn btn-primary">{all.journey.empty.trackerFind}</Link>
+            <Link href="#add-own" className="btn btn-secondary">{all.journey.empty.trackerAddOwn}</Link>
+            <Link href="/app/match" className="btn btn-secondary">{t.seeMatches}</Link>
+          </div>
         </div>
       ) : view === "board" ? (
         <div className="grid auto-cols-[minmax(232px,1fr)] grid-flow-col gap-4 overflow-x-auto pb-2">

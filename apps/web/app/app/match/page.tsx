@@ -5,6 +5,7 @@ import { admissionBand, admissionEstimate, matchPrograms, scoreGoals, type Admis
 import { ExplainButton } from "@/components/explain-button";
 import { ProgramCard } from "@/components/program-card";
 import { ScoreGoals } from "@/components/score-goals";
+import { FindUniversitiesButton } from "../matching/find-button";
 import { daysUntil, deadlineText, money } from "@/lib/format";
 import { asJson } from "@/lib/json";
 import { loadMatchInputs } from "@/lib/match-data";
@@ -46,9 +47,9 @@ export default async function MatchPage({ searchParams }: PageProps<"/app/match"
   if (!inputs) {
     return (
       <div className="rounded-2xl border border-border bg-surface p-8">
-        <h1 className="text-2xl font-semibold">Tell us what you want to study first</h1>
-        <p className="mt-2 text-muted">Choose at least the level you want, and ideally countries, subject and budget.</p>
-        <Link href="/app/profile" className="btn btn-primary mt-6">Complete your profile</Link>
+        <h1 className="text-2xl font-semibold">{all.journey.empty.profileTitle}</h1>
+        <p className="mt-2 text-muted">{all.journey.empty.profileBody}</p>
+        <Link href="/app/onboarding?screen=3" className="btn btn-primary mt-6">{all.journey.empty.profileAction}</Link>
       </div>
     );
   }
@@ -140,9 +141,16 @@ export default async function MatchPage({ searchParams }: PageProps<"/app/match"
       </header>
 
       {feasible.length === 0 ? (
+        // J3.5: while the catalogue is small, an empty list says so and offers what to do next.
         <div className="rounded-2xl border border-border bg-surface p-8">
-          <h2 className="text-xl font-semibold">Nothing fits all your limits yet</h2>
-          <p className="mt-2 text-muted">Look at why courses were set aside below, or widen your countries or budget.</p>
+          <h2 className="text-xl font-semibold">{all.journey.empty.matchTitle}</h2>
+          <p className="mt-2 max-w-[680px] text-muted">{all.journey.empty.matchBody}</p>
+          {excluded.length ? <p className="mt-2 text-muted">{all.journey.empty.whyAside}</p> : null}
+          <div className="mt-6 flex flex-wrap items-start gap-3">
+            <FindUniversitiesButton label={all.journey.empty.findUniversities} />
+            <Link href="/app/match/what-if" className="btn btn-secondary">{all.journey.empty.tryWhatIf}</Link>
+            <Link href="/courses" className="btn btn-secondary">{all.journey.empty.browse}</Link>
+          </div>
         </div>
       ) : (
         <div className="grid gap-4 md:grid-cols-2">

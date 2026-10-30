@@ -42,11 +42,11 @@ export default async function ShortlistPage() {
       <MergeLocalShortlist />
       {(cards ?? []).length === 0 ? (
         <div className="rounded-2xl border border-border bg-surface p-8">
-          <h2 className="text-xl font-semibold">Nothing shortlisted yet</h2>
-          <p className="mt-2 text-muted">Add courses from your matches or from search.</p>
-          <div className="mt-6 flex gap-3">
-            <Link href="/app/match" className="btn btn-primary">See my matches</Link>
-            <Link href="/courses" className="btn btn-secondary">Search courses</Link>
+          <h2 className="text-xl font-semibold">{all.journey.empty.shortlistTitle}</h2>
+          <p className="mt-2 text-muted">{all.journey.empty.shortlistBody}</p>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <Link href="/app/match" className="btn btn-primary">{all.journey.empty.seeMatches}</Link>
+            <Link href="/courses" className="btn btn-secondary">{all.journey.empty.search}</Link>
           </div>
         </div>
       ) : (

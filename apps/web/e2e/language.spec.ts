@@ -46,7 +46,7 @@ test("15.4 the tracker and offers read in Hindi when chosen", async ({ browser }
   await page.context().addCookies([{ name: "ug_locale", value: "hi", url: page.url() }]);
   await page.goto("/app/tracker");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(hi.tracker.title);
-  await expect(page.getByText(hi.tracker.emptyTitle)).toBeVisible();
+  await expect(page.getByText(hi.journey.empty.trackerTitle)).toBeVisible();
   await page.goto("/app/offers");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(hi.offers.title);
   await expect(page.getByText(hi.offers.none)).toBeVisible();
