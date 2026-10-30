@@ -3,6 +3,7 @@
  * requirements, deadlines, evidence quotes) are never in here: they stay in the language of their
  * official source.
  */
+import { STAGES } from "@uniguide/journey/stages";
 import { GLOSSARY, type TermId } from "@/lib/glossary";
 
 export const en = {
@@ -227,6 +228,65 @@ export const en = {
   /** Plain-language meanings of the glossary terms (15.1); the English lives in lib/glossary.ts. */
   glossary: Object.fromEntries(Object.entries(GLOSSARY).map(([id, e]) => [id, e.definition])) as Record<TermId, string>,
   skip: "Skip to content",
+  journey: {
+    nav: {
+      label: "Your journey",
+      home: "Home",
+      explore: "Explore",
+      shortlist: "Shortlist",
+      applications: "Applications",
+      offers: "Offers",
+      departure: "Visa and departure",
+      help: "Get help",
+      more: "More",
+      account: "Account",
+      sharing: "Sharing",
+      close: "Close",
+      notReached: "not reached yet",
+      helpStage: (n: number, name: string) => `Stage ${n} of 7: ${name}`,
+      helpNoStage: "Your stage shows on your home page.",
+      guide: "How applying abroad works",
+      glossary: "Words used in applications",
+    },
+    // English stage text comes from the journey engine, so there is one source (M2 plan, J2.5).
+    stages: Object.fromEntries(
+      Object.entries(STAGES).map(([n, s]) => [n, { name: s.name, forText: s.forText, doneWhen: s.doneWhen, usuallyTakes: s.usuallyTakes }]),
+    ) as Record<"1" | "2" | "3" | "4" | "5" | "6" | "7", { name: string; forText: string; doneWhen: string; usuallyTakes: string }>,
+    explainer: { title: "About this stage", forText: "For", doneWhen: "Done when", usuallyTakes: "Usually takes" },
+    bands: { urgent: "Due soon", long_lead: "Start soon", stage: "This stage", carry_over: "Also open" },
+    home: {
+      title: "Home",
+      greeting: (name: string) => (name ? `Hello, ${name}` : "Hello"),
+      summary: (n: number, name: string) => `You're in stage ${n} of 7: ${name}.`,
+      path: "Your journey",
+      stageDone: "done",
+      stageNow: "you are here",
+      nextSteps: "Your next steps",
+      start: "Start this step",
+      due: (date: string) => `Due ${date}`,
+      track: (name: string) => `Track: ${name}`,
+      officialPage: "Official page",
+      coursePage: "Course page",
+      visaRules: "Visa rules",
+      upToDate: "You're up to date in this stage.",
+      stagePage: "Go to this stage's page",
+      comingUp: "Coming up",
+      noDeadlines: "No deadlines yet. They appear when you track a course.",
+      addToCalendar: "Add deadlines to your calendar",
+      alsoOpen: "Also open",
+      alsoOpenCount: (n: number) => `${n} more ${n === 1 ? "step" : "steps"} from earlier stages and other applications.`,
+      sharedWith: "Shared with",
+      parent: (name: string) => `${name} (parent)`,
+      nobody: "Nobody yet.",
+      invite: "Invite a parent",
+      manage: "Manage sharing",
+      errorTitle: "We couldn't load your next steps just now.",
+      errorBody: "Nothing is lost. Try again in a moment.",
+      retry: "Try again",
+      revoked:
+        "A parent or guardian withdrew consent for this account. Until they confirm again, we don't save or use your personal details.",
+    },
+  },
 };
 
 export type Dict = typeof en;

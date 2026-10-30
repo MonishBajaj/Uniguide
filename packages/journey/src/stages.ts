@@ -1,5 +1,6 @@
 import { matchingMinimumMet } from "./minimum";
 import type { ApplicationSnapshot, JourneyInput, Stage } from "./types";
+export type { Stage } from "./types";
 
 export interface StageInfo {
   key: string;
