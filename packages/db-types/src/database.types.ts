@@ -135,14 +135,14 @@ isOneToOne: false
                   ]
                 },"checklist_items": {
                   Row: {
-                    "application_id": string,"created_at": string,"deadline_id": string | null,"details": string | null,"done": boolean,"done_at": string | null,"due_at": string | null,"id": string,"kind": string,"link": string | null,"requirement_id": string | null,"sort": number,"title": string,"user_id": string
+                    "application_id": string,"country_rule_id": string | null,"created_at": string,"deadline_id": string | null,"details": string | null,"done": boolean,"done_at": string | null,"due_at": string | null,"id": string,"kind": string,"link": string | null,"requirement_id": string | null,"sort": number,"title": string,"user_id": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "application_id": string,"created_at"?: string,"deadline_id"?: string | null,"details"?: string | null,"done"?: boolean,"done_at"?: string | null,"due_at"?: string | null,"id"?: string,"kind"?: string,"link"?: string | null,"requirement_id"?: string | null,"sort"?: number,"title": string,"user_id": string
+                    "application_id": string,"country_rule_id"?: string | null,"created_at"?: string,"deadline_id"?: string | null,"details"?: string | null,"done"?: boolean,"done_at"?: string | null,"due_at"?: string | null,"id"?: string,"kind"?: string,"link"?: string | null,"requirement_id"?: string | null,"sort"?: number,"title": string,"user_id": string
                   }
                   Update: {
-                    "application_id"?: string,"created_at"?: string,"deadline_id"?: string | null,"details"?: string | null,"done"?: boolean,"done_at"?: string | null,"due_at"?: string | null,"id"?: string,"kind"?: string,"link"?: string | null,"requirement_id"?: string | null,"sort"?: number,"title"?: string,"user_id"?: string
+                    "application_id"?: string,"country_rule_id"?: string | null,"created_at"?: string,"deadline_id"?: string | null,"details"?: string | null,"done"?: boolean,"done_at"?: string | null,"due_at"?: string | null,"id"?: string,"kind"?: string,"link"?: string | null,"requirement_id"?: string | null,"sort"?: number,"title"?: string,"user_id"?: string
                   }
                   Relationships: [
                     {
@@ -150,6 +150,12 @@ isOneToOne: false
       columns: ["application_id"]
 isOneToOne: false
       referencedRelation: "applications"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "checklist_items_country_rule_id_fkey"
+      columns: ["country_rule_id"]
+isOneToOne: false
+      referencedRelation: "country_rules"
       referencedColumns: ["id"]
     },{
       foreignKeyName: "checklist_items_deadline_id_fkey"
@@ -520,27 +526,33 @@ isOneToOne: false
                     {
       foreignKeyName: "enrichment_items_job_id_fkey"
       columns: ["job_id"]
-      isOneToOne: false
+isOneToOne: false
       referencedRelation: "enrichment_jobs"
       referencedColumns: ["id"]
     },{
       foreignKeyName: "enrichment_items_program_id_fkey"
       columns: ["program_id"]
-      isOneToOne: false
+isOneToOne: false
+      referencedRelation: "program_cards"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "enrichment_items_program_id_fkey"
+      columns: ["program_id"]
+isOneToOne: false
       referencedRelation: "programs"
       referencedColumns: ["id"]
     }
                   ]
                 },"enrichment_jobs": {
                   Row: {
-                    "allow_fallback": boolean,"created_at": string,"error": string | null,"finished_at": string | null,"heartbeat_at": string | null,"id": string,"profile_snapshot": Json,"stage": string,"started_at": string | null,"status": Database["public"]['Enums']["enrichment_status"],"user_id": string
+                    "allow_fallback": boolean,"created_at": string,"error": string | null,"finished_at": string | null,"heartbeat_at": string | null,"id": string,"profile_snapshot": NonNullable<Json>,"stage": string,"started_at": string | null,"status": Database["public"]['Enums']["enrichment_status"],"user_id": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "allow_fallback"?: boolean,"created_at"?: string,"error"?: string | null,"finished_at"?: string | null,"heartbeat_at"?: string | null,"id"?: string,"profile_snapshot"?: Json,"stage"?: string,"started_at"?: string | null,"status"?: Database["public"]['Enums']["enrichment_status"],"user_id": string
+                    "allow_fallback"?: boolean,"created_at"?: string,"error"?: string | null,"finished_at"?: string | null,"heartbeat_at"?: string | null,"id"?: string,"profile_snapshot"?: NonNullable<Json>,"stage"?: string,"started_at"?: string | null,"status"?: Database["public"]['Enums']["enrichment_status"],"user_id": string
                   }
                   Update: {
-                    "allow_fallback"?: boolean,"created_at"?: string,"error"?: string | null,"finished_at"?: string | null,"heartbeat_at"?: string | null,"id"?: string,"profile_snapshot"?: Json,"stage"?: string,"started_at"?: string | null,"status"?: Database["public"]['Enums']["enrichment_status"],"user_id"?: string
+                    "allow_fallback"?: boolean,"created_at"?: string,"error"?: string | null,"finished_at"?: string | null,"heartbeat_at"?: string | null,"id"?: string,"profile_snapshot"?: NonNullable<Json>,"stage"?: string,"started_at"?: string | null,"status"?: Database["public"]['Enums']["enrichment_status"],"user_id"?: string
                   }
                   Relationships: [
                     
@@ -788,9 +800,15 @@ isOneToOne: false
                     {
       foreignKeyName: "institution_indexes_institution_id_fkey"
       columns: ["institution_id"]
-      isOneToOne: false
+isOneToOne: false
       referencedRelation: "institutions"
       referencedColumns: ["id"]
+    },{
+      foreignKeyName: "institution_indexes_institution_id_fkey"
+      columns: ["institution_id"]
+isOneToOne: false
+      referencedRelation: "program_cards"
+      referencedColumns: ["institution_id"]
     }
                   ]
                 },"institutions": {
@@ -812,6 +830,62 @@ isOneToOne: false
       referencedRelation: "sources"
       referencedColumns: ["id"]
     }
+                  ]
+                },"journey_config": {
+                  Row: {
+                    "cron_token_hash": string,"id": boolean
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "cron_token_hash": string,"id"?: boolean
+                  }
+                  Update: {
+                    "cron_token_hash"?: string,"id"?: boolean
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"journey_events": {
+                  Row: {
+                    "catalogue_id": string | null,"created_at": string,"id": string,"kind": string,"stage": number | null,"step_id": string | null,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "catalogue_id"?: string | null,"created_at"?: string,"id"?: string,"kind": string,"stage"?: number | null,"step_id"?: string | null,"user_id": string
+                  }
+                  Update: {
+                    "catalogue_id"?: string | null,"created_at"?: string,"id"?: string,"kind"?: string,"stage"?: number | null,"step_id"?: string | null,"user_id"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"journey_state": {
+                  Row: {
+                    "completed": NonNullable<Json>,"computed_at": string,"engine_version": string,"stage": number,"stage_progress": NonNullable<Json>,"stalled": boolean,"steps": NonNullable<Json>,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "completed"?: NonNullable<Json>,"computed_at"?: string,"engine_version": string,"stage": number,"stage_progress"?: NonNullable<Json>,"stalled"?: boolean,"steps"?: NonNullable<Json>,"user_id": string
+                  }
+                  Update: {
+                    "completed"?: NonNullable<Json>,"computed_at"?: string,"engine_version"?: string,"stage"?: number,"stage_progress"?: NonNullable<Json>,"stalled"?: boolean,"steps"?: NonNullable<Json>,"user_id"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"journey_step_state": {
+                  Row: {
+                    "state": string,"step_id": string,"until": string | null,"updated_at": string,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "state": string,"step_id": string,"until"?: string | null,"updated_at"?: string,"user_id": string
+                  }
+                  Update: {
+                    "state"?: string,"step_id"?: string,"until"?: string | null,"updated_at"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    
                   ]
                 },"lifecycle_log": {
                   Row: {
@@ -1039,14 +1113,14 @@ isOneToOne: false
                   ]
                 },"profiles": {
                   Row: {
-                    "age_band": Database["public"]['Enums']["age_band"],"birth_month": string,"budget_amount": number | null,"budget_currency": string | null,"class_percentile": number | null,"consent_state": Database["public"]['Enums']["consent_state"],"created_at": string,"display_name": string | null,"grade_scale": string | null,"grade_text": string | null,"grade_value": number | null,"home_qualification": string | null,"intake_year": number | null,"preferences": NonNullable<Json>,"prior_credit_system": Database["public"]['Enums']["credit_system"] | null,"prior_credits": number | null,"reminder_days": (number)[],"reminders_enabled": boolean,"research_interests": string | null,"residence_country": string,"target_countries": (string)[],"target_fields": (string)[],"target_levels": (Database["public"]['Enums']["program_level"])[],"updated_at": string,"user_id": string
+                    "age_band": Database["public"]['Enums']["age_band"],"birth_month": string,"budget_amount": number | null,"budget_currency": string | null,"class_percentile": number | null,"consent_state": Database["public"]['Enums']["consent_state"],"created_at": string,"display_name": string | null,"entry_path": string | null,"grade_scale": string | null,"grade_text": string | null,"grade_value": number | null,"home_qualification": string | null,"intake_year": number | null,"preferences": NonNullable<Json>,"prior_credit_system": Database["public"]['Enums']["credit_system"] | null,"prior_credits": number | null,"reminder_days": (number)[],"reminders_enabled": boolean,"research_interests": string | null,"residence_country": string,"target_countries": (string)[],"target_fields": (string)[],"target_levels": (Database["public"]['Enums']["program_level"])[],"updated_at": string,"user_id": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "age_band": Database["public"]['Enums']["age_band"],"birth_month": string,"budget_amount"?: number | null,"budget_currency"?: string | null,"class_percentile"?: number | null,"consent_state": Database["public"]['Enums']["consent_state"],"created_at"?: string,"display_name"?: string | null,"grade_scale"?: string | null,"grade_text"?: string | null,"grade_value"?: number | null,"home_qualification"?: string | null,"intake_year"?: number | null,"preferences"?: NonNullable<Json>,"prior_credit_system"?: Database["public"]['Enums']["credit_system"] | null,"prior_credits"?: number | null,"reminder_days"?: (number)[],"reminders_enabled"?: boolean,"research_interests"?: string | null,"residence_country": string,"target_countries"?: (string)[],"target_fields"?: (string)[],"target_levels"?: (Database["public"]['Enums']["program_level"])[],"updated_at"?: string,"user_id": string
+                    "age_band": Database["public"]['Enums']["age_band"],"birth_month": string,"budget_amount"?: number | null,"budget_currency"?: string | null,"class_percentile"?: number | null,"consent_state": Database["public"]['Enums']["consent_state"],"created_at"?: string,"display_name"?: string | null,"entry_path"?: string | null,"grade_scale"?: string | null,"grade_text"?: string | null,"grade_value"?: number | null,"home_qualification"?: string | null,"intake_year"?: number | null,"preferences"?: NonNullable<Json>,"prior_credit_system"?: Database["public"]['Enums']["credit_system"] | null,"prior_credits"?: number | null,"reminder_days"?: (number)[],"reminders_enabled"?: boolean,"research_interests"?: string | null,"residence_country": string,"target_countries"?: (string)[],"target_fields"?: (string)[],"target_levels"?: (Database["public"]['Enums']["program_level"])[],"updated_at"?: string,"user_id": string
                   }
                   Update: {
-                    "age_band"?: Database["public"]['Enums']["age_band"],"birth_month"?: string,"budget_amount"?: number | null,"budget_currency"?: string | null,"class_percentile"?: number | null,"consent_state"?: Database["public"]['Enums']["consent_state"],"created_at"?: string,"display_name"?: string | null,"grade_scale"?: string | null,"grade_text"?: string | null,"grade_value"?: number | null,"home_qualification"?: string | null,"intake_year"?: number | null,"preferences"?: NonNullable<Json>,"prior_credit_system"?: Database["public"]['Enums']["credit_system"] | null,"prior_credits"?: number | null,"reminder_days"?: (number)[],"reminders_enabled"?: boolean,"research_interests"?: string | null,"residence_country"?: string,"target_countries"?: (string)[],"target_fields"?: (string)[],"target_levels"?: (Database["public"]['Enums']["program_level"])[],"updated_at"?: string,"user_id"?: string
+                    "age_band"?: Database["public"]['Enums']["age_band"],"birth_month"?: string,"budget_amount"?: number | null,"budget_currency"?: string | null,"class_percentile"?: number | null,"consent_state"?: Database["public"]['Enums']["consent_state"],"created_at"?: string,"display_name"?: string | null,"entry_path"?: string | null,"grade_scale"?: string | null,"grade_text"?: string | null,"grade_value"?: number | null,"home_qualification"?: string | null,"intake_year"?: number | null,"preferences"?: NonNullable<Json>,"prior_credit_system"?: Database["public"]['Enums']["credit_system"] | null,"prior_credits"?: number | null,"reminder_days"?: (number)[],"reminders_enabled"?: boolean,"research_interests"?: string | null,"residence_country"?: string,"target_countries"?: (string)[],"target_fields"?: (string)[],"target_levels"?: (Database["public"]['Enums']["program_level"])[],"updated_at"?: string,"user_id"?: string
                   }
                   Relationships: [
                     
@@ -1669,6 +1743,18 @@ isOneToOne: false
 "is_published_post":
 { Args: { "p_post": string }; Returns: boolean
                            },
+"journey_categories":
+{ Args: { "p_destination": string,"p_residence": string }; Returns: (Database["public"]['Enums']["applicant_category"])[]
+                           },
+"journey_due_users":
+{ Args: { "p_after"?: string,"p_limit"?: number,"p_token": string }; Returns: string[]
+                           },
+"journey_snapshot":
+{ Args: { "p_token"?: string,"p_user"?: string }; Returns: Json
+                           },
+"journey_subject":
+{ Args: { "p_token": string,"p_user": string }; Returns: string
+                           },
 "match_faculty":
 { Args: { "p_fields"?: (string)[],"p_institution_id": string,"p_limit"?: number,"p_query"?: string,"p_query_embedding"?: string }; Returns: {
               "cited_by_count": number,"id": string,"name": string,"openalex_id": string,"orcid": string,"recent_works": Json,"score": number,"topics": Json
@@ -1776,14 +1862,17 @@ isOneToOne: false
 "review_community_alum":
 { Args: { "p_approve": boolean,"p_id": string }; Returns: undefined
                            },
+"review_suggested_course":
+{ Args: { "p_approve": boolean,"p_program": string }; Returns: undefined
+                           },
 "revoke_agency_share":
 { Args: { "p_share_id": string }; Returns: undefined
                            },
 "revoke_parent_link":
 { Args: { "p_parent": string }; Returns: undefined
                            },
-"review_suggested_course":
-{ Args: { "p_approve": boolean,"p_program": string }; Returns: undefined
+"save_journey_state":
+{ Args: { "p_state": Json,"p_token"?: string,"p_user"?: string }; Returns: undefined
                            },
 "search_programs":
 { Args: { "p_countries"?: (string)[],"p_deadline_open"?: boolean,"p_delivery"?: (Database["public"]['Enums']["delivery_mode"])[],"p_fields"?: (string)[],"p_levels"?: (Database["public"]['Enums']["program_level"])[],"p_limit"?: number,"p_max_tuition"?: number,"p_offset"?: number,"p_query"?: string,"p_tuition_currency"?: string }; Returns: {
@@ -1846,6 +1935,7 @@ isOneToOne: false
 "search_tsv": unknown,
 "slug": string,
 "source_id": string | null,
+"suggestion_status": string | null,
 "title": string,
 "track": string | null,
 "updated_at": string,

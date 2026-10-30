@@ -64,7 +64,9 @@ describe("buildChecklist", () => {
       rule("proof_of_funds", "Funds for London", "london"),
       rule("proof_of_funds", "Funds for the country"),
     ];
-    const titles = buildChecklist([], [deadline("2027-01-15T05:00:00Z")], ["all"], NOW, undefined, rules).map((i) => i.title);
+    const items = buildChecklist([], [deadline("2027-01-15T05:00:00Z")], ["all"], NOW, undefined, rules);
+    const titles = items.map((i) => i.title);
+    expect(items.find((i) => i.title === "APS certificate")!.countryRuleId).toBe("APS certificate");
     expect(titles).toContain("APS certificate");
     expect(titles).toContain("Funds for the country");
     for (const left of ["Book visa appointment", "Graduate route: 24 months", "Part time work: 20 hours", "Funds for London"]) {

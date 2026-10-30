@@ -36,6 +36,8 @@ export interface ChecklistItem {
   dueAt: string | null;
   requirementId?: string;
   deadlineId?: string;
+  /** The country rule a step came from, so the journey can tell when that rule's step is done. */
+  countryRuleId?: string;
   sort: number;
 }
 
@@ -114,7 +116,15 @@ export function buildChecklist(
     (r) => r.kind !== "visa_info" && !NOT_APPLICATION_TASKS.has(r.kind) && !(r.kind === "proof_of_funds" && r.region),
   );
   for (const rule of applicationRules) {
-    push({ kind: "system_step", title: rule.title, details: rule.details ?? undefined, link: rule.link ?? undefined, dueAt: due, deadlineId: mainId });
+    push({
+      kind: "system_step",
+      title: rule.title,
+      details: rule.details ?? undefined,
+      link: rule.link ?? undefined,
+      dueAt: due,
+      deadlineId: mainId,
+      countryRuleId: rule.id,
+    });
   }
 
   const entry = reqs.filter((r) => r.kind === "entry_qualification");
