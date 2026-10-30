@@ -18,9 +18,17 @@
   "stage-3-shortlisted": {
     "stage": 3,
     "top3": [
+      "S3.01",
       "S1.07",
-      "S2.03",
-      "S2.04"
+      "S2.03"
+    ]
+  },
+  "edge-score-below-minimum": {
+    "stage": 3,
+    "top3": [
+      "S3.01",
+      "S3.02",
+      "S3.03"
     ]
   },
   "stage-4-preparing": {

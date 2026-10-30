@@ -1,5 +1,5 @@
 import { formatDate } from "../copy";
-import { courseLabel, daysBetween, nextDeadline, ref } from "./helpers";
+import { courseLabel, daysBetween, known, nextDeadline, ref } from "./helpers";
 import type { Ctx, StepDef } from "./types";
 
 /** The tracked-but-not-started application whose next deadline is soonest. */
@@ -11,38 +11,48 @@ function nearestShortlisted(ctx: Ctx) {
     .sort((a, b) => a.deadline!.dueAt.localeCompare(b.deadline!.dueAt))[0];
 }
 
+/** The first shortlisted course that publishes an entry or English test minimum the comparison panel can use. */
+const withMinimums = (ctx: Ctx) =>
+  ctx.apps.find((a) => a.status === "shortlisted" && a.requirements.some((r) => known(r) && (r.kind === "entry_qualification" || r.kind === "language_test")));
+
 const started = (ctx: Ctx) => ctx.apps.some((a) => a.status !== "shortlisted");
 
 /** Stage 3: Shortlist (spec section 5). */
 export const STAGE3: StepDef[] = [
   {
-    // Waits for the shortlist advice panel on /app/shortlist (G8, M3).
+    // Advises 6 to 10 courses, never requires it (spec open question); imbalance warnings stay on the panel (M3 P4).
     id: "S3.01",
     stage: 3,
     dismissable: true,
-    available: false,
+    until: 3,
+    available: true,
+    markable: true,
+    applies: (ctx) => ctx.input.shortlist.length < 6,
     done: () => false,
-    href: () => "/app/shortlist",
+    href: () => "/app/shortlist#advice",
   },
   {
-    // Waits for the profile comparison panel (G8, M3).
     id: "S3.02",
     stage: 3,
     dismissable: true,
-    available: false,
+    until: 3,
+    available: true,
     markable: true,
+    applies: (ctx) => withMinimums(ctx) !== undefined,
     done: () => false,
-    href: () => "/app/shortlist",
+    href: () => "/app/shortlist#comparison",
+    params: (ctx) => ({ course: courseLabel(withMinimums(ctx)!) }),
   },
   {
-    // Waits for cost scenarios on the shortlist (plan R10).
     id: "S3.03",
     stage: 3,
     dismissable: true,
-    available: false,
+    until: 3,
+    available: true,
     markable: true,
+    applies: (ctx) => ctx.input.profile.budgetAmount != null && ctx.apps.some((a) => a.status === "shortlisted"),
     done: () => false,
-    href: () => "/app/shortlist",
+    href: () => "/app/shortlist#costs",
   },
   {
     // Shortlist rows have no cycle yet (plan D11).

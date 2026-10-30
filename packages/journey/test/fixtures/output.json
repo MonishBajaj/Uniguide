@@ -85,7 +85,7 @@
     "urgentCount": 0,
     "urgentLabel": null,
     "stalled": false,
-    "engineVersion": "journey-0.2.0"
+    "engineVersion": "journey-0.3.0"
   },
   "stage-2-exploring": {
     "stage": 2,
@@ -180,7 +180,7 @@
     "urgentCount": 0,
     "urgentLabel": null,
     "stalled": false,
-    "engineVersion": "journey-0.2.0"
+    "engineVersion": "journey-0.3.0"
   },
   "stage-3-shortlisted": {
     "stage": 3,
@@ -190,6 +190,23 @@
       "label": "0 of 1 shortlisted course chosen to apply to"
     },
     "steps": [
+      {
+        "id": "S3.01",
+        "catalogueId": "S3.01",
+        "stage": 3,
+        "title": "Build a balanced shortlist",
+        "reason": "Most students apply to 6 to 10 courses with different entry requirements.",
+        "copy": {
+          "key": "S3.01",
+          "params": {}
+        },
+        "href": "/app/shortlist#advice",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": true,
+        "factRefs": [],
+        "rank": "stage"
+      },
       {
         "id": "S1.07",
         "catalogueId": "S1.07",
@@ -257,7 +274,157 @@
     "urgentCount": 0,
     "urgentLabel": null,
     "stalled": false,
-    "engineVersion": "journey-0.2.0"
+    "engineVersion": "journey-0.3.0"
+  },
+  "edge-score-below-minimum": {
+    "stage": 3,
+    "stageProgress": {
+      "done": 0,
+      "total": 1,
+      "label": "0 of 1 shortlisted course chosen to apply to"
+    },
+    "steps": [
+      {
+        "id": "S3.01",
+        "catalogueId": "S3.01",
+        "stage": 3,
+        "title": "Build a balanced shortlist",
+        "reason": "Most students apply to 6 to 10 courses with different entry requirements.",
+        "copy": {
+          "key": "S3.01",
+          "params": {}
+        },
+        "href": "/app/shortlist#advice",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": true,
+        "factRefs": [],
+        "rank": "stage"
+      },
+      {
+        "id": "S3.02",
+        "catalogueId": "S3.02",
+        "stage": 3,
+        "title": "See how your profile compares",
+        "reason": "MSc Data Science, University of Exampleton publishes entry minimums you can compare with your profile.",
+        "copy": {
+          "key": "S3.02",
+          "params": {
+            "course": "MSc Data Science, University of Exampleton"
+          }
+        },
+        "href": "/app/shortlist#comparison",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": true,
+        "factRefs": [],
+        "rank": "stage"
+      },
+      {
+        "id": "S3.03",
+        "catalogueId": "S3.03",
+        "stage": 3,
+        "title": "Check the cost of each course",
+        "reason": "Compare each course's costs with your budget before you apply.",
+        "copy": {
+          "key": "S3.03",
+          "params": {}
+        },
+        "href": "/app/shortlist#costs",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": true,
+        "factRefs": [],
+        "rank": "stage"
+      },
+      {
+        "id": "S1.07",
+        "catalogueId": "S1.07",
+        "stage": 1,
+        "title": "Invite a parent to follow along",
+        "reason": "A parent can see your plans and costs, but never your writing or scores.",
+        "copy": {
+          "key": "S1.07",
+          "params": {}
+        },
+        "href": "/app/sharing#family",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [],
+        "rank": "carry_over"
+      },
+      {
+        "id": "S2.03",
+        "catalogueId": "S2.03",
+        "stage": 2,
+        "title": "Compare your countries",
+        "reason": "See costs, visas and work rights for United Kingdom, Germany and United States side by side.",
+        "copy": {
+          "key": "S2.03",
+          "params": {
+            "countries": "United Kingdom, Germany and United States"
+          }
+        },
+        "href": "/compare/countries?c=GB&c=DE&c=US",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": true,
+        "factRefs": [],
+        "parentTitle": "Comparing countries",
+        "rank": "carry_over"
+      },
+      {
+        "id": "S2.05:a1-q-toefl",
+        "catalogueId": "S2.05",
+        "stage": 2,
+        "title": "Close the gap to a course's minimum score",
+        "reason": "MSc Data Science, University of Exampleton asks for 100 in TOEFL iBT. Your best so far is 92.",
+        "copy": {
+          "key": "S2.05",
+          "params": {
+            "course": "MSc Data Science, University of Exampleton",
+            "exam": "TOEFL iBT",
+            "minimum": "100",
+            "score": "92"
+          }
+        },
+        "href": "/app/match#score-goals",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [
+          {
+            "table": "requirements",
+            "id": "q-toefl",
+            "status": "verified"
+          }
+        ],
+        "source": {
+          "href": "https://exampleton.ac.uk/entry"
+        },
+        "application": {
+          "id": "a1",
+          "label": "MSc Data Science, University of Exampleton"
+        },
+        "rank": "carry_over"
+      }
+    ],
+    "completed": [
+      "S1.01",
+      "S1.02",
+      "S1.03",
+      "S1.04",
+      "S1.05",
+      "S2.01",
+      "S2.04"
+    ],
+    "marked": [],
+    "hidden": [],
+    "urgentCount": 0,
+    "urgentLabel": null,
+    "stalled": false,
+    "engineVersion": "journey-0.3.0"
   },
   "stage-4-preparing": {
     "stage": 4,
@@ -363,7 +530,7 @@
     "urgentCount": 0,
     "urgentLabel": null,
     "stalled": false,
-    "engineVersion": "journey-0.2.0"
+    "engineVersion": "journey-0.3.0"
   },
   "stage-5-submitted": {
     "stage": 5,
@@ -427,7 +594,7 @@
     "urgentCount": 0,
     "urgentLabel": null,
     "stalled": false,
-    "engineVersion": "journey-0.2.0"
+    "engineVersion": "journey-0.3.0"
   },
   "stage-6-admitted": {
     "stage": 6,
@@ -516,7 +683,7 @@
     "urgentCount": 0,
     "urgentLabel": null,
     "stalled": false,
-    "engineVersion": "journey-0.2.0"
+    "engineVersion": "journey-0.3.0"
   },
   "stage-7-accepted": {
     "stage": 7,
@@ -601,7 +768,7 @@
     "urgentCount": 0,
     "urgentLabel": null,
     "stalled": false,
-    "engineVersion": "journey-0.2.0"
+    "engineVersion": "journey-0.3.0"
   },
   "entry-exploring": {
     "stage": 2,
@@ -696,7 +863,7 @@
     "urgentCount": 0,
     "urgentLabel": null,
     "stalled": false,
-    "engineVersion": "journey-0.2.0"
+    "engineVersion": "journey-0.3.0"
   },
   "entry-knows": {
     "stage": 2,
@@ -791,7 +958,7 @@
     "urgentCount": 0,
     "urgentLabel": null,
     "stalled": false,
-    "engineVersion": "journey-0.2.0"
+    "engineVersion": "journey-0.3.0"
   },
   "entry-applying": {
     "stage": 4,
@@ -897,7 +1064,7 @@
     "urgentCount": 0,
     "urgentLabel": null,
     "stalled": false,
-    "engineVersion": "journey-0.2.0"
+    "engineVersion": "journey-0.3.0"
   },
   "entry-offers": {
     "stage": 6,
@@ -984,7 +1151,7 @@
     "urgentCount": 0,
     "urgentLabel": null,
     "stalled": false,
-    "engineVersion": "journey-0.2.0"
+    "engineVersion": "journey-0.3.0"
   },
   "edge-split-submitted-preparing": {
     "stage": 4,
@@ -1115,7 +1282,7 @@
     "urgentCount": 0,
     "urgentLabel": null,
     "stalled": false,
-    "engineVersion": "journey-0.2.0"
+    "engineVersion": "journey-0.3.0"
   },
   "edge-preparing-deadline-passed": {
     "stage": 5,
@@ -1203,7 +1370,7 @@
     "urgentCount": 0,
     "urgentLabel": null,
     "stalled": false,
-    "engineVersion": "journey-0.2.0"
+    "engineVersion": "journey-0.3.0"
   },
   "edge-rejected-everywhere": {
     "stage": 5,
@@ -1308,7 +1475,7 @@
     "urgentCount": 0,
     "urgentLabel": null,
     "stalled": false,
-    "engineVersion": "journey-0.2.0"
+    "engineVersion": "journey-0.3.0"
   },
   "edge-withdrawn-only": {
     "stage": 2,
@@ -1403,7 +1570,7 @@
     "urgentCount": 0,
     "urgentLabel": null,
     "stalled": false,
-    "engineVersion": "journey-0.2.0"
+    "engineVersion": "journey-0.3.0"
   },
   "edge-pending-consent": {
     "stage": 1,
@@ -1437,7 +1604,7 @@
     "urgentCount": 0,
     "urgentLabel": null,
     "stalled": false,
-    "engineVersion": "journey-0.2.0"
+    "engineVersion": "journey-0.3.0"
   },
   "edge-pending-consent-with-application": {
     "stage": 4,
@@ -1476,7 +1643,7 @@
     "urgentCount": 0,
     "urgentLabel": null,
     "stalled": false,
-    "engineVersion": "journey-0.2.0"
+    "engineVersion": "journey-0.3.0"
   },
   "edge-revoked-consent": {
     "stage": 4,
@@ -1497,7 +1664,7 @@
     "urgentCount": 0,
     "urgentLabel": null,
     "stalled": false,
-    "engineVersion": "journey-0.2.0"
+    "engineVersion": "journey-0.3.0"
   },
   "edge-targets-only-on-a-track": {
     "stage": 2,
@@ -1572,7 +1739,7 @@
     "urgentCount": 0,
     "urgentLabel": null,
     "stalled": false,
-    "engineVersion": "journey-0.2.0"
+    "engineVersion": "journey-0.3.0"
   },
   "edge-doctorate-needs-research-interests": {
     "stage": 1,
@@ -1629,6 +1796,6 @@
     "urgentCount": 0,
     "urgentLabel": null,
     "stalled": false,
-    "engineVersion": "journey-0.2.0"
+    "engineVersion": "journey-0.3.0"
   }
 }

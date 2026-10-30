@@ -73,6 +73,9 @@ export interface Requirement {
   exam: string | null;
   testPolicy: string | null;
   countRequired: number | null;
+  /** Test requirements only: the exam version and published minimum total (M3, J3.1). */
+  examVersion?: string | null;
+  minTotal?: number | null;
   status: FactStatus;
   /** The official page the fact was taken from (M2, N13). */
   sourceUrl?: string | null;

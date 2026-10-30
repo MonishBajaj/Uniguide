@@ -73,6 +73,8 @@ const snapshotSchema = z.object({
           exam: z.string().nullable(),
           testPolicy: z.string().nullable(),
           countRequired: z.number().nullable(),
+          examVersion: z.string().nullable().default(null),
+          minTotal: z.number().nullable().default(null),
           status: factStatus,
           sourceUrl: z.string().nullable().default(null),
         }),

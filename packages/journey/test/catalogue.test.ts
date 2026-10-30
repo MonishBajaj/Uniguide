@@ -9,7 +9,7 @@ const ids = (input: JourneyInput) => evaluateCatalogue(input).open.map((s) => s.
 
 /** M1 plan "Deviations". S1.03 turned on in M2 with the profile's intake field. Changing this list is a deliberate act. */
 const UNAVAILABLE = [
-  "S2.05", "S2.07", "S3.01", "S3.02", "S3.03", "S3.04", "S3.06", "S4.09", "S4.11", "S4.13",
+  "S2.07", "S3.04", "S3.06", "S4.09", "S4.11", "S4.13",
   "S5.02", "S5.03", "S5.04", "S6.05", "S6.06", "S6.07", "S6.08", "S7.03", "S7.04", "S7.08",
 ];
 
@@ -73,6 +73,21 @@ function everything(): JourneyInput {
   });
 }
 
+/** Stage 3: one shortlisted course with a verified TOEFL minimum above the student's best, and a budget. */
+function shortlistStage(overrides: { status?: "verified" | "unverified"; scores?: JourneyInput["testScores"]; shortlisted?: number } = {}): JourneyInput {
+  const long = { ...programs.exampleton!, title: LONG };
+  const toefl = {
+    id: "q-toefl", kind: "language_test" as const, exam: "toefl_ibt", examVersion: "legacy", minTotal: 100,
+    testPolicy: null, countRequired: null, status: overrides.status ?? ("verified" as const),
+  };
+  return base({
+    profile: readyProfile,
+    testScores: overrides.scores ?? [{ id: "t1", exam: "toefl_ibt", examVersion: "legacy", total: 92, takenOn: null }],
+    shortlist: Array.from({ length: overrides.shortlisted ?? 1 }, (_, n) => ({ program: { ...long, id: `p${n}` }, createdAt: "2026-10-01T00:00:00Z" })),
+    applications: [application("short", long, { requirements: [toefl] })],
+  });
+}
+
 /** Inputs that between them open every available step at least once, all with long names. */
 function scenarios(): JourneyInput[] {
   const long = { ...programs.exampleton!, title: LONG };
@@ -95,6 +110,7 @@ function scenarios(): JourneyInput[] {
         }),
       ],
     }),
+    shortlistStage(),
     base({
       profile: readyProfile,
       applications: [
@@ -343,5 +359,49 @@ describe("steps by situation", () => {
 
   it("never quotes an unknown fact", () => {
     for (const s of scenarios().flatMap((i) => evaluateCatalogue(i).open)) for (const f of s.factRefs) expect(f.status).not.toBe("unknown");
+  });
+});
+
+describe("M3 shortlist steps", () => {
+  it("S2.05 quotes a verified minimum above the best score, with the requirement as its fact", () => {
+    const s = evaluateCatalogue(shortlistStage()).open.find((x) => x.catalogueId === "S2.05")!;
+    expect(s.id).toBe("S2.05:short-q-toefl");
+    expect(s.href).toBe("/app/match#score-goals");
+    expect(s.reason).toContain("asks for 100 in TOEFL iBT. Your best so far is 92.");
+    expect(s.factRefs).toEqual([{ table: "requirements", id: "q-toefl", status: "verified" }]);
+  });
+
+  it("never starts S2.05 from an unverified minimum, another exam version, a met minimum or no score", () => {
+    const none = (input: JourneyInput) => expect(ids(input)).not.toContain("S2.05");
+    none(shortlistStage({ status: "unverified" }));
+    none(shortlistStage({ scores: [{ id: "t1", exam: "toefl_ibt", examVersion: "2026-01", total: 5, takenOn: null }] }));
+    none(shortlistStage({ scores: [{ id: "t1", exam: "toefl_ibt", examVersion: "legacy", total: 100, takenOn: null }] }));
+    none(shortlistStage({ scores: [] }));
+  });
+
+  it("S3.01 asks for more courses below six shortlisted, and stops at six", () => {
+    expect(evaluateCatalogue(shortlistStage()).open.find((x) => x.catalogueId === "S3.01")!.href).toBe("/app/shortlist#advice");
+    expect(ids(shortlistStage({ shortlisted: 6 }))).not.toContain("S3.01");
+  });
+
+  it("S3.02 and S3.03 link to their panels, and all three complete when marked done", () => {
+    const open = evaluateCatalogue(shortlistStage()).open;
+    expect(open.find((x) => x.catalogueId === "S3.02")!.href).toBe("/app/shortlist#comparison");
+    expect(open.find((x) => x.catalogueId === "S3.03")!.href).toBe("/app/shortlist#costs");
+    const stepState = ["S3.01", "S3.02", "S3.03"].map((stepId) => ({ stepId, state: "done" as const, until: null }));
+    const r = evaluateCatalogue({ ...shortlistStage(), stepState });
+    expect(r.marked).toEqual(["S3.01", "S3.02", "S3.03"]);
+  });
+
+  it("S3.03 needs a budget", () => {
+    const input = shortlistStage();
+    expect(ids({ ...input, profile: { ...input.profile, budgetAmount: null } })).not.toContain("S3.03");
+  });
+
+  it("leaves the shortlist steps behind once the student is preparing", () => {
+    const input = shortlistStage();
+    const preparing = { ...input, applications: input.applications.map((a) => ({ ...a, status: "preparing" as const })) };
+    expect(ids(preparing).filter((id) => id.startsWith("S3."))).toEqual([]);
+    expect(ids(preparing)).toContain("S2.05");
   });
 });

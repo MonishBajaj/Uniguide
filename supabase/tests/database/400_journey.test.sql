@@ -53,7 +53,7 @@ select is((:'snap'::jsonb) #> '{profile,targetCountries}', '["GB", "DE"]'::jsonb
 select is(jsonb_array_length((:'snap'::jsonb) -> 'applications'), 1, 'it has the application');
 select is((:'snap'::jsonb) #>> '{applications,0,program,country}', 'GB', 'with its course and country');
 select is((:'snap'::jsonb) #> '{applications,0,requirements}',
-  jsonb_build_array(jsonb_build_object('id', :'req', 'kind', 'recommendation_letters', 'exam', null, 'testPolicy', null, 'countRequired', 2, 'status', 'verified', 'sourceUrl', null)),
+  jsonb_build_array(jsonb_build_object('id', :'req', 'kind', 'recommendation_letters', 'exam', null, 'testPolicy', null, 'countRequired', 2, 'examVersion', null, 'minTotal', null, 'status', 'verified', 'sourceUrl', null)),
   'only published requirements for the student''s applicant category');
 select is((:'snap'::jsonb) #>> '{applications,0,deadlines,0,status}', 'unverified', 'deadlines keep their status');
 select is((:'snap'::jsonb) #>> '{applications,0,checklist,0,countryRuleId}', :'rule', 'checklist items carry their country rule');

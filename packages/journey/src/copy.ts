@@ -30,7 +30,7 @@ const en: Record<string, CopyTemplate> = {
   "S2.02": { title: "Find universities for your subject", reason: "We can look for more courses that fit your subject and countries." },
   "S2.03": { title: "Compare your countries", reason: "See costs, visas and work rights for {countries} side by side." },
   "S2.04": { title: "Check which English tests your matches accept", reason: "Each university lists the English tests it accepts and the score it asks for." },
-  "S2.05": { title: "Close the gap to a course's minimum score", reason: "{course} publishes a minimum score above the one you saved." },
+  "S2.05": { title: "Close the gap to a course's minimum score", reason: "{course} asks for {minimum} in {exam}. Your best so far is {score}." },
   "S2.06": { title: "Try what-if", reason: "See which courses open up if you change one thing, like your budget or countries." },
   "S2.07": { title: "Watch courses you're unsure about", reason: "We'll tell you when {course} changes a deadline or requirement." },
   // Stage 3

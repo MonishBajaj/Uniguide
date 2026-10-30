@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { createHash } from "node:crypto";
-import { admissionBand, admissionEstimate, matchPrograms, type AdmissionModelParams, type Exclusion } from "@uniguide/matching";
+import { admissionBand, admissionEstimate, matchPrograms, scoreGoals, type AdmissionModelParams, type Exclusion } from "@uniguide/matching";
 import { ExplainButton } from "@/components/explain-button";
 import { ProgramCard } from "@/components/program-card";
+import { ScoreGoals } from "@/components/score-goals";
 import { daysUntil, deadlineText, money } from "@/lib/format";
 import { asJson } from "@/lib/json";
 import { loadMatchInputs } from "@/lib/match-data";
@@ -93,6 +94,23 @@ export default async function MatchPage({ searchParams }: PageProps<"/app/match"
   const byId = new Map(candidates.map((c) => [c.id!, c]));
   const feasible = results.filter((r) => !r.excluded);
   const excluded = results.filter((r) => r.excluded);
+  // Score goals (J3.1): verified test minimums of the courses that fit, or that were set aside only for a requirement,
+  // unmet first. Unverified minimums are left out.
+  const titleOf = new Map(candidates.map((c) => [c.id!, c.title!]));
+  const inReach = new Set(results.filter((r) => !r.excluded || r.exclusions.every((e) => e.rule === "ineligible")).map((r) => r.programId));
+  const goals = scoreGoals(
+    student.testScores ?? [],
+    programs
+      .filter((p) => inReach.has(p.id))
+      .flatMap((p) =>
+        p.requirements
+          .filter((q) => q.status === "verified" && q.exam && (q.kind === "language_test" || q.kind === "admissions_test") && (q.minTotal != null || q.minSections))
+          .map((q) => ({ programId: p.id, title: titleOf.get(p.id) ?? "", exam: q.exam!, examVersion: q.examVersion ?? null, minTotal: q.minTotal ?? null, minSections: q.minSections ?? null })),
+      ),
+  )
+    .map((g) => ({ ...g, title: titleOf.get(g.programId) ?? "" }))
+    .sort((a, b) => Number(a.met) - Number(b.met))
+    .slice(0, 12);
   const groups = new Map<Exclusion["rule"], typeof excluded>();
   for (const r of excluded) {
     const rule = r.exclusions[0]!.rule;
@@ -196,6 +214,21 @@ export default async function MatchPage({ searchParams }: PageProps<"/app/match"
           })}
         </div>
       )}
+
+      <section id="score-goals" aria-labelledby="score-goals-title" className="grid gap-3 scroll-mt-24">
+        <h2 id="score-goals-title" className="text-2xl font-semibold">{all.journey.panels.scoreGoalsTitle}</h2>
+        <p className="max-w-[680px] text-muted">{all.journey.panels.scoreGoalsIntro}</p>
+        <ScoreGoals
+          rows={goals}
+          empty={
+            student.testScores?.length ? (
+              all.journey.panels.scoreGoalsNoMinimum
+            ) : (
+              <Link href="/app/profile#scores-section" className="underline underline-offset-2">{all.journey.panels.scoreGoalsNoScore}</Link>
+            )
+          }
+        />
+      </section>
 
       {lite && feasible.length > listSize(40, lite) ? (
         <p className="text-sm text-muted">

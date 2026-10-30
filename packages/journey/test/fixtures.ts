@@ -104,6 +104,23 @@ export const STAGE_FIXTURES: Record<string, { input: JourneyInput; stage: number
     input: base({ profile: readyProfile, matchRuns: matched, shortlist: [{ program: programs.exampleton!, createdAt: "2026-10-21T10:00:00Z" }] }),
     stage: 3,
   },
+  // M3 (J3.1): a tracked course whose verified TOEFL minimum is above the student's best score.
+  "edge-score-below-minimum": {
+    input: base({
+      profile: readyProfile,
+      matchRuns: matched,
+      testScores: [{ id: "t1", exam: "toefl_ibt", examVersion: "legacy", total: 92, takenOn: "2026-09-01" }],
+      shortlist: [{ program: programs.exampleton!, createdAt: "2026-10-21T10:00:00Z" }],
+      applications: [
+        application("a1", programs.exampleton!, {
+          requirements: [
+            { id: "q-toefl", kind: "language_test", exam: "toefl_ibt", examVersion: "legacy", minTotal: 100, testPolicy: null, countRequired: null, status: "verified", sourceUrl: "https://exampleton.ac.uk/entry" },
+          ],
+        }),
+      ],
+    }),
+    stage: 3,
+  },
   "stage-4-preparing": {
     input: base({ profile: readyProfile, matchRuns: matched, applications: [application("a1", programs.exampleton!, { status: "preparing" })] }),
     stage: 4,

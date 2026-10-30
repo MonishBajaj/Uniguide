@@ -1,5 +1,21 @@
-import { ENGLISH_SPEAKING, countryName, isEnglishExam, listOf } from "./helpers";
-import type { StepDef } from "./types";
+import type { Requirement } from "../types";
+import { ENGLISH_SPEAKING, EXAM_NAMES, countryName, courseLabel, isEnglishExam, listOf, ref } from "./helpers";
+import type { Ctx, StepDef } from "./types";
+
+/**
+ * The student's best total in a verified test requirement's exam and version, when it is below the published
+ * minimum; otherwise null. Unverified minimums and exams without a saved score never count.
+ */
+function scoreGap(ctx: Ctx, r: Requirement): number | null {
+  if (r.status !== "verified" || !r.exam || r.minTotal == null) return null;
+  if (r.kind !== "language_test" && r.kind !== "admissions_test") return null;
+  const totals = ctx.input.testScores
+    .filter((t) => t.exam === r.exam && (t.examVersion ?? null) === (r.examVersion ?? null) && t.total != null)
+    .map((t) => t.total!);
+  if (totals.length === 0) return null;
+  const best = Math.max(...totals);
+  return best < r.minTotal ? best : null;
+}
 
 /** Stage 2: Explore (spec section 5). */
 export const STAGE2: StepDef[] = [
@@ -50,14 +66,26 @@ export const STAGE2: StepDef[] = [
     href: () => "/english-tests",
   },
   {
-    // Waits for the score goals panel on the match page (G8, M3).
+    // Courses the student is tracking whose verified minimum is above their best score in the same exam and
+    // version. Match results aren't in the snapshot, so other matches show on the score goals panel only (M3 P3).
     id: "S2.05",
     stage: 2,
     dismissable: true,
     until: 4,
-    available: false,
+    available: true,
+    subjects: (ctx) =>
+      ctx.apps
+        .filter((app) => app.status === "shortlisted" || app.status === "preparing")
+        .flatMap((app) => app.requirements.filter((r) => scoreGap(ctx, r) !== null).map((requirement) => ({ key: `${app.id}-${requirement.id}`, app, requirement }))),
     done: () => false,
-    href: () => "/app/match",
+    factRefs: (_, s) => ref("requirements", s.requirement!.id, s.requirement!.status),
+    href: () => "/app/match#score-goals",
+    params: (ctx, s) => ({
+      course: courseLabel(s.app!),
+      exam: EXAM_NAMES[s.requirement!.exam!] ?? s.requirement!.exam!,
+      minimum: String(s.requirement!.minTotal),
+      score: String(scoreGap(ctx, s.requirement!)),
+    }),
   },
   {
     // Only the count of matches is known, not which filter limits it; any short list qualifies.
