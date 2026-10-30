@@ -73,6 +73,8 @@ Checked against `Updated-developer-b` at `2edc8db` on 30 October 2026.
 
 ## File Structure
 
+As built, the migrations are `20270103000001_journey_score_minimums.sql` (J3.1), `20270103000002_own_applications.sql` (J3.3a) and `20270103000003_test_plans.sql` (J3.4). Each replaces `journey_snapshot` for its own change, rather than sharing one snapshot migration. Their pgTAP files are `420_journey_score_minimums`, `430_own_applications` and `440_test_plans`. The panels also needed `lib/shortlist-panels.ts`; own applications needed `lib/own-application.ts` and `components/own-badge.tsx`.
+
 | File | Responsibility |
 |---|---|
 | `supabase/migrations/20270103000001_own_applications.sql` + `420_own_applications.test.sql` | `applications` own columns, check, policies; every function that joins `program_cycles` reviewed |
@@ -114,7 +116,7 @@ Checked against `Updated-developer-b` at `2edc8db` on 30 October 2026.
   - **S3.03:** a shortlisted course and a budget. Markable.
   - All of these were written in M1 with `available: false`.
 
-- [ ] **Step 1: Write failing tests:**
+- [x] **Step 1: Write failing tests:**
   - **Engine:**
     - S2.05 appears for a verified minimum above the best score, and never for an unverified one
     - S3.01 appears below 6 shortlisted courses
@@ -122,9 +124,9 @@ Checked against `Updated-developer-b` at `2edc8db` on 30 October 2026.
     - the `UNAVAILABLE` list loses the four
   - **pgTAP:** the snapshot's requirements carry `minTotal` and `examVersion`.
   - **Playwright:** the three panels render with content for the seed student, and each step's link lands on its panel.
-- [ ] **Step 2: Implement**, then run `diff-fixtures` and check that only the four steps and the new fields changed. Save the new output.
-- [ ] **Step 3: Screenshots** of the match and shortlist pages at both widths.
-- [ ] **Step 4: Commit** `J3.1 Score goals, shortlist advice and comparison panels`.
+- [x] **Step 2: Implement**, then run `diff-fixtures` and check that only the four steps and the new fields changed. Save the new output.
+- [x] **Step 3: Screenshots** of the match and shortlist pages at both widths.
+- [x] **Step 4: Commit** `J3.1 Score goals, shortlist advice and comparison panels`.
 
 ---
 
@@ -147,14 +149,14 @@ Checked against `Updated-developer-b` at `2edc8db` on 30 October 2026.
 - **The button** appears on each shortlist card and in an `#applying` section on a shortlisted application's page.
 - **S3.05** links to `/app/tracker/[id]#applying`.
 
-- [ ] **Step 1: Write failing tests:**
+- [x] **Step 1: Write failing tests:**
   - unit: the action's guard
   - **Playwright:**
     - "I'm applying" on a shortlist card moves the student to stage 4
     - the home shows the course's checklist step and no S3.05
     - the tracker shows the card under Preparing
-- [ ] **Step 2: Implement.**
-- [ ] **Step 3: Commit** `J3.2 I'm applying to this`.
+- [x] **Step 2: Implement.**
+- [x] **Step 3: Commit** `J3.2 I'm applying to this`.
 
 ---
 
@@ -180,7 +182,7 @@ Two commits, because the database change touches many functions.
   - `outcomes` stays catalogue-only: sharing an own application's outcome raises an error
 - **Snapshot:** own applications carry `own: true`, `program.slug: null` and `ownDueAt`.
 
-- [ ] **Steps:**
+- [x] **Steps:**
   - pgTAP first:
     - the check refuses a half-filled own application
     - a student can add and read only their own applications, and a parent sees titles only
@@ -207,7 +209,7 @@ Two commits, because the database change touches many functions.
   - steps for them carry no `source` and no fact references
 - **Pages that must not show own applications** keep inner joins: course pages, counselor statistics, the review queue.
 
-- [ ] **Steps:**
+- [x] **Steps:**
   - Failing tests first:
     - **engine fixtures:** `edge-own-application-preparing` (stage 4, with steps that have no `source`), and an own application whose own deadline has passed
     - **Playwright:**
@@ -233,7 +235,7 @@ Two commits, because the database change touches many functions.
 - **S1.05** is done when a score is saved, or when a plan says "not taken yet" for that exam.
 - **S4.11** applies when a required test has no score and no booking. Its lead time is 30 days, used for ranking only and never shown. It is done when a booking or a score exists.
 
-- [ ] **Steps:**
+- [x] **Steps:**
   - Failing tests first:
     - **pgTAP:** RLS, consent, and the check that a booked plan has a date
     - **engine:** S1.05 is done when the exam is "not taken yet"; S4.11 is "start soon" from 30 days before the deadline and gone once booked
@@ -258,7 +260,7 @@ Two commits, because the database change touches many functions.
   - "Add a course that isn't listed" (J3.3)
 - **Copy** comes from `lib/i18n` with Hindi; the welcome prompts from J2.6 are reused where they say the same thing.
 
-- [ ] **Steps:**
+- [x] **Steps:**
   - Playwright for each empty state's actions, at both widths, plus the axe audit.
   - Then implement and commit `J3.5 Empty states while the catalogue is small`.
 
@@ -274,23 +276,23 @@ Two commits, because the database change touches many functions.
 - A Playwright spec builds one student per stage (1 to 4) from fixtures. For each open step, it opens the link and checks that the page responds and that the anchor, if any, is an element on the page.
 - No anchor aliases (P11).
 
-- [ ] **Steps:** write the spec, fix any link it finds broken, and commit `J3.6 Every stage 1 to 4 step lands on its control`.
+- [x] **Steps:** write the spec, fix any link it finds broken, and commit `J3.6 Every stage 1 to 4 step lands on its control`.
 
 ---
 
 ### Task J3.7: Audit, end-to-end flows and docs
 
-- [ ] **Spec "done when":**
+- [x] **Spec "done when":**
   - every step in stages 1 to 4 links to a working control (J3.6)
   - the "already applying" entry path works for a course outside the catalogue (J3.3)
-- [ ] **Axe audit:** add the match, shortlist and tracker pages with their new panels and empty states, and the add-own-course form, at both widths, in English and Hindi.
-- [ ] **Run every suite** (Verification).
-- [ ] **Docs:**
+- [x] **Axe audit:** add the match, shortlist and tracker pages with their new panels and empty states, and the add-own-course form, at both widths, in English and Hindi.
+- [x] **Run every suite** (Verification).
+- [x] **Docs:**
   - FEATURES.md: G1, G8, G10, G11 and G19 built
   - BACKLOG.md: the switched-off table loses the steps M3 turned on; S3.04 moves to M5
   - README.md: the student area line
   - this plan's checkboxes and exit gate
-- [ ] **Commit** `J3.7 Journey wiring audit and docs`.
+- [x] **Commit** `J3.7 Journey wiring audit and docs`.
 
 ## Decisions (defaults used unless the owner says otherwise)
 

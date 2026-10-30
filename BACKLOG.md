@@ -24,19 +24,17 @@ Weeks 1–4 foundation; weeks 5–6 tracker, checklists, reminders, .ics, outcom
 | **Native-speaker review of the Hindi interface** (15.4) | `apps/web/lib/i18n/hi.ts`, written plainly but not yet reviewed; the footer says so in Hindi. Not yet translated: the profile forms, application pages, writing coach and server messages. Country and level names, and dates, are still in English |
 | **Legal review before switching on community features** (11.1, 11.3, 11.4, 11.6) | Built behind `COMMUNITY_ENABLED` (off). Before turning it on: terms for user posts, moderation policy and response times, takedown contact, defamation risk in reviews, and a privacy-policy update. Every post is pre-moderated, adults only, pseudonymous, with contact details blocked |
 
-## Journey system (after M2)
+## Journey system (after M3)
 
-M1 (the engine) and M2 (navigation, home, steps page, onboarding) are built; see `docs/superpowers/plans/2026-10-30-journey-m1-engine.md` and `2026-10-30-journey-m2-shell.md`. Decisions taken by the owner on 30 October 2026: students can explore without a test score; "opened" and "viewed" steps are marked done by the student; "today" is the UTC date until profiles store a time zone; the daily recompute is a token-guarded route called by GitHub Actions. The spec's open questions keep their defaults (no paywall, "UniGuide" in one constant, advise 6 to 10 shortlisted courses and never require it, lead times 21/30/21 for ranking only and never shown).
+M1 (the engine), M2 (navigation, home, steps page, onboarding) and M3 (panels, "I'm applying", own applications, test plans, empty states) are built; see `docs/superpowers/plans/2026-10-30-journey-m1-engine.md`, `2026-10-30-journey-m2-shell.md` and `2026-10-30-journey-m3-wiring.md`. Decisions taken by the owner on 30 October 2026: students can explore without a test score; "opened" and "viewed" steps are marked done by the student; "today" is the UTC date until profiles store a time zone; the daily recompute is a token-guarded route called by GitHub Actions. The spec's open questions keep their defaults (no paywall, "UniGuide" in one constant, advise 6 to 10 shortlisted courses and never require it, lead times 21/30/21 for ranking only and never shown).
 
 Catalogue steps written but switched off until the piece they need exists:
 
 | Steps | Waiting for | Milestone |
 |---|---|---|
-| S2.05, S3.01, S3.02 | Score goals, shortlist advice and profile comparison panels placed on pages (G8) | M3 |
-| S3.03, S3.04 | Cost scenarios on the shortlist; a cycle chosen per shortlisted course | M3 |
-| S1.05 "not taken yet", S4.11 | Test bookings (G11) | M3 |
-| S4.09 | Supervisor contact tracker (G9) | M3 |
-| S4.13 | Document readiness, passport expiry (G12) | M3 |
+| S3.04 | A cycle chosen per shortlisted course: `shortlists.cycle_id` is never set and there is no chooser (M3 plan, P6) | M5 |
+| S4.09 | Supervisor contact tracker (G9). Not one of the spec's M3 tasks | Not scheduled |
+| S4.13 | Document readiness, passport expiry (G12). Not one of the spec's M3 tasks | Not scheduled |
 | S5.02, S5.03, S5.04 | Portal notes with a resolved state; interview events and expected decision dates (G26) | M5 |
 | S6.05 to S6.08 | Enrollment steps after accepting, declining other offers (G13, G14) | M5 |
 | S7.03, S7.04, S7.08 | Housing, health insurance and registration country rules (G23) | M5 |
@@ -45,7 +43,13 @@ Catalogue steps written but switched off until the piece they need exists:
 - Own applications (G1) never become catalogue courses; a reviewer cannot convert one (spec open question 4). Record any request for that here.
 - "Today" in the student's own time zone needs a time zone on the profile.
 - **Accepted limits from M2 (owner, 30 October 2026):** Hindi users see English step titles and reasons until M6 translates them by copy key; on phones, Offers sits under More even in stage 6 (the step cards link straight to it).
-- **Waiting for later milestones:** the full "Get help" panel with per-page help (G4, M4); adding a course that isn't in the catalogue from onboarding and the tracker (G1, M3).
+- **Waiting for later milestones:** the full "Get help" panel with per-page help (G4, M4).
+- **Accepted limits from M3 (defaults in the M3 plan):**
+  - S2.05 only checks courses the student is tracking, because match results aren't in the snapshot. The score goals panel on `/app/match` covers every match.
+  - S3.01 only counts the shortlist (fewer than 6). The imbalance warnings stay on the advice panel.
+  - Own applications' dates are the student's: they count for the stage rules, ranking and the calendar export, but never start a deadline reminder email or the weekly parent digest, and the home's "Coming up" lists published deadlines only.
+  - The three panels' own wording (advice messages, comparison verdicts, score gaps) is still English on Hindi pages; their headings and introductions are translated.
+  - A counselor sees a student's own applications, with the label; there are no counselor statistics that could count them.
 - **Consent again after a withdrawal:** a student whose parental consent was revoked sees a banner and no steps, but there is no way yet for a parent to confirm again. Needs a flow (and a decision on who can start it) before any withdrawal flow goes live.
 - **Native-speaker review of the journey Hindi** (`apps/web/lib/i18n/hi.ts`, the `journey` section), along with the rest of the Hindi interface. Still English on Hindi journey pages: step titles and reasons and the stage progress line (engine text, M6), and the fact status labels ("Verified", "Unverified, confirm on the official page") from the shared `FactBadge`, which the 15.4 first pass didn't cover.
 - **Known failing e2e specs (accepted by the owner, 30 October 2026).** These fail on `develop` without any journey code and were accepted as known failures at the M2 exit gate:
