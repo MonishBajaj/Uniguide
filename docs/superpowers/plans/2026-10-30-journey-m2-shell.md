@@ -370,7 +370,7 @@ The review page for this plan has mockups of each screen.
 
 ---
 
-### Task J2.5: Hindi journey copy and the copy checks (G5)
+### Task J2.5: Hindi journey copy and the copy checks (G5), built after J2.6
 
 **Files:**
 - Modify: `apps/web/lib/i18n/en.ts`, `hi.ts`, `i18n.test.ts`
@@ -449,6 +449,7 @@ The review page for this plan has mockups of each screen.
   - at 390 px the bottom bar shows, and More opens and closes with the keyboard
   - a linked parent opening `/app` lands on `/parent`
 - [ ] **Step 2: Axe audit:** add `/app`, `/app/steps` and the onboarding screens at both widths.
+- [ ] **Step 2b: Fixture comparison script for M3:** add `pnpm --filter @uniguide/journey diff-fixtures`, which writes the full engine output for every fixture and compares it with the last saved copy (the J2.1 check, kept for M3).
 - [ ] **Step 3: Spec 9 "done when" check:**
   - every `/app` page has navigation
   - a new student goes from sign-up to first matches
@@ -461,6 +462,71 @@ The review page for this plan has mockups of each screen.
 - [ ] **Step 6: Commit** `J2.7 Journey shell audit and docs`.
 
 ---
+
+## Finishing M2 and handing over to M3
+
+Status on 30 October 2026: J2.1 is built and pushed (`e09d334`). J2.2 to J2.7 remain.
+
+### Build order and review points
+
+| Order | Task | Visible result | Review point |
+|---|---|---|---|
+| 1 | J2.2 Navigation | Journey sections in the header, badge, phone bottom bar, "Get help" panel | Screenshots with J2.3 |
+| 2 | J2.3 Journey home | `/app` with stage path, three step cards, side column; sign-in lands there | **Review 1:** navigation and home, desktop and phone, stages 1, 4 and 6, pending and revoked consent, error state |
+| 3 | J2.4 All steps | `/app/steps`, snooze, dismiss, mark done, Undo | **Review 2:** steps page and card buttons |
+| 4 | J2.6 Onboarding | Three screens, "Skip for now", routing by answer | **Review 3:** onboarding screens and where each answer lands |
+| 5 | J2.5 Hindi copy | Journey screens in Hindi (step titles stay English, Decision 6) | Screenshots in Hindi with J2.7 |
+| 6 | J2.7 Audit and docs | Full suites, axe, FEATURES and BACKLOG | **M2 exit gate** below |
+
+**J2.5 moves after J2.6.** J2.5 writes the Hindi for every `t.journey` key, and the onboarding keys only exist once J2.6 is built. Task IDs stay the same; only the order changes. J2.2 to J2.4 and J2.6 add their English keys as they go, with English placeholders in `hi.ts` until J2.5.
+
+Each task keeps its own commit. A review point is where the owner sees screenshots before the next task starts. Work after a review point waits only when the owner asks for changes.
+
+### M2 exit gate (M3 starts when all of these hold)
+
+1. **Spec "done when":** every `/app` page has navigation, and a signed-in student always lands on a home that shows their stage and next steps.
+2. **Suites:**
+   - all suites in Global Constraints pass, including `e2e:demo` against a server with sign-in off and `e2e:community` with community on
+   - the axe audit shows no serious or critical issues on the new pages
+3. **Tests that already fail on `develop`:**
+   - `course-filters` (3.4 filters)
+   - `enrichment` (first profile save starts the search)
+   - two `suggested-courses` specs
+   These fail on `develop` without any journey code (checked 30 October). They are fixed in a separate commit before the gate, or the owner accepts them in writing as known failures. Either way they are listed in the M2 report.
+4. **CI:**
+   - CI runs only on pull requests and pushes to main, so nothing has checked `Updated-developer-b` automatically.
+   - At the gate, open a draft pull request into `develop`, only if the owner agrees, and wait for CI to pass.
+5. **Docs:**
+   - FEATURES.md and BACKLOG.md updated (J2.7)
+   - the M2 plan's checkboxes ticked
+6. **Owner sign-off** on Reviews 1 to 3.
+
+### What M3 builds on
+
+M3 (spec section 9) wires the explore, shortlist and prepare stages. M2 leaves these hooks so M3 adds features without reworking the shell:
+
+| M3 task | Hook M2 leaves | What M3 changes |
+|---|---|---|
+| J3.1 Panels on match and shortlist (G8) | S2.05, S3.01 and S3.02 are written and switched off | Place the panels with anchors, add the anchors to `ROUTES`, set `available: true`. The route and anchor test fails until the anchor renders, so a step can't go live early. |
+| J3.2 "I'm applying" (G10) | S3.05 links to `/app/tracker/[id]` and can't be dismissed | Point S3.05 at the new button's anchor; the home and steps page need no change |
+| J3.3 Own applications (G1) | The onboarding "applying" and "offers" endings show "Find the courses you're applying to" with a line saying courses outside the catalogue are coming (J2.6). `NextStep.source` is optional (J2.1). | Replace that line with "Add a course that isn't listed". Own applications have no slug, so their steps carry no `source`, and the card shows "added by you, not checked" instead of a fact label. |
+| J3.4 Test plans (G11) | S1.05 "not taken yet" and S4.11 are switched off, with S4.11's 30-day lead time already set | Migration, profile section, then switch both on |
+| J3.5 Empty states (G19) | The home's "You're up to date" state (J2.3) covers the home only | Empty states on `/app/match`, `/app/shortlist` and `/app/tracker` |
+| J3.6 Anchors | Already present: `#budget` and `#intake` on the profile, `#scores` and `#decision` on the application page. The spec's `#tests` is `#scores-section` and its `#history` is `#portal` (M1 R4, R7). | Mostly done. M3 adds only the anchors J3.1 and J3.2 create, and can add `#tests` and `#history` as aliases if wanted. |
+| S3.03, S3.04 | Switched off (shortlist costs, cycle per shortlist row) | M3 decides whether they are in scope; if so, they need a shortlist cost scenario and a cycle column |
+
+**Engine changes in M3 follow the J2.1 routine:**
+- bump `ENGINE_VERSION` (minor) for every rule change, and regenerate `expected.json`
+- compare the full engine output for every fixture before and after; only the planned steps may differ
+
+J2.7 turns the throwaway comparison script from J2.1 into a package script (`pnpm --filter @uniguide/journey diff-fixtures`) so M3 can run it. Each step M3 switches on also needs:
+- removal from the `UNAVAILABLE` list in `catalogue.test.ts`
+- a fixture that shows it
+- its row removed from the BACKLOG table of switched-off steps
+
+### M3 plan
+
+The M3 plan is written in the same format as the M1 and M2 plans: spec vs code check first, then tasks, decisions and verification. It is drafted while J2.7 runs, so it is ready for review at the M2 exit gate, and is checked against the code as it stands after M2.
 
 ## Decisions (defaults used unless the owner says otherwise)
 
