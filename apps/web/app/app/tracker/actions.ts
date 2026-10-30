@@ -121,7 +121,8 @@ export async function shareOutcome(applicationId: string, form: FormData) {
     supabase.from("profiles").select("home_qualification, grade_value, grade_scale, residence_country").eq("user_id", user.id).single(),
     supabase.from("test_scores").select("exam, exam_version, total, sections"),
   ]);
-  if (!app?.decision || !app.program_cycles) return;
+  // Catalogue applications only: an own application (J3.3) has no course to share an outcome for.
+  if (!app?.decision || !app.program_cycles || !app.cycle_id) return;
   await supabase.from("outcomes").insert({
     application_id: app.id,
     user_id: user.id,

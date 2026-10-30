@@ -39,14 +39,14 @@ export default async function OffersPage({ searchParams }: PageProps<"/app/offer
     loadFx(supabase),
   ]);
   const offers = apps ?? [];
-  const programIds = offers.map((a) => a.program_cycles!.program_id);
+  const programIds = offers.flatMap((a) => (a.program_cycles ? [a.program_cycles.program_id] : []));
   const { data: cards } = programIds.length
     ? await supabase.from("program_cards").select("*").in("id", programIds)
     : { data: [] };
-  const cycles = await Promise.all(offers.map((a) => loadCycleById(supabase, a.cycle_id)));
+  const cycles = await Promise.all(offers.map((a) => (a.cycle_id ? loadCycleById(supabase, a.cycle_id) : null)));
 
   const rows = offers.map((app, i) => {
-    const card = cards?.find((c) => c.id === app.program_cycles!.program_id);
+    const card = cards?.find((c) => c.id === app.program_cycles?.program_id);
     const program = card ? toProgramInput(card, cycles[i] ?? undefined) : null;
     const cost = program
       ? costScenarios(program, { fx }, {
