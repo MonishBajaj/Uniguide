@@ -1,8 +1,8 @@
-# UNVERIFIED: the index URL below was written from memory and has not been opened.
-# A person must open it, confirm it lists the university's courses, then add verified_by and verified_at.
+# Checked by Claude on 2026-10-30 with the crawler's own fetcher and a dry run. WEAK: the explore-programs list is the right page (90 programs found), but the model expands titles ('Master of Science in X'), so only 2 were accepted.
+# Still needs a person to open the URL and add verified_by and verified_at before it is crawled.
 institution: "Northwestern University"
 country: US
 official_domain: northwestern.edu
 indexes:
-  - url: https://www.tgs.northwestern.edu/programs/index.html
+  - url: https://www.tgs.northwestern.edu/admission/academic-programs/explore-programs/index.html
     kind: programs
