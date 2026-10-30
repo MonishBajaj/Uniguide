@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 import { STUDENT, resetStudent, signIn, sql } from "./helpers";
 
 // Journey M3 (J3.4): "not taken yet" completes the test step; booking a date completes "Book your test".
-// The seed student's IELTS score is removed for these tests and put back afterwards.
+// The seed student has no scores; each test starts and ends without scores or plans.
 const SLUG = "exampleton-msc-data-science";
 
 test.beforeEach(() => {
@@ -15,9 +15,7 @@ test.beforeEach(() => {
 });
 
 test.afterEach(() => {
-  sql(`delete from test_plans where user_id = '${STUDENT}';
-       delete from test_scores where user_id = '${STUDENT}';
-       insert into test_scores (user_id, exam, total, taken_on, sections) values ('${STUDENT}', 'ielts_academic', 7.5, '2026-09-01', '{}')`);
+  sql(`delete from test_plans where user_id = '${STUDENT}'; delete from test_scores where user_id = '${STUDENT}'`);
 });
 
 const step = (page: import("@playwright/test").Page, title: string) => page.getByRole("article").filter({ has: page.getByRole("heading", { name: title }) });

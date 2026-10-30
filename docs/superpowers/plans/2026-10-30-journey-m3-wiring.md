@@ -314,6 +314,29 @@ Two commits, because the database change touches many functions.
 - **CI** on #4 is green apart from the four accepted e2e failures (and the worker check, if Decision 6 says leave it).
 - **Screenshots** of every new or changed screen at both widths, sent at the end of J3.1, J3.3 and J3.5.
 
+## Finishing M3: exit gate (30 October 2026)
+
+- **Spec "done when": met.**
+  - `journey-step-links.spec.ts` opens every step link for students in stages 1 to 4 (24 links). Each page responds and has its anchor.
+  - `journey-own.spec.ts` takes a student from "I'm already applying" to an unlisted course on the tracker, the home and the journey.
+- **Local results:**
+
+  | Suite | Result |
+  |---|---|
+  | pgTAP | 633 pass |
+  | Unit tests | journey 128, matching 124, web 284 pass |
+  | Typecheck, lint | Clean |
+  | Worker | pytest 387 pass; ruff and mypy clean |
+  | e2e (app) | 92 pass; only the four failures accepted at the M2 gate |
+  | e2e demo | 3 pass |
+  | e2e community | 6 pass |
+  | Axe audit | No serious or critical issues on every new or changed page, at 1280 and 390 px, in English and Hindi |
+
+- **CI:**
+  - The Worker check is green again after the mypy fix (Decision 6).
+  - On the J3.7 commit, CI's e2e run found one more failure. The panels spec depended on an IELTS score left in the local database by another spec; the seed has no scores. The J3.1, J3.4 and J3.6 specs now set up and remove their own scores. All 58 journey and score specs pass from a clean database.
+- **Engine:** 45 of the 60 catalogue steps are on (40 after M2). `diff-fixtures` showed only the planned changes at each step: the version, S3.01 in `stage-3-shortlisted`, and the new fixtures.
+
 ## Handing over to M4
 
 M4 (help panel, parent view on the journey, journey emails) builds on:

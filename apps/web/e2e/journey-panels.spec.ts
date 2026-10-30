@@ -2,13 +2,15 @@ import { expect, test } from "@playwright/test";
 import { STUDENT, audit, resetStudent, signIn, sql } from "./helpers";
 
 // Journey M3 (J3.1): score goals on the match page; advice, comparison and costs on the shortlist; and the
-// steps that link to them. TUM publishes a verified TOEFL iBT (legacy) minimum of 88; the student's best is 80.
+// steps that link to them. TUM publishes a verified TOEFL iBT (legacy) minimum of 88; the student's best is 80, and
+// their IELTS 7.5 meets TUM's IELTS minimum. The seed has no scores, so each test sets its own and removes them.
 const TUM = "tum-msc-informatics";
 
 test.beforeEach(() => {
   resetStudent();
-  sql(`delete from test_scores where user_id = '${STUDENT}' and exam = 'toefl_ibt';
-       insert into test_scores (user_id, exam, exam_version, total, taken_on) values ('${STUDENT}', 'toefl_ibt', 'legacy', 80, '2026-09-01');
+  sql(`delete from test_scores where user_id = '${STUDENT}';
+       insert into test_scores (user_id, exam, exam_version, total, taken_on) values
+         ('${STUDENT}', 'toefl_ibt', 'legacy', 80, '2026-09-01'), ('${STUDENT}', 'ielts_academic', null, 7.5, '2026-09-01');
        insert into shortlists (user_id, program_id) select '${STUDENT}', id from programs where slug = '${TUM}';
        insert into applications (user_id, cycle_id, status)
          select '${STUDENT}', c.id, 'shortlisted' from program_cycles c join programs p on p.id = c.program_id
@@ -16,7 +18,7 @@ test.beforeEach(() => {
 });
 
 test.afterEach(() => {
-  sql(`delete from test_scores where user_id = '${STUDENT}' and exam = 'toefl_ibt'`);
+  sql(`delete from test_scores where user_id = '${STUDENT}'`);
 });
 
 const stepLink = (page: import("@playwright/test").Page, title: string) =>

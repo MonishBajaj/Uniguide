@@ -41,7 +41,7 @@ async function stepLinks(page: Page): Promise<{ title: string; href: string }[]>
 for (const [stage, setup] of Object.entries(SETUPS)) {
   test(`every ${stage} step lands on a working page and control`, async ({ browser }) => {
     resetStudent();
-    sql(`delete from test_scores where user_id = '${STUDENT}' and exam = 'toefl_ibt'; ${setup}`);
+    sql(`delete from test_scores where user_id = '${STUDENT}'; ${setup}`);
     try {
       const page = await signIn(browser, "student@uniguide.local");
       await page.goto("/app");
@@ -57,7 +57,7 @@ for (const [stage, setup] of Object.entries(SETUPS)) {
         if (anchor) await expect(page.locator(`[id="${anchor}"]`), `${title} → ${href}`).toHaveCount(1);
       }
     } finally {
-      sql(`delete from test_scores where user_id = '${STUDENT}' and exam = 'toefl_ibt'`);
+      sql(`delete from test_scores where user_id = '${STUDENT}'`);
     }
   });
 }
