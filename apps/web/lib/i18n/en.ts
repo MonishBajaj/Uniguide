@@ -230,6 +230,7 @@ export const en = {
   skip: "Skip to content",
   journey: {
     nav: {
+      main: "Main",
       label: "Your journey",
       home: "Home",
       explore: "Explore",

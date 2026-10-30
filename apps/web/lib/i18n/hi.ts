@@ -260,6 +260,7 @@ export const hi: Dict = {
   skip: "सामग्री पर जाएँ",
   journey: {
     nav: {
+      main: "मुख्य",
       label: "आपकी यात्रा",
       home: "होम",
       explore: "खोजें",

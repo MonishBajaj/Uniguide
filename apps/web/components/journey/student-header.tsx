@@ -73,7 +73,7 @@ export function StudentHeader({
   return (
     <>
       <header className="sticky top-3 z-40 flex justify-center px-4 pt-3 print:hidden">
-        <nav aria-label="Main" className="flex max-w-full items-center gap-4 rounded-2xl border border-border bg-surface/80 px-4 py-2 backdrop-blur-md">
+        <nav aria-label={nav.main} className="flex max-w-full items-center gap-4 rounded-2xl border border-border bg-surface/80 px-4 py-2 backdrop-blur-md">
           <Link href="/app" className="text-base font-semibold whitespace-nowrap">
             Uniguide
           </Link>
