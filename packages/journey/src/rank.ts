@@ -1,6 +1,6 @@
 import type { Candidate } from "./catalogue";
 import { addDays, daysBetween } from "./catalogue/helpers";
-import type { Band, NextStep, Stage, StepStateRow } from "./types";
+import type { Band, HiddenStep, NextStep, Stage, StepStateRow } from "./types";
 
 /** Days ahead that count as urgent, and as "start now" for a long-lead step (spec 4.3). */
 export const URGENT_DAYS = 14;
@@ -21,14 +21,26 @@ export function bandFor(step: Pick<Candidate, "dueAt" | "leadDays" | "stage">, s
  * Steps that can't be dismissed ignore both. The "done" state is read by the catalogue (plan D8).
  */
 export function applyStepState<T extends Pick<Candidate, "id" | "dismissable">>(steps: T[], stepState: StepStateRow[], today: string): T[] {
+  return splitByStepState(steps, stepState, today).visible;
+}
+
+/** The steps to show, and the ones the student snoozed or dismissed, so they can be brought back. */
+export function splitByStepState<T extends Pick<Candidate, "id" | "dismissable">>(
+  steps: T[],
+  stepState: StepStateRow[],
+  today: string,
+): { visible: T[]; hidden: { step: T; state: HiddenStep["state"]; until: string | null }[] } {
   const byId = new Map(stepState.map((r) => [r.stepId, r]));
-  return steps.filter((s) => {
+  const visible: T[] = [];
+  const hidden: { step: T; state: HiddenStep["state"]; until: string | null }[] = [];
+  for (const s of steps) {
     const row = byId.get(s.id);
-    if (!row || !s.dismissable) return true;
-    if (row.state === "dismissed") return false;
-    if (row.state === "snoozed") return !row.until || row.until.slice(0, 10) <= today;
-    return true;
-  });
+    if (row && s.dismissable && row.state === "dismissed") hidden.push({ step: s, state: "dismissed", until: null });
+    else if (row && s.dismissable && row.state === "snoozed" && row.until && row.until.slice(0, 10) > today)
+      hidden.push({ step: s, state: "snoozed", until: row.until });
+    else visible.push(s);
+  }
+  return { visible, hidden };
 }
 
 /** Bands, then due date (soonest first, undated last), then catalogue order, then id. */

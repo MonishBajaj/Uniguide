@@ -1,8 +1,8 @@
 import { type Candidate, evaluateCatalogue } from "./catalogue";
 import { checklistFields, profileChecklist } from "./minimum";
-import { applyStepState, isStalled, rankSteps, urgentLabel } from "./rank";
+import { isStalled, rankSteps, splitByStepState, urgentLabel } from "./rank";
 import { activeApplications, computeStage } from "./stages";
-import type { JourneyInput, JourneyResult, Stage } from "./types";
+import type { FactRef, JourneyInput, JourneyResult, Stage } from "./types";
 import { ENGINE_VERSION } from "./version";
 
 const plural = (n: number, one: string, many: string) => (n === 1 ? one : many);
@@ -48,17 +48,53 @@ export function stageProgress(input: JourneyInput, stage: Stage, open: Candidate
   }
 }
 
+export interface UpcomingDeadline {
+  applicationId: string;
+  label: string;
+  dueAt: string;
+  timezone: string;
+  status: FactRef["status"];
+  factRef: FactRef;
+  sourceUrl: string | null;
+}
+
+/** The next published deadlines of the student's active applications, soonest first (M2 home, "Coming up"). */
+export function upcomingDeadlines(input: JourneyInput, limit = 3): UpcomingDeadline[] {
+  return activeApplications(input.applications)
+    .flatMap((app) =>
+      app.deadlines
+        .filter((d) => d.status !== "unknown" && d.dueAt.slice(0, 10) >= input.today)
+        .map((d) => {
+          const status = d.status as FactRef["status"];
+          return {
+            applicationId: app.id,
+            label: `${app.program.title}, ${app.program.institution}`,
+            dueAt: d.dueAt,
+            timezone: d.timezone,
+            status,
+            factRef: { table: "deadlines", id: d.id, status },
+            sourceUrl: d.sourceUrl ?? null,
+          };
+        }),
+    )
+    .sort((a, b) => a.dueAt.localeCompare(b.dueAt) || a.applicationId.localeCompare(b.applicationId))
+    .slice(0, limit);
+}
+
 /** The journey for one student on one date. Pure: same input, same output. */
 export function computeJourney(input: JourneyInput): JourneyResult {
   const stage = computeStage(input);
-  const { open, completed } = evaluateCatalogue(input, stage);
-  const steps = rankSteps(applyStepState(open, input.stepState, input.today), stage, input.today);
+  const { open, completed, marked } = evaluateCatalogue(input, stage);
+  const { visible, hidden } = splitByStepState(open, input.stepState, input.today);
+  const steps = rankSteps(visible, stage, input.today);
   const urgentCount = steps.filter((s) => s.rank === "urgent").length;
   return {
     stage,
     stageProgress: stageProgress(input, stage, open, completed),
     steps,
     completed,
+    marked,
+    hidden: hidden.map(({ step, state, until }) => ({ id: step.id, catalogueId: step.catalogueId, title: step.title, state, until })),
     urgentCount,
     urgentLabel: urgentLabel(urgentCount),
     stalled: isStalled(input.lastCompletedAt, steps, input.today),

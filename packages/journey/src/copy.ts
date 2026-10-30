@@ -15,7 +15,7 @@ export interface CopyTemplate {
 
 const en: Record<string, CopyTemplate> = {
   // Stage 1
-  "S1.01": { title: "Tell us what and where you want to study", reason: "Your level, subjects and countries decide which courses we look at." },
+  "S1.01": { title: "Tell us what and where you want to study", reason: "Your level, subjects and countries decide which courses we look at. One short form covers them." },
   "S1.01.research": { title: "Tell us about your research interests", reason: "Research courses are matched on what you want to study, so we need your interests." },
   "S1.02": { title: "Set your budget", reason: "A budget with its currency lets us compare each course's costs with what you can spend." },
   "S1.03": { title: "Choose your intake", reason: "The year you want to start decides which application rounds are still open." },

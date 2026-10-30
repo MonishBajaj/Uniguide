@@ -74,9 +74,19 @@ const snapshotSchema = z.object({
           testPolicy: z.string().nullable(),
           countRequired: z.number().nullable(),
           status: factStatus,
+          sourceUrl: z.string().nullable().default(null),
         }),
       ),
-      deadlines: list(z.object({ id: z.string(), dueAt: z.string(), timezone: z.string(), precision: z.string(), status: factStatus })),
+      deadlines: list(
+        z.object({
+          id: z.string(),
+          dueAt: z.string(),
+          timezone: z.string(),
+          precision: z.string(),
+          status: factStatus,
+          sourceUrl: z.string().nullable().default(null),
+        }),
+      ),
       checklist: list(
         z.object({
           id: z.string(),
@@ -113,6 +123,7 @@ const snapshotSchema = z.object({
       link: z.string().nullable(),
       status: factStatus,
       appliesTo: list(z.string()),
+      sourceUrl: z.string().nullable().default(null),
     }),
   ),
   departureTasks: list(z.object({ applicationId: z.string(), taskKey: z.string() })),
@@ -125,6 +136,9 @@ const snapshotSchema = z.object({
   cvEntries: z.number().default(0),
   portfolioItems: z.number().default(0),
   lastCompletedAt: z.string().nullable().default(null),
+  sharedWith: z
+    .object({ parents: list(z.string()), counselors: list(z.string()) })
+    .default({ parents: [], counselors: [] }),
 });
 
 /** Checks a journey_snapshot document and adds the date. Throws naming the first wrong field. */

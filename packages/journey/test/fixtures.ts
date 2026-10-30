@@ -58,6 +58,7 @@ export function base(overrides: Partial<JourneyInput> = {}): JourneyInput {
     cvEntries: 0,
     portfolioItems: 0,
     lastCompletedAt: null,
+    sharedWith: { parents: [], counselors: [] },
     ...overrides,
   };
 }
@@ -173,6 +174,22 @@ export const STAGE_FIXTURES: Record<string, { input: JourneyInput; stage: number
     stage: 2,
   },
   "edge-pending-consent": { input: base({ profile: { ...emptyProfile, consentState: "pending_parental" } }), stage: 1 },
+  // M2: consent blocks every step whatever the data says. Pending consent leaves only S1.06; revoked leaves nothing,
+  // because /consent can't help (M2 plan N17).
+  "edge-pending-consent-with-application": {
+    input: base({
+      profile: { ...readyProfile, consentState: "pending_parental" },
+      applications: [application("a1", programs.tum!, { status: "preparing" })],
+    }),
+    stage: 4,
+  },
+  "edge-revoked-consent": {
+    input: base({
+      profile: { ...readyProfile, consentState: "revoked" },
+      applications: [application("a1", programs.tum!, { status: "preparing" })],
+    }),
+    stage: 4,
+  },
   "edge-targets-only-on-a-track": {
     input: base({
       profile: { ...readyProfile, targetLevels: [], targetCountries: [], targetFields: [] },

@@ -33,6 +33,7 @@ const candidate = fc
       href: "/app",
       dueAt: r.due == null ? null : dateIn(r.due),
       dismissable: r.dismissable,
+      markable: false,
       factRefs: [],
       order: r.order,
       ...(r.leadDays ? { leadDays: r.leadDays } : {}),

@@ -20,8 +20,10 @@ describe("computeJourney on every fixture", () => {
       expect(r.stage).toBe(f.stage);
       expect(r.stage).toBe(want.stage);
       expect(r.steps.slice(0, 3).map((s) => s.id)).toEqual(want.top3);
-      // Never a blank home: every fixture has something to do next.
-      expect(r.steps.length).toBeGreaterThan(0);
+      // Never a blank home: every fixture has something to do next, except revoked consent,
+      // where nothing personal may be processed and the home shows a banner instead (M2 N17).
+      if (f.input.profile.consentState === "revoked") expect(r.steps).toEqual([]);
+      else expect(r.steps.length).toBeGreaterThan(0);
       expect(r.engineVersion).toBe(ENGINE_VERSION);
       expect(new Set(r.completed).size).toBe(r.completed.length);
       for (const s of r.steps) expect(r.completed).not.toContain(s.id);

@@ -27,7 +27,8 @@ export default defineConfig({
     command: `pnpm dev --port ${port}`,
     url: `http://localhost:${port}`,
     // A server Playwright starts always has real sign-in; the specs sign in through /login.
-    env: { AUTH_DISABLED: "false" },
+    // E2E=1 lets the error-state specs set a test-only cookie that makes the journey read fail (journey M2).
+    env: { AUTH_DISABLED: "false", E2E: "1" },
     reuseExistingServer: !process.env.CI,
     timeout: 180_000,
   },

@@ -7,9 +7,9 @@ import { STAGE_FIXTURES, application, base, programs, readyProfile } from "./fix
 
 const ids = (input: JourneyInput) => evaluateCatalogue(input).open.map((s) => s.catalogueId);
 
-/** Plan "Deviations", plus S1.03 (no intake control yet, R3). Changing this list is a deliberate act. */
+/** M1 plan "Deviations". S1.03 turned on in M2 with the profile's intake field. Changing this list is a deliberate act. */
 const UNAVAILABLE = [
-  "S1.03", "S2.05", "S2.07", "S3.01", "S3.02", "S3.03", "S3.04", "S3.06", "S4.09", "S4.11", "S4.13",
+  "S2.05", "S2.07", "S3.01", "S3.02", "S3.03", "S3.04", "S3.06", "S4.09", "S4.11", "S4.13",
   "S5.02", "S5.03", "S5.04", "S6.05", "S6.06", "S6.07", "S6.08", "S7.03", "S7.04", "S7.08",
 ];
 
@@ -180,7 +180,8 @@ describe("links", () => {
   });
 
   it("rejects unknown routes and anchors", () => {
-    expect(resolveHref("/app/profile#intake")).toBeNull();
+    expect(resolveHref("/app/profile#nowhere")).toBeNull();
+    expect(resolveHref("/app/profile#intake")).toBe("/app/profile");
     expect(resolveHref("/app/nowhere")).toBeNull();
     expect(resolveHref("/app/tracker/abc#portal")).toBe("/app/tracker/[id]");
     expect(resolveHref("/compare/countries?c=GB&c=DE")).toBe("/compare/countries");
@@ -205,14 +206,16 @@ describe("links", () => {
 });
 
 describe("steps by situation", () => {
-  it("S1.01 links to onboarding only with AI consent", () => {
+  it("S1.01 links to the short profile whatever the AI consent", () => {
     const step = (aiConsent: boolean) => evaluateCatalogue(base({ aiConsent })).open.find((s) => s.catalogueId === "S1.01")!;
-    expect(step(true).href).toBe("/app/onboarding");
-    expect(step(false).href).toBe("/app/profile#targets");
+    expect(step(true).href).toBe("/app/onboarding?screen=3");
+    expect(step(false).href).toBe("/app/onboarding?screen=3");
   });
 
-  it("asks a new student for the set-up steps", () => {
-    expect(ids(base())).toEqual(["S1.01", "S1.02", "S1.04"]);
+  it("asks a new student for the set-up steps, intake included", () => {
+    expect(ids(base())).toEqual(["S1.01", "S1.02", "S1.03", "S1.04"]);
+    expect(evaluateCatalogue(base()).open.find((s) => s.catalogueId === "S1.03")!.href).toBe("/app/profile#intake");
+    expect(ids(base({ profile: { ...readyProfile, intakeYear: 2027 } }))).not.toContain("S1.03");
   });
 
   it("asks for parental consent while it is pending, and never lets it be dismissed", () => {

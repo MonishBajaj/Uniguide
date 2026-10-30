@@ -19,9 +19,8 @@ export const STAGE1: StepDef[] = [
     available: true,
     parentTitle: "Choosing what and where to study",
     done: (ctx) => targetsSet(ctx) && !researchMissing(ctx),
-    // The onboarding chat runs only with consent to AI processing; the profile form works without it.
-    href: (ctx) =>
-      targetsSet(ctx) && researchMissing(ctx) ? "/app/profile#research" : ctx.input.aiConsent ? "/app/onboarding" : "/app/profile#targets",
+    // The short profile (onboarding screen 3) skips the entry question and offers the chat when AI consent exists.
+    href: (ctx) => (targetsSet(ctx) && researchMissing(ctx) ? "/app/profile#research" : "/app/onboarding?screen=3"),
     copyKey: (ctx) => (targetsSet(ctx) && researchMissing(ctx) ? "S1.01.research" : "S1.01"),
   },
   {
@@ -34,11 +33,11 @@ export const STAGE1: StepDef[] = [
     href: () => "/app/profile#budget",
   },
   {
-    // No student control writes intake_year yet (plan R3); J3.6 adds the field, then this turns on.
+    // The profile's #intake field arrived with M2 (J2.1), so this is on.
     id: "S1.03",
     stage: 1,
     dismissable: true,
-    available: false,
+    available: true,
     parentTitle: "Choosing when to start",
     done: (ctx) => ctx.input.profile.intakeYear != null,
     href: () => "/app/profile#intake",
@@ -75,7 +74,8 @@ export const STAGE1: StepDef[] = [
     stage: 1,
     dismissable: false,
     available: true,
-    applies: (ctx) => ctx.input.profile.consentState !== "not_required",
+    // Pending consent only (M1 D3): /consent can't help a student whose consent was revoked (M2 N17).
+    applies: (ctx) => ctx.input.profile.consentState === "pending_parental" || ctx.input.profile.consentState === "granted",
     done: (ctx) => ctx.input.profile.consentState === "granted",
     href: () => "/consent",
   },

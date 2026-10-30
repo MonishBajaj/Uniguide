@@ -4,7 +4,7 @@
     "top3": [
       "S1.01",
       "S1.02",
-      "S1.04"
+      "S1.03"
     ]
   },
   "stage-2-exploring": {
@@ -123,6 +123,16 @@
     "top3": [
       "S1.06"
     ]
+  },
+  "edge-pending-consent-with-application": {
+    "stage": 4,
+    "top3": [
+      "S1.06"
+    ]
+  },
+  "edge-revoked-consent": {
+    "stage": 4,
+    "top3": []
   },
   "edge-targets-only-on-a-track": {
     "stage": 2,

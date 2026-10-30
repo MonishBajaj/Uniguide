@@ -26,6 +26,7 @@ const Profile = z.object({
   grade_scale: z.enum(Object.keys(GRADE_SCALES) as [string, ...string[]]).nullable(),
   budget_amount: optionalNumber.refine((v) => v == null || v > 0),
   budget_currency: z.enum(CURRENCIES).nullable(),
+  intake_year: optionalNumber.refine((v) => v == null || (Number.isInteger(v) && v >= 2000 && v <= 2100)),
   target_levels: z.array(z.enum(LEVELS)),
   target_countries: z.array(z.enum(DESTINATIONS)),
   target_fields: z.array(z.enum(Object.keys(FIELDS) as [string, ...string[]])),
@@ -50,6 +51,7 @@ export async function saveProfile(_prev: FormState, form: FormData): Promise<For
     grade_scale: orNull("grade_scale"),
     budget_amount: form.get("budget_amount"),
     budget_currency: orNull("budget_currency"),
+    intake_year: form.get("intake_year"),
     target_levels: form.getAll("target_levels"),
     // The favourite goes first: the location criterion scores countries by their order.
     target_countries: [...new Set([form.get("favourite_country"), ...form.getAll("target_countries")])].filter(

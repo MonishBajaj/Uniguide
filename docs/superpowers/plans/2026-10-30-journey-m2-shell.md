@@ -134,7 +134,8 @@ The review page for this plan has mockups of each screen.
 | `packages/journey/src/engine.ts`, `types.ts`, `catalogue/*`, `version.ts`, `package.json` | `source`, `markable`, `hidden`, `marked`, `upcomingDeadlines`, S1.03 on, S1.01's new link, version 0.2.0, `./stages` subpath export |
 | `supabase/migrations/20270102000001_journey_shell.sql` + `supabase/tests/database/410_journey_shell.test.sql` | `sharedWith` and fact `sourceUrl` in `journey_snapshot` |
 | `apps/web/lib/journey-snapshot.ts` | `parseSnapshot` reads the new fields |
-| `apps/web/lib/journey-request.ts` + `.test.ts` | `getJourney()` (one snapshot read per request, React `cache()`), `saveJourney()` |
+| `apps/web/lib/journey-request.ts` + `.test.ts` | `journeyRequest()` (one snapshot read, then save of the same result) and the `failureInjected()` test switch; plain code, unit-tested |
+| `apps/web/lib/journey-request.server.ts` | `getJourney()` and `saveJourney()`: React `cache()` per request, cookies and the Supabase client. Split out because `lib/supabase/server.ts` is `server-only` and can't load in a unit test |
 | `apps/web/proxy.ts` | Forwards the request path as `x-ug-path` |
 | `supabase/seed.sql` | Seed student's `entry_path`; new seed student `applicant@uniguide.local` with a full profile |
 | `apps/web/lib/request-path.ts` + `.test.ts` | `withPathHeader()`: sets `x-ug-path` from the real path |

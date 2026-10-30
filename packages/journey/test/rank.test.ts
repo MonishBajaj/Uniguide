@@ -13,6 +13,7 @@ const step = (over: Partial<Candidate> = {}): Candidate => ({
   href: "/app/tracker",
   dueAt: null,
   dismissable: true,
+  markable: false,
   factRefs: [],
   order: 30,
   ...over,

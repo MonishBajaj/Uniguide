@@ -74,6 +74,8 @@ export interface Requirement {
   testPolicy: string | null;
   countRequired: number | null;
   status: FactStatus;
+  /** The official page the fact was taken from (M2, N13). */
+  sourceUrl?: string | null;
 }
 
 export interface Deadline {
@@ -82,6 +84,7 @@ export interface Deadline {
   timezone: string;
   precision: string;
   status: FactStatus;
+  sourceUrl?: string | null;
 }
 
 export interface ChecklistItem {
@@ -146,6 +149,8 @@ export interface CountryRuleRow {
   link: string | null;
   status: FactStatus;
   appliesTo: string[];
+  /** The rule's own official link, or its source page. */
+  sourceUrl?: string | null;
 }
 
 export interface DepartureTaskRow {
@@ -180,6 +185,8 @@ export interface JourneyInput {
   portfolioItems: number;
   /** When the student last completed a step (journey_events), for stalled detection (plan D13). */
   lastCompletedAt: string | null;
+  /** Names of linked parents and of counselor organisations with an active share (M2 home). */
+  sharedWith: { parents: string[]; counselors: string[] };
 }
 
 export type Band = "urgent" | "long_lead" | "stage" | "carry_over";
@@ -205,11 +212,24 @@ export interface NextStep {
   dueAt: string | null;
   rank: Band;
   dismissable: boolean;
+  /** The student can mark it done themselves (plan D8). */
+  markable: boolean;
   factRefs: FactRef[];
+  /** Where the quoted fact comes from: its official page, else the course page or /visas (M2, N4, N13). */
+  source?: { href: string };
   trackLabel?: string;
   application?: { id: string; label: string };
   /** Safe wording for the parent view; omitted means the step is never shown to parents. */
   parentTitle?: string;
+}
+
+/** A step the student snoozed or dismissed, so the steps page can bring it back. */
+export interface HiddenStep {
+  id: string;
+  catalogueId: string;
+  title: string;
+  state: "snoozed" | "dismissed";
+  until: string | null;
 }
 
 export interface JourneyResult {
@@ -220,6 +240,10 @@ export interface JourneyResult {
   steps: NextStep[];
   /** Ids of steps that apply and are done; save_journey_state logs new ones (plan D13). */
   completed: string[];
+  /** Ids in `completed` that are done only because the student marked them. */
+  marked: string[];
+  /** Snoozed (until their date) and dismissed steps. */
+  hidden: HiddenStep[];
   urgentCount: number;
   /** A sentence for badges, e.g. "2 steps due this fortnight"; null when nothing is urgent. */
   urgentLabel: string | null;
