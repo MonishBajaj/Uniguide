@@ -60,17 +60,19 @@ Checked against `Updated-developer-b` at `d8f3778` on 30 October 2026.
 | N8 | After sign-in the student lands on the home | `safeNext` falls back to `/app/profile`. Demo mode's User home is `/app/profile`, and `/consent` redirects there. | Change all three to `/app`. `/app` checks consent first: only when `consent_state` is `not_required` or `granted`, the stage is 1 and `entry_path` is empty does it send the student to `/app/onboarding`. |
 | N9 | `/app/steps` shows snoozed and dismissed handling | The engine drops hidden steps, so nothing could bring one back. `NextStep` doesn't say whether a step can be marked done. A step marked done moves to `result.completed`, so it is in neither the open steps nor any hidden list. | The engine adds `JourneyResult.hidden` (id, title, state, until), `JourneyResult.marked` (ids in `completed` that are done only because the student marked them) and `NextStep.markable`. Engine version 0.2.0. |
 | N10 | Bottom bar on phones: Home, Explore, Applications, Help, More (6.1) | No mobile navigation exists; the header scrolls sideways. | Build it. More opens a sheet with Shortlist, Offers, Visa and departure, and the account items. |
-| N11 | Navigation lives in the student area (6.1, `app/app/layout.tsx`) | `SiteHeader` is rendered by the root layout (`app/layout.tsx`) on every page, so the `/app` layout can't be the only place that decides whether to read the journey, and nothing tells the header which path it is on. | `proxy.ts` forwards the request path as an `x-ug-path` request header. `SiteHeader` calls `getJourney()` only when that path is under `/app` and the user is a student. Elsewhere, signed-in students see the student links without the badge, and no snapshot is read. Public pages already render per request (the header reads the session cookie), so no static caching is lost. |
+| N11 | Navigation lives in the student area (6.1, `app/app/layout.tsx`) | `SiteHeader` is rendered by the root layout (`app/layout.tsx`) on every page, so the `/app` layout can't be the only place that decides whether to read the journey, and nothing tells the header which path it is on. | `proxy.ts` forwards the request path as an `x-ug-path` request header, always set from the real request path and overwriting any `x-ug-path` the client sent, so a crafted header can't make a public page read the snapshot or hide a banner. `SiteHeader` calls `getJourney()` only when that path is under `/app` and the user is a student. Elsewhere, signed-in students see the student links without the badge, and no snapshot is read. Public pages already render per request (the header reads the session cookie), so no static caching is lost. |
 | N12 | The entry answer is saved as `profiles.entry_path` (6.4) | The "own profile update" policy requires `can_process_personal_data`, so the write fails while consent is `pending_parental` or `revoked`. | Students without consent are never sent to onboarding, and `/app/onboarding` sends them back to `/app` (N8). |
 | N13 | Fact status "with link to the source" (6.2) | The snapshot doesn't carry source URLs. Requirements and deadlines point at `sources` through `source_id`; country rules have their own `link` and a `source_id`. | J2.1 adds `sourceUrl` to each requirement, deadline and country rule in `journey_snapshot`. `NextStep.source` links to the official page, with `/courses/[slug]` (or `/visas` for a rule) as the fallback. |
 | N14 | Stage copy goes through `lib/i18n` (7.2) | `lib/i18n/en.ts` reaches the browser through `components/locale.tsx` (a client component). Importing the package index from it would put the whole engine in the browser bundle. | The journey package adds a subpath export, `@uniguide/journey/stages`, and `en.ts` imports the stage text from there. |
-| N15 | A new student is sent to onboarding | The seed student (the demo "User" account) has no `entry_path` and no subjects, so it is in stage 1. With N8, demo mode's User would land on onboarding every time. | `supabase/seed.sql` sets the seed student's `entry_path` to `exploring` (J2.3). |
-| N16 | The home shows S1.06 to a student waiting for consent | `app/app/layout.tsx` already shows a consent banner on every `/app` page, so the home would say the same thing twice. | The banner is left out on `/app` itself (read from `x-ug-path`), where the S1.06 card says it; other `/app` pages keep it. |
+| N15 | A new student is sent to onboarding; a student with a preparing application lands on stage 4 | `supabase/seed.sql` gives the seed student (`student@uniguide.local`, the demo "User" account) only a birth month and residence: no subjects, no applications and no `entry_path`, so it is in stage 1. M1's cron e2e check expects exactly that (stage 1, S1.01 first). With N8, demo mode's User would land on onboarding every time, and no seed account is in stage 4. Seed courses are loaded by the worker after `seed.sql` runs, so `seed.sql` can't create an application. | `seed.sql` sets the seed student's `entry_path` to `exploring` and leaves it otherwise unchanged, so M1's check and the specs that call `resetStudent()` still hold. A second seed student, `applicant@uniguide.local`, gets a full profile (master's, GB and DE, subject 0613, grade 8.4 on a 10-point scale, budget 60,000 USD, intake 2027) and `entry_path = applying`. A new e2e helper, `resetApplicant()`, gives it one preparing application on the first published placeholder course before each test (J2.3). |
+| N16 | The home shows S1.06 to a student waiting for consent | `app/app/layout.tsx` already shows a consent banner on every `/app` page while consent is `pending_parental`, so the home would say the same thing twice. | For pending consent, the banner is left out on `/app` itself (read from `x-ug-path`), where the S1.06 card says it; other `/app` pages keep it. For revoked consent the banner shows on every `/app` page, `/app` included (N17). |
+| N17 | M1 plan D3: only `pending_parental` triggers S1.06 | The engine disagrees with D3. S1.06 applies whenever consent isn't `not_required`, so a `revoked` student gets S1.06, and every other step is blocked. S1.06 links to `/consent`, which sends any student who isn't pending back out, so a revoked student would get a step that can't be done. Nothing sets `revoked` today, but the enum allows it and a parent withdrawal flow would. | J2.1 makes S1.06 apply only to `pending_parental`, as D3 says. A revoked student gets no steps, since nothing personal may be processed. `/app` shows the revoked banner ("A parent or guardian withdrew consent for this account. Until they confirm again, we don't save or use your personal details.") in place of the cards, with no "you're up to date" message and no onboarding redirect. A way for a parent to consent again doesn't exist; it goes in BACKLOG.md. |
 
 ## Deviations from the spec (decisions M2 takes)
 
 - **Engine 0.2.0.** It adds `NextStep.source`, `NextStep.markable`, `JourneyResult.hidden`, `JourneyResult.marked` and `upcomingDeadlines()`, switches S1.03 on, and changes S1.01's link (N4, N6, N9, N13). `expected.json` is regenerated deliberately and the version bumped.
 - **S1.01 links to the short profile.** In M1 it linked to `/app/onboarding` (the chat) only with AI consent, otherwise to `/app/profile#targets`. In M2 `/app/onboarding` is the three-screen flow for everyone, so S1.01 links to `/app/onboarding?screen=3`, the short profile, which skips the entry question; that screen offers the chat when AI consent exists. A doctorate student whose only gap is research interests still goes to `/app/profile#research`. The reason becomes "Your level, subjects and countries decide which courses we look at. One short form covers them."
+- **S1.06 is for pending consent only** (N17). M1's engine also showed it for revoked consent, against M1 D3; J2.1 brings the engine back in line, and revoked students see a banner instead of a step.
 - **Undoing "mark done" keeps its event.** Bring back deletes the `done` row, but the `step_done` event already logged stays, and it counts for the stalled timer. Marking a step done and undoing it is still activity, `journey_events` stays append-only, and no time window is needed. The step reopens on the next compute.
 - **"Get help" is a small stage panel until M4** (N5).
 - **No own applications in onboarding until M3** (N7).
@@ -80,7 +82,10 @@ Checked against `Updated-developer-b` at `d8f3778` on 30 October 2026.
 ## Review Focus
 
 - **A brand-new student** signs up, answers "Just exploring", fills the short form and lands on their first matches. The next visit to `/app` shows stage 2 and "Look through your matches". (J2.6, J2.7)
-- **A student with a preparing application** signs in and lands on `/app`, which shows stage 4. Its progress reads "0 of 1 application ready" until the checklist is done. (J2.3)
+- **A student with a preparing application** (the seed `applicant@uniguide.local`, given one by `resetApplicant()`) signs in and lands on `/app`, which shows stage 4. Its progress reads "0 of 1 application ready" until the checklist is done. (J2.3)
+- **A student whose consent was revoked** opens `/app`, isn't redirected, sees the revoked banner and no step cards, and the engine gives no S1.06. (J2.1, J2.3)
+- **A failed journey read** on `/app` or `/app/steps` shows an error state with a "Try again" link, not a crashed page; the navigation shows no badge. (J2.2, J2.3, J2.4)
+- **A crafted `x-ug-path` header** has no effect: the proxy overwrites it from the real path. (J2.2)
 - **A student waiting for parental consent** opens `/app`, isn't redirected to onboarding, and sees only "Ask a parent to confirm your account", with no snooze or dismiss. Opening `/app/onboarding` directly sends them back to `/app`. (J2.1, J2.3, J2.6)
 - **One snapshot read per `/app` request**, shared by the navigation and the page; none on public pages; a failed read leaves the navigation without a badge and the page still loads. (J2.1, J2.2)
 - **Onboarding never strands a student:** "Skip for now" lands on `/app`, and finishing with a profile matching can't use yet lands on `/app`, where the stage 1 steps say what is missing. (J2.6)
@@ -131,7 +136,9 @@ The review page for this plan has mockups of each screen.
 | `apps/web/lib/journey-snapshot.ts` | `parseSnapshot` reads the new fields |
 | `apps/web/lib/journey-request.ts` + `.test.ts` | `getJourney()` (one snapshot read per request, React `cache()`), `saveJourney()` |
 | `apps/web/proxy.ts` | Forwards the request path as `x-ug-path` |
-| `supabase/seed.sql` | Seed student's `entry_path` |
+| `supabase/seed.sql` | Seed student's `entry_path`; new seed student `applicant@uniguide.local` with a full profile |
+| `apps/web/lib/request-path.ts` + `.test.ts` | `withPathHeader()`: sets `x-ug-path` from the real path |
+| `apps/web/components/journey/journey-error.tsx` | Error state with "Try again", shared by `/app` and `/app/steps` |
 | `apps/web/lib/journey-nav.ts` + `.test.ts` | Route → navigation section (spec 6.1 table), reached sections by stage |
 | `apps/web/components/journey/student-nav.tsx`, `bottom-bar.tsx`, `help-panel.tsx` | Desktop top bar, phone bar with More sheet, small stage help panel |
 | `apps/web/components/site-header.tsx` | Uses the student navigation for signed-in students |
@@ -174,6 +181,7 @@ The review page for this plan has mockups of each screen.
 - **S1.01:**
   - links to `/app/onboarding?screen=3` whatever the AI consent, or to `/app/profile#research` when research interests are the only gap
   - new reason (see Deviations)
+- **S1.06** applies only when consent is `pending_parental` (M1 D3, N17). Every other step stays blocked under `pending_parental` and `revoked`, so a revoked student gets no steps.
 - **`ENGINE_VERSION = "journey-0.2.0"`**
 - **`@uniguide/journey/stages`** subpath export (`STAGES` only), for the i18n files (N14)
 - **`lib/journey-request.ts`:**
@@ -191,6 +199,7 @@ The review page for this plan has mockups of each screen.
     - S1.03 shows when the intake is missing.
     - S1.01 links to `/app/onboarding?screen=3` both with and without AI consent, and to `/app/profile#research` for a doctorate student missing only research interests (this replaces the M1 test "S1.01 links to onboarding only with AI consent").
   - **Pending consent:** a new fixture, `edge-pending-consent-with-application`, has a full profile, a preparing application and `consent_state = pending_parental`. It gives stage 4 and only S1.06. The engine already blocks every other step under pending or revoked consent (`evaluateCatalogue` in M1, with the existing `edge-pending-consent` test); this fixture proves it holds with real data too.
+  - **Revoked consent:** a new fixture, `edge-revoked-consent`, has the same data with `consent_state = revoked`. It gives no steps, and S1.06 is neither open nor completed. Both new fixtures go into `expected.json` (the revoked one with an empty top three).
   - **The M1 anchor check:** "lists only routes and anchors that exist in the web app" must pass with `#intake`, which proves the field renders.
   - **pgTAP:**
     - `sharedWith` lists an active parent and an active counselor organisation, and not revoked ones.
@@ -212,7 +221,7 @@ The review page for this plan has mockups of each screen.
 - Create: `apps/web/lib/journey-nav.ts` (+ test), `components/journey/student-nav.tsx`, `bottom-bar.tsx`, `help-panel.tsx`
 - Modify:
   - `components/site-header.tsx`
-  - `proxy.ts` (`x-ug-path`)
+  - `proxy.ts` and new `lib/request-path.ts` (`x-ug-path`, always overwritten)
   - `app/app/layout.tsx` (skip link target, bottom padding)
   - `lib/i18n/en.ts`, `hi.ts`
 
@@ -237,6 +246,7 @@ The review page for this plan has mockups of each screen.
   - stage 1 reaches home only; stage 4 reaches home, explore, shortlist and applications
   - `headerJourney("/courses/x", true, spy)` never calls `spy` and gives no badge
   - `headerJourney("/app/tracker", true, failing)` gives no badge and doesn't throw
+  - `withPathHeader(request)` (the proxy's header step, exported from `lib/request-path.ts` so it can be tested) sets `x-ug-path` to the request's real path, and replaces a client-sent `x-ug-path: /app` on a `/courses/x` request
 - [ ] **Step 2: Implement:**
   - Unreached sections use `text-muted`, with no badge, and stay links.
   - The badge is `aria-hidden`; its sentence (`urgentLabel`) is in visually hidden text inside the link.
@@ -245,6 +255,7 @@ The review page for this plan has mockups of each screen.
   - Guests, parents, counselors and staff keep today's header unchanged.
 - [ ] **Step 3: Playwright:**
   - a signed-in student on `/courses/[slug]` sees the student links and no badge
+  - the same request sent with `x-ug-path: /app` still shows no badge
   - the same student on `/app/tracker` sees the badge
 - [ ] **Step 4: Screenshots** at 1280 and 390 px wide, for stages 1, 4 and 6.
 - [ ] **Step 5: Commit** `J2.2 Journey navigation on desktop and phone`.
@@ -262,7 +273,9 @@ The review page for this plan has mockups of each screen.
   - `lib/demo-mode.ts` (User home `/app`)
   - `app/consent/page.tsx` (redirect to `/app`)
   - `app/app/layout.tsx` (no consent banner on `/app` itself, N16)
-  - `supabase/seed.sql` (seed student's `entry_path = exploring`, N15)
+  - `supabase/seed.sql` (seed student's `entry_path = exploring`; new seed student `applicant@uniguide.local`, N15)
+  - `e2e/helpers.ts` (`APPLICANT`, `resetApplicant()`)
+  - `app/app/layout.tsx` (revoked banner on every `/app` page, N17)
   - `lib/i18n/en.ts`, `hi.ts` (`t.journey.home`, `t.journey.bands`)
 
 **Interfaces:**
@@ -285,19 +298,24 @@ The review page for this plan has mockups of each screen.
   - **no snooze, dismiss or mark-done buttons yet**: J2.4 adds them with their actions
 - **Redirect order:**
   1. Linked parents keep going to `/parent` (existing layout rule).
-  2. A student whose `consent_state` is `pending_parental` or `revoked` stays on `/app` and sees the S1.06 card only (the engine gives nothing else).
-  3. Only a student whose consent is `not_required` or `granted`, who is in stage 1 and whose `entry_path` is empty, goes to `/app/onboarding`.
-- **No open steps:** "You're up to date in this stage" with a link to the stage's page (`STAGES[stage].route`).
+  2. A student whose `consent_state` is `pending_parental` stays on `/app` and sees the S1.06 card only (the engine gives nothing else).
+  3. A student whose `consent_state` is `revoked` stays on `/app` and sees the revoked banner and no cards (N17).
+  4. Only a student whose consent is `not_required` or `granted`, who is in stage 1 and whose `entry_path` is empty, goes to `/app/onboarding`.
+- **No open steps** (consent not revoked): "You're up to date in this stage" with a link to the stage's page (`STAGES[stage].route`).
+- **When `getJourney()` fails:** the page catches it, logs it and shows an error state ("We couldn't load your next steps just now.") with a "Try again" link to the same URL. Nothing is saved. The rest of the layout, including the navigation without a badge, still renders. The shared `JourneyError` component (in `components/journey/`) is reused by `/app/steps`.
 - **Copy:** every string through `t.journey` keys from the first commit.
 
 - [ ] **Step 1: Write the Playwright spec first** (`journey-home.spec.ts`):
-  - the seed student with a preparing application lands on `/app` after sign-in
+  - `applicant@uniguide.local`, after `resetApplicant()`, lands on `/app` after sign-in
   - the page shows stage 4 and three cards, each with a link that responds with 200
   - a student with `consent_state = pending_parental` and no `entry_path` opens `/app`, stays on `/app`, and sees one card, S1.06, with no snooze or dismiss, and no second consent banner
   - a student with consent and no `entry_path` in stage 1 is sent to `/app/onboarding`
+  - a student with `consent_state = revoked` opens `/app`, stays there, sees the revoked banner and no step cards
+  - with `journey_snapshot` made to fail (the test runs `revoke execute on function journey_snapshot from authenticated` and restores the grant in `finally`), `/app` shows the error state and a working "Try again" link, and the navigation renders without a badge
+  - the seed student (`student@uniguide.local`) lands on `/app` in stage 1 and is not sent to onboarding
   - an unverified deadline shows its label and a source link
-- [ ] **Step 2: Implement** the components and the page, change the three landing targets, and set the seed student's `entry_path`. Update existing e2e specs that expect `/app/profile` after sign-in.
-- [ ] **Step 3: Screenshots** of stages 1, 2, 4, 6 and 7 plus pending consent, at both widths.
+- [ ] **Step 2: Implement** the components and the page, change the three landing targets, and update the seed: the seed student's `entry_path`, and the new applicant account. Update existing e2e specs that expect `/app/profile` after sign-in.
+- [ ] **Step 3: Screenshots** of stages 1, 2, 4, 6 and 7, pending consent, revoked consent and the error state, at both widths.
 - [ ] **Step 4: Commit** `J2.3 Journey home`.
 
 ---
@@ -310,7 +328,7 @@ The review page for this plan has mockups of each screen.
 
 **Interfaces:**
 - **Page:**
-  - `getJourney()`, then `saveJourney()`.
+  - `getJourney()`, then `saveJourney()`. When `getJourney()` fails, the page shows the shared `JourneyError` state with "Try again" instead of crashing.
   - Groups steps by band, with the headings "Due soon" (`#urgent`), "Start soon" (`#long_lead`), "This stage" (`#stage`) and "Also open" (`#carry_over`).
   - A closed `<details>` at the end lists "Snoozed and dismissed" from `result.hidden`, each with "Bring back".
 - **Card buttons** (added to `step-card.tsx`, so the home gets them too):
@@ -342,6 +360,7 @@ The review page for this plan has mockups of each screen.
     - snooze, then the "Back on {date}" message appears and the row's `until` is 7 days ahead; Bring back from the list returns it
     - mark S2.03 done, then a `step_done` event is recorded; Undo reopens it
     - after dismissing an urgent step, the Applications badge count drops on the next page
+    - with `journey_snapshot` made to fail (as in J2.3), `/app/steps` shows the error state and a "Try again" link to `/app/steps`
 - [ ] **Step 2: Implement.**
 - [ ] **Step 3: Commit** `J2.4 All steps with snooze, dismiss and mark done`.
 
@@ -363,7 +382,11 @@ The review page for this plan has mockups of each screen.
 
 - [ ] **Step 1: Write failing tests:**
   - en/hi key parity, with no empty strings (existing test, now covering `t.journey`)
-  - Hindi `t.journey` strings differ from the English ones, so none were left untranslated
+  - Hindi `t.journey` strings differ from the English ones, so none were left untranslated. An exception list in the test allows identical strings for:
+    - brand names (UniGuide)
+    - test and exam names (IELTS, TOEFL iBT, GRE and the rest of `EXAM_NAMES`)
+    - strings made only of placeholders, numbers and punctuation (for example `{count}` or `{done} / {total}`)
+    - any other entry needs a comment saying why
   - no hard-coded English in `components/journey` (a grep test for text nodes outside `t.`)
 - [ ] **Step 2: Write the Hindi strings.**
 - [ ] **Step 3: Commit** `J2.5 Hindi journey copy and copy checks`.
@@ -429,7 +452,7 @@ The review page for this plan has mockups of each screen.
 - [ ] **Step 4: Run every suite** (Global Constraints).
 - [ ] **Step 5: Docs:**
   - **FEATURES.md:** journey rows G2, G3, G5, G6 Built; G18 Built.
-  - **BACKLOG.md:** S1.03 on, N5/N7 waiting for M4/M3, and the two accepted limits from Decisions 6 and 7 (English step titles for Hindi users until M6; Offers under More on phones).
+  - **BACKLOG.md:** S1.03 on, N5/N7 waiting for M4/M3, the two accepted limits from Decisions 6 and 7 (English step titles for Hindi users until M6; Offers under More on phones), and the missing flow for a parent to consent again after revoking (N17).
   - **README.md:** the student area line.
 - [ ] **Step 6: Commit** `J2.7 Journey shell audit and docs`.
 
