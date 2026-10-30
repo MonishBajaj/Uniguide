@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { dismissStep, markStepDone, snoozeStep } from "@/app/app/steps/actions";
 import { formatDate, type NextStep } from "@uniguide/journey";
 import { FactBadge } from "@/components/facts";
 import type { Dict } from "@/lib/i18n/en";
@@ -18,17 +19,20 @@ function sourceLabel(href: string, t: Dict["journey"]["home"]): string {
 
 /**
  * One next step (spec 6.2): why it's here, which application, what to do, the fact it relies on
- * with its status and source, and one button to the exact place to do it. Step buttons for
- * snooze, dismiss and mark done come with their actions in J2.4.
+ * with its status and source, and one button to the exact place to do it. Below it, snooze,
+ * dismiss and mark done where the catalogue allows them (J2.4).
  */
 export function StepCard({
   step,
   t,
+  from,
   timezone = "UTC",
   headingLevel = 3,
 }: {
   step: NextStep;
   t: Dict["journey"];
+  /** The page the step actions return to. */
+  from: "/app" | "/app/steps";
   /** The time zone of the deadline the due date comes from, so it reads the same as under "Coming up". */
   timezone?: string;
   headingLevel?: 3 | 4;
@@ -60,12 +64,45 @@ export function StepCard({
           {step.dueAt ? <span className="font-mono text-xs">{t.home.due(formatDate(step.dueAt, timezone))}</span> : null}
         </p>
       ) : null}
-      <div className="mt-1">
+      <div className="mt-1 flex flex-wrap items-center gap-2">
         <Link href={step.href} className="btn btn-primary min-h-11">
           {t.home.start}
           <span className="sr-only">: {step.title}</span>
         </Link>
+        {step.markable ? <StepButton action={markStepDone.bind(null, step.id)} from={from} label={t.steps.markDone} title={step.title} /> : null}
+        {step.dismissable ? (
+          <>
+            <StepButton action={snoozeStep.bind(null, step.id)} from={from} label={t.steps.snooze} title={step.title} />
+            <StepButton action={dismissStep.bind(null, step.id)} from={from} label={t.steps.dismiss} title={step.title} quiet />
+          </>
+        ) : (
+          <span className="text-sm text-muted">{t.steps.cantDismiss}</span>
+        )}
       </div>
     </article>
+  );
+}
+
+function StepButton({
+  action,
+  from,
+  label,
+  title,
+  quiet = false,
+}: {
+  action: (form: FormData) => Promise<void>;
+  from: string;
+  label: string;
+  title: string;
+  quiet?: boolean;
+}) {
+  return (
+    <form action={action}>
+      <input type="hidden" name="from" value={from} />
+      <button className={`btn btn-sm min-h-11 ${quiet ? "text-muted hover:text-foreground" : "btn-secondary"}`}>
+        {label}
+        <span className="sr-only">: {title}</span>
+      </button>
+    </form>
   );
 }

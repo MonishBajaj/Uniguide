@@ -1,29 +1,26 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { STAGES, upcomingDeadlines, type JourneyInput } from "@uniguide/journey";
+import { STAGES, upcomingDeadlines } from "@uniguide/journey";
 import { JourneyError } from "@/components/journey/journey-error";
 import { SideColumn } from "@/components/journey/side-column";
 import { StagePath } from "@/components/journey/stage-path";
 import { StepCard } from "@/components/journey/step-card";
+import { StepStatus } from "@/components/journey/step-status";
+import { readStatus } from "@/lib/journey-actions";
+import { dueTimezone } from "@/lib/journey-dates";
 import { getLocale } from "@/lib/i18n/server";
 import type { LoadedJourney } from "@/lib/journey-request";
 import { getJourney, saveJourney } from "@/lib/journey-request.server";
 
 export const metadata: Metadata = { title: "Home" };
 
-/** A due date that is a published deadline reads in that deadline's own time zone; anything else in UTC. */
-function dueTimezone(dueAt: string | null, input: JourneyInput): string {
-  if (!dueAt) return "UTC";
-  for (const app of input.applications) for (const d of app.deadlines) if (d.dueAt === dueAt) return d.timezone;
-  return "UTC";
-}
 
 /**
  * Journey home (spec 6.2, journey M2 J2.3): where a signed-in student lands. Everything on it comes
  * from the journey engine: the stage, its progress, the next three steps and their order.
  */
-export default async function JourneyHome() {
+export default async function JourneyHome({ searchParams }: PageProps<"/app">) {
   const { t } = await getLocale();
   const j = t.journey;
 
@@ -48,6 +45,7 @@ export default async function JourneyHome() {
 
   const stageName = j.stages[String(result.stage) as keyof typeof j.stages].name;
   const next = result.steps.slice(0, 3);
+  const status = readStatus(await searchParams);
   const alsoOpen = result.steps.filter((s) => s.rank === "carry_over").length;
 
   return (
@@ -57,12 +55,16 @@ export default async function JourneyHome() {
           {greeting}
           <p className="text-lg text-muted">{j.home.summary(result.stage, stageName)}</p>
         </header>
+        <StepStatus status={status} t={j.steps} from="/app" />
         <StagePath stage={result.stage} progress={result.stageProgress} t={j} />
         <section aria-labelledby="next-steps" className="grid gap-4">
-          <h2 id="next-steps" className="text-2xl font-semibold">{j.home.nextSteps}</h2>
+          <div className="flex flex-wrap items-baseline justify-between gap-2">
+            <h2 id="next-steps" className="text-2xl font-semibold">{j.home.nextSteps}</h2>
+            <Link href="/app/steps" className="font-semibold text-accent underline underline-offset-2">{j.home.seeAll}</Link>
+          </div>
           {next.length ? (
             <div className="grid gap-4">
-              {next.map((step) => <StepCard key={step.id} step={step} t={j} timezone={dueTimezone(step.dueAt, input)} />)}
+              {next.map((step) => <StepCard key={step.id} step={step} t={j} from="/app" timezone={dueTimezone(step.dueAt, input)} />)}
             </div>
           ) : (
             <div className="grid gap-2 rounded-2xl border border-border bg-surface p-5">

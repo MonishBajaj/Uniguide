@@ -43,7 +43,8 @@ export function resetStudent() {
        update profiles set residence_country = 'IN', target_levels = '{master}', target_countries = '{GB,US,DE}',
          home_qualification = 'bachelor_4yr', grade_value = 8.4, grade_scale = 'gpa_10', budget_amount = 60000,
          budget_currency = 'USD', prior_credits = null, prior_credit_system = null, class_percentile = null,
-         preferences = '{}', consent_state = 'not_required', entry_path = 'exploring' where user_id = '${STUDENT}'`);
+         preferences = '{}', consent_state = 'not_required', entry_path = 'exploring',
+         target_fields = '{}', intake_year = null where user_id = '${STUDENT}'`);
 }
 
 /** The applicant back to a full profile with exactly one preparing application, on a placeholder course. */

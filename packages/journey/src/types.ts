@@ -230,6 +230,8 @@ export interface HiddenStep {
   title: string;
   state: "snoozed" | "dismissed";
   until: string | null;
+  /** The application it's about, so two hidden steps with the same title can be told apart. */
+  application?: { id: string; label: string };
 }
 
 export interface JourneyResult {

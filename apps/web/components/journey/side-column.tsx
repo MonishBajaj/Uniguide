@@ -77,6 +77,7 @@ export function SideColumn({
         <section aria-labelledby="also-open" className={panel}>
           <h2 id="also-open" className="font-semibold">{t.home.alsoOpen}</h2>
           <p>{t.home.alsoOpenCount(alsoOpen)}</p>
+          <Link href="/app/steps#carry_over" className="font-semibold text-accent underline underline-offset-2">{t.home.seeAll}</Link>
         </section>
       ) : null}
 

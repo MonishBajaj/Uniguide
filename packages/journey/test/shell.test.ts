@@ -64,6 +64,12 @@ describe("markable, hidden and marked", () => {
       { id: "S2.03", catalogueId: "S2.03", title: "Compare your countries", state: "snoozed", until: "2026-11-09T00:00:00Z" },
     ]);
     expect(r.steps.map((s) => s.id)).not.toContain("S2.01");
+    // Steps about an application keep its label, so two hidden "Record the application fee" steps differ.
+    const fee = computeJourney({
+      ...preparingWithDeadline("verified", null),
+      stepState: [{ stepId: "S4.14:a1", state: "dismissed", until: null }],
+    }).hidden.find((h) => h.catalogueId === "S4.14")!;
+    expect(fee.application).toEqual({ id: "a1", label: "MSc Data Science, University of Exampleton" });
     const later = computeJourney({ ...input, today: "2026-11-09" });
     expect(later.hidden.map((h) => h.id)).toEqual(["S2.01"]);
     expect(later.steps.map((s) => s.id)).toContain("S2.03");
