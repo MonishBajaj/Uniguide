@@ -3,18 +3,23 @@
 from __future__ import annotations
 
 import os
+import re
 import time
 
 import httpx
 from pydantic import ValidationError
 
-from ..extract.ollama import DEFAULT_HOST, NUM_CTX, TIMEOUT_S
-from .lister import SYSTEM, CourseList, CourseListRun, _message
+from ..extract.ollama import DEFAULT_HOST, NUM_CTX
+from ..validate.quotes import normalise
+from .lister import SYSTEM, CourseList, CourseListRun, ListedCourse, _message
 
 # A small local model has a window of NUM_CTX tokens for the page, the link list and the answer, so the
 # page and its links are cut well below what Gemini takes. A longer index lists only its first courses.
 MAX_PAGE_CHARS = 20_000
 MAX_LINKS = 250
+# Listing a long page means writing a long answer (a 150-course page took over four minutes), so the lister waits
+# much longer than the one-page extractor does.
+LISTER_TIMEOUT_S = 900
 
 # A 7B model tends to expand "Computer Science" to "Master of Science in Computer Science", and the crawl then
 # rejects the course because its quote does not contain the title.
@@ -26,10 +31,28 @@ SYSTEM_FOR_SMALL_MODELS = (
 )
 
 
+_DEGREE_PREFIX = re.compile(
+    r"^(?:(?:master|doctor|bachelor)s? of [\w&' ]+?"
+    r"|(?:M\.?S\.?c?|M\.?A\.?|M\.?Eng|M\.?F\.?A|MBA|Ph\.?D\.?|B\.?S\.?|B\.?A\.?)) in ",
+    re.IGNORECASE,
+)
+
+
+def repair_title(title: str, quote: str) -> str:
+    """Undo a small model's habit of expanding 'Robotics' to 'Master of Science in Robotics'.
+
+    The plain name is used only when the quote really contains it, so the crawl's check stays strict.
+    """
+    if normalise(title) in normalise(quote):
+        return title
+    plain = _DEGREE_PREFIX.sub("", title, count=1)
+    return plain if plain != title and normalise(plain) in normalise(quote) else title
+
+
 class OllamaCourseLister:
     def __init__(self, model: str, client: httpx.Client | None = None, host: str | None = None) -> None:
         self.client = client or httpx.Client(
-            base_url=host or os.environ.get("OLLAMA_HOST") or DEFAULT_HOST, timeout=TIMEOUT_S
+            base_url=host or os.environ.get("OLLAMA_HOST") or DEFAULT_HOST, timeout=LISTER_TIMEOUT_S
         )
         self.model = model
 
@@ -71,4 +94,7 @@ class OllamaCourseLister:
         except ValidationError as exc:
             msg = f"unparseable output: {exc.error_count()} errors"
             return CourseListRun(None, self.model, tin, tout, 0.0, msg, ms())
+        courses = [
+            ListedCourse(title=repair_title(c.title, c.quote), level=c.level, url=c.url, quote=c.quote) for c in courses
+        ]
         return CourseListRun(courses, self.model, tin, tout, 0.0, None, ms())

@@ -6,7 +6,13 @@ import pytest
 from uniguide_worker.config import Settings
 from uniguide_worker.index.factory import make_lister
 from uniguide_worker.index.lister import CourseList, ListedCourse
-from uniguide_worker.index.ollama_lister import MAX_LINKS, MAX_PAGE_CHARS, OllamaCourseLister
+from uniguide_worker.index.ollama_lister import (
+    LISTER_TIMEOUT_S,
+    MAX_LINKS,
+    MAX_PAGE_CHARS,
+    OllamaCourseLister,
+    repair_title,
+)
 
 COURSES = CourseList(
     courses=[ListedCourse(title="MSc Robotics", level="master", url="https://u.example/robotics", quote="MSc Robotics")]
@@ -104,3 +110,37 @@ def test_factory_explains_what_is_missing() -> None:
         make_lister(_settings(extractor="gemini"))
     with pytest.raises(ValueError, match="gemini or ollama"):
         make_lister(_settings(extractor="anthropic"))
+
+
+@pytest.mark.parametrize(
+    ("title", "quote", "expected"),
+    [
+        ("Master of Science in Robotics", "Robotics (MS)", "Robotics"),
+        ("Master of Arts in History", "History", "History"),
+        ("Doctor of Philosophy in Chemistry", "Chemistry PhD", "Chemistry"),
+        ("PhD in Physics", "Physics", "Physics"),
+        ("MS in Data Science", "Data Science", "Data Science"),
+        ("Master of Science in Robotics", "Robotic Systems", "Master of Science in Robotics"),
+        ("Robotics", "Robotics", "Robotics"),
+        ("Master of Science in Robotics", "Master of Science in Robotics", "Master of Science in Robotics"),
+    ],
+)
+def test_expanded_degree_titles_are_repaired_only_when_the_quote_has_the_plain_name(
+    title: str, quote: str, expected: str
+) -> None:
+    assert repair_title(title, quote) == expected
+
+
+def test_a_repaired_title_reaches_the_caller_with_its_quote_unchanged() -> None:
+    reply = CourseList(
+        courses=[ListedCourse(title="Master of Science in Robotics", level="master", url="https://u.example/r", quote="Robotics")]
+    )
+    handler = httpx.MockTransport(lambda request: httpx.Response(200, json=_reply(reply.model_dump_json())))
+    run = _lister(handler).list_courses("https://u.example", "t", LINKS)
+    assert run.courses is not None
+    assert [(c.title, c.quote) for c in run.courses] == [("Robotics", "Robotics")]
+
+
+def test_the_lister_waits_longer_for_the_model_than_the_extractor_does() -> None:
+    assert LISTER_TIMEOUT_S >= 900
+    assert OllamaCourseLister(model="m").client.timeout.read == LISTER_TIMEOUT_S
