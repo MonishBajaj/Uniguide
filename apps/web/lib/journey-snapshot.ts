@@ -44,6 +44,9 @@ const snapshotSchema = z.object({
   testScores: list(
     z.object({ id: z.string(), exam: z.string(), examVersion: z.string().nullable(), total: z.number().nullable(), takenOn: z.string().nullable() }),
   ),
+  testPlans: list(
+    z.object({ exam: z.string(), examVersion: z.string().nullable(), status: z.enum(["not_taken", "booked"]), bookedFor: z.string().nullable() }),
+  ),
   shortlist: list(z.object({ program, createdAt: z.string() })),
   applications: list(
     z.object({

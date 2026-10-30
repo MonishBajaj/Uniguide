@@ -1499,6 +1499,20 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
+                },"test_plans": {
+                  Row: {
+                    "booked_for": string | null,"created_at": string,"exam": string,"exam_version": string | null,"id": string,"status": string,"updated_at": string,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "booked_for"?: string | null,"created_at"?: string,"exam": string,"exam_version"?: string | null,"id"?: string,"status": string,"updated_at"?: string,"user_id": string
+                  }
+                  Update: {
+                    "booked_for"?: string | null,"created_at"?: string,"exam"?: string,"exam_version"?: string | null,"id"?: string,"status"?: string,"updated_at"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
                 },"test_scores": {
                   Row: {
                     "created_at": string,"exam": Database["public"]['Enums']["exam_kind"],"exam_version": string | null,"id": string,"sections": NonNullable<Json>,"taken_on": string | null,"total": number | null,"user_id": string

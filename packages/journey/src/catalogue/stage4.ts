@@ -229,14 +229,25 @@ export const STAGE4: StepDef[] = [
     href: () => "/app/cv",
   },
   {
-    // Waits for test bookings (G11).
+    // A course being prepared asks for a test and none of its listed exams has a score or a booking (J3.4).
+    // The 30-day lead time ranks it as "start soon" a month before the deadline; it is never shown.
     id: "S4.11",
     stage: 4,
     dismissable: true,
-    available: false,
+    available: true,
     leadDays: 30,
-    done: () => false,
-    href: () => "/app/profile#scores-section",
+    subjects: (ctx) => appSubjects(preparing(ctx).filter((a) => testRequirements(a).length > 0)),
+    done: (ctx, s) =>
+      testRequirements(s.app!).some(
+        (r) =>
+          ctx.input.testScores.some((t) => t.exam === r.exam) ||
+          ctx.input.testPlans.some((p) => p.exam === r.exam && p.status === "booked"),
+      ),
+    dueAt: (ctx, s) => due(ctx, s),
+    factRefs: (_, s) => testRequirements(s.app!).flatMap((r) => ref("requirements", r.id, r.status)),
+    href: () => "/app/profile#test-plans",
+    copyKey: (_, s) => `S4.11${checkSuffix(testRequirements(s.app!))}`,
+    params: (_, s) => ({ course: courseLabel(s.app!) }),
   },
   {
     // One per saved score whose exam the course lists, until it is marked sent (4.5).

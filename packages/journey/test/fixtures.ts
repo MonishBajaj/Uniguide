@@ -44,6 +44,7 @@ export function base(overrides: Partial<JourneyInput> = {}): JourneyInput {
     profile: emptyProfile,
     tracks: [],
     testScores: [],
+    testPlans: [],
     shortlist: [],
     applications: [],
     recommenders: [],

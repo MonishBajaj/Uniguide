@@ -62,6 +62,14 @@ export interface TestScore {
  * The course an application is for. For an own application (J3.3) there is no catalogue course: id, slug and
  * level are null, and title, institution and country are the student's own words.
  */
+/** A planned test (J3.4): "not taken yet", or booked for a date. Only a saved score is a result. */
+export interface TestPlan {
+  exam: string;
+  examVersion: string | null;
+  status: "not_taken" | "booked";
+  bookedFor: string | null;
+}
+
 export interface ProgramRef {
   id: string | null;
   slug: string | null;
@@ -181,6 +189,7 @@ export interface JourneyInput {
   profile: ProfileSnapshot;
   tracks: TrackSnapshot[];
   testScores: TestScore[];
+  testPlans: TestPlan[];
   shortlist: ShortlistRow[];
   applications: ApplicationSnapshot[];
   recommenders: { id: string; name: string }[];

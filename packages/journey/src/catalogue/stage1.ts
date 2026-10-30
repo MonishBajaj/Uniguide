@@ -54,7 +54,8 @@ export const STAGE1: StepDef[] = [
     href: () => "/app/profile#qualification",
   },
   {
-    // Only when a course the student tracks asks for a test (plan D4). "Not taken yet" waits for G11.
+    // Only when a course the student tracks asks for a test (plan D4). A saved score completes it, and so does
+    // saying a test the course lists is "not taken yet" or booking it (J3.4).
     id: "S1.05",
     stage: 1,
     dismissable: true,
@@ -63,7 +64,8 @@ export const STAGE1: StepDef[] = [
       const app = ctx.apps.find((a) => testRequirements(a).length > 0);
       return app ? [{ key: null, app }] : [];
     },
-    done: (ctx) => ctx.input.testScores.length > 0,
+    done: (ctx, s) =>
+      ctx.input.testScores.length > 0 || testRequirements(s.app!).some((r) => ctx.input.testPlans.some((p) => p.exam === r.exam)),
     factRefs: (_, s) => testRequirements(s.app!).flatMap((r) => ref("requirements", r.id, r.status)),
     href: () => "/app/profile#scores-section",
     copyKey: (_, s) => `S1.05${checkSuffix(testRequirements(s.app!))}`,

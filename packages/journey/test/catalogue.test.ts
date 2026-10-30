@@ -1,7 +1,7 @@
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { CATALOGUE, COPY, REASON_MAX, ROUTES, TITLE_MAX, buildCtx, evaluateCatalogue, fit, render, resolveHref } from "../src";
+import { CATALOGUE, COPY, REASON_MAX, ROUTES, TITLE_MAX, buildCtx, computeJourney, evaluateCatalogue, fit, render, resolveHref } from "../src";
 import type { CountryRuleRow, JourneyInput } from "../src";
 import { STAGE_FIXTURES, application, base, programs, readyProfile } from "./fixtures";
 
@@ -9,7 +9,7 @@ const ids = (input: JourneyInput) => evaluateCatalogue(input).open.map((s) => s.
 
 /** M1 plan "Deviations". S1.03 turned on in M2 with the profile's intake field. Changing this list is a deliberate act. */
 const UNAVAILABLE = [
-  "S2.07", "S3.04", "S3.06", "S4.09", "S4.11", "S4.13",
+  "S2.07", "S3.04", "S3.06", "S4.09", "S4.13",
   "S5.02", "S5.03", "S5.04", "S6.05", "S6.06", "S6.07", "S6.08", "S7.03", "S7.04", "S7.08",
 ];
 
@@ -111,6 +111,7 @@ function scenarios(): JourneyInput[] {
       ],
     }),
     shortlistStage(),
+    base({ profile: readyProfile, applications: [application("prep", long, { status: "preparing", requirements: [testReq] })] }),
     base({
       profile: readyProfile,
       applications: [
@@ -434,5 +435,34 @@ describe("own applications (J3.3)", () => {
   it("never links an own application to a course page", () => {
     const accepted = { ...own, applications: own.applications.map((a) => ({ ...a, status: "decided" as const, decision: "admitted" as const, offerAcceptedAt: "2026-10-01T00:00:00Z" })) };
     for (const s of evaluateCatalogue(accepted).open) expect(s.href, s.id).not.toContain("/courses/");
+  });
+});
+
+describe("test plans (J3.4)", () => {
+  const testReq = { id: "q-ielts", kind: "language_test" as const, exam: "ielts_academic", testPolicy: null, countRequired: null, status: "verified" as const };
+  const deadline = (dueAt: string) => [{ id: "d1", dueAt, timezone: "Europe/London", precision: "date", status: "verified" as const }];
+  const input = (status: "shortlisted" | "preparing", testPlans: JourneyInput["testPlans"] = [], dueAt = "2027-03-01T23:59:00Z") =>
+    base({ profile: readyProfile, testPlans, applications: [application("a1", programs.exampleton!, { status, requirements: [testReq], deadlines: deadline(dueAt) })] });
+  const plan = (status: "not_taken" | "booked") => ({ exam: "ielts_academic", examVersion: null, status, bookedFor: status === "booked" ? "2027-01-10" : null });
+
+  it("completes S1.05 when the course's test is marked not taken yet", () => {
+    expect(ids(input("shortlisted"))).toContain("S1.05");
+    expect(evaluateCatalogue(input("shortlisted", [plan("not_taken")])).completed).toContain("S1.05");
+  });
+
+  it("asks a student preparing an application to book its test, until it is booked or scored", () => {
+    const s = evaluateCatalogue(input("preparing")).open.find((x) => x.catalogueId === "S4.11")!;
+    expect(s.id).toBe("S4.11:a1");
+    expect(s.href).toBe("/app/profile#test-plans");
+    expect(s.factRefs).toEqual([{ table: "requirements", id: "q-ielts", status: "verified" }]);
+    expect(ids(input("preparing", [plan("not_taken")]))).toContain("S4.11");
+    expect(ids(input("preparing", [plan("booked")]))).not.toContain("S4.11");
+    expect(ids({ ...input("preparing"), testScores: [{ id: "t", exam: "ielts_academic", examVersion: null, total: 7, takenOn: null }] })).not.toContain("S4.11");
+  });
+
+  it("ranks S4.11 as start soon from 30 days before the deadline", () => {
+    const rank = (dueAt: string) => computeJourney(input("preparing", [], dueAt)).steps.find((x) => x.catalogueId === "S4.11")!.rank;
+    expect(rank("2026-12-12T23:59:00Z")).toBe("long_lead"); // 40 days ahead: inside 30 + 14
+    expect(rank("2027-03-01T23:59:00Z")).toBe("stage");
   });
 });

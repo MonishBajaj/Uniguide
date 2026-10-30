@@ -97,6 +97,34 @@ export async function saveProfile(_prev: FormState, form: FormData): Promise<For
   return { ok: true, message: "Profile saved." };
 }
 
+// Test plans (J3.4) ---------------------------------------------------------------
+
+const Plan = z
+  .object({
+    exam: z.enum(EXAMS),
+    status: z.enum(["not_taken", "booked"]),
+    booked_for: z.preprocess((v) => v || null, z.iso.date().nullable()),
+  })
+  .refine((p) => (p.status === "booked") === (p.booked_for !== null));
+
+/** "Not taken yet" or a booking, one per test. Saving again replaces the plan for that test. */
+export async function saveTestPlan(form: FormData): Promise<void> {
+  const { supabase, user } = await getUser();
+  if (!user) redirect("/login");
+  const parsed = Plan.safeParse(Object.fromEntries(form));
+  if (!parsed.success) redirect("/app/profile?plan=invalid#test-plans");
+  await supabase.from("test_plans").upsert({ user_id: user.id, ...parsed.data }, { onConflict: "user_id,exam" });
+  revalidatePath("/app", "layout");
+  redirect("/app/profile#test-plans");
+}
+
+export async function deleteTestPlan(id: string): Promise<void> {
+  const { supabase, user } = await getUser();
+  if (!user) return;
+  await supabase.from("test_plans").delete().eq("id", id).eq("user_id", user.id);
+  revalidatePath("/app", "layout");
+}
+
 const Score = z.object({
   exam: z.enum(EXAMS),
   exam_version: optionalString,

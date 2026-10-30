@@ -4,18 +4,24 @@ import { profileChecklist } from "@/lib/profile-completeness";
 import { getUser } from "@/lib/supabase/server";
 import Link from "next/link";
 import { FindUniversitiesButton } from "../matching/find-button";
-import { deleteTestScore, removeTrack, setAiConsent } from "./actions";
+import { getLocale } from "@/lib/i18n/server";
+import { EXAMS } from "@/lib/fields";
+import { deleteTestPlan, deleteTestScore, removeTrack, saveTestPlan, setAiConsent } from "./actions";
 import { CvReader, ProfileForm, TestScoreForm, TrackForm } from "./forms";
 
 export const metadata: Metadata = { title: "Profile" };
 
-export default async function ProfilePage() {
+export default async function ProfilePage({ searchParams }: PageProps<"/app/profile">) {
   const { supabase, user } = await getUser();
-  const [{ data: profile }, { data: scores }, { data: consent }, { data: tracks }] = await Promise.all([
+  const planInvalid = (await searchParams).plan === "invalid";
+  const { t: all } = await getLocale();
+  const tp = all.journey.plans;
+  const [{ data: profile }, { data: scores }, { data: consent }, { data: tracks }, { data: plans }] = await Promise.all([
     supabase.from("profiles").select("*").eq("user_id", user!.id).single(),
     supabase.from("test_scores").select("*").order("taken_on", { ascending: false }),
     supabase.from("consents").select("id").eq("kind", "ai_processing").is("withdrawn_at", null).limit(1).maybeSingle(),
     supabase.from("tracks").select("*").order("created_at"),
+    supabase.from("test_plans").select("id, exam, status, booked_for").eq("user_id", user!.id).order("created_at"),
   ]);
   if (!profile) return <p>Profile not found.</p>;
   const checklist = profileChecklist(profile, (scores ?? []).length);
@@ -107,6 +113,50 @@ export default async function ProfilePage() {
           </ul>
         )}
         <TestScoreForm />
+
+        <div id="test-plans" className="grid scroll-mt-24 gap-3 border-t border-border pt-4">
+          <h3 className="font-semibold">{tp.title}</h3>
+          <p className="text-sm text-muted">{tp.intro}</p>
+          {planInvalid ? <p role="alert" className="text-sm font-semibold text-conflicting">{tp.invalid}</p> : null}
+          {(plans ?? []).length === 0 ? (
+            <p className="text-sm text-muted">{tp.none}</p>
+          ) : (
+            <ul className="grid gap-2">
+              {plans!.map((p) => (
+                <li key={p.id} className="flex items-center justify-between gap-3 rounded-lg bg-background p-3">
+                  <span>
+                    <span className="font-semibold">{label(p.exam)}</span>: {p.status === "booked" && p.booked_for ? tp.bookedRow(p.booked_for) : tp.notTakenRow}
+                  </span>
+                  <form action={deleteTestPlan.bind(null, p.id)}>
+                    <button className="btn btn-secondary btn-sm">
+                      {tp.remove}<span className="sr-only">: {label(p.exam)}</span>
+                    </button>
+                  </form>
+                </li>
+              ))}
+            </ul>
+          )}
+          <form action={saveTestPlan} className="grid gap-3 sm:grid-cols-[1fr_1fr_1fr_auto] sm:items-end">
+            <label className="grid gap-1 text-sm font-semibold">
+              {tp.exam}
+              <select name="exam" required className="field font-normal">
+                {EXAMS.map((e) => <option key={e} value={e}>{label(e)}</option>)}
+              </select>
+            </label>
+            <label className="grid gap-1 text-sm font-semibold">
+              {tp.status}
+              <select name="status" className="field font-normal">
+                <option value="not_taken">{tp.notTaken}</option>
+                <option value="booked">{tp.booked}</option>
+              </select>
+            </label>
+            <label className="grid gap-1 text-sm font-semibold">
+              {tp.bookedFor}
+              <input type="date" name="booked_for" className="field font-normal" />
+            </label>
+            <button className="btn btn-secondary">{tp.save}</button>
+          </form>
+        </div>
       </section>
 
       <section id="tracks" aria-labelledby="tracks-title" className="grid scroll-mt-24 gap-4 rounded-2xl border border-border bg-surface p-6">
