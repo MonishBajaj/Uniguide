@@ -1907,7 +1907,7 @@ isOneToOne: false
 { Args: { "p_state": Json,"p_token"?: string,"p_user"?: string }; Returns: undefined
                            },
 "search_programs":
-{ Args: { "p_countries"?: (string)[],"p_deadline_open"?: boolean,"p_delivery"?: (Database["public"]['Enums']["delivery_mode"])[],"p_fields"?: (string)[],"p_levels"?: (Database["public"]['Enums']["program_level"])[],"p_limit"?: number,"p_max_tuition"?: number,"p_offset"?: number,"p_query"?: string,"p_rank_subjects"?: (string)[],"p_tuition_currency"?: string }; Returns: {
+{ Args: { "p_countries"?: (string)[],"p_deadline_open"?: boolean,"p_delivery"?: (Database["public"]['Enums']["delivery_mode"])[],"p_fields"?: (string)[],"p_levels"?: (Database["public"]['Enums']["program_level"])[],"p_limit"?: number,"p_max_tuition"?: number,"p_offset"?: number,"p_per_institution"?: number,"p_query"?: string,"p_rank_subjects"?: (string)[],"p_tuition_currency"?: string }; Returns: {
               "cip": string | null,
 "city": string | null,
 "country": string,

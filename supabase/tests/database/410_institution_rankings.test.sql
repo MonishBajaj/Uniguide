@@ -22,13 +22,13 @@ select lives_ok($$ delete from public.institution_rankings where edition = '2027
 
 reset role;
 select tests.authenticate_as(:'student');
-select is((select count(*)::int from public.institution_rankings), 1, 'students can read rankings (the app never shows them)');
+select is((select count(*)::int from public.institution_rankings where institution_id = '00000000-0000-4000-c000-0000000000d1'), 1, 'students can read rankings (the app never shows them)');
 select throws_ok($$ insert into public.institution_rankings (institution_id, subject, rank_low, rank_high, edition)
   values ('00000000-0000-4000-c000-0000000000d1', 'Law', 1, 1, '2026') $$, '42501', null, 'students cannot write rankings');
 
 reset role;
 select tests.as_anon();
-select is((select count(*)::int from public.institution_rankings), 1, 'visitors can read rankings too');
+select is((select count(*)::int from public.institution_rankings where institution_id = '00000000-0000-4000-c000-0000000000d1'), 1, 'visitors can read rankings too');
 
 select * from finish();
 rollback;

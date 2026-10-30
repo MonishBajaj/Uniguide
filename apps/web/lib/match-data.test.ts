@@ -34,8 +34,8 @@ describe("loadMatchInputs", () => {
     const { client, calls } = fakeSupabase(profile);
     await loadMatchInputs(client as never, "u1");
     const search = calls.find((c) => c.name === "search_programs");
-    expect(search?.args).toMatchObject({ p_levels: ["master"], p_countries: ["US"], p_fields: ["07"], p_limit: 200 });
-    expect(search?.args.p_rank_subjects).toContain("Engineering & Technology");
+    expect(search?.args).toMatchObject({ p_levels: ["master"], p_countries: ["US"], p_fields: ["07"], p_limit: 200, p_per_institution: 5 });
+    expect(search?.args.p_rank_subjects).toEqual(["Engineering & Technology"]);
   });
 
   it("does not filter or reorder by subject when the student chose none", async () => {

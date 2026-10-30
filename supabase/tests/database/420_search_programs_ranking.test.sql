@@ -41,5 +41,19 @@ select is((select slug from public.search_programs(p_query => 'zrank', p_fields 
     p_rank_subjects => '{"Computer Science & Information Systems"}') limit 1), 'zrank-a',
   'a course with better coverage still comes before a ranked course with less');
 
+-- p_per_institution keeps the first courses of each institution so one university cannot fill the pool.
+reset role;
+update public.programs set coverage_tier = 'listed' where slug = 'zrank-a';
+insert into public.programs (institution_id, slug, title, level, isced_f, published, coverage_tier) values
+  ('00000000-0000-4000-c000-0000000000e3', 'zrank-c-2', 'MS Computing 2', 'master', '0613', true, 'listed'),
+  ('00000000-0000-4000-c000-0000000000e3', 'zrank-c-3', 'MS Computing 3', 'master', '0613', true, 'listed');
+select tests.as_anon();
+select is((select count(*)::int from public.search_programs(p_query => 'zrank', p_fields => '{06}')), 6,
+  'without a cap every matching course is returned');
+select results_eq($$ select slug from public.search_programs(p_query => 'zrank', p_fields => '{06}', p_per_institution => 2,
+    p_rank_subjects => '{"Data Science and Artificial Intelligence"}') $$,
+  $$ values ('zrank-c'), ('zrank-c-2'), ('zrank-a'), ('zrank-b'), ('zrank-d') $$,
+  'at most two courses per institution, best-ranked institution first, the rest in rank then name order');
+
 select * from finish();
 rollback;

@@ -4,32 +4,21 @@
  */
 export const FIELD_TO_QS_SUBJECTS: Record<string, readonly string[]> = {
   "01": ["Education"],
-  "02": [
-    "Arts & Humanities", "Archaeology", "Art & Design", "Classics & Ancient History", "English Language & Literature",
-    "History", "History of Art", "Linguistics", "Modern Languages", "Music", "Performing Arts", "Philosophy",
-    "Theology, Divinity & Religious Studies",
-  ],
-  "03": [
-    "Social Sciences & Management", "Anthropology", "Communication & Media Studies", "Development Studies",
-    "Economics & Econometrics", "Library & Information Management", "Politics & International Studies", "Psychology",
-    "Social Policy & Administration", "Sociology",
-  ],
+  // Broad fields use their QS faculty ranking alone: the best of many narrow subjects would put a specialist
+  // (for example Colorado School of Mines, first in mining) above the best all-round university.
+  "02": ["Arts & Humanities"],
+  "03": ["Social Sciences & Management"],
   "04": ["Business & Management Studies", "Accounting & Finance", "Marketing", "Law", "Economics & Econometrics"],
-  "05": [
-    "Natural Sciences", "Biological Sciences", "Chemistry", "Earth & Marine Sciences", "Environmental Sciences",
-    "Geography", "Geology", "Geophysics", "Materials Science", "Mathematics", "Physics & Astronomy",
-    "Statistics & Operational Research",
-  ],
+  "05": ["Natural Sciences"],
   "06": ["Computer Science & Information Systems", "Data Science and Artificial Intelligence"],
-  "07": [
-    "Engineering & Technology", "Engineering - Chemical", "Engineering - Civil & Structural",
-    "Engineering - Electrical & Electronic", "Engineering - Mechanical, Aeronautical & Manufacturing",
-    "Engineering - Mineral & Mining", "Petroleum Engineering", "Architecture / Built Environment", "Materials Science",
-  ],
+  "07": ["Engineering & Technology"],
   "08": ["Agriculture & Forestry", "Veterinary Science"],
   "09": ["Life Sciences & Medicine", "Medicine", "Nursing", "Dentistry", "Pharmacy & Pharmacology", "Anatomy & Physiology"],
   "10": ["Hospitality & Leisure Management", "Sports-related Subjects"],
 };
+
+/** At most this many courses of one university in the pool, so a few top universities cannot fill all 200. */
+const PER_INSTITUTION = 5;
 
 /** The QS subjects for a student's fields, each once; field codes without a mapping add nothing. */
 export function rankingSubjects(fields: string[]): string[] {
@@ -44,5 +33,6 @@ export function candidateFilters(p: { target_levels: string[]; target_countries:
     p_countries: p.target_countries.length ? p.target_countries : undefined,
     p_fields: p.target_fields.length ? p.target_fields : undefined,
     p_rank_subjects: subjects.length ? subjects : undefined,
+    p_per_institution: PER_INSTITUTION,
   };
 }

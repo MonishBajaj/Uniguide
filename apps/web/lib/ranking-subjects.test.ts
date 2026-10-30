@@ -23,8 +23,15 @@ describe("rankingSubjects", () => {
   });
 
   it("lists a subject shared by two fields once", () => {
-    const merged = rankingSubjects(["03", "04"]);
+    const merged = rankingSubjects(["04", "04"]);
     expect(merged.filter((s) => s === "Economics & Econometrics")).toHaveLength(1);
+  });
+
+  it("ranks broad fields by their faculty subject, so a specialist cannot outrank the best generalist", () => {
+    expect(rankingSubjects(["07"])).toEqual(["Engineering & Technology"]);
+    expect(rankingSubjects(["05"])).toEqual(["Natural Sciences"]);
+    expect(rankingSubjects(["03"])).toEqual(["Social Sciences & Management"]);
+    expect(rankingSubjects(["02"])).toEqual(["Arts & Humanities"]);
   });
 
   it("ignores field codes it does not know", () => {
@@ -41,6 +48,7 @@ describe("candidateFilters", () => {
       p_countries: ["US"],
       p_fields: undefined,
       p_rank_subjects: undefined,
+      p_per_institution: 5,
     });
   });
 
