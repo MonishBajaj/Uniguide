@@ -44,6 +44,13 @@ describe("matchPrograms", () => {
     expect(algorithmVersion).toBe(ALGORITHM_VERSION);
   });
 
+  it("keeps the order it was given for programs that tie, so a caller's ranking survives", () => {
+    const first = ukMasters({ id: "zzz-first" });
+    const second = ukMasters({ id: "aaa-second" });
+    const { results } = matchPrograms([first, second], student(), ctx);
+    expect(results.map((r) => r.programId)).toEqual(["zzz-first", "aaa-second"]);
+  });
+
   it("is deterministic", () => {
     const programs = [ukMasters({ id: "a" }), ukMasters({ id: "b", country: "DE" })];
     expect(matchPrograms(programs, student(), ctx)).toEqual(matchPrograms(programs, student(), ctx));
