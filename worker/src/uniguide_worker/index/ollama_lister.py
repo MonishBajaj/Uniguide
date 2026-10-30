@@ -16,6 +16,14 @@ from .lister import SYSTEM, CourseList, CourseListRun, _message
 MAX_PAGE_CHARS = 20_000
 MAX_LINKS = 250
 
+# A 7B model tends to expand "Computer Science" to "Master of Science in Computer Science", and the crawl then
+# rejects the course because its quote does not contain the title.
+SYSTEM_FOR_SMALL_MODELS = (
+    SYSTEM
+    + "\n- Copy each title exactly as the page writes it in your quote: never add or expand degree wording (do not turn "
+    "'Computer Science' into 'Master of Science in Computer Science'). The quote must contain the whole title."
+)
+
 
 class OllamaCourseLister:
     def __init__(self, model: str, client: httpx.Client | None = None, host: str | None = None) -> None:
@@ -39,7 +47,7 @@ class OllamaCourseLister:
                     "format": CourseList.model_json_schema(),
                     "options": {"temperature": 0, "num_ctx": NUM_CTX},
                     "messages": [
-                        {"role": "system", "content": SYSTEM},
+                        {"role": "system", "content": SYSTEM_FOR_SMALL_MODELS},
                         {"role": "user", "content": _message(url, page_text, links, MAX_PAGE_CHARS, MAX_LINKS)},
                     ],
                 },

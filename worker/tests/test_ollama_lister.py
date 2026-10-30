@@ -40,6 +40,18 @@ def test_lists_courses_from_the_model_answer() -> None:
     assert run.input_tokens == 900 and run.output_tokens == 120 and run.cost_usd == 0
 
 
+def test_the_prompt_tells_a_small_model_to_copy_titles_as_the_page_writes_them() -> None:
+    seen: list[str] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        seen.append(json.loads(request.content)["messages"][0]["content"])
+        return httpx.Response(200, json=_reply('{"courses": []}'))
+
+    _lister(httpx.MockTransport(handler)).list_courses("https://u.example", "t", LINKS)
+    assert "Copy each title exactly as the page writes it" in seen[0]
+    assert "The quote must contain the whole title" in seen[0]
+
+
 def test_long_pages_and_link_lists_are_cut_to_fit_the_model_window() -> None:
     seen: list[str] = []
 
