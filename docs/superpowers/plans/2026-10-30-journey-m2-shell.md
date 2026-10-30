@@ -84,7 +84,7 @@ Checked against `Updated-developer-b` at `d8f3778` on 30 October 2026.
 - **A brand-new student** signs up, answers "Just exploring", fills the short form and lands on their first matches. The next visit to `/app` shows stage 2 and "Look through your matches". (J2.6, J2.7)
 - **A student with a preparing application** (the seed `applicant@uniguide.local`, given one by `resetApplicant()`) signs in and lands on `/app`, which shows stage 4. Its progress reads "0 of 1 application ready" until the checklist is done. (J2.3)
 - **A student whose consent was revoked** opens `/app`, isn't redirected, sees the revoked banner and no step cards, and the engine gives no S1.06. (J2.1, J2.3)
-- **A failed journey read** on `/app` or `/app/steps` shows an error state with a "Try again" link, not a crashed page; the navigation shows no badge. (J2.2, J2.3, J2.4)
+- **A failed journey read** on `/app` or `/app/steps` shows an error state with a "Try again" link, not a crashed page; the navigation shows no badge. Tests trigger it with a test-only cookie that works only when the server runs with `E2E=1`. (J2.1, J2.2, J2.3, J2.4)
 - **A crafted `x-ug-path` header** has no effect: the proxy overwrites it from the real path. (J2.2)
 - **A student waiting for parental consent** opens `/app`, isn't redirected to onboarding, and sees only "Ask a parent to confirm your account", with no snooze or dismiss. Opening `/app/onboarding` directly sends them back to `/app`. (J2.1, J2.3, J2.6)
 - **One snapshot read per `/app` request**, shared by the navigation and the page; none on public pages; a failed read leaves the navigation without a badge and the page still loads. (J2.1, J2.2)
@@ -164,6 +164,7 @@ The review page for this plan has mockups of each screen.
 - Create:
   - `supabase/migrations/20270102000001_journey_shell.sql`, `supabase/tests/database/410_journey_shell.test.sql`
   - `apps/web/lib/journey-request.ts` + `.test.ts`
+- Modify for the failure switch: `apps/web/playwright.config.ts` (`E2E: "1"` in `webServer.env`), `.github/workflows/ci.yml` (`E2E=1` in the e2e env file)
 
 **Interfaces:**
 - **Snapshot (`journey_snapshot`, replaced):**
@@ -188,6 +189,7 @@ The review page for this plan has mockups of each screen.
   - `getJourney()`: React `cache()` around one `journey_snapshot` read plus `computeJourney`. It returns `{ result, input }` and never saves.
   - `saveJourney()`: saves the cached result with `save_journey_state`, reading nothing again.
   - Both are built on `journeyRequest(rpc, today)`, a plain memo that the unit test drives with a fake client.
+  - **Test-only failure switch:** `getJourney()` throws when `failureInjected(env, cookie)` is true, which needs both `process.env.E2E === "1"` and the cookie `ug_e2e_journey_fail=1`. The Playwright web server runs with `E2E=1` (set in `playwright.config.ts` and the CI env file); production never sets it. This replaces revoking database grants in the error-state tests, which would break specs running alongside and leave the grant revoked if a run is killed.
   - `loadJourney` stays for the daily recompute.
 
 - [ ] **Step 1: Write failing tests:**
@@ -205,6 +207,7 @@ The review page for this plan has mockups of each screen.
     - `sharedWith` lists an active parent and an active counselor organisation, and not revoked ones.
     - `sourceUrl` is the source's URL for a requirement and deadline, and the rule's link for a country rule.
   - **Request loader:** `getJourney` called twice and `saveJourney` called once in one request make one `journey_snapshot` call and one `save_journey_state` call with the same result. `getJourney` with a failing snapshot rejects, and the caller decides what to show (J2.2).
+  - **Failure switch:** `failureInjected` is true only with `E2E=1` and the cookie set to `1`. With the cookie but no `E2E` (or `E2E` set to anything else), it is false and the loader reads the snapshot normally.
 - [ ] **Step 2: Implement**, bump the version, and regenerate `expected.json`.
 - [ ] **Step 3: Check the change by hand.** `expected.json` holds only the stage and top three ids, so a link change doesn't show in it. Compare the full `computeJourney` output for every fixture before and after with a throwaway script. The only allowed differences are:
   - S1.03 appearing (and the steps it moves down)
@@ -311,7 +314,7 @@ The review page for this plan has mockups of each screen.
   - a student with `consent_state = pending_parental` and no `entry_path` opens `/app`, stays on `/app`, and sees one card, S1.06, with no snooze or dismiss, and no second consent banner
   - a student with consent and no `entry_path` in stage 1 is sent to `/app/onboarding`
   - a student with `consent_state = revoked` opens `/app`, stays there, sees the revoked banner and no step cards
-  - with `journey_snapshot` made to fail (the test runs `revoke execute on function journey_snapshot from authenticated` and restores the grant in `finally`), `/app` shows the error state and a working "Try again" link, and the navigation renders without a badge
+  - with the test-only cookie `ug_e2e_journey_fail=1` set on that browser context only, `/app` shows the error state and a working "Try again" link, and the navigation renders without a badge; after clearing the cookie, "Try again" loads the home
   - the seed student (`student@uniguide.local`) lands on `/app` in stage 1 and is not sent to onboarding
   - an unverified deadline shows its label and a source link
 - [ ] **Step 2: Implement** the components and the page, change the three landing targets, and update the seed: the seed student's `entry_path`, and the new applicant account. Update existing e2e specs that expect `/app/profile` after sign-in.
@@ -360,7 +363,7 @@ The review page for this plan has mockups of each screen.
     - snooze, then the "Back on {date}" message appears and the row's `until` is 7 days ahead; Bring back from the list returns it
     - mark S2.03 done, then a `step_done` event is recorded; Undo reopens it
     - after dismissing an urgent step, the Applications badge count drops on the next page
-    - with `journey_snapshot` made to fail (as in J2.3), `/app/steps` shows the error state and a "Try again" link to `/app/steps`
+    - with the test-only failure cookie set (as in J2.3), `/app/steps` shows the error state and a "Try again" link to `/app/steps`
 - [ ] **Step 2: Implement.**
 - [ ] **Step 3: Commit** `J2.4 All steps with snooze, dismiss and mark done`.
 
