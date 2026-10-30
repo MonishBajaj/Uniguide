@@ -31,6 +31,36 @@ RIGHTS = "Discover Uni dataset, Office for Students; Open Government Licence v3.
 INSTITUTION_COLUMNS = {"ukprn": "UKPRN", "name": "LEGAL_NAME", "url": "PROVURL"}
 COURSE_COLUMNS = {"ukprn": "UKPRN", "course_id": "KISCOURSEID", "title": "TITLE", "url": "CRSEURL", "mode": "KISMODE"}
 
+# SBJ.csv: one row per course, mode and subject. Codes are HECoS Common Aggregation Hierarchy (CAH) levels,
+# for example CAH11-01-01; the first part (CAH11) names the subject group we map to a broad ISCED-F field.
+SUBJECT_COLUMNS = {"ukprn": "UKPRN", "course_id": "KISCOURSEID", "subject": "SBJ"}
+
+# CAH subject group -> broad ISCED-F field (the field codes students pick from). None: no single field.
+# Checked against sample course titles in the 2026 dataset. Edit here if HESA changes the hierarchy.
+CAH_TO_ISCED_F: dict[str, str | None] = {
+    "CAH01": "09",  # medicine and dentistry
+    "CAH02": "09",  # subjects allied to medicine
+    "CAH03": "05",  # biological and sport sciences
+    "CAH04": "03",  # psychology (social and behavioural sciences)
+    "CAH05": "08",  # veterinary sciences
+    "CAH06": "08",  # agriculture, food and related studies
+    "CAH07": "05",  # physical sciences
+    "CAH09": "05",  # mathematical sciences
+    "CAH10": "07",  # engineering and technology
+    "CAH11": "06",  # computing
+    "CAH13": "07",  # architecture, building and planning
+    "CAH15": "03",  # social sciences
+    "CAH16": "04",  # law
+    "CAH17": "04",  # business and management
+    "CAH19": "02",  # language and area studies
+    "CAH20": "02",  # historical, philosophical and religious studies
+    "CAH22": "01",  # education and teaching
+    "CAH23": None,  # combined and general studies
+    "CAH24": "03",  # media, journalism and communications
+    "CAH25": "02",  # creative arts and design
+    "CAH26": "05",  # geography, earth and environmental sciences
+}
+
 # KISMODE: 1 full-time, 2 part-time, 3 both. Delivery is on campus unless the course is distance.
 MODES = {"1": "full_time", "2": "part_time", "3": "full_or_part_time"}
 
@@ -45,8 +75,23 @@ def _require(header: list[str], columns: dict[str, str], file: str) -> None:
         raise ColumnMismatch(f"{file} lacks columns {missing}; update the column map in uk_discover_uni.py")
 
 
+def _course_fields(subject_csv: str | None) -> dict[tuple[str, str], str]:
+    """The broad field of each course: its first listed subject that maps to a field."""
+    if subject_csv is None:
+        return {}
+    reader = csv.DictReader(io.StringIO(subject_csv.lstrip("\ufeff")))
+    _require(list(reader.fieldnames or []), SUBJECT_COLUMNS, "SBJ.csv")
+    fields: dict[tuple[str, str], str] = {}
+    for row in reader:
+        key = (row[SUBJECT_COLUMNS["ukprn"]].strip(), row[SUBJECT_COLUMNS["course_id"]].strip())
+        field = CAH_TO_ISCED_F.get(row[SUBJECT_COLUMNS["subject"]].strip()[:5])
+        if field and key not in fields:
+            fields[key] = field
+    return fields
+
+
 def parse(
-    institution_csv: str, course_csv: str
+    institution_csv: str, course_csv: str, subject_csv: str | None = None
 ) -> tuple[dict[str, InstitutionRecord], list[tuple[str, ProgramRecord]]]:
     inst_reader = csv.DictReader(io.StringIO(institution_csv.lstrip("﻿")))
     _require(list(inst_reader.fieldnames or []), INSTITUTION_COLUMNS, "INSTITUTION.csv")
@@ -61,6 +106,7 @@ def parse(
             official_domain=domain_of(row.get(INSTITUTION_COLUMNS["url"])),
         )
 
+    fields = _course_fields(subject_csv)
     course_reader = csv.DictReader(io.StringIO(course_csv.lstrip("﻿")))
     _require(list(course_reader.fieldnames or []), COURSE_COLUMNS, "KISCOURSE.csv")
     programs = []
@@ -79,7 +125,7 @@ def parse(
                     title=title,
                     level="bachelor",
                     isced_level=6,
-                    isced_f=None,
+                    isced_f=fields.get((ukprn, course_id)),
                     cip=None,
                     field_label=None,
                     track=MODES.get(row.get(COURSE_COLUMNS["mode"], "").strip()),
@@ -93,10 +139,21 @@ def parse(
     return institutions, programs
 
 
-def run(conn: Connection, *, institution_file: str, course_file: str, limit: int | None = None) -> ImportStats:
+def run(
+    conn: Connection,
+    *,
+    institution_file: str,
+    course_file: str,
+    subject_file: str | None = None,
+    limit: int | None = None,
+) -> ImportStats:
     with open(institution_file, encoding="utf-8-sig") as f1, open(course_file, encoding="utf-8-sig") as f2:
         institution_csv, course_csv = f1.read(), f2.read()
-    institutions, programs = parse(institution_csv, course_csv)
+    subject_csv = None
+    if subject_file:
+        with open(subject_file, encoding="utf-8-sig") as f3:
+            subject_csv = f3.read()
+    institutions, programs = parse(institution_csv, course_csv, subject_csv)
     source_id = register_source(
         conn,
         url=DATASET_URL,

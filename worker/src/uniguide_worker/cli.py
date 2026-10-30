@@ -121,6 +121,7 @@ def import_us_scorecard(
 def import_uk_discover_uni(
     institution_file: Annotated[Path, typer.Option(help="INSTITUTION.csv from the Discover Uni dataset")],
     course_file: Annotated[Path, typer.Option(help="KISCOURSE.csv from the Discover Uni dataset")],
+    subject_file: Annotated[Path | None, typer.Option(help="SBJ.csv, to fill in each course's subject field")] = None,
     limit: Annotated[int | None, typer.Option()] = None,
 ) -> None:
     """United Kingdom: Discover Uni dataset files (undergraduate)."""
@@ -130,7 +131,11 @@ def import_uk_discover_uni(
         _with_run(
             "import:uk_discover_uni",
             lambda conn: uk_discover_uni.run(
-                conn, institution_file=str(institution_file), course_file=str(course_file), limit=limit
+                conn,
+                institution_file=str(institution_file),
+                course_file=str(course_file),
+                subject_file=str(subject_file) if subject_file else None,
+                limit=limit,
             ),
         )
     )
