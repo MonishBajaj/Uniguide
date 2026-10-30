@@ -80,7 +80,8 @@ export const STAGE3: StepDef[] = [
       const d = nextDeadline(s.app!, ctx.today)!;
       return ref("deadlines", d.id, d.status);
     },
-    href: (_, s) => `/app/tracker/${s.app!.id}`,
+    // The "I'm applying to this" button on the application page (J3.2).
+    href: (_, s) => `/app/tracker/${s.app!.id}#applying`,
     copyKey: (ctx, s) => (nextDeadline(s.app!, ctx.today)!.status === "verified" ? "S3.05" : "S3.05.check"),
     params: (ctx, s) => {
       const d = nextDeadline(s.app!, ctx.today)!;

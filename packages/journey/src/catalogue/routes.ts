@@ -18,7 +18,7 @@ export const ROUTES: Record<string, string[]> = {
   "/deadlines": [],
   "/app/shortlist": ["advice", "comparison", "costs"],
   "/app/tracker": [],
-  "/app/tracker/[id]": ["checklist", "scores", "letters", "supplemental", "costs", "notes", "decision", "portal"],
+  "/app/tracker/[id]": ["applying", "checklist", "scores", "letters", "supplemental", "costs", "notes", "decision", "portal"],
   "/app/tracker/costs": [],
   "/app/writing": [],
   "/app/writing/new": [],

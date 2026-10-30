@@ -11,6 +11,7 @@ import { money, shortDate } from "@/lib/format";
 import { getLocale } from "@/lib/i18n/server";
 import { shortlistPanels } from "@/lib/shortlist-panels";
 import { getUser } from "@/lib/supabase/server";
+import { startApplyingTo } from "../tracker/actions";
 import { removeFromShortlist } from "./actions";
 import { MergeLocalShortlist } from "./merge-local";
 
@@ -26,6 +27,11 @@ export default async function ShortlistPage() {
     ? await supabase.from("program_cards").select("*").in("id", ids)
     : { data: [] };
   const cycles = await loadCurrentCycles(supabase, ids);
+  // Each course's application, if it's tracked, for the "I'm applying" button (J3.2).
+  const { data: apps } = ids.length
+    ? await supabase.from("applications").select("id, status, program_cycles!inner(program_id)").in("program_cycles.program_id", ids)
+    : { data: [] };
+  const appFor = new Map((apps ?? []).map((a) => [a.program_cycles.program_id, a]));
 
   return (
     <div className="grid gap-8">
@@ -50,9 +56,31 @@ export default async function ShortlistPage() {
               return (
                 <div key={card.id} className="grid gap-2">
                   <ProgramCard card={card} signedIn showShortlist={false} deadline={cardDeadline(cycles.get(card.id!)?.deadlines)} />
-                  <form action={removeFromShortlist.bind(null, card.id!)}>
-                    <button className="btn btn-secondary btn-sm">Remove</button>
-                  </form>
+                  <div className="flex flex-wrap gap-2">
+                    {(() => {
+                      const app = appFor.get(card.id!);
+                      if (app && app.status !== "shortlisted") {
+                        return (
+                          <Link href={`/app/tracker/${app.id}#checklist`} className="btn btn-secondary btn-sm">
+                            {all.journey.applying.already} · {all.journey.applying.openChecklist}
+                          </Link>
+                        );
+                      }
+                      return (
+                        <form action={startApplyingTo.bind(null, card.id!)}>
+                          <button className="btn btn-primary btn-sm">
+                            {all.journey.applying.button}
+                            <span className="sr-only">: {card.title}</span>
+                          </button>
+                        </form>
+                      );
+                    })()}
+                    <form action={removeFromShortlist.bind(null, card.id!)}>
+                      <button className="btn btn-secondary btn-sm">
+                        Remove<span className="sr-only">: {card.title}</span>
+                      </button>
+                    </form>
+                  </div>
                 </div>
               );
             })}

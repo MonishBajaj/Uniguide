@@ -346,6 +346,7 @@ describe("steps by situation", () => {
     const v = evaluateCatalogue(near("verified")).open.find((s) => s.catalogueId === "S3.05")!;
     expect(v.reason).toContain("1 December 2026");
     expect(v.factRefs).toEqual([{ table: "deadlines", id: "d1", status: "verified" }]);
+    expect(v.href).toBe("/app/tracker/a1#applying");
     const u = evaluateCatalogue(near("unverified")).open.find((s) => s.catalogueId === "S3.05")!;
     expect(u.reason).not.toContain("December");
     expect(u.reason).toContain("Check the deadline on the official page");

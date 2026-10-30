@@ -10,6 +10,7 @@ import { WAITLIST_STEPS } from "@/lib/waitlist";
 import { setAcceptedOffer } from "../../departure/actions";
 import { startLinkedDocument, startSupplemental } from "../../writing/actions";
 import { daysUntil, deadlineText, label, money, shortDate } from "@/lib/format";
+import { getLocale } from "@/lib/i18n/server";
 import { getUser } from "@/lib/supabase/server";
 import { CostForm } from "../cost-form";
 import { Term } from "@/components/term";
@@ -26,14 +27,17 @@ import {
   saveNotes,
   setApplicationTrack,
   shareOutcome,
+  startApplying,
   toggleItem,
   withdrawOutcome,
 } from "../actions";
 
 export const metadata: Metadata = { title: "Application" };
 
-export default async function ApplicationPage({ params }: PageProps<"/app/tracker/[id]">) {
+export default async function ApplicationPage({ params, searchParams }: PageProps<"/app/tracker/[id]">) {
   const { id } = await params;
+  const justStarted = (await searchParams).applying === "1";
+  const { t: all } = await getLocale();
   const { supabase, user } = await getUser();
   const [{ data: app }, { data: outcome }, { data: consent }, { data: events }, { data: scores }, { data: costs }, { data: profile }, { data: tracks }, { data: linkedDocs }] = await Promise.all([
     supabase
@@ -106,6 +110,19 @@ export default async function ApplicationPage({ params }: PageProps<"/app/tracke
           ) : null}
         </div>
       </header>
+
+      {justStarted && app.status === "preparing" ? (
+        <p role="status" className="rounded-2xl border border-verified/40 bg-surface p-4 font-semibold text-verified">{all.journey.applying.started}</p>
+      ) : null}
+      {app.status === "shortlisted" ? (
+        <section id="applying" aria-labelledby="applying-title" className="grid gap-3 rounded-2xl border border-border bg-surface p-6 scroll-mt-24">
+          <h2 id="applying-title" className="text-lg font-semibold">{all.journey.applying.title}</h2>
+          <p className="text-muted">{all.journey.applying.intro}</p>
+          <form action={startApplying.bind(null, app.id)}>
+            <button className="btn btn-primary">{all.journey.applying.button}</button>
+          </form>
+        </section>
+      ) : null}
 
       <section aria-labelledby="checklist" className="grid gap-3 rounded-2xl border border-border bg-surface p-6">
         <h2 id="checklist" className="text-lg font-semibold">Checklist</h2>

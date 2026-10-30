@@ -7,6 +7,7 @@ import type { Enums } from "@uniguide/db-types";
 import { POLICY_VERSION } from "@/lib/env";
 import { asJson } from "@/lib/json";
 import { getUser } from "@/lib/supabase/server";
+import { applyingHref, canStartApplying } from "@/lib/applying";
 import { ensureApplication } from "@/lib/tracker";
 
 export async function trackProgram(programId: string) {
@@ -15,6 +16,29 @@ export async function trackProgram(programId: string) {
   const id = await ensureApplication(supabase, user.id, programId);
   revalidatePath("/app/tracker");
   redirect(id ? `/app/tracker/${id}` : "/app/tracker?error=no-intake");
+}
+
+/**
+ * "I'm applying to this" (J3.2): a shortlisted application moves to preparing. Its checklist was built when it
+ * was tracked, so nothing is rebuilt. Anything past shortlisted is left alone.
+ */
+export async function startApplying(applicationId: string) {
+  const { supabase, user } = await getUser();
+  if (!user) redirect("/login");
+  const { data: app } = await supabase.from("applications").select("id, status").eq("id", applicationId).maybeSingle();
+  if (!app) redirect("/app/tracker");
+  if (canStartApplying(app.status)) await supabase.from("applications").update({ status: "preparing" }).eq("id", app.id);
+  revalidatePath("/app", "layout");
+  redirect(applyingHref(app.id));
+}
+
+/** The same from a shortlist card, which knows the course: tracks it first if its application was deleted. */
+export async function startApplyingTo(programId: string) {
+  const { supabase, user } = await getUser();
+  if (!user) redirect("/login");
+  const id = await ensureApplication(supabase, user.id, programId);
+  if (!id) redirect("/app/tracker?error=no-intake");
+  await startApplying(id);
 }
 
 /** Moves an application to one of the student's tracks, or back to Main (1.4). */

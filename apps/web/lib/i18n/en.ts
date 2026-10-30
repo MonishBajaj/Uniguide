@@ -306,6 +306,14 @@ export const en = {
       didMarkDone: "Marked done.",
       didRestore: "Step brought back.",
     },
+    applying: {
+      title: "Are you applying to this course?",
+      intro: "Say so and it moves to Preparing, so its checklist and deadlines become your next steps.",
+      button: "I'm applying to this",
+      started: "You're applying. Here's the checklist.",
+      already: "You're applying",
+      openChecklist: "Open the checklist",
+    },
     panels: {
       scoreGoalsTitle: "Score goals",
       scoreGoalsNoScore: "Add a test score to your profile to see it against each course's minimum.",
