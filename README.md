@@ -14,7 +14,7 @@ Every fact a student sees comes from Postgres with a source link, a verified dat
 | Consultancies | Read-only dashboard of students who chose to share, revocable at any time |
 | Research | Consented, de-identified outcomes; outcome report with small-group suppression; hierarchical admission model that is shown only after it passes a holdout and calibration gate |
 
-Payments are not built: writing reviews after the first free one use credits, which today come only from accepted "report outdated information" submissions or an admin grant.
+Payments are built but need provider accounts and keys before they go live (see docs/SETUP.md, Payments). Until then, writing reviews after the first free one use credits from accepted "report outdated information" submissions or an admin grant.
 
 ## Repository
 
@@ -22,6 +22,7 @@ Payments are not built: writing reviews after the first free one use credits, wh
 |---|---|
 | `apps/web` | Next.js 16 app (public pages, student app under `/app`, reviewer pages under `/admin`, counselor pages under `/agency`) and the Playwright suite in `e2e/` |
 | `packages/matching` | Deterministic engine: filters, eligibility, costs, score, checklist, bands, admission estimate |
+| `packages/journey` | Journey engine: the student's stage (1 to 7), ranked next steps and stall detection, from one database snapshot |
 | `packages/db-types` | TypeScript types generated from the database |
 | `supabase` | SQL migrations, RLS policies, RPCs, pgTAP tests, local seed |
 | `worker` | Python: register importers, official-page extraction (Claude Haiku 5.5), monitor, reminders, research, seed loader, evals |
@@ -71,7 +72,7 @@ Optional: import official registers (`uv run uniguide-worker import au-cricos`, 
 ## Tests
 
 ```bash
-pnpm db:test                       # 180 pgTAP tests: RLS on every table, isolation, consent, roles, review RPCs
+pnpm db:test                       # 595 pgTAP tests: RLS on every table, isolation, consent, roles, review RPCs
 ```
 
 ```bash

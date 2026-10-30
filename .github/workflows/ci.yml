@@ -97,6 +97,7 @@ jobs:
             echo "NEXT_PUBLIC_SUPABASE_URL=$API_URL"
             echo "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=$PUBLISHABLE_KEY"
             echo "NEXT_PUBLIC_SITE_URL=http://localhost:3000"
+            echo "JOURNEY_CRON_TOKEN=local-journey-token"
           } > apps/web/.env.local
       - run: pnpm --filter web exec playwright install --with-deps chromium
       - run: pnpm --filter web e2e
