@@ -50,7 +50,8 @@ export function ShortProfile({ initial, t, thisYear }: { initial: ShortProfileVa
       <fieldset>
         <legend className="mb-2 font-semibold">{t.subjects}</legend>
         <div className="flex flex-wrap gap-2">
-          {Object.entries(FIELDS).map(([code, name]) => (
+          {/* Sorted by code: "10" would otherwise come first, since JavaScript orders number-like keys first. */}
+          {Object.entries(FIELDS).sort(([a], [b]) => a.localeCompare(b)).map(([code, name]) => (
             <label key={code} className={box}>
               <input type="checkbox" name="target_fields" value={code} defaultChecked={v.target_fields.includes(code)} className="accent-[var(--accent)]" />
               {name}
