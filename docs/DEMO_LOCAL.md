@@ -65,7 +65,7 @@ Edit **`apps/web/.env.local`**:
 | `NEXT_PUBLIC_SITE_URL` | where people will open the site, for example `http://localhost:3000` |
 | `AUTH_DISABLED` | `true` for a demo (gives a Guest / Student / Parent switcher), `false` for real sign-in |
 | `JOURNEY_CRON_TOKEN` | any long random string (`openssl rand -hex 24`) |
-| `EXTRACTOR`, `GEMINI_API_KEY` | `gemini` and your key (web does not need these; the worker does) |
+| `EXTRACTOR`, `GEMINI_API_KEY` | `gemini` and your key, or `ollama` (step 13); the web app does not need these, the worker does |
 
 Edit **`worker/.env`**: `GEMINI_API_KEY`, `EXTRACTOR=gemini`, `CRAWLER_CONTACT` (a real email address, sent to the
 sites you read), `SITE_URL` (same as `NEXT_PUBLIC_SITE_URL`) and the same `JOURNEY_CRON_TOKEN`. The database lines
@@ -88,6 +88,7 @@ courses ends with "Couldn't read the official page". For a convincing demo load 
 - **Index crawl (US and Germany):** open a few of the URLs in `data/seed/indexes/us/*.yaml`, confirm each lists the
   university's courses (fix the URL if not), add `verified_by: "Your Name"` and `verified_at: 2026-10-30` to the
   entry, run `uv run uniguide-worker index load` again, then `uv run uniguide-worker index crawl --country us --limit 3`.
+- **UK (bachelor's):** download the Discover Uni zip from [hesa.ac.uk/kisdata](https://www.hesa.ac.uk/kisdata), unzip it and run `uv run uniguide-worker import uk-discover-uni --institution-file INSTITUTION.csv --course-file KISCOURSE.csv --subject-file SBJ.csv`.
 - **Registers:** `uv run uniguide-worker import au-cricos` (and `nl-duo`, `us-scorecard`, `uk-discover-uni`; some need
   files or keys, see `--help` and `docs/DATA_SOURCES.md`).
 
@@ -226,8 +227,17 @@ docker exec supabase_db_$(basename "$PWD") pg_dump -U postgres postgres > backup
 
 (`docker ps` shows the exact database container name if the command does not find it.)
 
-## 13. Using your GPU instead of Gemini (not built)
+## 13. Using your GPU instead of Gemini
 
-An 8 GB graphics card can run a small model through Ollama, which would remove the API key and cost. The worker
-does not support it yet: its extractor would need an option for an OpenAI-compatible endpoint. Small models also miss
-more facts, and the verbatim-quote check would drop the ones they invent. For a demo, use a Gemini key.
+Run the extraction on a local model through [Ollama](https://ollama.com). No API key, no cost, nothing leaves the machine.
+
+```bash
+ollama pull qwen2.5:14b          # or any model you have; a 14B model at 4-bit fits an 8 GB card tightly
+```
+
+In `worker/.env` set `EXTRACTOR=ollama` and `OLLAMA_MODEL=qwen2.5:14b` (add `OLLAMA_HOST` if Ollama is not on
+`http://127.0.0.1:11434`), then restart the worker. The first request loads the model and can take over a minute.
+
+Expect weaker extraction than Gemini: small models sometimes fill in fields the page does not state (for example
+per-section language scores). The verbatim-quote check drops invented quotes, but not a wrong value attached to a real
+quote, so keep **Suggested** review on for anything shown to real students. Pages are cut at 40,000 characters.
