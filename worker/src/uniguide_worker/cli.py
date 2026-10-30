@@ -372,15 +372,16 @@ def index_crawl(
     country: Annotated[str | None, typer.Option(help="Two-letter country code, for example US.")] = None,
     limit: Annotated[int, typer.Option(help="Index pages to crawl this run.")] = 30,
 ) -> None:
-    """Read the active index pages, list their courses with Gemini and add the ones that check out."""
+    """Read the active index pages, list their courses with the EXTRACTOR model and add the ones that check out."""
     from .index.crawl import crawl_all
-    from .index.lister import GeminiCourseLister
+    from .index.factory import make_lister
 
     settings = get_settings()
-    if not settings.gemini_api_key:
-        raise typer.BadParameter("Set GEMINI_API_KEY (see .env.example)")
+    try:
+        lister = make_lister(settings)
+    except ValueError as exc:
+        raise typer.BadParameter(str(exc)) from exc
     fetcher = Fetcher(settings.user_agent)
-    lister = GeminiCourseLister(model=settings.gemini_model, api_key=settings.gemini_api_key)
 
     def work(conn: Connection) -> dict[str, Any]:
         reports = crawl_all(
