@@ -93,7 +93,21 @@ describe("upcoming deadlines", () => {
     expect(up.map((u) => u.factRef.id)).toEqual(["soon", "late"]);
     expect(up[0]).toMatchObject({ applicationId: "a2", status: "unverified", label: "M.Sc. Informatik, Technische Universität Beispielstadt", sourceUrl: null });
     expect(upcomingDeadlines(input, 1)).toHaveLength(1);
+    // Once an application is sent, its deadlines drop out of "Coming up".
+    const sent = { ...input, applications: input.applications.map((a) => (a.id === "a2" ? { ...a, status: "submitted" as const } : a)) };
+    expect(upcomingDeadlines(sent, 3).map((u) => u.factRef.id)).toEqual(["late"]);
     expect(TODAY).toBe("2026-11-02");
+  });
+});
+
+describe("copy", () => {
+  it("says item or items to match the count", () => {
+    const item = (done: boolean) => ({ id: `c${done}`, title: "x", done, dueAt: null, kind: "requirement", link: null, countryRuleId: null });
+    const reason = (checklist: ReturnType<typeof item>[]) =>
+      computeJourney(base({ profile: readyProfile, applications: [application("a1", programs.exampleton!, { status: "preparing", checklist })] }))
+        .steps.find((s) => s.catalogueId === "S4.01")!.reason;
+    expect(reason([item(false)])).toBe("MSc Data Science, University of Exampleton has 1 checklist item still open.");
+    expect(reason([item(false), { ...item(false), id: "c2" }])).toContain("has 2 checklist items still open.");
   });
 });
 

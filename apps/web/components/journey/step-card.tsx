@@ -21,7 +21,18 @@ function sourceLabel(href: string, t: Dict["journey"]["home"]): string {
  * with its status and source, and one button to the exact place to do it. Step buttons for
  * snooze, dismiss and mark done come with their actions in J2.4.
  */
-export function StepCard({ step, t, headingLevel = 3 }: { step: NextStep; t: Dict["journey"]; headingLevel?: 3 | 4 }) {
+export function StepCard({
+  step,
+  t,
+  timezone = "UTC",
+  headingLevel = 3,
+}: {
+  step: NextStep;
+  t: Dict["journey"];
+  /** The time zone of the deadline the due date comes from, so it reads the same as under "Coming up". */
+  timezone?: string;
+  headingLevel?: 3 | 4;
+}) {
   const Heading = `h${headingLevel}` as "h3" | "h4";
   const fact = step.factRefs[0];
   const external = step.source && /^https?:\/\//.test(step.source.href);
@@ -46,7 +57,7 @@ export function StepCard({ step, t, headingLevel = 3 }: { step: NextStep; t: Dic
               {sourceLabel(step.source.href, t.home)}
             </a>
           ) : null}
-          {step.dueAt ? <span className="font-mono text-xs">{t.home.due(formatDate(step.dueAt))}</span> : null}
+          {step.dueAt ? <span className="font-mono text-xs">{t.home.due(formatDate(step.dueAt, timezone))}</span> : null}
         </p>
       ) : null}
       <div className="mt-1">

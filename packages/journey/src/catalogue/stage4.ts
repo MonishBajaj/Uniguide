@@ -59,7 +59,10 @@ export const STAGE4: StepDef[] = [
         .sort()[0] ?? due(ctx, s),
     factRefs: (ctx, s) => deadlineRefs(s.app!, ctx.today),
     href: (_, s) => tracker(s, "#checklist"),
-    params: (_, s) => ({ course: courseLabel(s.app!), count: String(s.app!.checklist.filter((i) => !i.done).length) }),
+    params: (_, s) => {
+      const open = s.app!.checklist.filter((i) => !i.done).length;
+      return { course: courseLabel(s.app!), count: String(open), items: open === 1 ? "item" : "items" };
+    },
   },
   {
     // Verified rules only. Any other rule becomes S4.02-check below (spec 5, stage 4 acceptance).

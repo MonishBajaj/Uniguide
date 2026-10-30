@@ -42,7 +42,7 @@ const en: Record<string, CopyTemplate> = {
   "S3.05.check": { title: "Decide which courses you're applying to", reason: "{course} may close soon. Check the deadline on the official page." },
   "S3.06": { title: "Look at the cost range with your parent", reason: "Talking about costs early avoids surprises later." },
   // Stage 4
-  "S4.01": { title: "Work through the checklist for {course}", reason: "{count} items on the {course} checklist are still open." },
+  "S4.01": { title: "Work through the checklist for {course}", reason: "{course} has {count} checklist {items} still open." },
   "S4.02": { title: "Start your {rule}", reason: "This applies to applicants from {residence} going to {destination}, so start it early." },
   "S4.02-check": { title: "Check {rule} with the university", reason: "We haven't verified whether this applies to you. Check this on the official page." },
   "S4.03": { title: "Ask {recommender} for a letter", reason: "{course} asks for {count} recommendation letters." },

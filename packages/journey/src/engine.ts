@@ -58,9 +58,13 @@ export interface UpcomingDeadline {
   sourceUrl: string | null;
 }
 
-/** The next published deadlines of the student's active applications, soonest first (M2 home, "Coming up"). */
+/**
+ * The next published deadlines of applications still to be sent (shortlisted or preparing), soonest
+ * first (M2 home, "Coming up"). Deadlines of applications already submitted or decided no longer matter.
+ */
 export function upcomingDeadlines(input: JourneyInput, limit = 3): UpcomingDeadline[] {
   return activeApplications(input.applications)
+    .filter((app) => app.status === "shortlisted" || app.status === "preparing")
     .flatMap((app) =>
       app.deadlines
         .filter((d) => d.status !== "unknown" && d.dueAt.slice(0, 10) >= input.today)

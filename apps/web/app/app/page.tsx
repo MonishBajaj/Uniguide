@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { STAGES, upcomingDeadlines } from "@uniguide/journey";
+import { STAGES, upcomingDeadlines, type JourneyInput } from "@uniguide/journey";
 import { JourneyError } from "@/components/journey/journey-error";
 import { SideColumn } from "@/components/journey/side-column";
 import { StagePath } from "@/components/journey/stage-path";
@@ -11,6 +11,13 @@ import type { LoadedJourney } from "@/lib/journey-request";
 import { getJourney, saveJourney } from "@/lib/journey-request.server";
 
 export const metadata: Metadata = { title: "Home" };
+
+/** A due date that is a published deadline reads in that deadline's own time zone; anything else in UTC. */
+function dueTimezone(dueAt: string | null, input: JourneyInput): string {
+  if (!dueAt) return "UTC";
+  for (const app of input.applications) for (const d of app.deadlines) if (d.dueAt === dueAt) return d.timezone;
+  return "UTC";
+}
 
 /**
  * Journey home (spec 6.2, journey M2 J2.3): where a signed-in student lands. Everything on it comes
@@ -55,7 +62,7 @@ export default async function JourneyHome() {
           <h2 id="next-steps" className="text-2xl font-semibold">{j.home.nextSteps}</h2>
           {next.length ? (
             <div className="grid gap-4">
-              {next.map((step) => <StepCard key={step.id} step={step} t={j} />)}
+              {next.map((step) => <StepCard key={step.id} step={step} t={j} timezone={dueTimezone(step.dueAt, input)} />)}
             </div>
           ) : (
             <div className="grid gap-2 rounded-2xl border border-border bg-surface p-5">
