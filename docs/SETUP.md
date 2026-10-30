@@ -1,6 +1,6 @@
 # Hosted setup: Supabase, Vercel and the worker
 
-Everything runs locally without accounts (see the README). This guide puts it online. Allow about an hour.
+Everything runs locally without accounts (see the README). This guide puts it online. Allow about an hour. To host a demo on your own machine instead, follow [DEMO_LOCAL.md](DEMO_LOCAL.md).
 
 ## 1. Supabase project
 
