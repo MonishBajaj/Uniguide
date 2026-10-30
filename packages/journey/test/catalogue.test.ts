@@ -406,3 +406,33 @@ describe("M3 shortlist steps", () => {
     expect(ids(preparing)).toContain("S2.05");
   });
 });
+
+describe("own applications (J3.3)", () => {
+  const own = STAGE_FIXTURES["edge-own-application-preparing"]!.input;
+
+  it("gives an own application its checklist and fee steps, with no facts and no source", () => {
+    const steps = evaluateCatalogue(own).open.filter((s) => s.application?.id === "own1");
+    expect(steps.map((s) => s.catalogueId)).toEqual(["S4.01", "S4.14"]);
+    for (const s of steps) {
+      expect(s.factRefs, s.id).toEqual([]);
+      expect(s.source, s.id).toBeUndefined();
+      expect(s.application!.label).toBe("MSc Urban Planning, Universiteit Voorbeeld");
+    }
+  });
+
+  it("ranks by the student's own date without quoting it", () => {
+    const s = evaluateCatalogue(own).open.find((x) => x.catalogueId === "S4.01")!;
+    expect(s.dueAt).toBe("2026-11-20T23:59:00Z");
+    expect(s.reason).not.toContain("20 November");
+  });
+
+  it("lets a passed own deadline close preparation, like a published one", () => {
+    expect(buildCtx(STAGE_FIXTURES["edge-own-deadline-passed"]!.input).stage).toBe(5);
+    expect(buildCtx(own).stage).toBe(4);
+  });
+
+  it("never links an own application to a course page", () => {
+    const accepted = { ...own, applications: own.applications.map((a) => ({ ...a, status: "decided" as const, decision: "admitted" as const, offerAcceptedAt: "2026-10-01T00:00:00Z" })) };
+    for (const s of evaluateCatalogue(accepted).open) expect(s.href, s.id).not.toContain("/courses/");
+  });
+});

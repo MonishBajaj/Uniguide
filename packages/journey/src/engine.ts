@@ -23,7 +23,7 @@ export function stageProgress(input: JourneyInput, stage: Stage, open: Candidate
     case 2:
       return { done: 0, total: 1, label: "No courses shortlisted yet" };
     case 3: {
-      const programs = new Set([...input.shortlist.map((s) => s.program.id), ...apps.map((a) => a.program.id)]);
+      const programs = new Set([...input.shortlist.map((s) => s.program.id), ...apps.map((a) => a.program.id ?? a.id)]);
       const chosen = apps.filter((a) => a.status !== "shortlisted").length;
       return of(chosen, programs.size, "shortlisted course", "shortlisted courses", "chosen to apply to");
     }

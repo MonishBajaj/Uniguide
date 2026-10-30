@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
 import { getUser } from "@/lib/supabase/server";
 import { createDocument } from "../actions";
+import { courseLabel } from "@/lib/own-application";
 
 export const metadata: Metadata = { title: "New document" };
 
 export default async function NewDocument({ searchParams }: PageProps<"/app/writing/new">) {
   const error = (await searchParams).error;
   const { supabase } = await getUser();
-  const { data: apps } = await supabase.from("applications").select("id, program_cycles(programs(title, institutions(name)))");
+  const { data: apps } = await supabase.from("applications").select("id, own_title, own_institution, program_cycles(programs(title, institutions(name)))");
   return (
     <div className="max-w-xl">
       <h1 className="text-4xl font-semibold">New document</h1>
@@ -38,7 +39,7 @@ export default async function NewDocument({ searchParams }: PageProps<"/app/writ
           <select name="application_id" className="field font-normal" defaultValue="">
             <option value="">Not linked</option>
             {(apps ?? []).map((a) => (
-              <option key={a.id} value={a.id}>{a.program_cycles?.programs?.title}, {a.program_cycles?.programs?.institutions?.name}</option>
+              <option key={a.id} value={a.id}>{courseLabel(a)}</option>
             ))}
           </select>
         </label>

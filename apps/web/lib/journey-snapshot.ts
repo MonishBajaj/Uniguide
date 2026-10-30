@@ -17,6 +17,8 @@ const program = z.object({
   country: z.string(),
   level,
 });
+/** An application's course: a catalogue course, or an own application's words with no id, slug or level (J3.3). */
+const appProgram = program.extend({ id: z.string().nullable(), slug: z.string().nullable(), level: level.nullable() });
 
 const snapshotSchema = z.object({
   profile: z.object({
@@ -54,8 +56,10 @@ const snapshotSchema = z.object({
       awardedAid: z.number().nullable(),
       portalCheckedAt: z.string().nullable(),
       createdAt: z.string(),
-      program,
-      cycle: z.object({ id: z.string(), label: z.string(), startsOn: z.string().nullable() }),
+      own: z.boolean().default(false),
+      ownDueAt: z.string().nullable().default(null),
+      program: appProgram,
+      cycle: z.object({ id: z.string(), label: z.string(), startsOn: z.string().nullable() }).nullable(),
       requirements: list(
         z.object({
           id: z.string(),

@@ -6,6 +6,7 @@ import { CV_SECTIONS, dateRange, orderEntries, type CvSection } from "@/lib/cv";
 import { shortDate } from "@/lib/format";
 import { bragPoints } from "@/lib/recommendations";
 import { getUser } from "@/lib/supabase/server";
+import { courseOf } from "@/lib/own-application";
 
 export const metadata: Metadata = { title: "Brag sheet", robots: { index: false } };
 
@@ -16,7 +17,7 @@ export default async function BragSheet({ params }: PageProps<"/app/recommenders
   const [{ data: rec }, { data: header }, { data: entries }] = await Promise.all([
     supabase
       .from("recommenders")
-      .select("name, relationship, brag_notes, recommendation_requests(id, due_on, status, applications(program_cycles(label, programs(title, institutions(name)))))")
+      .select("name, relationship, brag_notes, recommendation_requests(id, due_on, status, applications(own_title, own_institution, program_cycles(label, programs(title, institutions(name)))))")
       .eq("id", id)
       .eq("user_id", user!.id)
       .maybeSingle(),
@@ -58,11 +59,11 @@ export default async function BragSheet({ params }: PageProps<"/app/recommenders
               </thead>
               <tbody>
                 {letters.map((q) => {
-                  const program = q.applications?.program_cycles?.programs;
+                  const course = courseOf(q.applications);
                   return (
                     <tr key={q.id} className="border-b border-[#ececea]">
-                      <td className="py-1 pr-4">{program?.title ?? "Course"}</td>
-                      <td className="py-1 pr-4">{program?.institutions?.name ?? ""}</td>
+                      <td className="py-1 pr-4">{course.title}</td>
+                      <td className="py-1 pr-4">{course.institution}</td>
                       <td className="py-1">{q.due_on ? shortDate(q.due_on) : "To confirm"}</td>
                     </tr>
                   );

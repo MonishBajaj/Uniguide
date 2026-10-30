@@ -217,13 +217,15 @@ def send_letter_nudges(conn: Connection, mailer: Mailer, site_url: str, now: dat
     recipients = {r["user_id"]: r for r in conn.execute("select * from public.notifier_recipients()")}
     rows = conn.execute(
         """
-        select q.id, q.user_id, q.status, q.due_on, r.name as recommender, p.title as program, i.name as institution
+        select q.id, q.user_id, q.status, q.due_on, r.name as recommender,
+               coalesce(p.title, a.own_title) as program, coalesce(i.name, a.own_institution) as institution
         from recommendation_requests q
         join recommenders r on r.id = q.recommender_id
         join applications a on a.id = q.application_id
-        join program_cycles c on c.id = a.cycle_id
-        join programs p on p.id = c.program_id
-        join institutions i on i.id = p.institution_id
+        -- Left joins: the due date is the student's own, so an own application (J3.3) gets the nudge too.
+        left join program_cycles c on c.id = a.cycle_id
+        left join programs p on p.id = c.program_id
+        left join institutions i on i.id = p.institution_id
         where q.status in ('asked', 'agreed') and q.due_on is not null and a.status <> 'withdrawn'
         """
     ).fetchall()

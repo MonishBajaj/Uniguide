@@ -55,7 +55,7 @@ export function sourceFor(input: JourneyInput, refs: FactRef[]): { href: string 
   }
   for (const app of input.applications) {
     const fact = ref.table === "requirements" ? app.requirements.find((r) => r.id === ref.id) : app.deadlines.find((d) => d.id === ref.id);
-    if (fact) return { href: fact.sourceUrl ?? `/courses/${app.program.slug}` };
+    if (fact) return fact.sourceUrl ? { href: fact.sourceUrl } : app.program.slug ? { href: `/courses/${app.program.slug}` } : undefined;
   }
   return undefined;
 }

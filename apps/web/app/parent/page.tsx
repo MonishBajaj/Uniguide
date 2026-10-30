@@ -5,6 +5,8 @@ import { daysUntil, deadlineText, isFuture, label } from "@/lib/format";
 import { setDigest } from "@/app/family/actions";
 import { getRoles } from "@/lib/roles";
 import { getUser } from "@/lib/supabase/server";
+import { OwnBadge } from "@/components/own-badge";
+import { courseOf } from "@/lib/own-application";
 
 export const metadata: Metadata = { title: "My child", robots: { index: false } };
 
@@ -22,7 +24,7 @@ export default async function ParentPage() {
     supabase.from("shortlists").select("user_id, programs(slug, title, institutions(name))").in("user_id", studentIds),
     supabase
       .from("applications")
-      .select("id, user_id, status, decision, program_cycles(label, programs(slug, title, institutions(name))), checklist_items(id, title, done, sort, deadlines(due_at, timezone, precision))")
+      .select("id, user_id, status, decision, own_title, own_institution, program_cycles(label, programs(slug, title, institutions(name))), checklist_items(id, title, done, sort, deadlines(due_at, timezone, precision))")
       .in("user_id", studentIds),
   ]);
 
@@ -40,7 +42,7 @@ export default async function ParentPage() {
         const listed = (shortlist ?? []).filter((s) => s.user_id === link.student_id && s.programs);
         const items = mine.flatMap((a) => a.checklist_items);
         const next = mine
-          .flatMap((a) => a.checklist_items.filter((i) => !i.done && i.deadlines && isFuture(i.deadlines.due_at)).map((i) => ({ d: i.deadlines!, title: a.program_cycles?.programs?.title })))
+          .flatMap((a) => a.checklist_items.filter((i) => !i.done && i.deadlines && isFuture(i.deadlines.due_at)).map((i) => ({ d: i.deadlines!, title: courseOf(a).title })))
           .sort((x, y) => x.d.due_at.localeCompare(y.d.due_at))[0];
 
         return (
@@ -69,15 +71,16 @@ export default async function ParentPage() {
               <h3 className="text-lg font-semibold">Applications</h3>
               {mine.length === 0 ? <p className="text-muted">No applications tracked yet.</p> : null}
               {mine.map((a) => {
-                const program = a.program_cycles?.programs;
+                const course = courseOf(a);
                 const sorted = [...a.checklist_items].sort((x, y) => x.sort - y.sort);
                 return (
                   <article key={a.id} className="grid gap-2 rounded-2xl border border-border bg-surface p-6">
                     <div className="flex flex-wrap items-baseline justify-between gap-2">
-                      <h4 className="font-semibold">{program?.title}</h4>
+                      <h4 className="font-semibold">{course.title}</h4>
                       <span className="text-sm text-muted">{label(a.decision ?? a.status)}</span>
                     </div>
-                    <p className="text-sm text-muted">{program?.institutions?.name} · {a.program_cycles?.label}</p>
+                    <p className="text-sm text-muted">{course.institution}{a.program_cycles ? ` · ${a.program_cycles.label}` : ""}</p>
+                    {course.own ? <p><OwnBadge text="Added by the student, not checked" /></p> : null}
                     <ul className="grid gap-1 text-sm">
                       {sorted.map((i) => (
                         <li key={i.id} className={i.done ? "text-muted line-through" : ""}>

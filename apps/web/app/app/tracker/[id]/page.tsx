@@ -11,6 +11,9 @@ import { setAcceptedOffer } from "../../departure/actions";
 import { startLinkedDocument, startSupplemental } from "../../writing/actions";
 import { daysUntil, deadlineText, label, money, shortDate } from "@/lib/format";
 import { getLocale } from "@/lib/i18n/server";
+import { OwnBadge } from "@/components/own-badge";
+import { countryName } from "@/lib/format";
+import { courseOf, ownDate } from "@/lib/own-application";
 import { getUser } from "@/lib/supabase/server";
 import { CostForm } from "../cost-form";
 import { Term } from "@/components/term";
@@ -68,6 +71,7 @@ export default async function ApplicationPage({ params, searchParams }: PageProp
   ]);
   if (!app) notFound();
   const program = app.program_cycles?.programs;
+  const course = courseOf(app);
   const items = [...app.checklist_items].sort((a, b) => a.sort - b.sort);
   const letter = (linkedDocs ?? []).find((d) => d.kind === "continued_interest");
   const letters = letterProgress(app.recommendation_requests, lettersNeeded(app.program_cycles?.requirements ?? []));
@@ -85,8 +89,18 @@ export default async function ApplicationPage({ params, searchParams }: PageProp
     <div className="grid gap-8">
       <header>
         <Link href="/app/tracker" className="text-sm text-muted underline underline-offset-2">Tracker</Link>
-        <h1 className="mt-2 text-4xl font-semibold">{program?.title}</h1>
-        <p className="mt-1 text-muted">{program?.institutions?.name} · {app.program_cycles?.label.replace("-", " ")} intake</p>
+        <h1 className="mt-2 text-4xl font-semibold">{course.title}</h1>
+        {course.own ? (
+          <>
+            <p className="mt-1 text-muted">
+              {course.institution} · {countryName(app.own_country ?? "")}
+              {app.own_due_at ? ` · ${all.journey.own.yourDate}: ${ownDate(app.own_due_at)}` : ""}
+            </p>
+            <p className="mt-2"><OwnBadge text={all.journey.own.badge} /></p>
+          </>
+        ) : (
+          <p className="mt-1 text-muted">{program?.institutions?.name} · {app.program_cycles?.label.replace("-", " ")} intake</p>
+        )}
         <div className="mt-4 flex flex-wrap gap-2">
           {program ? <Link href={`/courses/${program.slug}`} className="btn btn-secondary btn-sm">Course facts and sources</Link> : null}
           <a href={`/app/tracker/calendar.ics?application=${app.id}`} className="btn btn-secondary btn-sm">Add to calendar (.ics)</a>
@@ -126,6 +140,7 @@ export default async function ApplicationPage({ params, searchParams }: PageProp
 
       <section aria-labelledby="checklist" className="grid gap-3 rounded-2xl border border-border bg-surface p-6">
         <h2 id="checklist" className="text-lg font-semibold">Checklist</h2>
+        {course.own ? <p className="text-sm text-muted">{all.journey.own.noFacts}</p> : null}
         <ul className="grid gap-2">
           {items.map((item) => {
             const deadline = item.deadlines;
@@ -394,7 +409,9 @@ export default async function ApplicationPage({ params, searchParams }: PageProp
           </div>
         ) : null}
 
-        {app.decision ? (
+        {app.decision && course.own ? (
+          <p className="text-sm text-muted">{all.journey.own.noSharing}</p>
+        ) : app.decision ? (
           outcome ? (
             <form action={withdrawOutcome.bind(null, app.id)} className="text-sm">
               <p>You shared this outcome for research. Thank you.</p>

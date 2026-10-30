@@ -31,6 +31,22 @@
       "S3.03"
     ]
   },
+  "edge-own-application-preparing": {
+    "stage": 4,
+    "top3": [
+      "S4.01:own1",
+      "S4.14:own1",
+      "S4.10"
+    ]
+  },
+  "edge-own-deadline-passed": {
+    "stage": 5,
+    "top3": [
+      "S5.01:sent",
+      "S1.07",
+      "S4.14:own1"
+    ]
+  },
   "stage-4-preparing": {
     "stage": 4,
     "top3": [

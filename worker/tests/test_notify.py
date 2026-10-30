@@ -210,3 +210,40 @@ def test_letter_nudge_reaches_the_student_once(
     later = Mailer()
     send_letter_nudges(notifier, later, "https://uniguide.example", now=datetime.now(UTC) + timedelta(days=2))
     assert [m for m in later.sent if m.to == scenario["email"]] == []
+
+
+def test_own_applications_get_letter_nudges_but_never_deadline_reminders(
+    notifier: Connection, operator: Connection, scenario: dict[str, Any]
+) -> None:
+    """J3.3: an own application's dates are the student's. Letter due dates are theirs anyway; deadline
+    reminders quote published deadlines, which an own application never has."""
+    app = operator.execute(
+        "insert into applications (user_id, status, own_institution, own_title, own_country, own_due_at) "
+        "values (%s, 'preparing', 'Universiteit Voorbeeld', 'MSc Urban Planning', 'NL', %s) returning id",
+        (scenario["uid"], datetime.now(UTC) + timedelta(days=7)),
+    ).fetchone()
+    assert app
+    operator.execute(
+        "insert into checklist_items (application_id, user_id, title, kind, due_at) values (%s, %s, 'Portfolio', 'custom', %s)",
+        (app["id"], scenario["uid"], datetime.now(UTC) + timedelta(days=7)),
+    )
+    rec = operator.execute(
+        "insert into recommenders (user_id, name) values (%s, 'Dr Rao') returning id", (scenario["uid"],)
+    ).fetchone()
+    assert rec
+    operator.execute(
+        "insert into recommendation_requests (user_id, recommender_id, application_id, status, due_on) "
+        "values (%s, %s, %s, 'asked', %s)",
+        (scenario["uid"], rec["id"], app["id"], (datetime.now(UTC) + timedelta(days=3)).date()),
+    )
+    operator.commit()
+
+    mailer = Mailer()
+    send_letter_nudges(notifier, mailer, "https://uniguide.example")
+    assert [m.subject for m in mailer.sent if m.to == scenario["email"]] == [
+        "Letter due in 3 days: Dr Rao for MSc Urban Planning"
+    ]
+
+    reminders = Mailer()
+    send_reminders(notifier, reminders, "https://uniguide.example")
+    assert all("Urban Planning" not in m.subject + m.text for m in reminders.sent)

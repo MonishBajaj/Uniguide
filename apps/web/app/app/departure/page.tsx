@@ -6,6 +6,7 @@ import { loadDeparture } from "@/lib/departure-data";
 import { shortDate } from "@/lib/format";
 import { getUser } from "@/lib/supabase/server";
 import { setAcceptedOffer, setTaskDone } from "./actions";
+import { courseOf } from "@/lib/own-application";
 
 export const metadata: Metadata = { title: "Before you leave" };
 
@@ -16,7 +17,7 @@ export default async function DeparturePage() {
   if (!data) {
     const { data: offers } = await supabase
       .from("applications")
-      .select("id, program_cycles(programs(title, institutions(name)))")
+      .select("id, own_title, own_institution, program_cycles(programs(title, institutions(name)))")
       .eq("decision", "admitted")
       .order("created_at");
     return (
@@ -35,8 +36,8 @@ export default async function DeparturePage() {
               {offers!.map((o) => (
                 <li key={o.id} className="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-background p-3">
                   <span>
-                    <span className="font-semibold">{o.program_cycles?.programs?.title}</span>
-                    <span className="text-muted"> · {o.program_cycles?.programs?.institutions?.name}</span>
+                    <span className="font-semibold">{courseOf(o).title}</span>
+                    <span className="text-muted"> · {courseOf(o).institution}</span>
                   </span>
                   <form action={setAcceptedOffer.bind(null, o.id)}>
                     <button className="btn btn-primary btn-sm">I&apos;m taking this offer</button>

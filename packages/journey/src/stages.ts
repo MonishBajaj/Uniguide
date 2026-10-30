@@ -103,6 +103,7 @@ export function hasOpenDeadline(app: ApplicationSnapshot, today: string): boolea
   const dates = [
     ...app.checklist.filter((i) => i.kind === "deadline" && !i.done && i.dueAt).map((i) => i.dueAt!),
     ...app.deadlines.map((d) => d.dueAt),
+    ...(app.ownDueAt ? [app.ownDueAt] : []),
   ];
   return dates.length === 0 || dates.some((d) => d.slice(0, 10) >= today);
 }

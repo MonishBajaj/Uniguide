@@ -58,13 +58,17 @@ export interface TestScore {
   takenOn: string | null;
 }
 
+/**
+ * The course an application is for. For an own application (J3.3) there is no catalogue course: id, slug and
+ * level are null, and title, institution and country are the student's own words.
+ */
 export interface ProgramRef {
-  id: string;
-  slug: string;
+  id: string | null;
+  slug: string | null;
   title: string;
   institution: string;
   country: string;
-  level: Level;
+  level: Level | null;
 }
 
 export interface Requirement {
@@ -131,8 +135,12 @@ export interface ApplicationSnapshot {
   awardedAid: number | null;
   portalCheckedAt: string | null;
   createdAt: string;
+  /** A course that isn't in the catalogue, added by the student (J3.3). It has no cycle and no facts. */
+  own?: boolean;
+  /** An own application's deadline, as the student was given it. Counts for the stage rules and ranking, never quoted as a fact. */
+  ownDueAt?: string | null;
   program: ProgramRef;
-  cycle: { id: string; label: string; startsOn: string | null };
+  cycle: { id: string; label: string; startsOn: string | null } | null;
   requirements: Requirement[];
   deadlines: Deadline[];
   checklist: ChecklistItem[];

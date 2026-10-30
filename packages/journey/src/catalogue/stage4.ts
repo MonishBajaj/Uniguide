@@ -15,7 +15,9 @@ import type { Ctx, StepDef, Subject } from "./types";
 
 const preparing = (ctx: Ctx) => ctx.apps.filter((a) => a.status === "preparing");
 const course = (_: Ctx, s: Subject) => ({ course: courseLabel(s.app!) });
-const due = (ctx: Ctx, s: Subject) => nextDeadline(s.app!, ctx.today)?.dueAt ?? null;
+/** The next published deadline, or for an own application the student's own date (ranking only, never a fact). */
+const due = (ctx: Ctx, s: Subject) =>
+  nextDeadline(s.app!, ctx.today)?.dueAt ?? (s.app!.ownDueAt && s.app!.ownDueAt.slice(0, 10) >= ctx.today ? s.app!.ownDueAt : null);
 const tracker = (s: Subject, anchor = "") => `/app/tracker/${s.app!.id}${anchor}`;
 
 /** Rule kinds that are tasks after an offer or just information, never application steps (as in matching's checklist). */

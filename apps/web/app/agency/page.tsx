@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { daysUntil, deadlineText, isFuture, label } from "@/lib/format";
 import { getRoles } from "@/lib/roles";
 import { getUser } from "@/lib/supabase/server";
+import { courseOf } from "@/lib/own-application";
 
 export const metadata: Metadata = { title: "Your students" };
 
@@ -22,7 +23,7 @@ export default async function AgencyPage() {
   const { data: apps } = students.length
     ? await supabase
         .from("applications")
-        .select("id, user_id, status, decision, program_cycles(programs(title)), checklist_items(done, deadlines(due_at, timezone, precision))")
+        .select("id, user_id, status, decision, own_title, own_institution, program_cycles(programs(title)), checklist_items(done, deadlines(due_at, timezone, precision))")
         .in("user_id", students.map((s) => s.student_id))
     : { data: [] };
 
@@ -30,7 +31,7 @@ export default async function AgencyPage() {
     const mine = (apps ?? []).filter((a) => a.user_id === studentId);
     const items = mine.flatMap((a) => a.checklist_items);
     const next = mine
-      .flatMap((a) => a.checklist_items.filter((i) => !i.done && i.deadlines && isFuture(i.deadlines.due_at)).map((i) => ({ d: i.deadlines!, title: a.program_cycles?.programs?.title })))
+      .flatMap((a) => a.checklist_items.filter((i) => !i.done && i.deadlines && isFuture(i.deadlines.due_at)).map((i) => ({ d: i.deadlines!, title: courseOf(a).title })))
       .sort((x, y) => x.d.due_at.localeCompare(y.d.due_at))[0];
     return { count: mine.length, done: items.filter((i) => i.done).length, total: items.length, next, statuses: mine.map((a) => a.decision ?? a.status) };
   };

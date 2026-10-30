@@ -69,6 +69,9 @@ export const programs: Record<string, ProgramRef> = {
   state: { id: "p-state", slug: "example-state-ms-computer-science", title: "MS in Computer Science", institution: "Example State University", country: "US", level: "master" },
 };
 
+/** An own application's course: the student's words, no catalogue id, slug or level (J3.3). */
+export const ownProgram: ProgramRef = { id: null, slug: null, title: "MSc Urban Planning", institution: "Universiteit Voorbeeld", country: "NL", level: null };
+
 export function application(id: string, program: ProgramRef, overrides: Partial<ApplicationSnapshot> = {}): ApplicationSnapshot {
   return {
     id,
@@ -120,6 +123,25 @@ export const STAGE_FIXTURES: Record<string, { input: JourneyInput; stage: number
       ],
     }),
     stage: 3,
+  },
+  // M3 (J3.3): a course that isn't in the catalogue. The student's own words and date, no facts.
+  "edge-own-application-preparing": {
+    input: base({
+      profile: { ...readyProfile, entryPath: "applying" },
+      applications: [application("own1", ownProgram, { status: "preparing", own: true, ownDueAt: "2026-11-20T23:59:00Z", cycle: null, deadlines: [], requirements: [],
+        checklist: [{ id: "c1", title: "Upload portfolio", done: false, dueAt: null, kind: "custom", link: null, countryRuleId: null }] })],
+    }),
+    stage: 4,
+  },
+  "edge-own-deadline-passed": {
+    input: base({
+      profile: { ...readyProfile, entryPath: "applying" },
+      applications: [
+        application("own1", ownProgram, { status: "preparing", own: true, ownDueAt: "2026-10-01T23:59:00Z", cycle: null, deadlines: [], requirements: [] }),
+        application("sent", programs.exampleton!, { status: "submitted" }),
+      ],
+    }),
+    stage: 5,
   },
   "stage-4-preparing": {
     input: base({ profile: readyProfile, matchRuns: matched, applications: [application("a1", programs.exampleton!, { status: "preparing" })] }),

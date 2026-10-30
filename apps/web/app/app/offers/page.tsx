@@ -13,6 +13,8 @@ import { firstReply, daysToReply, replyText, REACTIONS, tallyGutChecks, type Gut
 import { Term } from "@/components/term";
 import { GutCheck } from "./gut-check";
 import { DecisionMatrix } from "./matrix";
+import { OwnBadge } from "@/components/own-badge";
+import { courseOf } from "@/lib/own-application";
 
 export const metadata: Metadata = { title: "Compare offers" };
 
@@ -31,7 +33,7 @@ export default async function OffersPage({ searchParams }: PageProps<"/app/offer
   const [{ data: apps }, { data: profile }, { data: matrix }, fx] = await Promise.all([
     supabase
       .from("applications")
-      .select("id, cycle_id, decision, awarded_aid, awarded_aid_currency, deposit_due_at, program_cycles(label, program_id)")
+      .select("id, cycle_id, decision, awarded_aid, awarded_aid_currency, deposit_due_at, own_title, own_institution, program_cycles(label, program_id)")
       .in("decision", ["admitted", "waitlisted"])
       .order("created_at"),
     supabase.from("profiles").select("budget_amount, budget_currency").eq("user_id", user!.id).single(),
@@ -54,10 +56,12 @@ export default async function OffersPage({ searchParams }: PageProps<"/app/offer
           awardedAid: app.awarded_aid && app.awarded_aid_currency ? [{ amount: Number(app.awarded_aid), currency: app.awarded_aid_currency }] : [],
         })
       : null;
-    return { app, card, cost };
+    // An own application (J3.3) has no catalogue card and no published costs: its name is the student's.
+    const course = card ? { title: card.title!, institution: card.institution_name!, own: false } : courseOf({ own_title: app.own_title, own_institution: app.own_institution });
+    return { app, card, cost, course };
   });
   const admitted = rows.filter((r) => r.app.decision === "admitted");
-  const titleOf = (r: (typeof rows)[number]) => r.card?.title ?? "Course";
+  const titleOf = (r: (typeof rows)[number]) => r.course.title;
   const first = firstReply(admitted.map((r) => ({ title: titleOf(r), due: r.app.deposit_due_at })));
   const tally = tallyGutChecks((matrix?.gut_checks as Check[] | undefined) ?? []);
   const budget = profile?.budget_amount && profile.budget_currency ? { amount: Number(profile.budget_amount), currency: profile.budget_currency } : null;
@@ -91,14 +95,15 @@ export default async function OffersPage({ searchParams }: PageProps<"/app/offer
         <section aria-labelledby="cost" className="grid gap-4">
           <h2 id="cost" className="text-2xl font-semibold">{t.trueCost}</h2>
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {rows.map(({ app, card, cost }) => (
+            {rows.map(({ app, cost, course }) => (
               <article key={app.id} className="grid content-start gap-3 rounded-2xl border border-border bg-surface p-6">
                 <div>
                   <p className="text-xs font-semibold tracking-wide text-muted uppercase">{label(app.decision)}</p>
                   <h3 className="text-lg font-semibold">
-                    <Link href={`/app/tracker/${app.id}`} className="underline-offset-2 hover:underline">{card?.title ?? "Course"}</Link>
+                    <Link href={`/app/tracker/${app.id}`} className="underline-offset-2 hover:underline">{course.title}</Link>
                   </h3>
-                  <p className="text-sm text-muted">{card?.institution_name}</p>
+                  <p className="text-sm text-muted">{course.institution}</p>
+                  {course.own ? <p className="mt-1"><OwnBadge text={all.journey.own.badge} /></p> : null}
                 </div>
                 {cost?.currency ? (
                   <div className="grid content-start gap-2 text-sm">
@@ -190,7 +195,7 @@ export default async function OffersPage({ searchParams }: PageProps<"/app/offer
             ) : null}
           </div>
           <DecisionMatrix
-            offers={rows.map(({ app, card }) => ({ id: app.id, title: card?.title ?? "Course" }))}
+            offers={rows.map(({ app, course }) => ({ id: app.id, title: course.title }))}
             initialCriteria={(matrix?.criteria as typeof DEFAULT_CRITERIA | undefined)?.length ? (matrix!.criteria as typeof DEFAULT_CRITERIA) : DEFAULT_CRITERIA}
             initialScores={(matrix?.scores as Record<string, Record<string, number>>) ?? {}}
           />

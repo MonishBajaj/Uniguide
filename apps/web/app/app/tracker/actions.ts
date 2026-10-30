@@ -8,6 +8,7 @@ import { POLICY_VERSION } from "@/lib/env";
 import { asJson } from "@/lib/json";
 import { getUser } from "@/lib/supabase/server";
 import { applyingHref, canStartApplying } from "@/lib/applying";
+import { DESTINATIONS } from "@/lib/format";
 import { ensureApplication } from "@/lib/tracker";
 
 export async function trackProgram(programId: string) {
@@ -39,6 +40,33 @@ export async function startApplyingTo(programId: string) {
   const id = await ensureApplication(supabase, user.id, programId);
   if (!id) redirect("/app/tracker?error=no-intake");
   await startApplying(id);
+}
+
+const OwnApplication = z.object({
+  own_institution: z.string().trim().min(1).max(200),
+  own_title: z.string().trim().min(1).max(200),
+  own_country: z.enum(DESTINATIONS),
+  // The date the student was given, kept as the end of that day in UTC: their date, not a fact.
+  own_due_at: z.preprocess((v) => (v ? `${v}T23:59:00Z` : null), z.iso.datetime().nullable()),
+});
+
+/**
+ * Tracks a course that isn't in the catalogue (J3.3). It starts in preparing: a student adding one is
+ * already applying. It gets no requirements, deadlines or country-rule checklist items, only the
+ * student's own checklist.
+ */
+export async function addOwnApplication(form: FormData) {
+  const { supabase, user } = await getUser();
+  if (!user) redirect("/login");
+  const parsed = OwnApplication.safeParse(Object.fromEntries(form));
+  if (!parsed.success) redirect("/app/tracker?own=invalid#add-own");
+  const { data: app } = await supabase
+    .from("applications")
+    .insert({ user_id: user.id, status: "preparing", ...parsed.data })
+    .select("id")
+    .single();
+  revalidatePath("/app", "layout");
+  redirect(app ? `/app/tracker/${app.id}#checklist` : "/app/tracker?own=invalid#add-own");
 }
 
 /** Moves an application to one of the student's tracks, or back to Main (1.4). */

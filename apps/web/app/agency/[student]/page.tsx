@@ -5,6 +5,8 @@ import { PortfolioList } from "@/components/portfolio-list";
 import { GRADE_SCALES } from "@/lib/fields";
 import { countryName, daysUntil, deadlineText, label, money } from "@/lib/format";
 import { getUser } from "@/lib/supabase/server";
+import { OwnBadge } from "@/components/own-badge";
+import { courseOf } from "@/lib/own-application";
 
 export const metadata: Metadata = { title: "Student" };
 
@@ -19,7 +21,7 @@ export default async function AgencyStudent({ params }: PageProps<"/agency/[stud
     supabase.from("shortlists").select("programs(slug, title, institutions(name))").eq("user_id", student),
     supabase
       .from("applications")
-      .select("id, status, decision, program_cycles(label, programs(slug, title, institutions(name))), checklist_items(id, title, done, sort, deadlines(due_at, timezone, precision, status))")
+      .select("id, status, decision, own_title, own_institution, program_cycles(label, programs(slug, title, institutions(name))), checklist_items(id, title, done, sort, deadlines(due_at, timezone, precision, status))")
       .eq("user_id", student),
   ]);
   if (!share || !profile) notFound();
@@ -51,15 +53,16 @@ export default async function AgencyStudent({ params }: PageProps<"/agency/[stud
         <h2 id="apps" className="text-2xl font-semibold">Applications</h2>
         {(apps ?? []).length === 0 ? <p className="text-muted">No applications tracked yet.</p> : null}
         {(apps ?? []).map((a) => {
-          const program = a.program_cycles?.programs;
+          const course = courseOf(a);
           const items = [...a.checklist_items].sort((x, y) => x.sort - y.sort);
           return (
             <article key={a.id} className="grid gap-2 rounded-2xl border border-border bg-surface p-6">
               <div className="flex flex-wrap items-baseline justify-between gap-2">
-                <h3 className="text-lg font-semibold">{program?.title}</h3>
+                <h3 className="text-lg font-semibold">{course.title}</h3>
                 <span className="text-sm text-muted">{label(a.decision ?? a.status)}</span>
               </div>
-              <p className="text-sm text-muted">{program?.institutions?.name} · {a.program_cycles?.label}</p>
+              <p className="text-sm text-muted">{course.institution}{a.program_cycles ? ` · ${a.program_cycles.label}` : ""}</p>
+                    {course.own ? <p><OwnBadge text="Added by the student, not checked" /></p> : null}
               <ul className="grid gap-1 text-sm">
                 {items.map((i) => (
                   <li key={i.id} className={i.done ? "text-muted line-through" : ""}>

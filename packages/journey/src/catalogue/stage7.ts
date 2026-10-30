@@ -63,9 +63,10 @@ export const STAGE7: StepDef[] = [
     available: true,
     parentTitle: "Planning the arrival",
     subjects: (ctx) => acceptedApps(ctx).map((app) => ({ key: app.id, app })),
-    applies: (ctx, s) => s.app!.cycle.startsOn != null && ctx.today >= addDays(s.app!.cycle.startsOn, -30),
+    // Own applications have no published start date or arrival page, so the step can't apply to them.
+    applies: (ctx, s) => s.app!.program.slug != null && s.app!.cycle?.startsOn != null && ctx.today >= addDays(s.app!.cycle.startsOn, -30),
     done: (ctx, s) => departureDone(ctx, s.app!.id, "flights"),
-    dueAt: (_, s) => s.app!.cycle.startsOn,
+    dueAt: (_, s) => s.app!.cycle?.startsOn ?? null,
     href: (_, s) => `/courses/${s.app!.program.slug}/arrival`,
     params: (_, s) => ({ course: courseLabel(s.app!) }),
   },
