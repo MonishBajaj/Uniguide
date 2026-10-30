@@ -34,7 +34,7 @@ Checked against `develop` at `6b755ce` on 30 October 2026. Each row says what M1
 |---|---|---|---|
 | R1 | "Today the student area has no navigation" (6.1) | `components/site-header.tsx` already shows My matches, Shortlist, Tracker, Offers, Writing, Profile, Updates and Display to signed-in students. `app/app/layout.tsx` has only the consent banner. | M2 should rework the existing header into the journey navigation, not add a second bar. Noted for M2; nothing in M1. |
 | R2 | `/app` home and `/app/steps` | Neither exists. After sign-in, `safeNext` in `lib/age.ts` falls back to `/app/profile`. | M2 builds both and changes the fallback to `/app`. |
-| R3 | S1.03 links `/app/profile#intake` | `profiles.intake_year` exists, but no student control writes it: the profile form has no intake field. | The step stays, linking to `/app/profile#intake`. M3 (J3.6) must add the field, not just the anchor. Recorded as a dependency. |
+| R3 | S1.03 links `/app/profile#intake` | `profiles.intake_year` exists, but no student control writes it: the profile form has no intake field. | S1.03 is written, linking to `/app/profile#intake`, but marked unavailable: a step the student cannot complete would never go away. M3 (J3.6) adds the field and the anchor, then turns it on. (Changed during J1.3.) |
 | R4 | `#grades` (S1.04), `#tests` (S1.05) | Anchors are `#qualification` and `#scores-section`. | The catalogue uses the existing anchors. J3.6 can add aliases later. |
 | R5 | S1.08 links `/app/cv` to "upload your CV to fill this in" | `/app/cv` is the CV builder (6.2). The CV reader that fills the profile is on `/app/profile#cv`. | Link to `/app/profile#cv`. |
 | R6 | S4.05 `/app/writing/new?application=…`, S4.07 `/app/writing/new?kind=supplemental` | `/app/writing/new` ignores query parameters. Linked documents start from buttons on `/app/tracker/[id]`, and supplemental essays from its `#supplemental` form. | Link to `/app/tracker/[id]` (S4.05) and `/app/tracker/[id]#supplemental` (S4.07). |
@@ -85,6 +85,7 @@ Out-of-date docs found while checking, not caused by the spec: `README.md` still
   - `NextStep.available` on catalogue entries (below)
 - **One more step state:** `journey_step_state.state` adds `done` (D8).
 - **Unavailable steps.** Every catalogue entry is written now. Entries whose data, control or link does not exist yet are marked `available: false` and produce nothing; the later milestone that adds the missing piece flips them on. Unavailable in M1:
+  - S1.03 (no intake control yet, R3; added during J1.3)
   - S2.05, S3.01, S3.02 (M3 placements)
   - S2.07, S3.06 (no view tracking; decision)
   - S3.03, S3.04 (M3)
@@ -95,6 +96,8 @@ Out-of-date docs found while checking, not caused by the spec: `README.md` still
   - S5.03, S5.04 (G26)
   - S6.05 to S6.08 (G13, G14)
   - S7.03, S7.04, S7.08 (G23)
+- **Unverified country rules** get their own entry, `S4.02-check` ("Check {rule} with the university"), so S4.02 itself only ever comes from a verified rule. (Added during J1.3.)
+- **Steps that stop helping:** a student-level step can set `until`, the last stage where it applies. Exploration steps (S2.x) stop after stage 3, English tests (S2.04) and the CV step (S4.10) after stage 4, and the CV reader (S1.08) after stage 2, so a student choosing an offer is not told to find universities. (Added during J1.3.)
 - **Daily recompute** runs as a token-guarded route called by GitHub Actions, not as a host cron (I1).
 - **Matching minimum** excludes the test-score item (D4).
 - **Stage 5** counts `decided` (D5).
