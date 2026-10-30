@@ -49,9 +49,11 @@ def course(operator: Connection) -> Iterator[dict[str, Any]]:
         """,
         (f"enrich-{tag}@example.com",),
     ).fetchone()
+    assert user is not None
     inst = operator.execute(
         "insert into institutions (name, country, official_domain) values ('Enrich U', 'DE', 'enrich.example.org') returning id"
     ).fetchone()
+    assert inst is not None
     prog = operator.execute(
         """
         insert into programs (institution_id, slug, title, level, published, official_url)
@@ -59,6 +61,7 @@ def course(operator: Connection) -> Iterator[dict[str, Any]]:
         """,
         (inst["id"], f"enrich-{tag}", f"{HOST}/msc-{tag}"),
     ).fetchone()
+    assert prog is not None
     operator.commit()
     yield {"user": user["id"], "program": prog["id"]}
     operator.execute("delete from institutions where id = %s", (inst["id"],))
@@ -70,10 +73,12 @@ def make_item(operator: Connection, course: dict[str, Any], status: str = "pendi
     job = operator.execute(
         "insert into enrichment_jobs (user_id) values (%s) returning id", (course["user"],)
     ).fetchone()
+    assert job is not None
     item = operator.execute(
         "insert into enrichment_items (job_id, program_id, status) values (%s, %s, %s) returning id",
         (job["id"], course["program"], status),
     ).fetchone()
+    assert item is not None
     operator.commit()
     return item["id"]
 

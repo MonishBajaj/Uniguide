@@ -24,7 +24,7 @@ PAGE = (
 
 
 def listed(title: str, url: str, level: str = "master", quote: str | None = None) -> ListedCourse:
-    return ListedCourse(title=title, level=level, url=url, quote=quote or title)  # type: ignore[arg-type]
+    return ListedCourse(title=title, level=level, url=url, quote=quote or title)
 
 
 class Lister:
@@ -68,10 +68,12 @@ def index(operator: Connection) -> Iterator[dict[str, Any]]:
         "insert into institutions (name, country, official_domain) values (%s, 'US', %s) returning id",
         (f"Crawl U {tag}", domain),
     ).fetchone()
+    assert inst is not None
     row = operator.execute(
         "insert into institution_indexes (institution_id, url, active) values (%s, %s, true) returning id",
         (inst["id"], f"https://www.{domain}/programs"),
     ).fetchone()
+    assert row is not None
     operator.commit()
     yield {"id": row["id"], "institution": inst["id"], "domain": domain}
     operator.execute("delete from institutions where id = %s", (inst["id"],))
@@ -186,9 +188,9 @@ def test_refused_and_missing_pages_are_reported_not_raised(worker: Connection, i
     lister = Lister([])
     assert crawl_index(worker, RefusingFetcher(), lister, index_row(worker, index)).status == "refused"  # type: ignore[arg-type]
     assert (
-        crawl_index(worker, IndexFetcher(index["domain"], status=404), lister, index_row(worker, index)).status
+        crawl_index(worker, IndexFetcher(index["domain"], status=404), lister, index_row(worker, index)).status  # type: ignore[arg-type]
         == "failed"
-    )  # type: ignore[arg-type]
+    )
     assert lister.calls == 0
 
 
@@ -216,7 +218,7 @@ def test_prompt_lists_the_links_and_the_model_output_is_parsed() -> None:
         }
     )
     client = FakeGenai(FakeGenaiResponse(reply))
-    run = GeminiCourseLister(client=client, model="gemini-test").list_courses(  # type: ignore[arg-type]
+    run = GeminiCourseLister(client=client, model="gemini-test").list_courses(
         "https://x.example.org/programs", "MS Robotics", (("MS Robotics", "https://x.example.org/r"),)
     )
     prompt = client.models.calls[0]["contents"]
@@ -224,7 +226,7 @@ def test_prompt_lists_the_links_and_the_model_output_is_parsed() -> None:
     assert run.error is None and run.courses and run.courses[0].title == "MS Robotics"
     bad = GeminiCourseLister(client=FakeGenai(FakeGenaiResponse("nope")), model="gemini-test").list_courses(
         "u", "t", ()
-    )  # type: ignore[arg-type]
+    )
     assert bad.courses is None and bad.error
 
 
@@ -337,5 +339,5 @@ def test_an_empty_or_fully_rejected_listing_is_tried_again_next_time(worker: Con
 
 def test_a_cut_off_model_answer_says_the_index_is_too_long() -> None:
     reply = FakeGenaiResponse('{"courses": [', finish_reason="MAX_TOKENS")
-    run = GeminiCourseLister(client=FakeGenai(reply), model="gemini-test").list_courses("u", "t", ())  # type: ignore[arg-type]
+    run = GeminiCourseLister(client=FakeGenai(reply), model="gemini-test").list_courses("u", "t", ())
     assert run.courses is None and run.error and "too long" in run.error

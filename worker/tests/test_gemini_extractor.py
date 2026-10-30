@@ -49,7 +49,7 @@ def test_unparseable_or_truncated_output_yields_no_extraction() -> None:
 
 
 def test_version_names_model_and_prompt() -> None:
-    extractor = GeminiExtractor(client=FakeGenai(FakeGenaiResponse("{}")), model="gemini-test")
+    extractor = GeminiExtractor(client=FakeGenai(FakeGenaiResponse("{}")), model="gemini-test")  # type: ignore[arg-type]
     assert extractor.version.startswith("gemini-test/")
 
 

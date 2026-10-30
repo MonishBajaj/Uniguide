@@ -35,10 +35,12 @@ def world(operator: Connection) -> Iterator[dict[str, Any]]:
         """,
         (f"job-{tag}@example.com",),
     ).fetchone()
+    assert user is not None
     inst = operator.execute(
         "insert into institutions (name, country, official_domain) values (%s, 'DE', 'enrich.example.org') returning id",
         (f"Job U {tag}",),
     ).fetchone()
+    assert inst is not None
     operator.commit()
     yield {"user": user["id"], "inst": inst["id"], "tag": tag, "operator": operator}
     operator.execute("delete from institutions where id = %s", (inst["id"],))
@@ -55,6 +57,7 @@ def make_job(
         "insert into enrichment_jobs (user_id, allow_fallback, profile_snapshot) values (%s, %s, %s) returning id",
         (world["user"], allow_fallback, json.dumps(snapshot or {"target_countries": ["DE"]})),
     ).fetchone()
+    assert job is not None
     for n in range(courses):
         slug = f"job-{uuid.uuid4().hex[:10]}"
         prog = op.execute(
@@ -62,13 +65,17 @@ def make_job(
             "values (%s, %s, %s, 'master', true, %s) returning id",
             (world["inst"], slug, f"MSc {n}", f"{HOST}/{slug}"),
         ).fetchone()
+        assert prog is not None
         op.execute("insert into enrichment_items (job_id, program_id) values (%s, %s)", (job["id"], prog["id"]))
     op.commit()
     return job["id"]
 
 
 def job_row(world: dict[str, Any], job: Any) -> dict[str, Any]:
-    return world["operator"].execute("select * from enrichment_jobs where id = %s", (job,)).fetchone()  # type: ignore[return-value]
+    op: Connection = world["operator"]
+    row = op.execute("select * from enrichment_jobs where id = %s", (job,)).fetchone()
+    assert row is not None
+    return row
 
 
 def item_statuses(world: dict[str, Any], job: Any) -> list[str]:
@@ -89,9 +96,12 @@ def test_job_moves_through_stages_in_order(
 ) -> None:
     seen: list[str] = []
     original = serve_mod.set_stage
-    monkeypatch.setattr(
-        serve_mod, "set_stage", lambda conn, job, stage: (seen.append(stage), original(conn, job, stage))[1]
-    )
+
+    def record(conn: Connection, job: Any, stage: str) -> None:
+        seen.append(stage)
+        original(conn, job, stage)
+
+    monkeypatch.setattr(serve_mod, "set_stage", record)
     job = make_job(world, 2)
     run(world, worker, job)
     assert seen == ["optimizing_profile", "selecting_universities", "fetching_details"]
@@ -214,7 +224,9 @@ def test_waiting_item_gives_up_with_a_clear_message(worker: Connection, world: d
     job = make_job(world, 1)
     op: Connection = world["operator"]
     program = op.execute("select program_id from enrichment_items where job_id = %s", (job,)).fetchone()
+    assert program is not None
     other = op.execute("insert into enrichment_jobs (user_id) values (%s) returning id", (world["user"],)).fetchone()
+    assert other is not None
     op.execute(
         "insert into enrichment_items (job_id, program_id, status) values (%s, %s, 'running')",
         (other["id"], program["program_id"]),
@@ -222,6 +234,7 @@ def test_waiting_item_gives_up_with_a_clear_message(worker: Connection, world: d
     op.commit()
     run(world, worker, job, wait_rounds=2)
     row = op.execute("select status, detail from enrichment_items where job_id = %s", (job,)).fetchone()
+    assert row is not None
     assert row["status"] == "failed" and "still" in row["detail"]
     assert job_row(world, job)["status"] == "done"
 
@@ -246,12 +259,14 @@ def test_a_dead_workers_item_does_not_block_the_course_for_other_students(
     op: Connection = world["operator"]
     dead = make_job(world, 1)
     program = op.execute("select program_id from enrichment_items where job_id = %s", (dead,)).fetchone()
+    assert program is not None
     op.execute("update enrichment_items set status = 'running' where job_id = %s", (dead,))
     op.execute(
         "update enrichment_jobs set status = 'running', heartbeat_at = now() - interval '20 minutes' where id = %s",
         (dead,),
     )
     later = op.execute("insert into enrichment_jobs (user_id) values (%s) returning id", (world["user"],)).fetchone()
+    assert later is not None
     op.execute(
         "insert into enrichment_items (job_id, program_id) values (%s, %s)", (later["id"], program["program_id"])
     )
