@@ -28,7 +28,7 @@ select throws_ok($$ insert into public.institution_rankings (institution_id, sub
 
 reset role;
 select tests.as_anon();
-select is((select count(*)::int from public.institution_rankings where institution_id = '00000000-0000-4000-c000-0000000000d1'), 1, 'visitors can read rankings too');
+select is((select count(*)::int from public.institution_rankings where institution_id = '00000000-0000-4000-c000-0000000000d1'), 0, 'visitors cannot read rankings: only signed-in students can');
 
 select * from finish();
 rollback;
