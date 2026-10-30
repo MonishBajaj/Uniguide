@@ -13,7 +13,7 @@ export default defineConfig({
   reporter: process.env.CI ? [["github"], ["html", { open: "never" }]] : "list",
   // First visits compile pages on demand, so allow more than the default per test.
   timeout: 90_000,
-  use: { baseURL: `http://localhost:${port}`, trace: "retain-on-failure" },
+  use: { baseURL: `http://localhost:${port}`, trace: "retain-on-failure", channel: process.env.E2E_BROWSER_CHANNEL },
   // "demo" runs only with sign-in switched off (AUTH_DISABLED=true, `pnpm e2e:demo`); "community" only with
   // COMMUNITY_ENABLED=true (`pnpm e2e:community`); "app" covers everything else.
   projects: [
