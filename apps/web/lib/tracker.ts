@@ -62,6 +62,7 @@ export async function ensureApplication(supabase: Supabase, userId: string, prog
         due_at: i.dueAt,
         requirement_id: i.requirementId ?? null,
         deadline_id: i.deadlineId ?? null,
+        country_rule_id: i.countryRuleId ?? null,
       })),
     );
   }

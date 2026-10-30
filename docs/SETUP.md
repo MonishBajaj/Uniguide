@@ -110,8 +110,25 @@ Run imports from your machine (`uv run uniguide-worker import --help`).
 | `monitor`: re-check official pages by demand | daily 03:17 | `WORKER_DATABASE_URL`, and `GEMINI_API_KEY` or `ANTHROPIC_API_KEY` | `CRAWLER_CONTACT`, `EXTRACTOR` (`gemini` by default) |
 | `research`: outcome report and admission model gate | Mondays 04:23 | `ANALYST_DATABASE_URL` | |
 | `index`: crawl verified course-index pages | daily 05:41 | `WORKER_DATABASE_URL`, `GEMINI_API_KEY` | `CRAWLER_CONTACT`, `GEMINI_MODEL` |
+| `journeys`: recompute each active student's journey (stage and next steps) | daily 02:29 | `JOURNEY_CRON_TOKEN` | `SITE_URL` |
 
 Any job can also be started by hand from the Actions tab (Run workflow).
+
+### Journey recompute token
+
+The `journeys` job calls `POST /api/cron/journeys` on the live site, which recomputes students who signed in within 90 days and stores the result for emails and the parent view. The web app has no secret Supabase key, so the route proves itself with a shared token, like the payment webhooks:
+
+1. Pick a token of at least 32 random bytes (for example `openssl rand -hex 32`).
+2. Set it as `JOURNEY_CRON_TOKEN` on Vercel (Production) and as the `JOURNEY_CRON_TOKEN` Actions secret.
+3. Store its hash in the database (SQL editor):
+
+   ```sql
+   insert into public.journey_config (cron_token_hash)
+   values (encode(extensions.digest('<the token>', 'sha256'), 'hex'))
+   on conflict (id) do update set cron_token_hash = excluded.cron_token_hash;
+   ```
+
+Locally the seed stores the hash of `local-journey-token`, which `.env.example` already sets. Without the variable the route answers 503; with a wrong token, 401.
 
 ## 7. Enrichment worker (on-demand course facts)
 

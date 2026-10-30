@@ -56,3 +56,8 @@ alter role analyst with login password 'analyst_local';
 insert into public.payment_config (webhook_token_hash)
 values (encode(extensions.digest('local-webhook-token', 'sha256'), 'hex'))
 on conflict (id) do nothing;
+
+-- Local journey recompute token: the cron route sends JOURNEY_CRON_TOKEN=local-journey-token (see .env.example).
+insert into public.journey_config (cron_token_hash)
+values (encode(extensions.digest('local-journey-token', 'sha256'), 'hex'))
+on conflict (id) do nothing;

@@ -8,12 +8,13 @@ on:
     - cron: "17 3 * * *"    # monitor: daily, re-check official pages by demand
     - cron: "23 4 * * 1"    # research: weekly, outcome report and admission model gate
     - cron: "41 5 * * *"    # index: daily, crawl verified course-index pages
+    - cron: "29 2 * * *"    # journeys: daily, recompute each active student's journey (stage, next steps)
   workflow_dispatch:
     inputs:
       job:
         description: Job to run
         type: choice
-        options: [notify, monitor, research, index]
+        options: [notify, monitor, research, index, journeys]
 
 concurrency:
   group: scheduled-${{ github.event.schedule || inputs.job }}
@@ -96,3 +97,25 @@ jobs:
         if: env.WORKER_DATABASE_URL != '' && env.GEMINI_API_KEY != ''
       - run: uv sync --frozen && uv run uniguide-worker index crawl --limit 30
         if: env.WORKER_DATABASE_URL != '' && env.GEMINI_API_KEY != ''
+
+  # Calls the web app's token-guarded route a page at a time until it reports no next page.
+  journeys:
+    if: (github.event.schedule == '29 2 * * *' || inputs.job == 'journeys')
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      SITE_URL: ${{ vars.SITE_URL }}
+      JOURNEY_CRON_TOKEN: ${{ secrets.JOURNEY_CRON_TOKEN }}
+    steps:
+      - name: Recompute journeys
+        if: env.SITE_URL != '' && env.JOURNEY_CRON_TOKEN != ''
+        run: |
+          after=""
+          for page in $(seq 1 500); do
+            body=$(curl -sS --fail-with-body -X POST -H "Authorization: Bearer $JOURNEY_CRON_TOKEN" \
+              "$SITE_URL/api/cron/journeys${after:+?after=$after}")
+            echo "page $page: $body"
+            after=$(echo "$body" | jq -r '.next // empty')
+            [ -z "$after" ] && exit 0
+          done
+          echo "Stopped after 500 pages" && exit 1

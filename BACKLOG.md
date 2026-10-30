@@ -24,6 +24,28 @@ Weeks 1–4 foundation; weeks 5–6 tracker, checklists, reminders, .ics, outcom
 | **Native-speaker review of the Hindi interface** (15.4) | `apps/web/lib/i18n/hi.ts`, written plainly but not yet reviewed; the footer says so in Hindi. Not yet translated: the profile forms, application pages, writing coach and server messages. Country and level names, and dates, are still in English |
 | **Legal review before switching on community features** (11.1, 11.3, 11.4, 11.6) | Built behind `COMMUNITY_ENABLED` (off). Before turning it on: terms for user posts, moderation policy and response times, takedown contact, defamation risk in reviews, and a privacy-policy update. Every post is pre-moderated, adults only, pseudonymous, with contact details blocked |
 
+## Journey system (after M1)
+
+M1 (the engine) is built; see `docs/superpowers/plans/2026-10-30-journey-m1-engine.md`. Decisions taken by the owner on 30 October 2026: students can explore without a test score; "opened" and "viewed" steps are marked done by the student; "today" is the UTC date until profiles store a time zone; the daily recompute is a token-guarded route called by GitHub Actions. The spec's open questions keep their defaults (no paywall, "UniGuide" in one constant, advise 6 to 10 shortlisted courses and never require it, lead times 21/30/21 for ranking only and never shown).
+
+Catalogue steps written but switched off until the piece they need exists:
+
+| Steps | Waiting for | Milestone |
+|---|---|---|
+| S1.03 Choose your intake | An intake field on the profile (no student control writes `intake_year` today) | M3 (J3.6) |
+| S2.05, S3.01, S3.02 | Score goals, shortlist advice and profile comparison panels placed on pages (G8) | M3 |
+| S3.03, S3.04 | Cost scenarios on the shortlist; a cycle chosen per shortlisted course | M3 |
+| S1.05 "not taken yet", S4.11 | Test bookings (G11) | M3 |
+| S4.09 | Supervisor contact tracker (G9) | M3 |
+| S4.13 | Document readiness, passport expiry (G12) | M3 |
+| S5.02, S5.03, S5.04 | Portal notes with a resolved state; interview events and expected decision dates (G26) | M5 |
+| S6.05 to S6.08 | Enrollment steps after accepting, declining other offers (G13, G14) | M5 |
+| S7.03, S7.04, S7.08 | Housing, health insurance and registration country rules (G23) | M5 |
+| S2.07, S3.06 | Course and parent-view tracking, which the spec does not define yet | Needs a decision |
+
+- Own applications (G1) never become catalogue courses; a reviewer cannot convert one (spec open question 4). Record any request for that here.
+- "Today" in the student's own time zone needs a time zone on the profile.
+
 ## Follow-ups
 
 - Extract fee waivers from official pages with the model. Today fee waivers arrive only through hand-verified seed files and admin review.

@@ -1,0 +1,142 @@
+{
+  "stage-1-new-account": {
+    "stage": 1,
+    "top3": [
+      "S1.01",
+      "S1.02",
+      "S1.04"
+    ]
+  },
+  "stage-2-exploring": {
+    "stage": 2,
+    "top3": [
+      "S2.01",
+      "S2.03",
+      "S2.04"
+    ]
+  },
+  "stage-3-shortlisted": {
+    "stage": 3,
+    "top3": [
+      "S1.07",
+      "S2.03",
+      "S2.04"
+    ]
+  },
+  "stage-4-preparing": {
+    "stage": 4,
+    "top3": [
+      "S4.14:a1",
+      "S4.10",
+      "S1.07"
+    ]
+  },
+  "stage-5-submitted": {
+    "stage": 5,
+    "top3": [
+      "S5.01:a1",
+      "S1.07"
+    ]
+  },
+  "stage-6-admitted": {
+    "stage": 6,
+    "top3": [
+      "S6.04:a1",
+      "S6.09:a1",
+      "S1.07"
+    ]
+  },
+  "stage-7-accepted": {
+    "stage": 7,
+    "top3": [
+      "S7.01:a1",
+      "S1.07",
+      "S6.09:a1"
+    ]
+  },
+  "entry-exploring": {
+    "stage": 2,
+    "top3": [
+      "S2.02",
+      "S2.03",
+      "S2.04"
+    ]
+  },
+  "entry-knows": {
+    "stage": 2,
+    "top3": [
+      "S2.01",
+      "S2.03",
+      "S2.04"
+    ]
+  },
+  "entry-applying": {
+    "stage": 4,
+    "top3": [
+      "S4.14:a1",
+      "S4.10",
+      "S1.07"
+    ]
+  },
+  "entry-offers": {
+    "stage": 6,
+    "top3": [
+      "S6.01:a1",
+      "S6.09:a1",
+      "S1.07"
+    ]
+  },
+  "edge-split-submitted-preparing": {
+    "stage": 4,
+    "top3": [
+      "S4.14:a2",
+      "S4.10",
+      "S1.07"
+    ]
+  },
+  "edge-preparing-deadline-passed": {
+    "stage": 5,
+    "top3": [
+      "S5.01:a1",
+      "S1.07",
+      "S4.14:a2"
+    ]
+  },
+  "edge-rejected-everywhere": {
+    "stage": 5,
+    "top3": [
+      "S5.06",
+      "S1.07",
+      "S6.09:a1"
+    ]
+  },
+  "edge-withdrawn-only": {
+    "stage": 2,
+    "top3": [
+      "S2.02",
+      "S2.03",
+      "S2.04"
+    ]
+  },
+  "edge-pending-consent": {
+    "stage": 1,
+    "top3": [
+      "S1.06"
+    ]
+  },
+  "edge-targets-only-on-a-track": {
+    "stage": 2,
+    "top3": [
+      "S2.02",
+      "S2.04",
+      "S1.07"
+    ]
+  },
+  "edge-doctorate-needs-research-interests": {
+    "stage": 1,
+    "top3": [
+      "S1.01",
+      "S1.07"
+    ]
+  }
+}

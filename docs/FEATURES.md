@@ -173,6 +173,16 @@ The student app works end to end behind sign-in, but the catalogue holds six pla
 | P3 | 2.5 | Test prep resource marketplace | Decision | S | Affiliate links. Owner decides how this sits with the "No commissions" promise. |
 | P3 | 6.4 | Portfolio builder | Built | L | Built on developer-b: a private Storage bucket with a folder per student, PNG, JPEG and PDF up to 10 MB plus links, reordering, 7-day share links, read-only for shared counselors, hidden from parents. |
 
+### Journey system (spec `docs/superpowers/specs/2026-10-30-journey-system-design.md`)
+
+Built on `Updated-developer-b`, milestone by milestone. Gap IDs (G…) are the spec's section 7.
+
+| Milestone | ID | Feature | Status | Scope |
+|---|---|---|---|---|
+| M1 | G7 | Journey engine and step catalogue | Built | `packages/journey`: stage 1 to 7 from the student's own data, 60 catalogue steps (39 on in M1; the rest wait for the features listed in BACKLOG.md), ranked urgent, long lead, stage and carry-over, and a stalled flag. One snapshot RPC, results stored in `journey_state` with `journey_events`, and a daily recompute through a token-guarded route. No page shows it yet. |
+| M1 | G18 | Snooze, dismiss and mark done | Partial | Table and engine rules built (`journey_step_state`; three steps can't be dismissed). The buttons come with the home page in M2. |
+| M2 | | Navigation, journey home, step list | To build | Next milestone. |
+
 ### Working agreement
 
 - **Branches.** Developer B pushes all work to `developer-b`, one commit per feature row, each starting with its ID (for example `4.5 Track which scores went to which school`). A draft pull request from that branch runs CI on every push. Developer A uses one branch per feature row, named by ID (for example `feat/x1-real-seed`). Plain commit messages, no Claude co-author line.
