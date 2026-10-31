@@ -92,7 +92,7 @@ The tasks keep the spec's numbers but are built in this order: J6.2, J6.3, J6.4,
   - the counselor's view follows the counselor's language
 - **`copy-hi.ts` header:** "Hindi translations written by the developer, awaiting native-speaker review", as in `lib/i18n/hi.ts`.
 
-- [ ] **Steps:**
+- [x] **Steps:**
   - failing tests:
     - **unit (journey):** every English key has a Hindi template with the same placeholders, and each fills within the limits with a 120-character course name; the same for parent titles
     - **unit (web):** the translator uses Hindi for `hi` and English otherwise, and keeps the course name untouched
@@ -111,7 +111,7 @@ The tasks keep the spec's numbers but are built in this order: J6.2, J6.3, J6.4,
 - **The help panel** opens and closes with the keyboard and with a click, shows its content straight away, and has no transitions.
 - **Transfer budget:** the bytes the browser downloads for `/app` with data saver on are measured once, and the test fails above that figure plus 20%. The figure goes in the test with the date it was measured (Decisions 4).
 
-- [ ] **Steps:**
+- [x] **Steps:**
   - **Playwright, with `Save-Data: on`:**
     - `/app` has `data-lite`
     - no prefetch requests while the page loads or the pointer moves over step links
@@ -136,7 +136,7 @@ The tasks keep the spec's numbers but are built in this order: J6.2, J6.3, J6.4,
 - **`/admin/rules`:** unverified rules that steps quote come first, with their count.
 - **Worker:** the source monitor rechecks pages by journey demand first.
 
-- [ ] **Steps:**
+- [x] **Steps:**
   - failing tests:
     - **pgTAP:** a saved journey quoting an unverified deadline counts once per student; a verified fact, an old journey and a parent count nothing; a student can't call it
     - **pytest:** the monitor's order
@@ -160,7 +160,7 @@ The tasks keep the spec's numbers but are built in this order: J6.2, J6.3, J6.4,
   - `/parent`, and `/agency/[student]` for a counselor with a share
 - **The per-feature audit tests** in the journey specs are removed. Their flows stay.
 
-- [ ] **Steps:**
+- [x] **Steps:**
   - write the audit and check that it fails if a known issue is put back (for example, an unlabelled input)
   - remove the duplicates; full e2e run
   - commit `J6.1 One accessibility audit for every journey page`
@@ -169,7 +169,7 @@ The tasks keep the spec's numbers but are built in this order: J6.2, J6.3, J6.4,
 
 ### Task J6.5: `docs/JOURNEY.md` and the M6 exit gate
 
-- [ ] **`docs/JOURNEY.md`** covers:
+- [x] **`docs/JOURNEY.md`** covers:
   - the seven stages and how a stage is worked out
   - a step's definition (subjects, done, applies, href, parent title, markable, dismissable)
   - ranking and stalled detection
@@ -179,8 +179,8 @@ The tasks keep the spec's numbers but are built in this order: J6.2, J6.3, J6.4,
   - emails, parent and counselor views, verification demand
   - how to add a step, from catalogue to route anchor to tests
   - the test commands
-- [ ] **FEATURES.md:** G25 built, and the M2 note "Step titles stay English until M6" removed. **BACKLOG.md:** the M2 accepted limit about English step titles removed, and any M6 limits added. **README.md.**
-- [ ] **Run every suite** (Verification), fill in this plan's exit gate, update the PR description, and commit `J6.5 Journey docs and M6 exit gate`.
+- [x] **FEATURES.md:** G25 built, and the M2 note "Step titles stay English until M6" removed. **BACKLOG.md:** the M2 accepted limit about English step titles removed, and any M6 limits added. **README.md.**
+- [x] **Run every suite** (Verification), fill in this plan's exit gate, update the PR description, and commit `J6.5 Journey docs and M6 exit gate`.
 
 ## Decisions (defaults used unless the owner says otherwise)
 
@@ -202,3 +202,33 @@ The tasks keep the spec's numbers but are built in this order: J6.2, J6.3, J6.4,
   - `diff-fixtures` after the engine change
 - **CI on #4** is green apart from the four accepted e2e failures.
 - **Screenshots** of the Hindi home, steps page and parent view, and of the review queue with journey demand, at both widths.
+
+## Finishing M6: exit gate (31 October 2026)
+
+- **Spec "done when": met.**
+  - **Hindi:** the journey reads in Hindi, covering steps, hidden steps, the progress line, and the parent's stage, note and steps (`journey-hindi.spec.ts`).
+  - **Accessibility:** every journey page is in the CI audit, with a course in every state, at both widths and in both languages (`a11y.spec.ts`). The audit fails on a planted unlabelled input.
+  - **Data saver:** the home and help panel pass the low-bandwidth check (`journey-lite.spec.ts`).
+  - **Verification demand:** steps raise it, and the review queue puts those courses first (`verification-demand.spec.ts`, `520_journey_demand.test.sql`).
+  - **Docs:** `docs/JOURNEY.md` exists.
+- **Local results:**
+
+  | Suite | Result |
+  |---|---|
+  | pgTAP | 713 pass |
+  | Unit tests | journey 258, matching 124, web 313 pass |
+  | Typecheck, lint | Clean |
+  | Worker | pytest 398 pass; ruff and mypy clean |
+  | e2e (app) | 123 pass; only the four failures accepted at the M2 gate. There are fewer tests than at M5 because the per-feature audit tests moved into one audit. |
+  | e2e demo | 3 pass |
+  | e2e community | 6 pass |
+  | `diff-fixtures` | One deliberate change: `engineVersion` to `journey-0.5.0` |
+
+- **CI on #4** (`031efe8`): end-to-end 127 pass with the four accepted failures; database and web green. The worker check fails only on `ruff format --check` for 7 files that exist only on `develop` (the QS-rankings importer and the Ollama lister, with their tests). It's explained on the pull request and needs fixing on `develop`.
+- **Deviations from this plan:**
+  - **Prefetching (J6.3):** the dev server the specs run against never prefetches. A browser check would pass either way, so a source test (`lib/journey-links.test.ts`) makes sure journey pages link with `AppLink`. The page-size budget measures the home page itself (69.8 KB, plus 20%), since dev-mode scripts aren't what a student downloads.
+  - **Counselor pages (J6.2):** these are English only, like the rest of `/agency`, so their step lists stay English. Recorded in BACKLOG.
+  - **Already-saved journeys (J6.2):** parent titles saved before M6 have no catalogue id, so they stay English until the student's journey is next saved.
+- **Fixed on the way (own commits):**
+  - `resetStudent` merged with `develop`'s change into a statement that set `target_fields` twice. This branch now writes that line as `develop` does.
+  - The 6.4 portfolio spec signed the counselor in before the share had saved.
