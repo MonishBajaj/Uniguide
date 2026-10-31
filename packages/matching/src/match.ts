@@ -41,7 +41,8 @@ export function matchPrograms(
     if (byScore !== 0) return byScore;
     const byCoverage = b.fit.dataCoverage - a.fit.dataCoverage;
     if (byCoverage !== 0) return byCoverage;
-    return a.programId.localeCompare(b.programId);
+    // Equal programs keep the order they were given (Array.sort is stable), so a ranked input list is not shuffled.
+    return 0;
   });
   return { algorithmVersion: ALGORITHM_VERSION, results };
 }

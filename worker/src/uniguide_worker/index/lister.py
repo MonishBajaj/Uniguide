@@ -68,9 +68,15 @@ class CourseLister(Protocol):
     def list_courses(self, url: str, page_text: str, links: tuple[tuple[str, str], ...]) -> CourseListRun: ...
 
 
-def _message(url: str, page_text: str, links: tuple[tuple[str, str], ...]) -> str:
-    numbered = "\n".join(f"{i}. {text} -> {href}" for i, (text, href) in enumerate(links[:MAX_LINKS], 1))
-    return f"Official page: {url}\n\n<page>\n{page_text[:MAX_PAGE_CHARS]}\n</page>\n\n<links>\n{numbered}\n</links>"
+def _message(
+    url: str,
+    page_text: str,
+    links: tuple[tuple[str, str], ...],
+    max_chars: int = MAX_PAGE_CHARS,
+    max_links: int = MAX_LINKS,
+) -> str:
+    numbered = "\n".join(f"{i}. {text} -> {href}" for i, (text, href) in enumerate(links[:max_links], 1))
+    return f"Official page: {url}\n\n<page>\n{page_text[:max_chars]}\n</page>\n\n<links>\n{numbered}\n</links>"
 
 
 class GeminiCourseLister:

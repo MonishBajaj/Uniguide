@@ -1,5 +1,5 @@
-# UNVERIFIED: the index URL below was written from memory and has not been opened.
-# A person must open it, confirm it lists the university's courses, then add verified_by and verified_at.
+# Checked by Claude on 2026-10-30 with the crawler's own fetcher and a dry run. DOES NOT WORK YET: lists schools and the catalog, not courses (1 junk item).
+# Still needs a person to open the URL and add verified_by and verified_at before it is crawled.
 institution: "University of Pennsylvania"
 country: US
 official_domain: upenn.edu

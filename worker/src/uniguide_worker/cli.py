@@ -11,7 +11,7 @@ from typing import Annotated, Any
 import typer
 from psycopg.types.json import Jsonb
 
-from .config import get_settings
+from .config import REPO_ROOT, get_settings
 from .db import Connection, connect, is_local
 from .fetch.fetcher import Fetcher
 
@@ -121,6 +121,7 @@ def import_us_scorecard(
 def import_uk_discover_uni(
     institution_file: Annotated[Path, typer.Option(help="INSTITUTION.csv from the Discover Uni dataset")],
     course_file: Annotated[Path, typer.Option(help="KISCOURSE.csv from the Discover Uni dataset")],
+    subject_file: Annotated[Path | None, typer.Option(help="SBJ.csv, to fill in each course's subject field")] = None,
     limit: Annotated[int | None, typer.Option()] = None,
 ) -> None:
     """United Kingdom: Discover Uni dataset files (undergraduate)."""
@@ -130,10 +131,26 @@ def import_uk_discover_uni(
         _with_run(
             "import:uk_discover_uni",
             lambda conn: uk_discover_uni.run(
-                conn, institution_file=str(institution_file), course_file=str(course_file), limit=limit
+                conn,
+                institution_file=str(institution_file),
+                course_file=str(course_file),
+                subject_file=str(subject_file) if subject_file else None,
+                limit=limit,
             ),
         )
     )
+
+
+@importer.command("qs-rankings")
+def import_qs_rankings(
+    file: Annotated[Path, typer.Option(help="QS World University Rankings by Subject workbook (.xlsx)")],
+    aliases: Annotated[Path | None, typer.Option(help="QS name to institution name YAML")] = None,
+) -> None:
+    """QS subject rankings, used only to order courses (never shown to students)."""
+    from .importers import qs_rankings
+
+    path = aliases or REPO_ROOT / "data" / "seed" / "rankings" / "aliases.yaml"
+    _report(_with_run("import:qs_rankings", lambda conn: qs_rankings.run(conn, file=str(file), aliases_file=str(path))))
 
 
 @importer.command("nl-duo")
@@ -367,15 +384,16 @@ def index_crawl(
     country: Annotated[str | None, typer.Option(help="Two-letter country code, for example US.")] = None,
     limit: Annotated[int, typer.Option(help="Index pages to crawl this run.")] = 30,
 ) -> None:
-    """Read the active index pages, list their courses with Gemini and add the ones that check out."""
+    """Read the active index pages, list their courses with the EXTRACTOR model and add the ones that check out."""
     from .index.crawl import crawl_all
-    from .index.lister import GeminiCourseLister
+    from .index.factory import make_lister
 
     settings = get_settings()
-    if not settings.gemini_api_key:
-        raise typer.BadParameter("Set GEMINI_API_KEY (see .env.example)")
+    try:
+        lister = make_lister(settings)
+    except ValueError as exc:
+        raise typer.BadParameter(str(exc)) from exc
     fetcher = Fetcher(settings.user_agent)
-    lister = GeminiCourseLister(model=settings.gemini_model, api_key=settings.gemini_api_key)
 
     def work(conn: Connection) -> dict[str, Any]:
         reports = crawl_all(

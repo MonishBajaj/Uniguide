@@ -1,0 +1,8 @@
+# Checked by Claude on 2026-10-31 with the crawler's own fetcher and a dry run. WORKS: dry run accepted 116 of 116 master's degrees.
+# Still needs a person to open the URL and add verified_by and verified_at before it is crawled.
+institution: "University of Exeter"
+country: GB
+official_domain: exeter.ac.uk
+indexes:
+  - url: https://www.exeter.ac.uk/masters-degrees/
+    kind: programs

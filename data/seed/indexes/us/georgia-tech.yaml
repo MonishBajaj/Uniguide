@@ -1,8 +1,8 @@
-# UNVERIFIED: the index URL below was written from memory and has not been opened.
-# A person must open it, confirm it lists the university's courses, then add verified_by and verified_at.
+# Checked by Claude on 2026-10-30 with the crawler's own fetcher and a dry run. DOES NOT WORK YET: the old URL redirects to an application portal whose list is loaded by JavaScript.
+# Still needs a person to open the URL and add verified_by and verified_at before it is crawled.
 institution: "Georgia Institute of Technology"
 country: US
 official_domain: gatech.edu
 indexes:
-  - url: https://grad.gatech.edu/degree-programs
+  - url: https://gradapp.gatech.edu/portal/program-info
     kind: programs

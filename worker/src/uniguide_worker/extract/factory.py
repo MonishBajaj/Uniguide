@@ -19,4 +19,10 @@ def make_extractor(settings: Settings) -> PageExtractor:
                 "EXTRACTOR=gemini needs GEMINI_API_KEY (or set EXTRACTOR=anthropic with ANTHROPIC_API_KEY)"
             )
         return GeminiExtractor(model=settings.gemini_model, api_key=settings.gemini_api_key)
-    raise ValueError(f"Unknown EXTRACTOR {settings.extractor!r}; use 'gemini' or 'anthropic'")
+    if settings.extractor == "ollama":
+        from .ollama import OllamaExtractor
+
+        if not settings.ollama_model:
+            raise ValueError("EXTRACTOR=ollama needs OLLAMA_MODEL (a model you have pulled, for example qwen2.5:14b)")
+        return OllamaExtractor(model=settings.ollama_model)
+    raise ValueError(f"Unknown EXTRACTOR {settings.extractor!r}; use 'gemini', 'anthropic' or 'ollama'")

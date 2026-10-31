@@ -851,6 +851,38 @@ isOneToOne: false
       referencedColumns: ["institution_id"]
     }
                   ]
+                },"institution_rankings": {
+                  Row: {
+                    "edition": string,"id": string,"institution_id": string,"rank_high": number,"rank_low": number,"source_id": string | null,"subject": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "edition": string,"id"?: string,"institution_id": string,"rank_high": number,"rank_low": number,"source_id"?: string | null,"subject": string
+                  }
+                  Update: {
+                    "edition"?: string,"id"?: string,"institution_id"?: string,"rank_high"?: number,"rank_low"?: number,"source_id"?: string | null,"subject"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "institution_rankings_institution_id_fkey"
+      columns: ["institution_id"]
+isOneToOne: false
+      referencedRelation: "institutions"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "institution_rankings_institution_id_fkey"
+      columns: ["institution_id"]
+isOneToOne: false
+      referencedRelation: "program_cards"
+      referencedColumns: ["institution_id"]
+    },{
+      foreignKeyName: "institution_rankings_source_id_fkey"
+      columns: ["source_id"]
+isOneToOne: false
+      referencedRelation: "sources"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"institutions": {
                   Row: {
                     "city": string | null,"country": string,"created_at": string,"cricos_provider_code": string | null,"id": string,"ipeds_unitid": string | null,"name": string,"official_domain": string | null,"other_ids": NonNullable<Json>,"region": string | null,"ror_id": string | null,"source_id": string | null,"ukprn": string | null,"updated_at": string,"verification_method": Database["public"]['Enums']["verification_method"]
@@ -2058,7 +2090,7 @@ isOneToOne: false
 { Args: { "p_state": Json,"p_token"?: string,"p_user"?: string }; Returns: undefined
                            },
 "search_programs":
-{ Args: { "p_countries"?: (string)[],"p_deadline_open"?: boolean,"p_delivery"?: (Database["public"]['Enums']["delivery_mode"])[],"p_fields"?: (string)[],"p_levels"?: (Database["public"]['Enums']["program_level"])[],"p_limit"?: number,"p_max_tuition"?: number,"p_offset"?: number,"p_query"?: string,"p_tuition_currency"?: string }; Returns: {
+{ Args: { "p_countries"?: (string)[],"p_deadline_open"?: boolean,"p_delivery"?: (Database["public"]['Enums']["delivery_mode"])[],"p_fields"?: (string)[],"p_levels"?: (Database["public"]['Enums']["program_level"])[],"p_limit"?: number,"p_max_tuition"?: number,"p_offset"?: number,"p_per_institution"?: number,"p_query"?: string,"p_rank_subjects"?: (string)[],"p_tuition_currency"?: string }; Returns: {
               "cip": string | null,
 "city": string | null,
 "country": string,

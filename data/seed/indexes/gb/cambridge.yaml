@@ -1,0 +1,8 @@
+# Checked by Claude on 2026-10-31 with the crawler's own fetcher and a dry run. WORKS (partly): dry run accepted 13 of 15 postgraduate courses; the page has 158 links, only the first part is read.
+# Still needs a person to open the URL and add verified_by and verified_at before it is crawled.
+institution: "University of Cambridge"
+country: GB
+official_domain: cam.ac.uk
+indexes:
+  - url: https://www.postgraduate.study.cam.ac.uk/courses
+    kind: programs

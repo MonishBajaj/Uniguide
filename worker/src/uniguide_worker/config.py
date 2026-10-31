@@ -35,6 +35,7 @@ class Settings:
     extractor: str = "gemini"
     gemini_model: str | None = None
     gemini_api_key: str | None = None
+    ollama_model: str | None = None
     enrich_fresh_days: int = 7
 
     @property
@@ -55,5 +56,6 @@ def get_settings() -> Settings:
         extractor=(os.environ.get("EXTRACTOR") or "gemini").lower(),
         gemini_model=os.environ.get("GEMINI_MODEL") or None,
         gemini_api_key=os.environ.get("GEMINI_API_KEY") or None,
+        ollama_model=os.environ.get("OLLAMA_MODEL") or None,
         enrich_fresh_days=int(os.environ.get("ENRICH_FRESH_DAYS") or 7),
     )
