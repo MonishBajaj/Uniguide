@@ -1823,6 +1823,11 @@ isOneToOne: false
 "journey_due_users":
 { Args: { "p_after"?: string,"p_limit"?: number,"p_token": string }; Returns: string[]
                            },
+"journey_fact_demand":
+{ Args: Record<PropertyKey, never>; Returns: {
+              "fact_id": string,"fact_table": string,"students": number
+            }[]
+                           },
 "journey_snapshot":
 { Args: { "p_token"?: string,"p_user"?: string }; Returns: Json
                            },
@@ -1948,6 +1953,11 @@ isOneToOne: false
 "revoke_parent_link":
 { Args: { "p_parent": string }; Returns: undefined
                            },
+"rule_demand":
+{ Args: Record<PropertyKey, never>; Returns: {
+              "journey_steps": number,"rule_id": string
+            }[]
+                           },
 "save_journey_state":
 { Args: { "p_state": Json,"p_token"?: string,"p_user"?: string }; Returns: undefined
                            },
@@ -2035,7 +2045,7 @@ isOneToOne: false
                            },
 "verification_demand":
 { Args: { "p_limit"?: number }; Returns: {
-              "facts_unverified": number,"next_deadline": string,"program_id": string,"shortlists": number
+              "facts_unverified": number,"journey_steps": number,"next_deadline": string,"program_id": string,"shortlists": number
             }[]
                            },
 "verifier_countries":

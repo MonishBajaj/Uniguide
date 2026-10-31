@@ -11,7 +11,7 @@ import pytest
 from uniguide_worker.db import Connection
 from uniguide_worker.extract.extractor import ExtractionRun, Extractor
 from uniguide_worker.fetch.fetcher import FetchResult, content_hash
-from uniguide_worker.monitor import MonitorReport, check_source
+from uniguide_worker.monitor import MonitorReport, check_source, monitor
 
 from .conftest import FakeAnthropic, FakeResponse
 from .test_proposals import PAGE, extraction
@@ -108,3 +108,61 @@ def test_failed_extraction_is_retried_not_remembered_as_unchanged(
     assert report.unchanged == 0
     assert report.pages[-1]["status"] == "extracted"
     assert source_row(worker, watched["source"])["content_hash"] is not None
+
+
+class RecordingFetcher(PageFetcher):
+    def __init__(self) -> None:
+        super().__init__(PAGE)
+        self.urls: list[str] = []
+
+    def fetch(self, url: str, etag: str | None = None, last_modified: str | None = None) -> FetchResult:
+        self.urls.append(url)
+        return super().fetch(url, etag, last_modified)
+
+
+def test_pages_students_next_steps_rely_on_are_checked_first(
+    worker: Connection, operator: Connection, watched: dict[str, Any]
+) -> None:
+    """Journey M6 (J6.4, G25): a course whose unverified deadline a student's next step quotes comes before the
+    most-shortlisted ones."""
+    tag = uuid.uuid4().hex[:8]
+    inst = operator.execute(
+        "insert into institutions (name, country) values ('Needed U', 'GB') returning id"
+    ).fetchone()
+    assert inst
+    prog = operator.execute(
+        "insert into programs (institution_id, slug, title, level, published) values (%s, %s, 'MSc N', 'master', true) returning id",
+        (inst["id"], f"needed-{tag}"),
+    ).fetchone()
+    assert prog
+    cycle = operator.execute(
+        "insert into program_cycles (program_id, label, intake_year, intake_term) values (%s, '2027-autumn', 2027, 'autumn') returning id",
+        (prog["id"],),
+    ).fetchone()
+    assert cycle
+    deadline = operator.execute(
+        "insert into deadlines (cycle_id, applicant_category, kind, owning_system, due_at, timezone, precision, status, published) "
+        "values (%s, 'all', 'application', 'direct', now() + interval '30 days', 'Europe/London', 'date', 'unverified', true) "
+        "returning id",
+        (cycle["id"],),
+    ).fetchone()
+    assert deadline
+    url = f"https://needed-{tag}.example.org/apply"
+    operator.execute(
+        "insert into program_sources (program_id, kind, url) values (%s, 'admissions', %s)", (prog["id"], url)
+    )
+    steps = f'[{{"id": "S3.05:x", "factRefs": [{{"table": "deadlines", "id": "{deadline["id"]}", "status": "unverified"}}]}}]'
+    operator.execute(
+        "insert into journey_state (user_id, stage, steps, engine_version) values (%s, 3, %s, 'journey-0.5.0') "
+        "on conflict (user_id) do update set steps = excluded.steps, computed_at = now()",
+        (watched["user"], steps),
+    )
+    operator.commit()
+    try:
+        fetcher = RecordingFetcher()
+        monitor(worker, fetcher, FailingExtractor(), limit=1)  # type: ignore[arg-type]
+        assert fetcher.urls == [url]
+    finally:
+        operator.execute("delete from journey_state where user_id = %s", (watched["user"],))
+        operator.execute("delete from institutions where id = %s", (inst["id"],))
+        operator.commit()

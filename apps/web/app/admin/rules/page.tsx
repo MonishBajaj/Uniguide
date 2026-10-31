@@ -12,10 +12,14 @@ export default async function RulesAdmin() {
   const { supabase, user } = await getUser();
   const { data: admin } = await supabase.from("admins").select("user_id").eq("user_id", user!.id).maybeSingle();
   if (!admin) notFound();
-  const [{ data: rules }, { data: stats }] = await Promise.all([
+  const [{ data: rules }, { data: stats }, { data: ruleDemand }] = await Promise.all([
     supabase.from("country_rules").select("*, sources(url)").order("status").order("destination"),
     supabase.from("program_stats").select("*, programs(slug, title), sources(url)").order("status").order("created_at", { ascending: false }).limit(100),
+    supabase.rpc("rule_demand"),
   ]);
+  // Rules students' next steps quote come first (journey M6, J6.4, G25); the rest keep their order.
+  const demand = new Map((ruleDemand ?? []).map((d) => [d.rule_id, d.journey_steps]));
+  const ordered = [...(rules ?? [])].sort((a, b) => (demand.get(b.id) ?? 0) - (demand.get(a.id) ?? 0));
 
   return (
     <div className="mx-auto grid max-w-6xl gap-10 px-6 py-12">
@@ -28,11 +32,14 @@ export default async function RulesAdmin() {
       <section aria-labelledby="rules" className="grid gap-4">
         <h2 id="rules" className="text-2xl font-semibold">Country rules</h2>
         <ul className="grid gap-2">
-          {(rules ?? []).map((r) => ({ ...r, url: r.sources?.url ?? r.link })).map((r) => (
+          {ordered.map((r) => ({ ...r, url: r.sources?.url ?? r.link })).map((r) => (
             <li key={r.id} className="flex flex-wrap items-start justify-between gap-3 rounded-xl border border-border bg-surface p-4 text-sm">
               <div className="grid gap-1">
                 <span className="font-semibold">{countryName(r.destination)}: {r.title}</span>
                 <span className="text-muted">{r.kind}{r.applies_to.length ? ` · for ${r.applies_to.join(", ")}` : " · everyone"}{r.lead_days ? ` · start ${r.lead_days} days ahead` : ""}</span>
+                {demand.get(r.id) ? (
+                  <strong>{demand.get(r.id) === 1 ? "1 student's next steps need this" : `${demand.get(r.id)} students' next steps need this`}</strong>
+                ) : null}
                 {r.evidence_quote ? <q className="text-muted italic">{r.evidence_quote}</q> : null}
                 {r.url ? <a href={r.url} target="_blank" rel="noreferrer" className="underline underline-offset-2">{new URL(r.url).hostname}</a> : null}
               </div>
