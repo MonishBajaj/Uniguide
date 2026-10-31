@@ -192,7 +192,10 @@ def run(conn: Connection, *, file: str, aliases_file: str | None = None) -> Impo
                     ranks[(ids[0], sheet.subject)] = (row.rank_low, row.rank_high)
 
     source_id = register_source(
-        conn, url=SOURCE_URL, owner="QS Quacquarelli Symonds", rights_note=RIGHTS,
+        conn,
+        url=SOURCE_URL,
+        owner="QS Quacquarelli Symonds",
+        rights_note=RIGHTS,
         content_hash=hashlib.sha256(Path(file).read_bytes()).hexdigest(),
     )
     conn.execute("delete from institution_rankings where edition = %s", (book.edition,))

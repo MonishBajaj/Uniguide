@@ -32,7 +32,7 @@ def write_workbook(path: str, sheets: dict[str, tuple[str, list[list[str]]]], ed
             out.append(f'<row r="{r}">{cells}</row>')
         return (
             '<?xml version="1.0" encoding="UTF-8"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'
-            f'<sheetData>{"".join(out)}</sheetData></worksheet>'
+            f"<sheetData>{''.join(out)}</sheetData></worksheet>"
         )
 
     parts: list[tuple[str, str]] = [
@@ -43,7 +43,9 @@ def write_workbook(path: str, sheets: dict[str, tuple[str, list[list[str]]]], ed
         rows = [["2026 QS World University Rankings by Subject", "Academic"], [subject], HEADER, *data]
         parts.append((tab, sheet_xml(rows)))
 
-    sheet_tags = "".join(f'<sheet name="{escape(n)}" sheetId="{i}" r:id="rId{i}"/>' for i, (n, _) in enumerate(parts, 1))
+    sheet_tags = "".join(
+        f'<sheet name="{escape(n)}" sheetId="{i}" r:id="rId{i}"/>' for i, (n, _) in enumerate(parts, 1)
+    )
     rels = "".join(
         f'<Relationship Id="rId{i}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" '
         f'Target="worksheets/sheet{i}.xml"/>'

@@ -68,7 +68,11 @@ def test_version_names_model_and_prompt() -> None:
 
 def _settings(**kwargs: object) -> Settings:
     return Settings(
-        worker_database_url=None, operator_database_url=None, data_gov_api_key=None, crawler_contact="x", **kwargs  # type: ignore[arg-type]
+        worker_database_url=None,
+        operator_database_url=None,
+        data_gov_api_key=None,
+        crawler_contact="x",
+        **kwargs,  # type: ignore[arg-type]
     )
 
 
