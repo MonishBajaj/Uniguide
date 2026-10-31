@@ -8,10 +8,10 @@ Every fact a student sees comes from Postgres with a source link, a verified dat
 
 | For | Features |
 |---|---|
-| Students | Explore without an account; course pages with sources, quotes and freshness; requirements table; matching with eligibility, cost scenarios and suitability; what-if simulator; shortlist; tracker with checklists, country rules (for example APS for Indian applicants to Germany), calendar export and email reminders; offers comparison with true cost and a decision matrix; writing coach (story bank, outlines, authorship record, linter, rubric review, draft comparison, never ghostwriting); faculty dossiers for research degrees; course Q&A grounded in facts; optional low-confidence bands; sharing with a counselor |
-| Parents | Consent by email link and a button press for students below their country's consent age |
-| Reviewers | Demand-ordered review queue, student reports, country rules and admit rates; per-country verifiers with their own tally |
-| Consultancies | Read-only dashboard of students who chose to share, revocable at any time |
+| Students | A journey home (`/app`) with their stage, next steps and deadlines, navigation by stage, an all-steps page with snooze and dismiss, onboarding by "Where are you right now?", a help panel on every page, step titles and reasons in Hindi as well as English, and weekly journey emails; explore without an account; course pages with sources, quotes and freshness; requirements table; matching with eligibility, cost scenarios, suitability and score goals; what-if simulator; shortlist with advice, profile comparison and costs, and "I'm applying to this"; tracker with checklists, courses not in the catalogue added by the student, test plans, country rules (for example APS for Indian applicants to Germany), calendar export and email reminders; offers comparison with true cost and a decision matrix; after accepting, the offer's conditions, deposit and admission document, declining the other offers, a departure timeline with dated country rules, and "You made it" on arrival; interviews, expected decision dates and "something is missing" on each application; choosing the intake for each course; document readiness and supervisor contacts; a kind next-intake path when every decision is a no; writing coach (story bank, outlines, authorship record, linter, rubric review, draft comparison, never ghostwriting); faculty dossiers for research degrees; course Q&A grounded in facts; optional low-confidence bands; sharing with a counselor |
+| Parents | Consent by email link and a button press for students below their country's consent age; a read-only view of their child's stage, how to help right now and what they're working on (never writing, grades or scores), with a weekly email |
+| Reviewers | Review queue ordered by what students' next steps need, then by shortlists, student reports, country rules and admit rates; per-country verifiers with their own tally |
+| Consultancies | Read-only dashboard of students who chose to share, with each student's stage and next steps, revocable at any time |
 | Research | Consented, de-identified outcomes; outcome report with small-group suppression; hierarchical admission model that is shown only after it passes a holdout and calibration gate |
 
 Payments are built but need provider accounts and keys before they go live (see docs/SETUP.md, Payments). Until then, writing reviews after the first free one use credits from accepted "report outdated information" submissions or an admin grant.
@@ -22,7 +22,7 @@ Payments are built but need provider accounts and keys before they go live (see 
 |---|---|
 | `apps/web` | Next.js 16 app (public pages, student app under `/app`, reviewer pages under `/admin`, counselor pages under `/agency`) and the Playwright suite in `e2e/` |
 | `packages/matching` | Deterministic engine: filters, eligibility, costs, score, checklist, bands, admission estimate |
-| `packages/journey` | Journey engine: the student's stage (1 to 7), ranked next steps and stall detection, from one database snapshot |
+| `packages/journey` | Journey engine: the student's stage (1 to 7), ranked next steps and stall detection, from one database snapshot. How it works: `docs/JOURNEY.md` |
 | `packages/db-types` | TypeScript types generated from the database |
 | `supabase` | SQL migrations, RLS policies, RPCs, pgTAP tests, local seed |
 | `worker` | Python: register importers, official-page extraction (Claude Haiku 5.5), monitor, reminders, research, seed loader, evals |

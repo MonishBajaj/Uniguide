@@ -10,6 +10,8 @@ export function sql(query: string): string {
 }
 
 export const STUDENT = "00000000-0000-4000-a000-000000000002";
+/** The second seed student, applying (journey M2): full profile, one preparing application after resetApplicant(). */
+export const APPLICANT = "00000000-0000-4000-a000-000000000006";
 
 export async function signIn(browser: Browser, email: string): Promise<Page> {
   const page = await (await browser.newContext()).newPage();
@@ -23,7 +25,8 @@ export async function signIn(browser: Browser, email: string): Promise<Page> {
   await page.fill("input[name=email]", email);
   await page.fill("input[name=password]", "password123");
   await page.click('button:has-text("Sign in")');
-  await page.waitForURL("**/app/**");
+  // Students land on the journey home (/app) or a page under it; linked parents are sent on to /parent.
+  await page.waitForURL(/\/(app|parent)(\/|\?|$)/);
   return page;
 }
 
@@ -35,11 +38,26 @@ export function resetStudent() {
        delete from decision_matrices where user_id = '${STUDENT}';
        delete from tracks where user_id = '${STUDENT}';
        delete from enrichment_jobs where user_id = '${STUDENT}';
+       delete from journey_step_state where user_id = '${STUDENT}';
        insert into enrichment_jobs (user_id, status, stage) values ('${STUDENT}', 'done', 'done');
        update profiles set residence_country = 'IN', target_levels = '{master}', target_countries = '{GB,US,DE}', target_fields = '{}',
          home_qualification = 'bachelor_4yr', grade_value = 8.4, grade_scale = 'gpa_10', budget_amount = 60000,
          budget_currency = 'USD', prior_credits = null, prior_credit_system = null, class_percentile = null,
-         preferences = '{}' where user_id = '${STUDENT}'`);
+         preferences = '{}', consent_state = 'not_required', entry_path = 'exploring',
+         intake_year = null, intake_rolled_at = null where user_id = '${STUDENT}'`);
+}
+
+/** The applicant back to a full profile with exactly one preparing application, on a placeholder course. */
+export function resetApplicant() {
+  sql(`delete from applications where user_id = '${APPLICANT}';
+       delete from journey_step_state where user_id = '${APPLICANT}';
+       update profiles set consent_state = 'not_required', entry_path = 'applying', home_qualification = 'bachelor_4yr',
+         grade_value = 8.4, grade_scale = 'gpa_10', budget_amount = 60000, budget_currency = 'USD',
+         target_levels = '{master}', target_countries = '{GB,DE}', target_fields = '{06}', intake_year = 2027
+       where user_id = '${APPLICANT}';
+       insert into applications (user_id, cycle_id, status)
+         select '${APPLICANT}', c.id, 'preparing' from program_cycles c join programs p on p.id = c.program_id
+         where p.slug = 'exampleton-msc-data-science' and c.is_current`);
 }
 
 export async function expectStored(query: string, expected: string) {
@@ -47,8 +65,10 @@ export async function expectStored(query: string, expected: string) {
 }
 
 /** Serious and critical WCAG 2.1 AA violations on a page, one line each (15.2). */
-export async function audit(page: Page, path: string): Promise<string[]> {
-  await page.goto(path);
+/** Serious or critical axe violations on `path`, or on the page as it is now when `path` is null. */
+export async function audit(page: Page, path: string | null): Promise<string[]> {
+  if (path) await page.goto(path);
+  path ??= `${new URL(page.url()).pathname} (as shown)`;
   const { violations } = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"]).analyze();
   return violations
     .filter((v) => v.impact === "serious" || v.impact === "critical")

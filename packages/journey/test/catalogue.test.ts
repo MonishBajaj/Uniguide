@@ -1,16 +1,15 @@
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { CATALOGUE, COPY, REASON_MAX, ROUTES, TITLE_MAX, buildCtx, evaluateCatalogue, fit, render, resolveHref } from "../src";
+import { CATALOGUE, COPY, REASON_MAX, ROUTES, TITLE_MAX, buildCtx, computeJourney, evaluateCatalogue, fit, render, resolveHref } from "../src";
 import type { CountryRuleRow, JourneyInput } from "../src";
 import { STAGE_FIXTURES, application, base, programs, readyProfile } from "./fixtures";
 
 const ids = (input: JourneyInput) => evaluateCatalogue(input).open.map((s) => s.catalogueId);
 
-/** Plan "Deviations", plus S1.03 (no intake control yet, R3). Changing this list is a deliberate act. */
+/** M1 plan "Deviations". S1.03 turned on in M2 with the profile's intake field. Changing this list is a deliberate act. */
 const UNAVAILABLE = [
-  "S1.03", "S2.05", "S2.07", "S3.01", "S3.02", "S3.03", "S3.04", "S3.06", "S4.09", "S4.11", "S4.13",
-  "S5.02", "S5.03", "S5.04", "S6.05", "S6.06", "S6.07", "S6.08", "S7.03", "S7.04", "S7.08",
+  "S2.07", "S3.06",
 ];
 
 const LONG = "A".repeat(120);
@@ -24,6 +23,9 @@ function everything(): JourneyInput {
     { id: "r-funds", destination: "DE", kind: "proof_of_funds", title: "Blocked account", link: null, status: "verified", appliesTo: [] },
     { id: "r-cred", destination: "DE", kind: "credential_evaluation", title: "Anabin check", link: null, status: "verified", appliesTo: [] },
     { id: "r-bank", destination: "DE", kind: "banking", title: "Bank account", link: null, status: "verified", appliesTo: [] },
+    { id: "r-ins", destination: "DE", kind: "health_insurance", title: "Health insurance", link: null, status: "verified", appliesTo: [], leadDays: 60 },
+    { id: "r-reg", destination: "DE", kind: "residence_registration", title: "Register", link: null, status: "verified", appliesTo: [] },
+    { id: "r-house", destination: "DE", kind: "housing", title: "Housing", link: null, status: "verified", appliesTo: [] },
   ];
   const req = (id: string, kind: never | string, extra = {}) => ({ id, kind, exam: null, testPolicy: null, countRequired: null, status: "verified", ...extra }) as never;
   return base({
@@ -58,8 +60,14 @@ function everything(): JourneyInput {
       }),
       application("short", { ...long, id: "p3" }, {
         deadlines: [{ id: "d-short", dueAt: "2027-09-10T23:59:00Z", timezone: "Europe/Berlin", precision: "date", status: "verified" }],
+        openCycles: 2,
       }),
-      application("sent", { ...long, id: "p4" }, { status: "submitted" }),
+      application("sent", { ...long, id: "p4" }, {
+        status: "submitted",
+        interviews: ["2027-09-02T10:00:00Z"],
+        missingNotes: 1,
+        expectedDecisionOn: "2027-08-01",
+      }),
       application("wait", { ...long, id: "p5" }, { status: "decided", decision: "waitlisted" }),
       application("offer1", { ...long, id: "p6" }, { status: "decided", decision: "admitted", depositDueAt: "2027-09-01T00:00:00Z" }),
       application("offer2", { ...long, id: "p7" }, { status: "decided", decision: "admitted" }),
@@ -68,8 +76,31 @@ function everything(): JourneyInput {
         decision: "admitted",
         offerAcceptedAt: "2027-06-01T00:00:00Z",
         cycle: { id: "c-going", label: "2027-winter", startsOn: "2027-09-20" },
+        conditions: { metAt: null },
+        depositDueAt: "2027-09-05T00:00:00Z",
+      }),
+      application("going2", { ...long, id: "p9" }, {
+        status: "decided",
+        decision: "admitted",
+        offerAcceptedAt: "2027-06-01T00:00:00Z",
+        admissionDocumentAt: "2027-07-01T00:00:00Z",
       }),
     ],
+  });
+}
+
+/** Stage 3: one shortlisted course with a verified TOEFL minimum above the student's best, and a budget. */
+function shortlistStage(overrides: { status?: "verified" | "unverified"; scores?: JourneyInput["testScores"]; shortlisted?: number } = {}): JourneyInput {
+  const long = { ...programs.exampleton!, title: LONG };
+  const toefl = {
+    id: "q-toefl", kind: "language_test" as const, exam: "toefl_ibt", examVersion: "legacy", minTotal: 100,
+    testPolicy: null, countRequired: null, status: overrides.status ?? ("verified" as const),
+  };
+  return base({
+    profile: readyProfile,
+    testScores: overrides.scores ?? [{ id: "t1", exam: "toefl_ibt", examVersion: "legacy", total: 92, takenOn: null }],
+    shortlist: Array.from({ length: overrides.shortlisted ?? 1 }, (_, n) => ({ program: { ...long, id: `p${n}` }, createdAt: "2026-10-01T00:00:00Z" })),
+    applications: [application("short", long, { requirements: [toefl] })],
   });
 }
 
@@ -95,6 +126,8 @@ function scenarios(): JourneyInput[] {
         }),
       ],
     }),
+    shortlistStage(),
+    base({ profile: readyProfile, applications: [application("prep", long, { status: "preparing", requirements: [testReq] })] }),
     base({
       profile: readyProfile,
       applications: [
@@ -180,7 +213,8 @@ describe("links", () => {
   });
 
   it("rejects unknown routes and anchors", () => {
-    expect(resolveHref("/app/profile#intake")).toBeNull();
+    expect(resolveHref("/app/profile#nowhere")).toBeNull();
+    expect(resolveHref("/app/profile#intake")).toBe("/app/profile");
     expect(resolveHref("/app/nowhere")).toBeNull();
     expect(resolveHref("/app/tracker/abc#portal")).toBe("/app/tracker/[id]");
     expect(resolveHref("/compare/countries?c=GB&c=DE")).toBe("/compare/countries");
@@ -205,14 +239,16 @@ describe("links", () => {
 });
 
 describe("steps by situation", () => {
-  it("S1.01 links to onboarding only with AI consent", () => {
+  it("S1.01 links to the short profile whatever the AI consent", () => {
     const step = (aiConsent: boolean) => evaluateCatalogue(base({ aiConsent })).open.find((s) => s.catalogueId === "S1.01")!;
-    expect(step(true).href).toBe("/app/onboarding");
-    expect(step(false).href).toBe("/app/profile#targets");
+    expect(step(true).href).toBe("/app/onboarding?screen=3");
+    expect(step(false).href).toBe("/app/onboarding?screen=3");
   });
 
-  it("asks a new student for the set-up steps", () => {
-    expect(ids(base())).toEqual(["S1.01", "S1.02", "S1.04"]);
+  it("asks a new student for the set-up steps, intake included", () => {
+    expect(ids(base())).toEqual(["S1.01", "S1.02", "S1.03", "S1.04"]);
+    expect(evaluateCatalogue(base()).open.find((s) => s.catalogueId === "S1.03")!.href).toBe("/app/profile#intake");
+    expect(ids(base({ profile: { ...readyProfile, intakeYear: 2027 } }))).not.toContain("S1.03");
   });
 
   it("asks for parental consent while it is pending, and never lets it be dismissed", () => {
@@ -327,18 +363,314 @@ describe("steps by situation", () => {
     const v = evaluateCatalogue(near("verified")).open.find((s) => s.catalogueId === "S3.05")!;
     expect(v.reason).toContain("1 December 2026");
     expect(v.factRefs).toEqual([{ table: "deadlines", id: "d1", status: "verified" }]);
+    expect(v.href).toBe("/app/tracker/a1#applying");
     const u = evaluateCatalogue(near("unverified")).open.find((s) => s.catalogueId === "S3.05")!;
     expect(u.reason).not.toContain("December");
     expect(u.reason).toContain("Check the deadline on the official page");
   });
 
-  it("starts Go steps after an offer is accepted", () => {
+  it("starts Go steps after an offer is accepted, the visa once the admission document is in (M5)", () => {
     const input = STAGE_FIXTURES["stage-7-accepted"]!.input;
-    expect(ids(input)).toContain("S7.01");
+    expect(ids(input)).toContain("S6.08");
     expect(buildCtx(input).stage).toBe(7);
+    const received = { ...input, applications: input.applications.map((a) => ({ ...a, admissionDocumentAt: "2026-10-31T00:00:00Z" })) };
+    expect(ids(received)).toContain("S7.01");
   });
 
   it("never quotes an unknown fact", () => {
     for (const s of scenarios().flatMap((i) => evaluateCatalogue(i).open)) for (const f of s.factRefs) expect(f.status).not.toBe("unknown");
+  });
+});
+
+describe("M3 shortlist steps", () => {
+  it("S2.05 quotes a verified minimum above the best score, with the requirement as its fact", () => {
+    const s = evaluateCatalogue(shortlistStage()).open.find((x) => x.catalogueId === "S2.05")!;
+    expect(s.id).toBe("S2.05:short-q-toefl");
+    expect(s.href).toBe("/app/match#score-goals");
+    expect(s.reason).toContain("asks for 100 in TOEFL iBT. Your best so far is 92.");
+    expect(s.factRefs).toEqual([{ table: "requirements", id: "q-toefl", status: "verified" }]);
+  });
+
+  it("never starts S2.05 from an unverified minimum, another exam version, a met minimum or no score", () => {
+    const none = (input: JourneyInput) => expect(ids(input)).not.toContain("S2.05");
+    none(shortlistStage({ status: "unverified" }));
+    none(shortlistStage({ scores: [{ id: "t1", exam: "toefl_ibt", examVersion: "2026-01", total: 5, takenOn: null }] }));
+    none(shortlistStage({ scores: [{ id: "t1", exam: "toefl_ibt", examVersion: "legacy", total: 100, takenOn: null }] }));
+    none(shortlistStage({ scores: [] }));
+  });
+
+  it("S3.01 asks for more courses below six shortlisted, and stops at six", () => {
+    expect(evaluateCatalogue(shortlistStage()).open.find((x) => x.catalogueId === "S3.01")!.href).toBe("/app/shortlist#advice");
+    expect(ids(shortlistStage({ shortlisted: 6 }))).not.toContain("S3.01");
+  });
+
+  it("S3.02 and S3.03 link to their panels, and all three complete when marked done", () => {
+    const open = evaluateCatalogue(shortlistStage()).open;
+    expect(open.find((x) => x.catalogueId === "S3.02")!.href).toBe("/app/shortlist#comparison");
+    expect(open.find((x) => x.catalogueId === "S3.03")!.href).toBe("/app/shortlist#costs");
+    const stepState = ["S3.01", "S3.02", "S3.03"].map((stepId) => ({ stepId, state: "done" as const, until: null }));
+    const r = evaluateCatalogue({ ...shortlistStage(), stepState });
+    expect(r.marked).toEqual(["S3.01", "S3.02", "S3.03"]);
+  });
+
+  it("S3.03 needs a budget", () => {
+    const input = shortlistStage();
+    expect(ids({ ...input, profile: { ...input.profile, budgetAmount: null } })).not.toContain("S3.03");
+  });
+
+  it("leaves the shortlist steps behind once the student is preparing", () => {
+    const input = shortlistStage();
+    const preparing = { ...input, applications: input.applications.map((a) => ({ ...a, status: "preparing" as const })) };
+    expect(ids(preparing).filter((id) => id.startsWith("S3."))).toEqual([]);
+    expect(ids(preparing)).toContain("S2.05");
+  });
+});
+
+describe("own applications (J3.3)", () => {
+  const own = STAGE_FIXTURES["edge-own-application-preparing"]!.input;
+
+  it("gives an own application its checklist and fee steps, with no facts and no source", () => {
+    const steps = evaluateCatalogue(own).open.filter((s) => s.application?.id === "own1");
+    expect(steps.map((s) => s.catalogueId)).toEqual(["S4.01", "S4.14"]);
+    for (const s of steps) {
+      expect(s.factRefs, s.id).toEqual([]);
+      expect(s.source, s.id).toBeUndefined();
+      expect(s.application!.label).toBe("MSc Urban Planning, Universiteit Voorbeeld");
+    }
+  });
+
+  it("ranks by the student's own date without quoting it", () => {
+    const s = evaluateCatalogue(own).open.find((x) => x.catalogueId === "S4.01")!;
+    expect(s.dueAt).toBe("2026-11-20T23:59:00Z");
+    expect(s.reason).not.toContain("20 November");
+  });
+
+  it("lets a passed own deadline close preparation, like a published one", () => {
+    expect(buildCtx(STAGE_FIXTURES["edge-own-deadline-passed"]!.input).stage).toBe(5);
+    expect(buildCtx(own).stage).toBe(4);
+  });
+
+  it("never links an own application to a course page", () => {
+    const accepted = { ...own, applications: own.applications.map((a) => ({ ...a, status: "decided" as const, decision: "admitted" as const, offerAcceptedAt: "2026-10-01T00:00:00Z" })) };
+    for (const s of evaluateCatalogue(accepted).open) expect(s.href, s.id).not.toContain("/courses/");
+  });
+});
+
+describe("test plans (J3.4)", () => {
+  const testReq = { id: "q-ielts", kind: "language_test" as const, exam: "ielts_academic", testPolicy: null, countRequired: null, status: "verified" as const };
+  const deadline = (dueAt: string) => [{ id: "d1", dueAt, timezone: "Europe/London", precision: "date", status: "verified" as const }];
+  const input = (status: "shortlisted" | "preparing", testPlans: JourneyInput["testPlans"] = [], dueAt = "2027-03-01T23:59:00Z") =>
+    base({ profile: readyProfile, testPlans, applications: [application("a1", programs.exampleton!, { status, requirements: [testReq], deadlines: deadline(dueAt) })] });
+  const plan = (status: "not_taken" | "booked") => ({ exam: "ielts_academic", examVersion: null, status, bookedFor: status === "booked" ? "2027-01-10" : null });
+
+  it("completes S1.05 when the course's test is marked not taken yet", () => {
+    expect(ids(input("shortlisted"))).toContain("S1.05");
+    expect(evaluateCatalogue(input("shortlisted", [plan("not_taken")])).completed).toContain("S1.05");
+  });
+
+  it("asks a student preparing an application to book its test, until it is booked or scored", () => {
+    const s = evaluateCatalogue(input("preparing")).open.find((x) => x.catalogueId === "S4.11")!;
+    expect(s.id).toBe("S4.11:a1");
+    expect(s.href).toBe("/app/profile#test-plans");
+    expect(s.factRefs).toEqual([{ table: "requirements", id: "q-ielts", status: "verified" }]);
+    expect(ids(input("preparing", [plan("not_taken")]))).toContain("S4.11");
+    expect(ids(input("preparing", [plan("booked")]))).not.toContain("S4.11");
+    expect(ids({ ...input("preparing"), testScores: [{ id: "t", exam: "ielts_academic", examVersion: null, total: 7, takenOn: null }] })).not.toContain("S4.11");
+  });
+
+  it("ranks S4.11 as start soon from 30 days before the deadline", () => {
+    const rank = (dueAt: string) => computeJourney(input("preparing", [], dueAt)).steps.find((x) => x.catalogueId === "S4.11")!.rank;
+    expect(rank("2026-12-12T23:59:00Z")).toBe("long_lead"); // 40 days ahead: inside 30 + 14
+    expect(rank("2027-03-01T23:59:00Z")).toBe("stage");
+  });
+});
+
+describe("after accepting an offer (J5.1)", () => {
+  const accepted = (over: Partial<import("../src").ApplicationSnapshot> = {}) =>
+    base({
+      profile: readyProfile,
+      applications: [application("a1", programs.exampleton!, { status: "decided", decision: "admitted", offerAcceptedAt: "2026-10-20T00:00:00Z", ...over })],
+    });
+
+  it("asks for the admission document, then the visa once it has arrived", () => {
+    expect(ids(accepted())).toContain("S6.08");
+    expect(ids(accepted())).not.toContain("S7.01");
+    const received = accepted({ admissionDocumentAt: "2026-10-25T00:00:00Z" });
+    expect(ids(received)).not.toContain("S6.08");
+    expect(ids(received)).toContain("S7.01");
+  });
+
+  it("asks to meet noted conditions until they're marked met, without a parent title", () => {
+    const s = evaluateCatalogue(accepted({ conditions: { metAt: null } })).open.find((x) => x.catalogueId === "S6.05")!;
+    expect(s.href).toBe("/app/offers#after-accept");
+    expect(s.parentTitle).toBeUndefined();
+    expect(ids(accepted({ conditions: { metAt: "2026-10-28T00:00:00Z" } }))).not.toContain("S6.05");
+    expect(ids(accepted())).not.toContain("S6.05");
+  });
+
+  it("asks for the deposit when one is due, until it's paid", () => {
+    expect(ids(accepted())).not.toContain("S6.06");
+    expect(ids(accepted({ hasDepositDeadline: true }))).toContain("S6.06");
+    const due = evaluateCatalogue(accepted({ depositDueAt: "2026-11-10T00:00:00Z" })).open.find((x) => x.catalogueId === "S6.06")!;
+    expect(due.dueAt).toBe("2026-11-10T00:00:00Z");
+    expect(due.parentTitle).toBe("Paying the deposit");
+    expect(ids(accepted({ hasDepositDeadline: true, depositPaidAt: "2026-10-30T00:00:00Z" }))).not.toContain("S6.06");
+  });
+});
+
+describe("declining other offers (J5.2)", () => {
+  const offers = (declinedAt: string | null = null) =>
+    base({
+      profile: readyProfile,
+      applications: [
+        application("going", programs.exampleton!, { status: "decided", decision: "admitted", offerAcceptedAt: "2026-10-20T00:00:00Z" }),
+        application("other", programs.tum!, { status: "decided", decision: "admitted", declinedAt }),
+        application("wait", programs.state!, { status: "decided", decision: "waitlisted" }),
+      ],
+    });
+
+  it("asks to let each other university know once an offer is accepted", () => {
+    const steps = evaluateCatalogue(offers()).open.filter((s) => s.catalogueId === "S6.07");
+    expect(steps.map((s) => s.id).sort()).toEqual(["S6.07:other", "S6.07:wait"]);
+    expect(steps[0]!.href).toBe("/app/offers#others");
+    expect(steps.find((s) => s.id === "S6.07:other")!.reason).toContain("Declining M.Sc. Informatik");
+  });
+
+  it("completes the step when declined, and a declined offer no longer counts", () => {
+    const r = evaluateCatalogue(offers("2026-10-25T00:00:00Z"));
+    expect(r.completed).toContain("S6.07:other");
+    expect(r.open.map((s) => s.id)).toContain("S6.07:wait");
+    expect(r.open.some((s) => s.application?.id === "other" && s.catalogueId !== "S6.07")).toBe(false);
+  });
+
+  it("asks nothing before an offer is accepted", () => {
+    const input = offers();
+    const before = { ...input, applications: input.applications.map((a) => ({ ...a, offerAcceptedAt: null })) };
+    expect(ids(before)).not.toContain("S6.07");
+  });
+});
+
+describe("document readiness and supervisor contacts (J5.3)", () => {
+  const prep = (over: Partial<JourneyInput> = {}, level: "master" | "doctorate" = "master") =>
+    base({
+      profile: { ...readyProfile, intakeYear: 2027 },
+      applications: [application("a1", { ...programs.tum!, level }, { status: "preparing", cycle: { id: "c", label: "2027-winter", startsOn: "2027-10-01" } })],
+      ...over,
+    });
+  const passport = (expiresOn: string | null) => ({ readiness: [{ kind: "passport" as const, ready: true, expiresOn }] });
+
+  it("asks for the passport until it's valid 18 months past the course start", () => {
+    expect(ids(prep())).toContain("S4.13");
+    expect(evaluateCatalogue(prep()).open.find((s) => s.catalogueId === "S4.13")!.href).toBe("/app/profile#readiness");
+    expect(ids(prep(passport("2028-12-01")))).toContain("S4.13");
+    expect(ids(prep(passport("2029-04-01")))).not.toContain("S4.13");
+  });
+
+  it("asks a doctorate applicant to contact a supervisor until one is logged for that application", () => {
+    const doctorate = prep({ profile: { ...readyProfile, targetLevels: ["doctorate"], researchInterests: "x" } }, "doctorate");
+    const s = evaluateCatalogue(doctorate).open.find((x) => x.catalogueId === "S4.09")!;
+    expect(s.href).toBe("/app/tracker/a1#supervisors");
+    expect(ids({ ...doctorate, supervisorContacts: [{ applicationId: "a1", reply: "none" }] })).not.toContain("S4.09");
+    expect(ids(prep())).not.toContain("S4.09");
+  });
+});
+
+describe("no offers yet, and the next intake (J5.4)", () => {
+  it("sends a student rejected everywhere to the next-intake page", () => {
+    const s = evaluateCatalogue(STAGE_FIXTURES["edge-rejected-everywhere"]!.input).open.find((x) => x.catalogueId === "S5.06")!;
+    expect(s.href).toBe("/app/next-intake");
+  });
+
+  it("stops counting earlier rejections once the student plans the next intake", () => {
+    const rolled = STAGE_FIXTURES["edge-rolled-over-after-rejections"]!.input;
+    expect(buildCtx(rolled).stage).toBe(3);
+    expect(ids(rolled)).not.toContain("S5.06");
+    // A rejection after the rollover still counts.
+    const later = { ...rolled, applications: [...rolled.applications, application("a3", programs.state!, { status: "decided", decision: "rejected", createdAt: "2026-11-01T00:00:00Z" })] };
+    expect(buildCtx(later).stage).toBe(5);
+  });
+});
+
+describe("housing, health insurance and registration (J5.5)", () => {
+  const rule = (kind: string, status: "verified" | "unverified" = "verified", leadDays: number | null = null): CountryRuleRow => ({
+    id: `r-${kind}`, destination: "DE", kind, title: kind, link: null, status, appliesTo: [], leadDays,
+  });
+  const going = (rules: CountryRuleRow[], housingFacts = 0) =>
+    base({
+      profile: readyProfile,
+      countryRules: rules,
+      applications: [
+        application("a1", programs.tum!, {
+          status: "decided", decision: "admitted", offerAcceptedAt: "2026-10-01T00:00:00Z", admissionDocumentAt: "2026-10-05T00:00:00Z",
+          cycle: { id: "c", label: "2027-summer", startsOn: "2027-04-01" }, housingFacts,
+        }),
+      ],
+    });
+
+  it("asks for insurance and registration from verified rules, dated by a verified lead time", () => {
+    const open = evaluateCatalogue(going([rule("health_insurance", "verified", 60), rule("residence_registration")])).open;
+    const ins = open.find((s) => s.catalogueId === "S7.04")!;
+    expect(ins.reason).toBe("Germany asks students to have health insurance.");
+    expect(ins.dueAt).toBe("2027-01-31");
+    expect(ins.factRefs).toEqual([{ table: "country_rules", id: "r-health_insurance", status: "verified" }]);
+    expect(open.find((s) => s.catalogueId === "S7.08")!.dueAt).toBeNull();
+  });
+
+  it("never acts on an unverified rule or lead time", () => {
+    expect(ids(going([rule("health_insurance", "unverified", 60)]))).not.toContain("S7.04");
+  });
+
+  it("asks for housing when the university publishes housing facts or a housing rule exists, done with the housing task", () => {
+    expect(ids(going([]))).not.toContain("S7.03");
+    expect(ids(going([], 2))).toContain("S7.03");
+    expect(ids(going([rule("housing")]))).toContain("S7.03");
+    const done = { ...going([], 2), departureTasks: [{ applicationId: "a1", taskKey: "accommodation" }] };
+    expect(evaluateCatalogue(done).completed).toContain("S7.03:a1");
+  });
+});
+
+
+describe("interviews, expected decisions and missing documents (J5.6)", () => {
+  const sent = (extra: Record<string, unknown>) =>
+    base({ today: "2027-02-15", profile: readyProfile, applications: [application("a1", programs.tum!, { status: "submitted", ...extra })] });
+
+  it("asks for the missing document until the note is sorted", () => {
+    const step = evaluateCatalogue(sent({ missingNotes: 1 })).open.find((s) => s.catalogueId === "S5.02")!;
+    expect(step.href).toBe("/app/tracker/a1#portal");
+    expect(ids(sent({ missingNotes: 0 }))).not.toContain("S5.02");
+  });
+
+  it("asks to prepare for an interview until its date passes, and never dates the step from it", () => {
+    const step = evaluateCatalogue(sent({ interviews: ["2027-02-20T09:00:00Z"] })).open.find((s) => s.catalogueId === "S5.03")!;
+    expect(step.href).toBe("/app/tracker/a1#interviews");
+    expect(step.dueAt).toBeNull();
+    expect(ids(sent({ interviews: ["2027-02-15T09:00:00Z"] }))).toContain("S5.03");
+    expect(ids(sent({ interviews: ["2027-02-10T09:00:00Z"] }))).not.toContain("S5.03");
+    expect(ids(sent({ interviews: ["2027-02-20T09:00:00Z"], decision: "admitted", status: "decided" }))).not.toContain("S5.03");
+  });
+
+  it("asks to record the decision once the student's expected date has passed", () => {
+    expect(ids(sent({ expectedDecisionOn: "2027-02-20" }))).not.toContain("S5.04");
+    expect(ids(sent({ expectedDecisionOn: "2027-02-15" }))).not.toContain("S5.04");
+    const step = evaluateCatalogue(sent({ expectedDecisionOn: "2027-02-14" })).open.find((s) => s.catalogueId === "S5.04")!;
+    expect(step.href).toBe("/app/tracker/a1#decision");
+    expect(step.dueAt).toBeNull();
+  });
+});
+
+describe("choosing the intake (J5.7)", () => {
+  const shortlisted = (extra: Record<string, unknown>) =>
+    base({ profile: readyProfile, applications: [application("a1", programs.tum!, { status: "shortlisted", ...extra })] });
+
+  it("asks when a shortlisted course has more than one intake open, until one is chosen", () => {
+    expect(ids(shortlisted({ openCycles: 1 }))).not.toContain("S3.04");
+    const step = evaluateCatalogue(shortlisted({ openCycles: 2 })).open.find((s) => s.catalogueId === "S3.04")!;
+    expect(step.href).toBe("/app/shortlist");
+    expect(step.title).toMatch(/^Confirm the intake for /);
+    expect(evaluateCatalogue(shortlisted({ openCycles: 2, intakeChosen: true })).completed).toContain("S3.04:a1");
+  });
+
+  it("never asks about a course already being prepared", () => {
+    expect(ids(shortlisted({ openCycles: 3, status: "preparing" }))).not.toContain("S3.04");
   });
 });

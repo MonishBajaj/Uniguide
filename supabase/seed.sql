@@ -3,7 +3,8 @@
 -- Password for the ingest worker role (hosted: set a strong one, see docs/SETUP.md).
 alter role ingest_worker with login password 'ingest_worker_local';
 
--- Confirmed users: an admin reviewer, a student, a Germany verifier, a consultancy counselor and the student's parent.
+-- Confirmed users: an admin reviewer, a student, a Germany verifier, a consultancy counselor, the student's parent
+-- and a second student who is applying.
 -- Password for all: password123
 insert into auth.users (
   instance_id, id, aud, role, email, encrypted_password, email_confirmed_at,
@@ -29,6 +30,11 @@ insert into auth.users (
   ('00000000-0000-0000-0000-000000000000', '00000000-0000-4000-a000-000000000005', 'authenticated', 'authenticated',
    'parent@uniguide.local', extensions.crypt('password123', extensions.gen_salt('bf')), now(),
    '{"provider":"email","providers":["email"]}', '{"birth_month":"1975-04","residence_country":"IN"}', now(), now(),
+   '', '', '', ''),
+  -- A second student with a full profile, for journey stage 4 tests (e2e resetApplicant() adds a preparing application).
+  ('00000000-0000-0000-0000-000000000000', '00000000-0000-4000-a000-000000000006', 'authenticated', 'authenticated',
+   'applicant@uniguide.local', extensions.crypt('password123', extensions.gen_salt('bf')), now(),
+   '{"provider":"email","providers":["email"]}', '{"birth_month":"1999-02","residence_country":"IN"}', now(), now(),
    '', '', '', '');
 
 insert into auth.identities (id, user_id, provider_id, identity_data, provider, last_sign_in_at, created_at, updated_at)
@@ -61,3 +67,12 @@ on conflict (id) do nothing;
 insert into public.journey_config (cron_token_hash)
 values (encode(extensions.digest('local-journey-token', 'sha256'), 'hex'))
 on conflict (id) do nothing;
+
+-- Journey M2: the seed student (the demo "User") has answered the entry question, so /app shows the home
+-- rather than onboarding. It stays in stage 1, as the journey cron e2e check expects.
+update public.profiles set entry_path = 'exploring' where user_id = '00000000-0000-4000-a000-000000000002';
+update public.profiles set
+  display_name = 'Priya', home_qualification = 'bachelor_4yr', grade_value = 8.4, grade_scale = 'gpa_10',
+  budget_amount = 60000, budget_currency = 'USD', target_levels = '{master}', target_countries = '{GB,DE}',
+  target_fields = '{06}', intake_year = 2027, entry_path = 'applying'
+where user_id = '00000000-0000-4000-a000-000000000006';

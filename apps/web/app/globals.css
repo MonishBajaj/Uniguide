@@ -144,3 +144,10 @@ html[data-lite="on"] *, html[data-lite="on"] *::before, html[data-lite="on"] *::
 }
 html[data-motion="reduce"] .reveal, html[data-lite="on"] .reveal { opacity: 1; transform: none; }
 html[data-motion="reduce"] [data-word], html[data-lite="on"] [data-word] { opacity: 1 !important; }
+
+/* Journey M2: room under the page for the phone bottom bar, so nothing hides behind it. */
+@media (max-width: 767px) {
+  body:has([data-bottom-bar]) {
+    padding-bottom: calc(4.5rem + env(safe-area-inset-bottom));
+  }
+}

@@ -1,0 +1,2312 @@
+{
+  "stage-1-new-account": {
+    "stage": 1,
+    "stageProgress": {
+      "done": 0,
+      "total": 5,
+      "label": "0 of 5 profile details added"
+    },
+    "steps": [
+      {
+        "id": "S1.01",
+        "catalogueId": "S1.01",
+        "stage": 1,
+        "title": "Tell us what and where you want to study",
+        "reason": "Your level, subjects and countries decide which courses we look at. One short form covers them.",
+        "copy": {
+          "key": "S1.01",
+          "params": {}
+        },
+        "href": "/app/onboarding?screen=3",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [],
+        "parentTitle": "Choosing what and where to study",
+        "rank": "stage"
+      },
+      {
+        "id": "S1.02",
+        "catalogueId": "S1.02",
+        "stage": 1,
+        "title": "Set your budget",
+        "reason": "A budget with its currency lets us compare each course's costs with what you can spend.",
+        "copy": {
+          "key": "S1.02",
+          "params": {}
+        },
+        "href": "/app/profile#budget",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [],
+        "parentTitle": "Setting a budget",
+        "rank": "stage"
+      },
+      {
+        "id": "S1.03",
+        "catalogueId": "S1.03",
+        "stage": 1,
+        "title": "Choose your intake",
+        "reason": "The year you want to start decides which application rounds are still open.",
+        "copy": {
+          "key": "S1.03",
+          "params": {}
+        },
+        "href": "/app/profile#intake",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [],
+        "parentTitle": "Choosing when to start",
+        "rank": "stage"
+      },
+      {
+        "id": "S1.04",
+        "catalogueId": "S1.04",
+        "stage": 1,
+        "title": "Add your grades",
+        "reason": "Your grade and its scale let us check courses' published entry requirements.",
+        "copy": {
+          "key": "S1.04",
+          "params": {}
+        },
+        "href": "/app/profile#qualification",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [],
+        "rank": "stage"
+      }
+    ],
+    "completed": [],
+    "marked": [],
+    "hidden": [],
+    "urgentCount": 0,
+    "urgentLabel": null,
+    "stalled": false,
+    "arrived": false,
+    "engineVersion": "journey-0.5.0"
+  },
+  "stage-2-exploring": {
+    "stage": 2,
+    "stageProgress": {
+      "done": 0,
+      "total": 1,
+      "label": "No courses shortlisted yet"
+    },
+    "steps": [
+      {
+        "id": "S2.01",
+        "catalogueId": "S2.01",
+        "stage": 2,
+        "title": "Look through your matches",
+        "reason": "Shortlist the courses you'd like to look at more closely.",
+        "copy": {
+          "key": "S2.01",
+          "params": {}
+        },
+        "href": "/app/match",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [],
+        "parentTitle": "Looking through course matches",
+        "rank": "stage"
+      },
+      {
+        "id": "S2.03",
+        "catalogueId": "S2.03",
+        "stage": 2,
+        "title": "Compare your countries",
+        "reason": "See costs, visas and work rights for United Kingdom, Germany and United States side by side.",
+        "copy": {
+          "key": "S2.03",
+          "params": {
+            "countries": "United Kingdom, Germany and United States"
+          }
+        },
+        "href": "/compare/countries?c=GB&c=DE&c=US",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": true,
+        "factRefs": [],
+        "parentTitle": "Comparing countries",
+        "rank": "stage"
+      },
+      {
+        "id": "S2.04",
+        "catalogueId": "S2.04",
+        "stage": 2,
+        "title": "Check which English tests your matches accept",
+        "reason": "Each university lists the English tests it accepts and the score it asks for.",
+        "copy": {
+          "key": "S2.04",
+          "params": {}
+        },
+        "href": "/english-tests",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": true,
+        "factRefs": [],
+        "rank": "stage"
+      },
+      {
+        "id": "S1.07",
+        "catalogueId": "S1.07",
+        "stage": 1,
+        "title": "Invite a parent to follow along",
+        "reason": "A parent can see your plans and costs, but never your writing or scores.",
+        "copy": {
+          "key": "S1.07",
+          "params": {}
+        },
+        "href": "/app/sharing#family",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [],
+        "rank": "carry_over"
+      }
+    ],
+    "completed": [
+      "S1.01",
+      "S1.02",
+      "S1.03",
+      "S1.04",
+      "S1.08"
+    ],
+    "marked": [],
+    "hidden": [],
+    "urgentCount": 0,
+    "urgentLabel": null,
+    "stalled": false,
+    "arrived": false,
+    "engineVersion": "journey-0.5.0"
+  },
+  "stage-3-shortlisted": {
+    "stage": 3,
+    "stageProgress": {
+      "done": 0,
+      "total": 1,
+      "label": "0 of 1 shortlisted course chosen to apply to"
+    },
+    "steps": [
+      {
+        "id": "S3.01",
+        "catalogueId": "S3.01",
+        "stage": 3,
+        "title": "Build a balanced shortlist",
+        "reason": "Most students apply to 6 to 10 courses with different entry requirements.",
+        "copy": {
+          "key": "S3.01",
+          "params": {}
+        },
+        "href": "/app/shortlist#advice",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": true,
+        "factRefs": [],
+        "rank": "stage"
+      },
+      {
+        "id": "S1.07",
+        "catalogueId": "S1.07",
+        "stage": 1,
+        "title": "Invite a parent to follow along",
+        "reason": "A parent can see your plans and costs, but never your writing or scores.",
+        "copy": {
+          "key": "S1.07",
+          "params": {}
+        },
+        "href": "/app/sharing#family",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [],
+        "rank": "carry_over"
+      },
+      {
+        "id": "S2.03",
+        "catalogueId": "S2.03",
+        "stage": 2,
+        "title": "Compare your countries",
+        "reason": "See costs, visas and work rights for United Kingdom, Germany and United States side by side.",
+        "copy": {
+          "key": "S2.03",
+          "params": {
+            "countries": "United Kingdom, Germany and United States"
+          }
+        },
+        "href": "/compare/countries?c=GB&c=DE&c=US",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": true,
+        "factRefs": [],
+        "parentTitle": "Comparing countries",
+        "rank": "carry_over"
+      },
+      {
+        "id": "S2.04",
+        "catalogueId": "S2.04",
+        "stage": 2,
+        "title": "Check which English tests your matches accept",
+        "reason": "Each university lists the English tests it accepts and the score it asks for.",
+        "copy": {
+          "key": "S2.04",
+          "params": {}
+        },
+        "href": "/english-tests",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": true,
+        "factRefs": [],
+        "rank": "carry_over"
+      }
+    ],
+    "completed": [
+      "S1.01",
+      "S1.02",
+      "S1.03",
+      "S1.04",
+      "S2.01"
+    ],
+    "marked": [],
+    "hidden": [],
+    "urgentCount": 0,
+    "urgentLabel": null,
+    "stalled": false,
+    "arrived": false,
+    "engineVersion": "journey-0.5.0"
+  },
+  "edge-score-below-minimum": {
+    "stage": 3,
+    "stageProgress": {
+      "done": 0,
+      "total": 1,
+      "label": "0 of 1 shortlisted course chosen to apply to"
+    },
+    "steps": [
+      {
+        "id": "S3.01",
+        "catalogueId": "S3.01",
+        "stage": 3,
+        "title": "Build a balanced shortlist",
+        "reason": "Most students apply to 6 to 10 courses with different entry requirements.",
+        "copy": {
+          "key": "S3.01",
+          "params": {}
+        },
+        "href": "/app/shortlist#advice",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": true,
+        "factRefs": [],
+        "rank": "stage"
+      },
+      {
+        "id": "S3.02",
+        "catalogueId": "S3.02",
+        "stage": 3,
+        "title": "See how your profile compares",
+        "reason": "MSc Data Science, University of Exampleton publishes entry minimums you can compare with your profile.",
+        "copy": {
+          "key": "S3.02",
+          "params": {
+            "course": "MSc Data Science, University of Exampleton"
+          }
+        },
+        "href": "/app/shortlist#comparison",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": true,
+        "factRefs": [],
+        "rank": "stage"
+      },
+      {
+        "id": "S3.03",
+        "catalogueId": "S3.03",
+        "stage": 3,
+        "title": "Check the cost of each course",
+        "reason": "Compare each course's costs with your budget before you apply.",
+        "copy": {
+          "key": "S3.03",
+          "params": {}
+        },
+        "href": "/app/shortlist#costs",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": true,
+        "factRefs": [],
+        "rank": "stage"
+      },
+      {
+        "id": "S1.07",
+        "catalogueId": "S1.07",
+        "stage": 1,
+        "title": "Invite a parent to follow along",
+        "reason": "A parent can see your plans and costs, but never your writing or scores.",
+        "copy": {
+          "key": "S1.07",
+          "params": {}
+        },
+        "href": "/app/sharing#family",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [],
+        "rank": "carry_over"
+      },
+      {
+        "id": "S2.03",
+        "catalogueId": "S2.03",
+        "stage": 2,
+        "title": "Compare your countries",
+        "reason": "See costs, visas and work rights for United Kingdom, Germany and United States side by side.",
+        "copy": {
+          "key": "S2.03",
+          "params": {
+            "countries": "United Kingdom, Germany and United States"
+          }
+        },
+        "href": "/compare/countries?c=GB&c=DE&c=US",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": true,
+        "factRefs": [],
+        "parentTitle": "Comparing countries",
+        "rank": "carry_over"
+      },
+      {
+        "id": "S2.05:a1-q-toefl",
+        "catalogueId": "S2.05",
+        "stage": 2,
+        "title": "Close the gap to a course's minimum score",
+        "reason": "MSc Data Science, University of Exampleton asks for 100 in TOEFL iBT. Your best so far is 92.",
+        "copy": {
+          "key": "S2.05",
+          "params": {
+            "course": "MSc Data Science, University of Exampleton",
+            "exam": "TOEFL iBT",
+            "minimum": "100",
+            "score": "92"
+          }
+        },
+        "href": "/app/match#score-goals",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [
+          {
+            "table": "requirements",
+            "id": "q-toefl",
+            "status": "verified"
+          }
+        ],
+        "source": {
+          "href": "https://exampleton.ac.uk/entry"
+        },
+        "application": {
+          "id": "a1",
+          "label": "MSc Data Science, University of Exampleton"
+        },
+        "rank": "carry_over"
+      }
+    ],
+    "completed": [
+      "S1.01",
+      "S1.02",
+      "S1.03",
+      "S1.04",
+      "S1.05",
+      "S2.01",
+      "S2.04"
+    ],
+    "marked": [],
+    "hidden": [],
+    "urgentCount": 0,
+    "urgentLabel": null,
+    "stalled": false,
+    "arrived": false,
+    "engineVersion": "journey-0.5.0"
+  },
+  "edge-own-application-preparing": {
+    "stage": 4,
+    "stageProgress": {
+      "done": 0,
+      "total": 1,
+      "label": "0 of 1 application ready"
+    },
+    "steps": [
+      {
+        "id": "S4.01:own1",
+        "catalogueId": "S4.01",
+        "stage": 4,
+        "title": "Work through the checklist for MSc Urban Planning, Universi…",
+        "reason": "MSc Urban Planning, Universiteit Voorbeeld has 1 checklist item still open.",
+        "copy": {
+          "key": "S4.01",
+          "params": {
+            "course": "MSc Urban Planning, Universiteit Voorbeeld",
+            "count": "1",
+            "items": "item"
+          }
+        },
+        "href": "/app/tracker/own1#checklist",
+        "dueAt": "2026-11-20T23:59:00Z",
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [],
+        "application": {
+          "id": "own1",
+          "label": "MSc Urban Planning, Universiteit Voorbeeld"
+        },
+        "parentTitle": "Working through the MSc Urban Planning, Universit… checklist",
+        "rank": "stage"
+      },
+      {
+        "id": "S4.14:own1",
+        "catalogueId": "S4.14",
+        "stage": 4,
+        "title": "Record the application fee",
+        "reason": "Recording each fee keeps the total cost of applying in one place.",
+        "copy": {
+          "key": "S4.14",
+          "params": {
+            "course": "MSc Urban Planning, Universiteit Voorbeeld"
+          }
+        },
+        "href": "/app/tracker/own1#costs",
+        "dueAt": "2026-11-20T23:59:00Z",
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [],
+        "application": {
+          "id": "own1",
+          "label": "MSc Urban Planning, Universiteit Voorbeeld"
+        },
+        "parentTitle": "Recording the MSc Urban Planning, Universit… application fee",
+        "rank": "stage"
+      },
+      {
+        "id": "S4.10",
+        "catalogueId": "S4.10",
+        "stage": 4,
+        "title": "Build your CV",
+        "reason": "Many master's and research applications ask for a CV.",
+        "copy": {
+          "key": "S4.10",
+          "params": {}
+        },
+        "href": "/app/cv",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [],
+        "rank": "stage"
+      },
+      {
+        "id": "S4.13",
+        "catalogueId": "S4.13",
+        "stage": 4,
+        "title": "Check your passport is valid",
+        "reason": "Your passport usually needs to be valid for your whole stay.",
+        "copy": {
+          "key": "S4.13",
+          "params": {}
+        },
+        "href": "/app/profile#readiness",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [],
+        "parentTitle": "Checking the passport is valid",
+        "rank": "stage"
+      },
+      {
+        "id": "S1.07",
+        "catalogueId": "S1.07",
+        "stage": 1,
+        "title": "Invite a parent to follow along",
+        "reason": "A parent can see your plans and costs, but never your writing or scores.",
+        "copy": {
+          "key": "S1.07",
+          "params": {}
+        },
+        "href": "/app/sharing#family",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [],
+        "rank": "carry_over"
+      },
+      {
+        "id": "S2.04",
+        "catalogueId": "S2.04",
+        "stage": 2,
+        "title": "Check which English tests your matches accept",
+        "reason": "Each university lists the English tests it accepts and the score it asks for.",
+        "copy": {
+          "key": "S2.04",
+          "params": {}
+        },
+        "href": "/english-tests",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": true,
+        "factRefs": [],
+        "rank": "carry_over"
+      }
+    ],
+    "completed": [
+      "S1.01",
+      "S1.02",
+      "S1.03",
+      "S1.04"
+    ],
+    "marked": [],
+    "hidden": [],
+    "urgentCount": 0,
+    "urgentLabel": null,
+    "stalled": false,
+    "arrived": false,
+    "engineVersion": "journey-0.5.0"
+  },
+  "edge-own-deadline-passed": {
+    "stage": 5,
+    "stageProgress": {
+      "done": 0,
+      "total": 1,
+      "label": "0 of 1 decision received"
+    },
+    "steps": [
+      {
+        "id": "S5.01:sent",
+        "catalogueId": "S5.01",
+        "stage": 5,
+        "title": "Check the MSc Data Science, University of Exampleton portal",
+        "reason": "Universities post missing-document requests and decisions on their portals.",
+        "copy": {
+          "key": "S5.01",
+          "params": {
+            "course": "MSc Data Science, University of Exampleton"
+          }
+        },
+        "href": "/app/tracker/sent#portal",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [],
+        "application": {
+          "id": "sent",
+          "label": "MSc Data Science, University of Exampleton"
+        },
+        "parentTitle": "Checking the MSc Data Science, University of Example… portal",
+        "rank": "stage"
+      },
+      {
+        "id": "S1.07",
+        "catalogueId": "S1.07",
+        "stage": 1,
+        "title": "Invite a parent to follow along",
+        "reason": "A parent can see your plans and costs, but never your writing or scores.",
+        "copy": {
+          "key": "S1.07",
+          "params": {}
+        },
+        "href": "/app/sharing#family",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [],
+        "rank": "carry_over"
+      },
+      {
+        "id": "S4.13",
+        "catalogueId": "S4.13",
+        "stage": 4,
+        "title": "Check your passport is valid",
+        "reason": "Your passport usually needs to be valid for your whole stay.",
+        "copy": {
+          "key": "S4.13",
+          "params": {}
+        },
+        "href": "/app/profile#readiness",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [],
+        "parentTitle": "Checking the passport is valid",
+        "rank": "carry_over"
+      },
+      {
+        "id": "S4.14:own1",
+        "catalogueId": "S4.14",
+        "stage": 4,
+        "title": "Record the application fee",
+        "reason": "Recording each fee keeps the total cost of applying in one place.",
+        "copy": {
+          "key": "S4.14",
+          "params": {
+            "course": "MSc Urban Planning, Universiteit Voorbeeld"
+          }
+        },
+        "href": "/app/tracker/own1#costs",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [],
+        "application": {
+          "id": "own1",
+          "label": "MSc Urban Planning, Universiteit Voorbeeld"
+        },
+        "parentTitle": "Recording the MSc Urban Planning, Universit… application fee",
+        "rank": "carry_over"
+      }
+    ],
+    "completed": [
+      "S1.01",
+      "S1.02",
+      "S1.03",
+      "S1.04",
+      "S4.16:sent"
+    ],
+    "marked": [],
+    "hidden": [],
+    "urgentCount": 0,
+    "urgentLabel": null,
+    "stalled": false,
+    "arrived": false,
+    "engineVersion": "journey-0.5.0"
+  },
+  "stage-4-preparing": {
+    "stage": 4,
+    "stageProgress": {
+      "done": 0,
+      "total": 1,
+      "label": "0 of 1 application ready"
+    },
+    "steps": [
+      {
+        "id": "S4.14:a1",
+        "catalogueId": "S4.14",
+        "stage": 4,
+        "title": "Record the application fee",
+        "reason": "Recording each fee keeps the total cost of applying in one place.",
+        "copy": {
+          "key": "S4.14",
+          "params": {
+            "course": "MSc Data Science, University of Exampleton"
+          }
+        },
+        "href": "/app/tracker/a1#costs",
+        "dueAt": "2027-01-15T23:59:00Z",
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [
+          {
+            "table": "deadlines",
+            "id": "d-a1",
+            "status": "verified"
+          }
+        ],
+        "source": {
+          "href": "/courses/exampleton-msc-data-science"
+        },
+        "application": {
+          "id": "a1",
+          "label": "MSc Data Science, University of Exampleton"
+        },
+        "parentTitle": "Recording the MSc Data Science, University… application fee",
+        "rank": "stage"
+      },
+      {
+        "id": "S4.10",
+        "catalogueId": "S4.10",
+        "stage": 4,
+        "title": "Build your CV",
+        "reason": "Many master's and research applications ask for a CV.",
+        "copy": {
+          "key": "S4.10",
+          "params": {}
+        },
+        "href": "/app/cv",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [],
+        "rank": "stage"
+      },
+      {
+        "id": "S4.13",
+        "catalogueId": "S4.13",
+        "stage": 4,
+        "title": "Check your passport is valid",
+        "reason": "Your passport usually needs to be valid for your whole stay.",
+        "copy": {
+          "key": "S4.13",
+          "params": {}
+        },
+        "href": "/app/profile#readiness",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [],
+        "parentTitle": "Checking the passport is valid",
+        "rank": "stage"
+      },
+      {
+        "id": "S1.07",
+        "catalogueId": "S1.07",
+        "stage": 1,
+        "title": "Invite a parent to follow along",
+        "reason": "A parent can see your plans and costs, but never your writing or scores.",
+        "copy": {
+          "key": "S1.07",
+          "params": {}
+        },
+        "href": "/app/sharing#family",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [],
+        "rank": "carry_over"
+      },
+      {
+        "id": "S2.04",
+        "catalogueId": "S2.04",
+        "stage": 2,
+        "title": "Check which English tests your matches accept",
+        "reason": "Each university lists the English tests it accepts and the score it asks for.",
+        "copy": {
+          "key": "S2.04",
+          "params": {}
+        },
+        "href": "/english-tests",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": true,
+        "factRefs": [],
+        "rank": "carry_over"
+      }
+    ],
+    "completed": [
+      "S1.01",
+      "S1.02",
+      "S1.03",
+      "S1.04"
+    ],
+    "marked": [],
+    "hidden": [],
+    "urgentCount": 0,
+    "urgentLabel": null,
+    "stalled": false,
+    "arrived": false,
+    "engineVersion": "journey-0.5.0"
+  },
+  "stage-5-submitted": {
+    "stage": 5,
+    "stageProgress": {
+      "done": 0,
+      "total": 1,
+      "label": "0 of 1 decision received"
+    },
+    "steps": [
+      {
+        "id": "S5.01:a1",
+        "catalogueId": "S5.01",
+        "stage": 5,
+        "title": "Check the MSc Data Science, University of Exampleton portal",
+        "reason": "Universities post missing-document requests and decisions on their portals.",
+        "copy": {
+          "key": "S5.01",
+          "params": {
+            "course": "MSc Data Science, University of Exampleton"
+          }
+        },
+        "href": "/app/tracker/a1#portal",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [],
+        "application": {
+          "id": "a1",
+          "label": "MSc Data Science, University of Exampleton"
+        },
+        "parentTitle": "Checking the MSc Data Science, University of Example… portal",
+        "rank": "stage"
+      },
+      {
+        "id": "S1.07",
+        "catalogueId": "S1.07",
+        "stage": 1,
+        "title": "Invite a parent to follow along",
+        "reason": "A parent can see your plans and costs, but never your writing or scores.",
+        "copy": {
+          "key": "S1.07",
+          "params": {}
+        },
+        "href": "/app/sharing#family",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [],
+        "rank": "carry_over"
+      },
+      {
+        "id": "S4.13",
+        "catalogueId": "S4.13",
+        "stage": 4,
+        "title": "Check your passport is valid",
+        "reason": "Your passport usually needs to be valid for your whole stay.",
+        "copy": {
+          "key": "S4.13",
+          "params": {}
+        },
+        "href": "/app/profile#readiness",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [],
+        "parentTitle": "Checking the passport is valid",
+        "rank": "carry_over"
+      }
+    ],
+    "completed": [
+      "S1.01",
+      "S1.02",
+      "S1.03",
+      "S1.04",
+      "S4.16:a1"
+    ],
+    "marked": [],
+    "hidden": [],
+    "urgentCount": 0,
+    "urgentLabel": null,
+    "stalled": false,
+    "arrived": false,
+    "engineVersion": "journey-0.5.0"
+  },
+  "stage-6-admitted": {
+    "stage": 6,
+    "stageProgress": {
+      "done": 0,
+      "total": 1,
+      "label": "1 offer to decide on"
+    },
+    "steps": [
+      {
+        "id": "S6.04:a1",
+        "catalogueId": "S6.04",
+        "stage": 6,
+        "title": "Reply to MSc Data Science, University o… by 20 November 2026",
+        "reason": "You recorded 20 November 2026 as the reply date for MSc Data Science, University of Exampleton.",
+        "copy": {
+          "key": "S6.04",
+          "params": {
+            "course": "MSc Data Science, University of Exampleton",
+            "date": "20 November 2026"
+          }
+        },
+        "href": "/app/offers#decision-day",
+        "dueAt": "2026-11-20T00:00:00Z",
+        "dismissable": false,
+        "markable": false,
+        "factRefs": [],
+        "application": {
+          "id": "a1",
+          "label": "MSc Data Science, University of Exampleton"
+        },
+        "parentTitle": "Replying to the MSc Data Science,… offer by 20 November 2026",
+        "rank": "stage"
+      },
+      {
+        "id": "S6.09:a1",
+        "catalogueId": "S6.09",
+        "stage": 6,
+        "title": "Share your outcome for research",
+        "reason": "Shared outcomes, kept separate from your account, help future students. It's optional.",
+        "copy": {
+          "key": "S6.09",
+          "params": {
+            "course": "MSc Data Science, University of Exampleton"
+          }
+        },
+        "href": "/app/tracker/a1#decision",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [],
+        "application": {
+          "id": "a1",
+          "label": "MSc Data Science, University of Exampleton"
+        },
+        "rank": "stage"
+      },
+      {
+        "id": "S1.07",
+        "catalogueId": "S1.07",
+        "stage": 1,
+        "title": "Invite a parent to follow along",
+        "reason": "A parent can see your plans and costs, but never your writing or scores.",
+        "copy": {
+          "key": "S1.07",
+          "params": {}
+        },
+        "href": "/app/sharing#family",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [],
+        "rank": "carry_over"
+      },
+      {
+        "id": "S4.13",
+        "catalogueId": "S4.13",
+        "stage": 4,
+        "title": "Check your passport is valid",
+        "reason": "Your passport usually needs to be valid for your whole stay.",
+        "copy": {
+          "key": "S4.13",
+          "params": {}
+        },
+        "href": "/app/profile#readiness",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [],
+        "parentTitle": "Checking the passport is valid",
+        "rank": "carry_over"
+      }
+    ],
+    "completed": [
+      "S1.01",
+      "S1.02",
+      "S1.03",
+      "S1.04",
+      "S4.16:a1",
+      "S6.01:a1"
+    ],
+    "marked": [],
+    "hidden": [],
+    "urgentCount": 0,
+    "urgentLabel": null,
+    "stalled": false,
+    "arrived": false,
+    "engineVersion": "journey-0.5.0"
+  },
+  "stage-7-accepted": {
+    "stage": 7,
+    "stageProgress": {
+      "done": 0,
+      "total": 1,
+      "label": "0 of 1 step done before you go"
+    },
+    "steps": [
+      {
+        "id": "S6.08:a1",
+        "catalogueId": "S6.08",
+        "stage": 6,
+        "title": "Get your admission document for the visa",
+        "reason": "Your visa application needs the admission document from M.Sc. Informatik, Technische Universität Beispielstadt.",
+        "copy": {
+          "key": "S6.08",
+          "params": {
+            "course": "M.Sc. Informatik, Technische Universität Beispielstadt"
+          }
+        },
+        "href": "/app/offers#after-accept",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [],
+        "application": {
+          "id": "a1",
+          "label": "M.Sc. Informatik, Technische Universität Beispielstadt"
+        },
+        "parentTitle": "Getting the admission document for the visa",
+        "rank": "stage"
+      },
+      {
+        "id": "S1.07",
+        "catalogueId": "S1.07",
+        "stage": 1,
+        "title": "Invite a parent to follow along",
+        "reason": "A parent can see your plans and costs, but never your writing or scores.",
+        "copy": {
+          "key": "S1.07",
+          "params": {}
+        },
+        "href": "/app/sharing#family",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [],
+        "rank": "carry_over"
+      },
+      {
+        "id": "S4.13",
+        "catalogueId": "S4.13",
+        "stage": 4,
+        "title": "Check your passport is valid",
+        "reason": "Your passport usually needs to be valid for your whole stay.",
+        "copy": {
+          "key": "S4.13",
+          "params": {}
+        },
+        "href": "/app/profile#readiness",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [],
+        "parentTitle": "Checking the passport is valid",
+        "rank": "carry_over"
+      },
+      {
+        "id": "S6.09:a1",
+        "catalogueId": "S6.09",
+        "stage": 6,
+        "title": "Share your outcome for research",
+        "reason": "Shared outcomes, kept separate from your account, help future students. It's optional.",
+        "copy": {
+          "key": "S6.09",
+          "params": {
+            "course": "M.Sc. Informatik, Technische Universität Beispielstadt"
+          }
+        },
+        "href": "/app/tracker/a1#decision",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [],
+        "application": {
+          "id": "a1",
+          "label": "M.Sc. Informatik, Technische Universität Beispielstadt"
+        },
+        "rank": "carry_over"
+      }
+    ],
+    "completed": [
+      "S1.01",
+      "S1.02",
+      "S1.03",
+      "S1.04",
+      "S4.16:a1"
+    ],
+    "marked": [],
+    "hidden": [],
+    "urgentCount": 0,
+    "urgentLabel": null,
+    "stalled": false,
+    "arrived": false,
+    "engineVersion": "journey-0.5.0"
+  },
+  "entry-exploring": {
+    "stage": 2,
+    "stageProgress": {
+      "done": 0,
+      "total": 1,
+      "label": "No courses shortlisted yet"
+    },
+    "steps": [
+      {
+        "id": "S2.02",
+        "catalogueId": "S2.02",
+        "stage": 2,
+        "title": "Find universities for your subject",
+        "reason": "We can look for more courses that fit your subject and countries.",
+        "copy": {
+          "key": "S2.02",
+          "params": {}
+        },
+        "href": "/app/matching",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [],
+        "parentTitle": "Finding universities for their subject",
+        "rank": "stage"
+      },
+      {
+        "id": "S2.03",
+        "catalogueId": "S2.03",
+        "stage": 2,
+        "title": "Compare your countries",
+        "reason": "See costs, visas and work rights for United Kingdom, Germany and United States side by side.",
+        "copy": {
+          "key": "S2.03",
+          "params": {
+            "countries": "United Kingdom, Germany and United States"
+          }
+        },
+        "href": "/compare/countries?c=GB&c=DE&c=US",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": true,
+        "factRefs": [],
+        "parentTitle": "Comparing countries",
+        "rank": "stage"
+      },
+      {
+        "id": "S2.04",
+        "catalogueId": "S2.04",
+        "stage": 2,
+        "title": "Check which English tests your matches accept",
+        "reason": "Each university lists the English tests it accepts and the score it asks for.",
+        "copy": {
+          "key": "S2.04",
+          "params": {}
+        },
+        "href": "/english-tests",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": true,
+        "factRefs": [],
+        "rank": "stage"
+      },
+      {
+        "id": "S1.07",
+        "catalogueId": "S1.07",
+        "stage": 1,
+        "title": "Invite a parent to follow along",
+        "reason": "A parent can see your plans and costs, but never your writing or scores.",
+        "copy": {
+          "key": "S1.07",
+          "params": {}
+        },
+        "href": "/app/sharing#family",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [],
+        "rank": "carry_over"
+      }
+    ],
+    "completed": [
+      "S1.01",
+      "S1.02",
+      "S1.03",
+      "S1.04",
+      "S1.08"
+    ],
+    "marked": [],
+    "hidden": [],
+    "urgentCount": 0,
+    "urgentLabel": null,
+    "stalled": false,
+    "arrived": false,
+    "engineVersion": "journey-0.5.0"
+  },
+  "entry-knows": {
+    "stage": 2,
+    "stageProgress": {
+      "done": 0,
+      "total": 1,
+      "label": "No courses shortlisted yet"
+    },
+    "steps": [
+      {
+        "id": "S2.01",
+        "catalogueId": "S2.01",
+        "stage": 2,
+        "title": "Look through your matches",
+        "reason": "Shortlist the courses you'd like to look at more closely.",
+        "copy": {
+          "key": "S2.01",
+          "params": {}
+        },
+        "href": "/app/match",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [],
+        "parentTitle": "Looking through course matches",
+        "rank": "stage"
+      },
+      {
+        "id": "S2.03",
+        "catalogueId": "S2.03",
+        "stage": 2,
+        "title": "Compare your countries",
+        "reason": "See costs, visas and work rights for United Kingdom, Germany and United States side by side.",
+        "copy": {
+          "key": "S2.03",
+          "params": {
+            "countries": "United Kingdom, Germany and United States"
+          }
+        },
+        "href": "/compare/countries?c=GB&c=DE&c=US",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": true,
+        "factRefs": [],
+        "parentTitle": "Comparing countries",
+        "rank": "stage"
+      },
+      {
+        "id": "S2.04",
+        "catalogueId": "S2.04",
+        "stage": 2,
+        "title": "Check which English tests your matches accept",
+        "reason": "Each university lists the English tests it accepts and the score it asks for.",
+        "copy": {
+          "key": "S2.04",
+          "params": {}
+        },
+        "href": "/english-tests",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": true,
+        "factRefs": [],
+        "rank": "stage"
+      },
+      {
+        "id": "S1.07",
+        "catalogueId": "S1.07",
+        "stage": 1,
+        "title": "Invite a parent to follow along",
+        "reason": "A parent can see your plans and costs, but never your writing or scores.",
+        "copy": {
+          "key": "S1.07",
+          "params": {}
+        },
+        "href": "/app/sharing#family",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [],
+        "rank": "carry_over"
+      }
+    ],
+    "completed": [
+      "S1.01",
+      "S1.02",
+      "S1.03",
+      "S1.04",
+      "S1.08"
+    ],
+    "marked": [],
+    "hidden": [],
+    "urgentCount": 0,
+    "urgentLabel": null,
+    "stalled": false,
+    "arrived": false,
+    "engineVersion": "journey-0.5.0"
+  },
+  "entry-applying": {
+    "stage": 4,
+    "stageProgress": {
+      "done": 0,
+      "total": 1,
+      "label": "0 of 1 application ready"
+    },
+    "steps": [
+      {
+        "id": "S4.14:a1",
+        "catalogueId": "S4.14",
+        "stage": 4,
+        "title": "Record the application fee",
+        "reason": "Recording each fee keeps the total cost of applying in one place.",
+        "copy": {
+          "key": "S4.14",
+          "params": {
+            "course": "MS in Computer Science, Example State University"
+          }
+        },
+        "href": "/app/tracker/a1#costs",
+        "dueAt": "2027-01-15T23:59:00Z",
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [
+          {
+            "table": "deadlines",
+            "id": "d-a1",
+            "status": "verified"
+          }
+        ],
+        "source": {
+          "href": "/courses/example-state-ms-computer-science"
+        },
+        "application": {
+          "id": "a1",
+          "label": "MS in Computer Science, Example State University"
+        },
+        "parentTitle": "Recording the MS in Computer Science, Examp… application fee",
+        "rank": "stage"
+      },
+      {
+        "id": "S4.10",
+        "catalogueId": "S4.10",
+        "stage": 4,
+        "title": "Build your CV",
+        "reason": "Many master's and research applications ask for a CV.",
+        "copy": {
+          "key": "S4.10",
+          "params": {}
+        },
+        "href": "/app/cv",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [],
+        "rank": "stage"
+      },
+      {
+        "id": "S4.13",
+        "catalogueId": "S4.13",
+        "stage": 4,
+        "title": "Check your passport is valid",
+        "reason": "Your passport usually needs to be valid for your whole stay.",
+        "copy": {
+          "key": "S4.13",
+          "params": {}
+        },
+        "href": "/app/profile#readiness",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [],
+        "parentTitle": "Checking the passport is valid",
+        "rank": "stage"
+      },
+      {
+        "id": "S1.07",
+        "catalogueId": "S1.07",
+        "stage": 1,
+        "title": "Invite a parent to follow along",
+        "reason": "A parent can see your plans and costs, but never your writing or scores.",
+        "copy": {
+          "key": "S1.07",
+          "params": {}
+        },
+        "href": "/app/sharing#family",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [],
+        "rank": "carry_over"
+      },
+      {
+        "id": "S2.04",
+        "catalogueId": "S2.04",
+        "stage": 2,
+        "title": "Check which English tests your matches accept",
+        "reason": "Each university lists the English tests it accepts and the score it asks for.",
+        "copy": {
+          "key": "S2.04",
+          "params": {}
+        },
+        "href": "/english-tests",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": true,
+        "factRefs": [],
+        "rank": "carry_over"
+      }
+    ],
+    "completed": [
+      "S1.01",
+      "S1.02",
+      "S1.03",
+      "S1.04"
+    ],
+    "marked": [],
+    "hidden": [],
+    "urgentCount": 0,
+    "urgentLabel": null,
+    "stalled": false,
+    "arrived": false,
+    "engineVersion": "journey-0.5.0"
+  },
+  "entry-offers": {
+    "stage": 6,
+    "stageProgress": {
+      "done": 0,
+      "total": 1,
+      "label": "1 offer to decide on"
+    },
+    "steps": [
+      {
+        "id": "S6.01:a1",
+        "catalogueId": "S6.01",
+        "stage": 6,
+        "title": "Add the details of your MSc Data Science, University… offer",
+        "reason": "Your offer's aid and reply date let you compare it with others.",
+        "copy": {
+          "key": "S6.01",
+          "params": {
+            "course": "MSc Data Science, University of Exampleton"
+          }
+        },
+        "href": "/app/offers",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [],
+        "application": {
+          "id": "a1",
+          "label": "MSc Data Science, University of Exampleton"
+        },
+        "parentTitle": "Adding the MSc Data Science, University of Ex… offer details",
+        "rank": "stage"
+      },
+      {
+        "id": "S6.09:a1",
+        "catalogueId": "S6.09",
+        "stage": 6,
+        "title": "Share your outcome for research",
+        "reason": "Shared outcomes, kept separate from your account, help future students. It's optional.",
+        "copy": {
+          "key": "S6.09",
+          "params": {
+            "course": "MSc Data Science, University of Exampleton"
+          }
+        },
+        "href": "/app/tracker/a1#decision",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [],
+        "application": {
+          "id": "a1",
+          "label": "MSc Data Science, University of Exampleton"
+        },
+        "rank": "stage"
+      },
+      {
+        "id": "S1.07",
+        "catalogueId": "S1.07",
+        "stage": 1,
+        "title": "Invite a parent to follow along",
+        "reason": "A parent can see your plans and costs, but never your writing or scores.",
+        "copy": {
+          "key": "S1.07",
+          "params": {}
+        },
+        "href": "/app/sharing#family",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [],
+        "rank": "carry_over"
+      },
+      {
+        "id": "S4.13",
+        "catalogueId": "S4.13",
+        "stage": 4,
+        "title": "Check your passport is valid",
+        "reason": "Your passport usually needs to be valid for your whole stay.",
+        "copy": {
+          "key": "S4.13",
+          "params": {}
+        },
+        "href": "/app/profile#readiness",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [],
+        "parentTitle": "Checking the passport is valid",
+        "rank": "carry_over"
+      }
+    ],
+    "completed": [
+      "S1.01",
+      "S1.02",
+      "S1.03",
+      "S1.04",
+      "S4.16:a1"
+    ],
+    "marked": [],
+    "hidden": [],
+    "urgentCount": 0,
+    "urgentLabel": null,
+    "stalled": false,
+    "arrived": false,
+    "engineVersion": "journey-0.5.0"
+  },
+  "edge-split-submitted-preparing": {
+    "stage": 4,
+    "stageProgress": {
+      "done": 1,
+      "total": 2,
+      "label": "1 of 2 applications ready"
+    },
+    "steps": [
+      {
+        "id": "S4.14:a2",
+        "catalogueId": "S4.14",
+        "stage": 4,
+        "title": "Record the application fee",
+        "reason": "Recording each fee keeps the total cost of applying in one place.",
+        "copy": {
+          "key": "S4.14",
+          "params": {
+            "course": "M.Sc. Informatik, Technische Universität Beispielstadt"
+          }
+        },
+        "href": "/app/tracker/a2#costs",
+        "dueAt": "2027-01-15T23:59:00Z",
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [
+          {
+            "table": "deadlines",
+            "id": "d-a2",
+            "status": "verified"
+          }
+        ],
+        "source": {
+          "href": "/courses/tu-beispielstadt-msc-informatik"
+        },
+        "application": {
+          "id": "a2",
+          "label": "M.Sc. Informatik, Technische Universität Beispielstadt"
+        },
+        "parentTitle": "Recording the M.Sc. Informatik, Technische… application fee",
+        "rank": "stage"
+      },
+      {
+        "id": "S4.10",
+        "catalogueId": "S4.10",
+        "stage": 4,
+        "title": "Build your CV",
+        "reason": "Many master's and research applications ask for a CV.",
+        "copy": {
+          "key": "S4.10",
+          "params": {}
+        },
+        "href": "/app/cv",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [],
+        "rank": "stage"
+      },
+      {
+        "id": "S4.13",
+        "catalogueId": "S4.13",
+        "stage": 4,
+        "title": "Check your passport is valid",
+        "reason": "Your passport usually needs to be valid for your whole stay.",
+        "copy": {
+          "key": "S4.13",
+          "params": {}
+        },
+        "href": "/app/profile#readiness",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [],
+        "parentTitle": "Checking the passport is valid",
+        "rank": "stage"
+      },
+      {
+        "id": "S1.07",
+        "catalogueId": "S1.07",
+        "stage": 1,
+        "title": "Invite a parent to follow along",
+        "reason": "A parent can see your plans and costs, but never your writing or scores.",
+        "copy": {
+          "key": "S1.07",
+          "params": {}
+        },
+        "href": "/app/sharing#family",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [],
+        "rank": "carry_over"
+      },
+      {
+        "id": "S2.04",
+        "catalogueId": "S2.04",
+        "stage": 2,
+        "title": "Check which English tests your matches accept",
+        "reason": "Each university lists the English tests it accepts and the score it asks for.",
+        "copy": {
+          "key": "S2.04",
+          "params": {}
+        },
+        "href": "/english-tests",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": true,
+        "factRefs": [],
+        "rank": "carry_over"
+      },
+      {
+        "id": "S5.01:a1",
+        "catalogueId": "S5.01",
+        "stage": 5,
+        "title": "Check the MSc Data Science, University of Exampleton portal",
+        "reason": "Universities post missing-document requests and decisions on their portals.",
+        "copy": {
+          "key": "S5.01",
+          "params": {
+            "course": "MSc Data Science, University of Exampleton"
+          }
+        },
+        "href": "/app/tracker/a1#portal",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [],
+        "application": {
+          "id": "a1",
+          "label": "MSc Data Science, University of Exampleton"
+        },
+        "parentTitle": "Checking the MSc Data Science, University of Example… portal",
+        "rank": "carry_over"
+      }
+    ],
+    "completed": [
+      "S1.01",
+      "S1.02",
+      "S1.03",
+      "S1.04",
+      "S4.16:a1"
+    ],
+    "marked": [],
+    "hidden": [],
+    "urgentCount": 0,
+    "urgentLabel": null,
+    "stalled": false,
+    "arrived": false,
+    "engineVersion": "journey-0.5.0"
+  },
+  "edge-preparing-deadline-passed": {
+    "stage": 5,
+    "stageProgress": {
+      "done": 0,
+      "total": 1,
+      "label": "0 of 1 decision received"
+    },
+    "steps": [
+      {
+        "id": "S5.01:a1",
+        "catalogueId": "S5.01",
+        "stage": 5,
+        "title": "Check the MSc Data Science, University of Exampleton portal",
+        "reason": "Universities post missing-document requests and decisions on their portals.",
+        "copy": {
+          "key": "S5.01",
+          "params": {
+            "course": "MSc Data Science, University of Exampleton"
+          }
+        },
+        "href": "/app/tracker/a1#portal",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [],
+        "application": {
+          "id": "a1",
+          "label": "MSc Data Science, University of Exampleton"
+        },
+        "parentTitle": "Checking the MSc Data Science, University of Example… portal",
+        "rank": "stage"
+      },
+      {
+        "id": "S1.07",
+        "catalogueId": "S1.07",
+        "stage": 1,
+        "title": "Invite a parent to follow along",
+        "reason": "A parent can see your plans and costs, but never your writing or scores.",
+        "copy": {
+          "key": "S1.07",
+          "params": {}
+        },
+        "href": "/app/sharing#family",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [],
+        "rank": "carry_over"
+      },
+      {
+        "id": "S4.13",
+        "catalogueId": "S4.13",
+        "stage": 4,
+        "title": "Check your passport is valid",
+        "reason": "Your passport usually needs to be valid for your whole stay.",
+        "copy": {
+          "key": "S4.13",
+          "params": {}
+        },
+        "href": "/app/profile#readiness",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [],
+        "parentTitle": "Checking the passport is valid",
+        "rank": "carry_over"
+      },
+      {
+        "id": "S4.14:a2",
+        "catalogueId": "S4.14",
+        "stage": 4,
+        "title": "Record the application fee",
+        "reason": "Recording each fee keeps the total cost of applying in one place.",
+        "copy": {
+          "key": "S4.14",
+          "params": {
+            "course": "M.Sc. Informatik, Technische Universität Beispielstadt"
+          }
+        },
+        "href": "/app/tracker/a2#costs",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [],
+        "application": {
+          "id": "a2",
+          "label": "M.Sc. Informatik, Technische Universität Beispielstadt"
+        },
+        "parentTitle": "Recording the M.Sc. Informatik, Technische… application fee",
+        "rank": "carry_over"
+      }
+    ],
+    "completed": [
+      "S1.01",
+      "S1.02",
+      "S1.03",
+      "S1.04",
+      "S4.16:a1"
+    ],
+    "marked": [],
+    "hidden": [],
+    "urgentCount": 0,
+    "urgentLabel": null,
+    "stalled": false,
+    "arrived": false,
+    "engineVersion": "journey-0.5.0"
+  },
+  "edge-rejected-everywhere": {
+    "stage": 5,
+    "stageProgress": {
+      "done": 2,
+      "total": 2,
+      "label": "2 of 2 decisions received"
+    },
+    "steps": [
+      {
+        "id": "S5.06",
+        "catalogueId": "S5.06",
+        "stage": 5,
+        "title": "Plan for the next intake",
+        "reason": "Many students who apply again get in. Look at what to change for the next intake.",
+        "copy": {
+          "key": "S5.06",
+          "params": {}
+        },
+        "href": "/app/next-intake",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": true,
+        "factRefs": [],
+        "parentTitle": "Planning for the next intake",
+        "rank": "stage"
+      },
+      {
+        "id": "S1.07",
+        "catalogueId": "S1.07",
+        "stage": 1,
+        "title": "Invite a parent to follow along",
+        "reason": "A parent can see your plans and costs, but never your writing or scores.",
+        "copy": {
+          "key": "S1.07",
+          "params": {}
+        },
+        "href": "/app/sharing#family",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [],
+        "rank": "carry_over"
+      },
+      {
+        "id": "S6.09:a1",
+        "catalogueId": "S6.09",
+        "stage": 6,
+        "title": "Share your outcome for research",
+        "reason": "Shared outcomes, kept separate from your account, help future students. It's optional.",
+        "copy": {
+          "key": "S6.09",
+          "params": {
+            "course": "MSc Data Science, University of Exampleton"
+          }
+        },
+        "href": "/app/tracker/a1#decision",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [],
+        "application": {
+          "id": "a1",
+          "label": "MSc Data Science, University of Exampleton"
+        },
+        "rank": "carry_over"
+      },
+      {
+        "id": "S6.09:a2",
+        "catalogueId": "S6.09",
+        "stage": 6,
+        "title": "Share your outcome for research",
+        "reason": "Shared outcomes, kept separate from your account, help future students. It's optional.",
+        "copy": {
+          "key": "S6.09",
+          "params": {
+            "course": "M.Sc. Informatik, Technische Universität Beispielstadt"
+          }
+        },
+        "href": "/app/tracker/a2#decision",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [],
+        "application": {
+          "id": "a2",
+          "label": "M.Sc. Informatik, Technische Universität Beispielstadt"
+        },
+        "rank": "carry_over"
+      }
+    ],
+    "completed": [
+      "S1.01",
+      "S1.02",
+      "S1.03",
+      "S1.04",
+      "S4.16:a1",
+      "S4.16:a2"
+    ],
+    "marked": [],
+    "hidden": [],
+    "urgentCount": 0,
+    "urgentLabel": null,
+    "stalled": false,
+    "arrived": false,
+    "engineVersion": "journey-0.5.0"
+  },
+  "edge-rolled-over-after-rejections": {
+    "stage": 3,
+    "stageProgress": {
+      "done": 0,
+      "total": 1,
+      "label": "0 of 1 shortlisted course chosen to apply to"
+    },
+    "steps": [
+      {
+        "id": "S3.01",
+        "catalogueId": "S3.01",
+        "stage": 3,
+        "title": "Build a balanced shortlist",
+        "reason": "Most students apply to 6 to 10 courses with different entry requirements.",
+        "copy": {
+          "key": "S3.01",
+          "params": {}
+        },
+        "href": "/app/shortlist#advice",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": true,
+        "factRefs": [],
+        "rank": "stage"
+      },
+      {
+        "id": "S1.07",
+        "catalogueId": "S1.07",
+        "stage": 1,
+        "title": "Invite a parent to follow along",
+        "reason": "A parent can see your plans and costs, but never your writing or scores.",
+        "copy": {
+          "key": "S1.07",
+          "params": {}
+        },
+        "href": "/app/sharing#family",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [],
+        "rank": "carry_over"
+      },
+      {
+        "id": "S2.03",
+        "catalogueId": "S2.03",
+        "stage": 2,
+        "title": "Compare your countries",
+        "reason": "See costs, visas and work rights for United Kingdom, Germany and United States side by side.",
+        "copy": {
+          "key": "S2.03",
+          "params": {
+            "countries": "United Kingdom, Germany and United States"
+          }
+        },
+        "href": "/compare/countries?c=GB&c=DE&c=US",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": true,
+        "factRefs": [],
+        "parentTitle": "Comparing countries",
+        "rank": "carry_over"
+      },
+      {
+        "id": "S2.04",
+        "catalogueId": "S2.04",
+        "stage": 2,
+        "title": "Check which English tests your matches accept",
+        "reason": "Each university lists the English tests it accepts and the score it asks for.",
+        "copy": {
+          "key": "S2.04",
+          "params": {}
+        },
+        "href": "/english-tests",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": true,
+        "factRefs": [],
+        "rank": "carry_over"
+      }
+    ],
+    "completed": [
+      "S1.01",
+      "S1.02",
+      "S1.03",
+      "S1.04",
+      "S2.01"
+    ],
+    "marked": [],
+    "hidden": [],
+    "urgentCount": 0,
+    "urgentLabel": null,
+    "stalled": false,
+    "arrived": false,
+    "engineVersion": "journey-0.5.0"
+  },
+  "edge-withdrawn-only": {
+    "stage": 2,
+    "stageProgress": {
+      "done": 0,
+      "total": 1,
+      "label": "No courses shortlisted yet"
+    },
+    "steps": [
+      {
+        "id": "S2.02",
+        "catalogueId": "S2.02",
+        "stage": 2,
+        "title": "Find universities for your subject",
+        "reason": "We can look for more courses that fit your subject and countries.",
+        "copy": {
+          "key": "S2.02",
+          "params": {}
+        },
+        "href": "/app/matching",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [],
+        "parentTitle": "Finding universities for their subject",
+        "rank": "stage"
+      },
+      {
+        "id": "S2.03",
+        "catalogueId": "S2.03",
+        "stage": 2,
+        "title": "Compare your countries",
+        "reason": "See costs, visas and work rights for United Kingdom, Germany and United States side by side.",
+        "copy": {
+          "key": "S2.03",
+          "params": {
+            "countries": "United Kingdom, Germany and United States"
+          }
+        },
+        "href": "/compare/countries?c=GB&c=DE&c=US",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": true,
+        "factRefs": [],
+        "parentTitle": "Comparing countries",
+        "rank": "stage"
+      },
+      {
+        "id": "S2.04",
+        "catalogueId": "S2.04",
+        "stage": 2,
+        "title": "Check which English tests your matches accept",
+        "reason": "Each university lists the English tests it accepts and the score it asks for.",
+        "copy": {
+          "key": "S2.04",
+          "params": {}
+        },
+        "href": "/english-tests",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": true,
+        "factRefs": [],
+        "rank": "stage"
+      },
+      {
+        "id": "S1.07",
+        "catalogueId": "S1.07",
+        "stage": 1,
+        "title": "Invite a parent to follow along",
+        "reason": "A parent can see your plans and costs, but never your writing or scores.",
+        "copy": {
+          "key": "S1.07",
+          "params": {}
+        },
+        "href": "/app/sharing#family",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [],
+        "rank": "carry_over"
+      }
+    ],
+    "completed": [
+      "S1.01",
+      "S1.02",
+      "S1.03",
+      "S1.04",
+      "S1.08"
+    ],
+    "marked": [],
+    "hidden": [],
+    "urgentCount": 0,
+    "urgentLabel": null,
+    "stalled": false,
+    "arrived": false,
+    "engineVersion": "journey-0.5.0"
+  },
+  "edge-pending-consent": {
+    "stage": 1,
+    "stageProgress": {
+      "done": 0,
+      "total": 5,
+      "label": "0 of 5 profile details added"
+    },
+    "steps": [
+      {
+        "id": "S1.06",
+        "catalogueId": "S1.06",
+        "stage": 1,
+        "title": "Ask a parent to confirm your account",
+        "reason": "Until a parent confirms, we can't save your personal details.",
+        "copy": {
+          "key": "S1.06",
+          "params": {}
+        },
+        "href": "/consent",
+        "dueAt": null,
+        "dismissable": false,
+        "markable": false,
+        "factRefs": [],
+        "rank": "stage"
+      }
+    ],
+    "completed": [],
+    "marked": [],
+    "hidden": [],
+    "urgentCount": 0,
+    "urgentLabel": null,
+    "stalled": false,
+    "arrived": false,
+    "engineVersion": "journey-0.5.0"
+  },
+  "edge-pending-consent-with-application": {
+    "stage": 4,
+    "stageProgress": {
+      "done": 0,
+      "total": 1,
+      "label": "0 of 1 application ready"
+    },
+    "steps": [
+      {
+        "id": "S1.06",
+        "catalogueId": "S1.06",
+        "stage": 1,
+        "title": "Ask a parent to confirm your account",
+        "reason": "Until a parent confirms, we can't save your personal details.",
+        "copy": {
+          "key": "S1.06",
+          "params": {}
+        },
+        "href": "/consent",
+        "dueAt": null,
+        "dismissable": false,
+        "markable": false,
+        "factRefs": [],
+        "rank": "carry_over"
+      }
+    ],
+    "completed": [
+      "S1.01",
+      "S1.02",
+      "S1.03",
+      "S1.04"
+    ],
+    "marked": [],
+    "hidden": [],
+    "urgentCount": 0,
+    "urgentLabel": null,
+    "stalled": false,
+    "arrived": false,
+    "engineVersion": "journey-0.5.0"
+  },
+  "edge-revoked-consent": {
+    "stage": 4,
+    "stageProgress": {
+      "done": 0,
+      "total": 1,
+      "label": "0 of 1 application ready"
+    },
+    "steps": [],
+    "completed": [
+      "S1.01",
+      "S1.02",
+      "S1.03",
+      "S1.04"
+    ],
+    "marked": [],
+    "hidden": [],
+    "urgentCount": 0,
+    "urgentLabel": null,
+    "stalled": false,
+    "arrived": false,
+    "engineVersion": "journey-0.5.0"
+  },
+  "edge-targets-only-on-a-track": {
+    "stage": 2,
+    "stageProgress": {
+      "done": 0,
+      "total": 1,
+      "label": "No courses shortlisted yet"
+    },
+    "steps": [
+      {
+        "id": "S2.02",
+        "catalogueId": "S2.02",
+        "stage": 2,
+        "title": "Find universities for your subject",
+        "reason": "We can look for more courses that fit your subject and countries.",
+        "copy": {
+          "key": "S2.02",
+          "params": {}
+        },
+        "href": "/app/matching",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [],
+        "parentTitle": "Finding universities for their subject",
+        "rank": "stage"
+      },
+      {
+        "id": "S2.04",
+        "catalogueId": "S2.04",
+        "stage": 2,
+        "title": "Check which English tests your matches accept",
+        "reason": "Each university lists the English tests it accepts and the score it asks for.",
+        "copy": {
+          "key": "S2.04",
+          "params": {}
+        },
+        "href": "/english-tests",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": true,
+        "factRefs": [],
+        "rank": "stage"
+      },
+      {
+        "id": "S1.07",
+        "catalogueId": "S1.07",
+        "stage": 1,
+        "title": "Invite a parent to follow along",
+        "reason": "A parent can see your plans and costs, but never your writing or scores.",
+        "copy": {
+          "key": "S1.07",
+          "params": {}
+        },
+        "href": "/app/sharing#family",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [],
+        "rank": "carry_over"
+      }
+    ],
+    "completed": [
+      "S1.01",
+      "S1.02",
+      "S1.03",
+      "S1.04",
+      "S1.08"
+    ],
+    "marked": [],
+    "hidden": [],
+    "urgentCount": 0,
+    "urgentLabel": null,
+    "stalled": false,
+    "arrived": false,
+    "engineVersion": "journey-0.5.0"
+  },
+  "edge-doctorate-needs-research-interests": {
+    "stage": 1,
+    "stageProgress": {
+      "done": 5,
+      "total": 6,
+      "label": "5 of 6 profile details added"
+    },
+    "steps": [
+      {
+        "id": "S1.01",
+        "catalogueId": "S1.01",
+        "stage": 1,
+        "title": "Tell us about your research interests",
+        "reason": "Research courses are matched on what you want to study, so we need your interests.",
+        "copy": {
+          "key": "S1.01.research",
+          "params": {}
+        },
+        "href": "/app/profile#research",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [],
+        "parentTitle": "Choosing what and where to study",
+        "rank": "stage"
+      },
+      {
+        "id": "S1.07",
+        "catalogueId": "S1.07",
+        "stage": 1,
+        "title": "Invite a parent to follow along",
+        "reason": "A parent can see your plans and costs, but never your writing or scores.",
+        "copy": {
+          "key": "S1.07",
+          "params": {}
+        },
+        "href": "/app/sharing#family",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [],
+        "rank": "stage"
+      }
+    ],
+    "completed": [
+      "S1.02",
+      "S1.03",
+      "S1.04",
+      "S1.08"
+    ],
+    "marked": [],
+    "hidden": [],
+    "urgentCount": 0,
+    "urgentLabel": null,
+    "stalled": false,
+    "arrived": false,
+    "engineVersion": "journey-0.5.0"
+  }
+}

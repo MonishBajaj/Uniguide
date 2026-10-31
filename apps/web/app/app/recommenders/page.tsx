@@ -4,6 +4,7 @@ import { LETTER_STATUSES } from "@/lib/recommendations";
 import { getUser } from "@/lib/supabase/server";
 import { addRecommender, addRequest, removeRecommender, saveBragNotes } from "./actions";
 import { RequestRow } from "./request-row";
+import { courseLabel } from "@/lib/own-application";
 
 export const metadata: Metadata = { title: "Recommendation letters" };
 
@@ -14,9 +15,9 @@ export default async function RecommendersPage() {
       .from("recommenders")
       .select("id, name, relationship, brag_notes, recommendation_requests(id, application_id, status, due_on, asked_on, submitted_on)")
       .order("created_at"),
-    supabase.from("applications").select("id, program_cycles(programs(title, institutions(name)))").neq("status", "withdrawn"),
+    supabase.from("applications").select("id, own_title, own_institution, program_cycles(programs(title, institutions(name)))").neq("status", "withdrawn"),
   ]);
-  const title = new Map((apps ?? []).map((a) => [a.id, `${a.program_cycles?.programs?.title ?? "Course"}, ${a.program_cycles?.programs?.institutions?.name ?? ""}`]));
+  const title = new Map((apps ?? []).map((a) => [a.id, courseLabel(a)]));
 
   return (
     <div className="grid gap-8">

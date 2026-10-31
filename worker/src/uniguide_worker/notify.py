@@ -15,6 +15,7 @@ from datetime import UTC, date, datetime, timedelta
 from typing import Any
 from zoneinfo import ZoneInfo
 
+from . import journey
 from .db import Connection
 from .mailer import Mailer, Message
 
@@ -138,8 +139,24 @@ def week_start(now: datetime) -> date:
     return (now - timedelta(days=now.weekday())).date()
 
 
-def parent_digest_text(student: str, apps: list[dict[str, Any]], now: datetime, site_url: str) -> str:
-    lines = [f"{student} is tracking {len(apps)} application{'s' if len(apps) != 1 else ''}.", ""]
+def parent_journey_lines(student: str, state: dict[str, Any]) -> list[str]:
+    """The journey in parent-safe terms (journey M4, J4.3): stage, progress, the parent note and parent titles."""
+    stage = state["stage"]
+    label = (state["stage_progress"] or {}).get("label")
+    lines = [f"Stage {stage} of 7: {journey.stage_name(stage)}." + (f" {label}." if label else ""), ""]
+    lines += ["How you can help right now:", journey.parent_note(stage, student), ""]
+    titles = journey.parent_safe_titles(state["steps"])
+    if titles:
+        lines += [f"What {student} is working on:", *[f"- {t}" for t in titles], ""]
+    return lines
+
+
+def parent_digest_text(
+    student: str, apps: list[dict[str, Any]], now: datetime, site_url: str, state: dict[str, Any] | None = None
+) -> str:
+    lines = parent_journey_lines(student, state) if state else []
+    if apps:
+        lines += [f"{student} is tracking {len(apps)} application{'s' if len(apps) != 1 else ''}.", ""]
     for a in apps:
         status = (a["decision"] or a["status"]).replace("_", " ").capitalize()
         line = f"- {a['program']}, {a['institution']}: {status}, {a['done']} of {a['total']} steps done"
@@ -189,14 +206,24 @@ def send_parent_digests(conn: Connection, mailer: Mailer, site_url: str, now: da
             """,
             (now, r["student_id"]),
         ).fetchall()
-        if not apps:
+        state = conn.execute(
+            "select stage, stage_progress, steps, arrived, computed_at from journey_state where user_id = %s",
+            (r["student_id"],),
+        ).fetchone()
+        if state is not None and state["arrived"]:
+            continue  # the student has arrived: the journey is done, so the weekly email stops (M5 J5.8)
+        if state is not None and not journey.is_fresh(state["computed_at"], now):
+            state = None  # an old journey isn't reported as this week's
+        if not apps and state is None:
             continue  # nothing to report yet; no empty emails
+        student = r["student_name"]
+        subject = (
+            f"This week: {student}'s applications"
+            if state is None
+            else f"This week: {student} is in stage {state['stage']}, {journey.stage_name(state['stage'])}"
+        )
         ok = mailer.send(
-            Message(
-                to=r["email"],
-                subject=f"This week: {r['student_name']}'s applications",
-                text=parent_digest_text(r["student_name"], apps, now, site_url),
-            )
+            Message(to=r["email"], subject=subject, text=parent_digest_text(student, apps, now, site_url, state))
         )
         if ok:
             conn.execute(
@@ -217,13 +244,15 @@ def send_letter_nudges(conn: Connection, mailer: Mailer, site_url: str, now: dat
     recipients = {r["user_id"]: r for r in conn.execute("select * from public.notifier_recipients()")}
     rows = conn.execute(
         """
-        select q.id, q.user_id, q.status, q.due_on, r.name as recommender, p.title as program, i.name as institution
+        select q.id, q.user_id, q.status, q.due_on, r.name as recommender,
+               coalesce(p.title, a.own_title) as program, coalesce(i.name, a.own_institution) as institution
         from recommendation_requests q
         join recommenders r on r.id = q.recommender_id
         join applications a on a.id = q.application_id
-        join program_cycles c on c.id = a.cycle_id
-        join programs p on p.id = c.program_id
-        join institutions i on i.id = p.institution_id
+        -- Left joins: the due date is the student's own, so an own application (J3.3) gets the nudge too.
+        left join program_cycles c on c.id = a.cycle_id
+        left join programs p on p.id = c.program_id
+        left join institutions i on i.id = p.institution_id
         where q.status in ('asked', 'agreed') and q.due_on is not null and a.status <> 'withdrawn'
         """
     ).fetchall()

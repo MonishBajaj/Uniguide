@@ -1,9 +1,15 @@
 import Link from "next/link";
+import { headers } from "next/headers";
 import { COMMUNITY_ENABLED, DEMO_SWITCHER } from "@/lib/env";
 import { modeOf } from "@/lib/demo-mode";
 import { getLocale } from "@/lib/i18n/server";
 import { getRoles } from "@/lib/roles";
 import { getUser } from "@/lib/supabase/server";
+import { helpFor } from "@/lib/help";
+import { headerJourney } from "@/lib/journey-nav";
+import { getJourney } from "@/lib/journey-request.server";
+import { PATH_HEADER } from "@/lib/request-path";
+import { StudentHeader } from "./journey/student-header";
 import { ModeSwitcher } from "./mode-switcher";
 import { NavLinks } from "./nav-links";
 
@@ -14,7 +20,36 @@ export async function SiteHeader() {
     : 0;
   const roles = await getRoles(supabase, user?.id);
   const mode = modeOf(Boolean(user), roles.parentOf.length > 0);
-  const { t } = await getLocale();
+  const { t, locale } = await getLocale();
+  const accountEnd = DEMO_SWITCHER ? (
+    <ModeSwitcher mode={mode} />
+  ) : (
+    <form action="/auth/signout" method="post">
+      <button className="btn btn-secondary btn-sm w-full whitespace-nowrap">{t.nav.signOut}</button>
+    </form>
+  );
+
+  // Students get the journey navigation (journey M2, J2.2). Staff, counselors and parents keep the site header.
+  const staff = roles.admin || roles.verifier || roles.orgs.length > 0;
+  if (user && mode === "user" && !staff) {
+    const path = (await headers()).get(PATH_HEADER);
+    const journey = await headerJourney(path, true, getJourney);
+    // "Ask about this course" in the help panel, on a catalogue application's page (J4.1).
+    const appId = /^\/app\/tracker\/([0-9a-f-]{36})$/.exec(path ?? "")?.[1];
+    const courseSlug = appId
+      ? ((await supabase.from("applications").select("program_cycles(programs(slug))").eq("id", appId).maybeSingle()).data?.program_cycles?.programs?.slug ?? null)
+      : null;
+    return (
+      <StudentHeader
+        journey={journey}
+        t={t}
+        unread={unread}
+        accountEnd={accountEnd}
+        pageHelp={helpFor(path, locale)}
+        courseSlug={courseSlug}
+      />
+    );
+  }
 
   const links = [
     { href: "/courses", label: t.nav.courses },

@@ -11,6 +11,8 @@ export interface CountryRule {
   details: string | null;
   link: string | null;
   status: string;
+  /** Days ahead to start, from the official page; only a verified rule's counts (journey M5, J5.5). */
+  lead_days?: number | null;
 }
 
 export interface DepartureTask {
@@ -22,6 +24,8 @@ export interface DepartureTask {
   due: string | null;
   link?: string | null;
   status?: string;
+  /** The due date comes from the official page's lead time, not our default. */
+  leadFromSource?: boolean;
 }
 
 const GENERIC: Omit<DepartureTask, "due">[] = [
@@ -34,7 +38,7 @@ const GENERIC: Omit<DepartureTask, "due">[] = [
   { key: "arrival", weeksBefore: -1, title: "Register after you arrive", body: "Many countries and universities ask you to register your address, enrol in person or report to the international office within days. Your university's arrival guide lists what applies." },
 ];
 
-const RULE_WEEKS: Record<string, number> = { aps_certificate: 24, proof_of_funds: 16, visa_info: 12 };
+const RULE_WEEKS: Record<string, number> = { aps_certificate: 24, proof_of_funds: 16, visa_info: 12, housing: 12, health_insurance: 8, residence_registration: -1 };
 
 /** Typical start month and day per intake term, used only when the cycle has no start date. */
 const TERM_STARTS: Record<string, string> = {
@@ -57,6 +61,12 @@ export function courseStart(cycle: { starts_on: string | null; intake_year: numb
   return monthDay ? { date: `${cycle.intake_year}-${monthDay}`, approximate: true } : null;
 }
 
+function daysBefore(start: string, days: number): string {
+  const d = new Date(`${start}T00:00:00Z`);
+  d.setUTCDate(d.getUTCDate() - days);
+  return d.toISOString().slice(0, 10);
+}
+
 function weeksBefore(start: string, weeks: number): string {
   const d = new Date(`${start}T00:00:00Z`);
   d.setUTCDate(d.getUTCDate() - weeks * 7);
@@ -65,16 +75,22 @@ function weeksBefore(start: string, weeks: number): string {
 
 /** Generic steps plus the destination's rules, earliest first. */
 export function departureTimeline(rules: CountryRule[], start: string | null): DepartureTask[] {
-  const fromRules = rules.map((r) => ({
-    key: `rule:${r.id}`,
-    title: r.title,
-    body: r.details ?? "Read the official page for what applies to you and how long it takes.",
-    weeksBefore: RULE_WEEKS[r.kind] ?? 12,
-    link: r.link,
-    status: r.status,
-  }));
-  return [...fromRules, ...GENERIC]
-    .map((t) => ({ ...t, due: start ? weeksBefore(start, t.weeksBefore) : null }))
+  const fromRules: DepartureTask[] = rules.map((r) => {
+    // A verified lead time from the official page replaces our default.
+    const lead = r.status === "verified" && r.lead_days != null ? r.lead_days : null;
+    const weeks = lead != null ? Math.ceil(lead / 7) : (RULE_WEEKS[r.kind] ?? 12);
+    return {
+      key: `rule:${r.id}`,
+      title: r.title,
+      body: r.details ?? "Read the official page for what applies to you and how long it takes.",
+      weeksBefore: weeks,
+      due: !start ? null : lead != null ? daysBefore(start, lead) : weeksBefore(start, weeks),
+      link: r.link,
+      status: r.status,
+      ...(lead != null ? { leadFromSource: true } : {}),
+    };
+  });
+  return [...fromRules, ...GENERIC.map((t) => ({ ...t, due: start ? weeksBefore(start, t.weeksBefore) : null }))]
     .sort((a, b) => b.weeksBefore - a.weeksBefore);
 }
 

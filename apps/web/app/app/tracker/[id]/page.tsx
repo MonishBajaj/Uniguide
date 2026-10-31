@@ -8,8 +8,13 @@ import { letterProgress, lettersNeeded, LETTER_STATUSES, type LetterStatus } fro
 import { scoreNeeds, sentProgress } from "@/lib/score-sending";
 import { WAITLIST_STEPS } from "@/lib/waitlist";
 import { setAcceptedOffer } from "../../departure/actions";
+import { setDeclined } from "../../offers/actions";
 import { startLinkedDocument, startSupplemental } from "../../writing/actions";
 import { daysUntil, deadlineText, label, money, shortDate } from "@/lib/format";
+import { getLocale } from "@/lib/i18n/server";
+import { OwnBadge } from "@/components/own-badge";
+import { countryName } from "@/lib/format";
+import { courseOf, ownDate } from "@/lib/own-application";
 import { getUser } from "@/lib/supabase/server";
 import { CostForm } from "../cost-form";
 import { Term } from "@/components/term";
@@ -25,15 +30,23 @@ import {
   removeScoreReport,
   saveNotes,
   setApplicationTrack,
+  addSupervisorContact,
+  removeSupervisorContact,
+  addInterview,
+  resolveMissing,
+  setExpectedDecision,
   shareOutcome,
+  startApplying,
   toggleItem,
   withdrawOutcome,
 } from "../actions";
 
 export const metadata: Metadata = { title: "Application" };
 
-export default async function ApplicationPage({ params }: PageProps<"/app/tracker/[id]">) {
+export default async function ApplicationPage({ params, searchParams }: PageProps<"/app/tracker/[id]">) {
   const { id } = await params;
+  const justStarted = (await searchParams).applying === "1";
+  const { t: all } = await getLocale();
   const { supabase, user } = await getUser();
   const [{ data: app }, { data: outcome }, { data: consent }, { data: events }, { data: scores }, { data: costs }, { data: profile }, { data: tracks }, { data: linkedDocs }] = await Promise.all([
     supabase
@@ -47,7 +60,7 @@ export default async function ApplicationPage({ params }: PageProps<"/app/tracke
     supabase.from("consents").select("id").eq("kind", "outcomes_research").is("withdrawn_at", null).limit(1).maybeSingle(),
     supabase
       .from("application_events")
-      .select("id, kind, from_value, to_value, note, created_at")
+      .select("id, kind, from_value, to_value, note, created_at, occurs_at, missing, resolved_at")
       .eq("application_id", id)
       .order("created_at", { ascending: false })
       .limit(50),
@@ -64,6 +77,19 @@ export default async function ApplicationPage({ params }: PageProps<"/app/tracke
   ]);
   if (!app) notFound();
   const program = app.program_cycles?.programs;
+  const course = courseOf(app);
+  // Supervisor contacts for a research degree (J5.3, G9).
+  const doctorate = program?.level === "doctorate";
+  const { data: contacts } = doctorate
+    ? await supabase.from("supervisor_contacts").select("id, name, institution, contacted_on, reply, note").eq("application_id", app.id).order("contacted_on")
+    : { data: [] };
+  const ts = all.journey.supervisors;
+  const tw = all.journey.waiting;
+  // Interview times are kept as the student typed them, in UTC (J5.6).
+  const interviewTime = (iso: string) =>
+    new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit", timeZone: "UTC" }).format(new Date(iso));
+  const interviews = (events ?? []).filter((e) => e.kind === "interview" && e.occurs_at).sort((a, b) => a.occurs_at!.localeCompare(b.occurs_at!));
+  const waiting = app.status === "submitted" || interviews.length > 0 || app.expected_decision_on != null;
   const items = [...app.checklist_items].sort((a, b) => a.sort - b.sort);
   const letter = (linkedDocs ?? []).find((d) => d.kind === "continued_interest");
   const letters = letterProgress(app.recommendation_requests, lettersNeeded(app.program_cycles?.requirements ?? []));
@@ -81,8 +107,18 @@ export default async function ApplicationPage({ params }: PageProps<"/app/tracke
     <div className="grid gap-8">
       <header>
         <Link href="/app/tracker" className="text-sm text-muted underline underline-offset-2">Tracker</Link>
-        <h1 className="mt-2 text-4xl font-semibold">{program?.title}</h1>
-        <p className="mt-1 text-muted">{program?.institutions?.name} · {app.program_cycles?.label.replace("-", " ")} intake</p>
+        <h1 className="mt-2 text-4xl font-semibold">{course.title}</h1>
+        {course.own ? (
+          <>
+            <p className="mt-1 text-muted">
+              {course.institution} · {countryName(app.own_country ?? "")}
+              {app.own_due_at ? ` · ${all.journey.own.yourDate}: ${ownDate(app.own_due_at)}` : ""}
+            </p>
+            <p className="mt-2"><OwnBadge text={all.journey.own.badge} /></p>
+          </>
+        ) : (
+          <p className="mt-1 text-muted">{program?.institutions?.name} · {app.program_cycles?.label.replace("-", " ")} intake</p>
+        )}
         <div className="mt-4 flex flex-wrap gap-2">
           {program ? <Link href={`/courses/${program.slug}`} className="btn btn-secondary btn-sm">Course facts and sources</Link> : null}
           <a href={`/app/tracker/calendar.ics?application=${app.id}`} className="btn btn-secondary btn-sm">Add to calendar (.ics)</a>
@@ -107,8 +143,59 @@ export default async function ApplicationPage({ params }: PageProps<"/app/tracke
         </div>
       </header>
 
+      {justStarted && app.status === "preparing" ? (
+        <p role="status" className="rounded-2xl border border-verified/40 bg-surface p-4 font-semibold text-verified">{all.journey.applying.started}</p>
+      ) : null}
+      {app.status === "shortlisted" ? (
+        <section id="applying" aria-labelledby="applying-title" className="grid gap-3 rounded-2xl border border-border bg-surface p-6 scroll-mt-24">
+          <h2 id="applying-title" className="text-lg font-semibold">{all.journey.applying.title}</h2>
+          <p className="text-muted">{all.journey.applying.intro}</p>
+          <form action={startApplying.bind(null, app.id)}>
+            <button className="btn btn-primary">{all.journey.applying.button}</button>
+          </form>
+        </section>
+      ) : null}
+
+      {doctorate ? (
+        <section id="supervisors" aria-labelledby="supervisors-title" className="grid scroll-mt-24 gap-3 rounded-2xl border border-border bg-surface p-6">
+          <h2 id="supervisors-title" className="text-lg font-semibold">{ts.title}</h2>
+          <p className="text-sm text-muted">{ts.intro}</p>
+          {(contacts ?? []).length ? (
+            <ul className="grid gap-2 text-sm">
+              {contacts!.map((c) => (
+                <li key={c.id} className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-background p-3">
+                  <span>
+                    <span className="font-semibold">{c.name}</span>, {c.institution} · {shortDate(c.contacted_on)} · {ts.replies[c.reply as keyof typeof ts.replies]}
+                    {c.note ? <span className="block text-muted">{c.note}</span> : null}
+                  </span>
+                  <form action={removeSupervisorContact.bind(null, c.id)}>
+                    <button className="btn btn-secondary btn-sm">{ts.remove}<span className="sr-only">: {c.name}</span></button>
+                  </form>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-sm text-muted">{ts.none}</p>
+          )}
+          <form action={addSupervisorContact.bind(null, app.id)} className="grid gap-3 sm:grid-cols-2">
+            <label className="grid gap-1 text-sm font-semibold">{ts.name}<input name="name" required maxLength={200} className="field font-normal" /></label>
+            <label className="grid gap-1 text-sm font-semibold">{ts.institution}<input name="institution" required maxLength={200} defaultValue={course.institution} className="field font-normal" /></label>
+            <label className="grid gap-1 text-sm font-semibold">{ts.contactedOn}<input name="contacted_on" type="date" required className="field font-normal" /></label>
+            <label className="grid gap-1 text-sm font-semibold">
+              {ts.reply}
+              <select name="reply" className="field font-normal">
+                {(["none", "positive", "negative"] as const).map((r) => <option key={r} value={r}>{ts.replies[r]}</option>)}
+              </select>
+            </label>
+            <label className="grid gap-1 text-sm font-semibold sm:col-span-2">{ts.note}<input name="note" maxLength={1000} className="field font-normal" /></label>
+            <button className="btn btn-secondary justify-self-start">{ts.add}</button>
+          </form>
+        </section>
+      ) : null}
+
       <section aria-labelledby="checklist" className="grid gap-3 rounded-2xl border border-border bg-surface p-6">
         <h2 id="checklist" className="text-lg font-semibold">Checklist</h2>
+        {course.own ? <p className="text-sm text-muted">{all.journey.own.noFacts}</p> : null}
         <ul className="grid gap-2">
           {items.map((item) => {
             const deadline = item.deadlines;
@@ -156,6 +243,8 @@ export default async function ApplicationPage({ params }: PageProps<"/app/tracke
               {needs.some((n) => !n.required) ? `; optional: ${needs.filter((n) => !n.required).map((n) => n.label).join(", ")}` : ""}.
               {progress.needed ? ` Sent ${progress.sent} of ${progress.needed}.` : ""} Confirm on the official page.
             </p>
+          ) : course.own ? (
+            <p className="text-sm text-muted">{all.journey.own.scoresNote}</p>
           ) : (
             <p className="text-sm text-muted">No test requirements are published for this course yet. Check the official page.</p>
           )}
@@ -209,7 +298,11 @@ export default async function ApplicationPage({ params }: PageProps<"/app/tracke
           <Link href="/app/recommenders" className="text-sm underline underline-offset-2">Manage recommenders</Link>
         </div>
         <p className="text-sm text-muted">
-          {letters.needed != null ? `This course asks for ${letters.needed} letter${letters.needed === 1 ? "" : "s"}. ` : "The number of letters is not published yet; check the official page. "}
+          {letters.needed != null
+            ? `This course asks for ${letters.needed} letter${letters.needed === 1 ? "" : "s"}. `
+            : course.own
+              ? `${all.journey.own.lettersNote} `
+              : "The number of letters is not published yet; check the official page. "}
           {app.recommendation_requests.length ? `${letters.submitted} submitted, ${letters.lined_up} agreed or submitted.` : ""}
           {letters.short ? ` Ask ${letters.short} more ${letters.short === 1 ? "person" : "people"}.` : ""}
         </p>
@@ -296,6 +389,49 @@ export default async function ApplicationPage({ params }: PageProps<"/app/tracke
         </form>
       </section>
 
+      {waiting ? (
+        <section id="interviews" aria-labelledby="interviews-title" className="grid scroll-mt-24 gap-4 rounded-2xl border border-border bg-surface p-6">
+          <div>
+            <h2 id="interviews-title" className="text-lg font-semibold">{tw.title}</h2>
+            <p className="text-sm text-muted">{tw.intro}</p>
+          </div>
+          <div className="grid gap-2">
+            <h3 className="font-semibold">{tw.interviews}</h3>
+            {interviews.length ? (
+              <ul className="grid gap-2 text-sm">
+                {interviews.map((e) => (
+                  <li key={e.id} className="rounded-lg bg-background p-3">
+                    {tw.interviewOn(interviewTime(e.occurs_at!))} <span className="text-muted">· {all.journey.own.yourDate}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-sm text-muted">{tw.noInterviews}</p>
+            )}
+            <form action={addInterview.bind(null, app.id)} className="flex flex-wrap items-end gap-2">
+              <label className="grid gap-1 text-sm font-semibold">
+                {tw.interviewAt}
+                <input name="occurs_at" type="datetime-local" required className="field font-normal" />
+              </label>
+              <button className="btn btn-secondary">{tw.addInterview}</button>
+            </form>
+          </div>
+          {!app.decision ? (
+            <form action={setExpectedDecision.bind(null, app.id)} className="grid gap-2 border-t border-border pt-4">
+              <label htmlFor="expected-decision" className="font-semibold">{tw.expected}</label>
+              <p id="expected-hint" className="text-sm text-muted">{tw.expectedHint}</p>
+              {app.expected_decision_on ? (
+                <p className="text-sm">{tw.expectedBy(ownDate(app.expected_decision_on))} <span className="text-muted">· {all.journey.own.yourDate}</span></p>
+              ) : null}
+              <div className="flex flex-wrap gap-2">
+                <input id="expected-decision" name="expected_decision_on" type="date" aria-describedby="expected-hint" defaultValue={app.expected_decision_on ?? ""} className="field max-w-xs" />
+                <button className="btn btn-secondary">{tw.saveExpected}</button>
+              </div>
+            </form>
+          ) : null}
+        </section>
+      ) : null}
+
       <section aria-labelledby="decision" className="grid gap-4 rounded-2xl border border-border bg-surface p-6">
         <h2 id="decision" className="text-lg font-semibold">Decision</h2>
         <form action={recordDecision.bind(null, app.id)} className="grid gap-3 sm:grid-cols-2">
@@ -377,7 +513,27 @@ export default async function ApplicationPage({ params }: PageProps<"/app/tracke
           </div>
         ) : null}
 
-        {app.decision ? (
+        {(app.decision === "admitted" || app.decision === "waitlisted") && !app.offer_accepted_at ? (
+          // Declining an offer the student won't take (J5.2, G14).
+          <div className="flex flex-wrap items-center gap-3 border-t border-border pt-4 text-sm">
+            {app.declined_at ? (
+              <>
+                <span className="text-muted">{all.journey.decline.declinedOn(shortDate(app.declined_at))}</span>
+                <form action={setDeclined.bind(null, app.id, false)}>
+                  <button className="btn btn-secondary btn-sm">{all.journey.decline.undo}</button>
+                </form>
+              </>
+            ) : (
+              <form action={setDeclined.bind(null, app.id, true)}>
+                <button className="btn btn-secondary btn-sm">{all.journey.decline.declined}</button>
+              </form>
+            )}
+          </div>
+        ) : null}
+
+        {app.decision && course.own ? (
+          <p className="text-sm text-muted">{all.journey.own.noSharing}</p>
+        ) : app.decision ? (
           outcome ? (
             <form action={withdrawOutcome.bind(null, app.id)} className="text-sm">
               <p>You shared this outcome for research. Thank you.</p>
@@ -409,6 +565,10 @@ export default async function ApplicationPage({ params }: PageProps<"/app/tracke
         <form action={logPortal.bind(null, app.id, "portal_check")} className="flex flex-wrap gap-2">
           <label className="sr-only" htmlFor="portal-note">What the portal says (optional)</label>
           <input id="portal-note" name="note" maxLength={1000} placeholder="What the portal says (optional)" className="field max-w-md" />
+          <label className="flex items-center gap-2 text-sm">
+            <input type="checkbox" name="missing" className="size-4" />
+            {tw.missing}
+          </label>
           <button className="btn btn-primary">I checked the portal today</button>
         </form>
         <form action={logPortal.bind(null, app.id, "note")} className="flex flex-wrap gap-2">
@@ -420,7 +580,16 @@ export default async function ApplicationPage({ params }: PageProps<"/app/tracke
           {(events ?? []).map((e) => (
             <li key={e.id} className="grid grid-cols-[110px_1fr] gap-3 border-t border-border pt-2">
               <time dateTime={e.created_at} className="text-muted">{shortDate(e.created_at)}</time>
-              <span>{describeEvent(e)}</span>
+              <span className="flex flex-wrap items-center gap-2">
+                {e.missing ? <span className="rounded-full border border-conflicting px-2 text-xs font-semibold text-conflicting">{tw.missingBadge}</span> : null}
+                <span>{e.kind === "interview" && e.occurs_at ? tw.interviewOn(interviewTime(e.occurs_at)) : describeEvent(e)}</span>
+                {e.missing && e.resolved_at ? <span className="text-muted">· {tw.sortedOn(shortDate(e.resolved_at))}</span> : null}
+                {e.missing && !e.resolved_at ? (
+                  <form action={resolveMissing.bind(null, e.id)}>
+                    <button className="btn btn-secondary btn-sm">{tw.sorted}<span className="sr-only">: {e.note ?? tw.missing}</span></button>
+                  </form>
+                ) : null}
+              </span>
             </li>
           ))}
         </ol>

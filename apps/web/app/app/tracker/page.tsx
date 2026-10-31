@@ -1,14 +1,20 @@
 import type { Metadata } from "next";
+import { WelcomePrompt } from "@/components/journey/welcome-prompt";
+import { welcomeOf } from "@/lib/onboarding";
 import Link from "next/link";
 import { checkedAgo } from "@/lib/application-events";
 import { daysUntil, deadlineText } from "@/lib/format";
 import { letterProgress, lettersNeeded } from "@/lib/recommendations";
 import { scoreNeeds, sentProgress } from "@/lib/score-sending";
 import { getLocale } from "@/lib/i18n/server";
+import { intakeName } from "@/lib/intakes";
 import { getUser } from "@/lib/supabase/server";
 import { inTrack } from "@/lib/tracks";
 import { TrackSwitcher } from "@/components/track-switcher";
+import { OwnBadge } from "@/components/own-badge";
+import { courseOf, ownDate } from "@/lib/own-application";
 import { setStatus } from "./actions";
+import { AddOwnCourse } from "./add-own";
 
 export const metadata: Metadata = { title: "Tracker" };
 
@@ -25,12 +31,14 @@ export default async function TrackerPage({ searchParams }: PageProps<"/app/trac
   const { data } = await supabase
     .from("applications")
     .select(
-      "id, status, due_at, decision, portal_checked_at, track_id, program_cycles(label, requirements(kind, exam, test_policy, count_required), programs(slug, title, institutions(name, country))), checklist_items(done, deadlines(due_at, timezone, precision)), score_reports(test_scores(exam)), recommendation_requests(status)",
+      "id, status, due_at, decision, declined_at, portal_checked_at, track_id, own_title, own_institution, own_country, own_due_at, program_cycles(label, intake_year, intake_term, requirements(kind, exam, test_policy, count_required), programs(slug, title, institutions(name, country))), checklist_items(done, deadlines(due_at, timezone, precision)), score_reports(test_scores(exam)), recommendation_requests(status)",
     )
     .order("due_at", { ascending: true, nullsFirst: false });
   const apps = (data ?? []).filter((a) => inTrack(a.track_id, trackFilter)).map((a) => ({
     ...a,
-    program: a.program_cycles?.programs,
+    course: courseOf(a),
+    // An own application's date is the student's, shown as theirs and never as a fact (J3.3).
+    ownDue: a.own_due_at && new Date(a.own_due_at) >= new Date() ? a.own_due_at : null,
     // Show the next deadline in the institution's own time zone.
     next: a.checklist_items
       .flatMap((i) => (i.deadlines && !i.done && new Date(i.deadlines.due_at) >= new Date() ? [i.deadlines] : []))
@@ -46,6 +54,7 @@ export default async function TrackerPage({ searchParams }: PageProps<"/app/trac
 
   return (
     <div className="grid gap-8">
+      <WelcomePrompt welcome={welcomeOf(params.welcome)} t={all.journey.onboarding} />
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 className="text-4xl font-semibold">{t.title}</h1>
@@ -70,9 +79,13 @@ export default async function TrackerPage({ searchParams }: PageProps<"/app/trac
 
       {apps.length === 0 ? (
         <div className="rounded-2xl border border-border bg-surface p-8">
-          <h2 className="text-xl font-semibold">{t.emptyTitle}</h2>
-          <p className="mt-2 text-muted">{t.emptyBody}</p>
-          <Link href="/app/match" className="btn btn-primary mt-6">{t.seeMatches}</Link>
+          <h2 className="text-xl font-semibold">{all.journey.empty.trackerTitle}</h2>
+          <p className="mt-2 text-muted">{all.journey.empty.trackerBody}</p>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <Link href="/courses" className="btn btn-primary">{all.journey.empty.trackerFind}</Link>
+            <Link href="#add-own" className="btn btn-secondary">{all.journey.empty.trackerAddOwn}</Link>
+            <Link href="/app/match" className="btn btn-secondary">{t.seeMatches}</Link>
+          </div>
         </div>
       ) : view === "board" ? (
         <div className="grid auto-cols-[minmax(232px,1fr)] grid-flow-col gap-4 overflow-x-auto pb-2">
@@ -83,9 +96,18 @@ export default async function TrackerPage({ searchParams }: PageProps<"/app/trac
                 <h2 id={`col-${status}`} className="px-1 text-sm font-semibold">{t.status[status]} ({items.length})</h2>
                 {items.map((a) => (
                   <article key={a.id} className="grid gap-2 rounded-xl bg-background p-3 text-sm">
-                    <Link href={`/app/tracker/${a.id}`} className="font-semibold underline-offset-2 hover:underline">{a.program?.title}</Link>
-                    <p className="text-muted">{a.program?.institutions?.name}</p>
-                    <p>{a.next ? t.due(deadlineText(a.next.due_at, a.next.timezone, a.next.precision), daysUntil(a.next.due_at)) : t.noDeadline}</p>
+                    <Link href={`/app/tracker/${a.id}`} className="font-semibold underline-offset-2 hover:underline">{a.course.title}</Link>
+                    <p className="text-muted">{a.course.institution}</p>
+                    {a.program_cycles ? <p className="text-muted">{all.journey.intakeChoice.intake(intakeName(a.program_cycles))}</p> : null}
+                    {a.course.own ? <p><OwnBadge text={all.journey.own.badge} /></p> : null}
+                    {a.declined_at ? <p className="font-semibold text-muted">{all.journey.decline.label}</p> : null}
+                    <p>
+                      {a.next
+                        ? t.due(deadlineText(a.next.due_at, a.next.timezone, a.next.precision), daysUntil(a.next.due_at))
+                        : a.ownDue
+                          ? `${all.journey.own.yourDate}: ${ownDate(a.ownDue)}`
+                          : t.noDeadline}
+                    </p>
                     <p className="text-muted">{t.steps(a.done, a.total)}</p>
                     {a.scores.needed ? <p className="text-muted">{t.scoresSent(a.scores.sent, a.scores.needed)}</p> : null}
                     {a.letters.needed ? <p className="text-muted">{t.letters(a.letters.submitted, a.letters.needed)}</p> : null}
@@ -119,13 +141,17 @@ export default async function TrackerPage({ searchParams }: PageProps<"/app/trac
               {apps.map((a) => (
                 <tr key={a.id} className="border-t border-border">
                   <td className="p-3">
-                    <Link href={`/app/tracker/${a.id}`} className="font-semibold underline-offset-2 hover:underline">{a.program?.title}</Link>
-                    <div className="text-muted">{a.program?.institutions?.name}</div>
+                    <Link href={`/app/tracker/${a.id}`} className="font-semibold underline-offset-2 hover:underline">{a.course.title}</Link>
+                    <div className="text-muted">{a.course.institution}</div>
+                    {a.program_cycles ? <div className="text-muted">{all.journey.intakeChoice.intake(intakeName(a.program_cycles))}</div> : null}
+                    {a.course.own ? <OwnBadge text={all.journey.own.badge} /> : null}
                   </td>
                   <td className="p-3">{t.status[a.status]}</td>
-                  <td className="p-3">{a.next ? deadlineText(a.next.due_at, a.next.timezone, a.next.precision) : t.notKnown}</td>
+                  <td className="p-3">
+                    {a.next ? deadlineText(a.next.due_at, a.next.timezone, a.next.precision) : a.ownDue ? `${all.journey.own.yourDate}: ${ownDate(a.ownDue)}` : t.notKnown}
+                  </td>
                   <td className="p-3">{a.done} / {a.total}</td>
-                  <td className="p-3">{a.decision ?? ""}</td>
+                  <td className="p-3">{a.declined_at ? all.journey.decline.label : (a.decision ?? "")}</td>
                   <td className="p-3">{checkedAgo(a.portal_checked_at)}</td>
                 </tr>
               ))}
@@ -133,6 +159,8 @@ export default async function TrackerPage({ searchParams }: PageProps<"/app/trac
           </table>
         </div>
       )}
+
+      <AddOwnCourse t={all.journey.own} invalid={params.own === "invalid"} />
     </div>
   );
 }

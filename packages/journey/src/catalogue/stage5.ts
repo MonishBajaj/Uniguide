@@ -17,31 +17,42 @@ export const STAGE5: StepDef[] = [
     params: course,
   },
   {
-    // Portal notes have no "missing" or "resolved" state yet (plan D9).
+    // A portal check that noted something missing, until the student marks it sorted (M5 J5.6, plan R9).
     id: "S5.02",
     stage: 5,
     dismissable: true,
-    available: false,
+    available: true,
+    parentTitle: "Sending a missing document for {course}",
+    subjects: (ctx) => appSubjects(ctx.apps.filter((a) => (a.missingNotes ?? 0) > 0 && !a.declinedAt)),
     done: () => false,
-    href: () => "/app/tracker",
+    href: (_, s) => `/app/tracker/${s.app!.id}#portal`,
+    params: course,
   },
   {
-    // Waits for interview events (G26).
+    // An interview the student logged, until its date passes (G26, plan R8). The date is the student's, so it never
+    // becomes a due date and never starts a reminder (M5 global constraints).
     id: "S5.03",
     stage: 5,
     dismissable: true,
-    available: false,
+    available: true,
+    markable: true,
+    parentTitle: "Preparing for an interview for {course}",
+    subjects: (ctx) => appSubjects(ctx.apps.filter((a) => !a.decision && (a.interviews ?? []).some((t) => t.slice(0, 10) >= ctx.today))),
     done: () => false,
-    href: () => "/app/tracker",
+    href: (_, s) => `/app/tracker/${s.app!.id}#interviews`,
+    params: course,
   },
   {
-    // Waits for expected decision dates (G26).
+    // The student's own expected decision date has passed with no decision recorded (G26, plan R8).
     id: "S5.04",
     stage: 5,
     dismissable: true,
-    available: false,
+    available: true,
+    subjects: (ctx) =>
+      appSubjects(ctx.apps.filter((a) => a.status === "submitted" && !a.decision && a.expectedDecisionOn != null && a.expectedDecisionOn < ctx.today)),
     done: () => false,
-    href: () => "/app/tracker",
+    href: (_, s) => `/app/tracker/${s.app!.id}#decision`,
+    params: course,
   },
   {
     // The waitlist guide and continued-interest letter are on the application's decision section (plan R8).
@@ -56,7 +67,8 @@ export const STAGE5: StepDef[] = [
     params: course,
   },
   {
-    // A new track for the next intake is the nearest thing to G20's "no offers" path that exists.
+    // The "no offers yet" path (G20, G21, M5 J5.4). Planning the next intake sets intakeRolledAt, after which these
+    // rejections no longer count, so the step goes and the student is back in stage 2 or 3.
     id: "S5.06",
     stage: 5,
     dismissable: true,
@@ -65,6 +77,6 @@ export const STAGE5: StepDef[] = [
     parentTitle: "Planning for the next intake",
     applies: (ctx) => ctx.apps.length > 0 && ctx.apps.every((a) => a.decision === "rejected"),
     done: () => false,
-    href: () => "/app/profile#tracks",
+    href: () => "/app/next-intake",
   },
 ];

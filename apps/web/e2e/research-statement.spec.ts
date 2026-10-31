@@ -35,12 +35,16 @@ test("5.7 a research statement shows the course's researchers and checks for a q
   await expect(checks).toContainText("Save a draft to check");
   await page.locator("textarea").fill("I love data and your department is excellent.");
   await page.click('button:has-text("Save draft")');
+  // Wait for the draft to save before reloading.
+  await expect.poll(() => sql(`select count(*) from document_versions v join documents d on d.id = v.document_id where d.user_id = '${STUDENT}' and d.kind = 'research_statement'`)).toBe("1");
   await page.reload();
   await expect(checks).toContainText("No research question found yet.");
   await expect(checks).toContainText("No method named yet.");
 
   await page.locator("textarea").fill("Can rostering under uncertainty cut nurse overtime? I would build a simulation from two years of shift data, as Dr Raman did.");
   await page.click('button:has-text("Save draft")');
+  // Wait for the draft to save before reloading.
+  await expect.poll(() => sql(`select count(*) from document_versions v join documents d on d.id = v.document_id where d.user_id = '${STUDENT}' and d.kind = 'research_statement'`)).toBe("2");
   await page.reload();
   await expect(checks).toContainText("States a research question (S1).");
   await expect(checks).toContainText("Names how you would answer it: simulation.");

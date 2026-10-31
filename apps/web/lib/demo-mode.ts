@@ -9,7 +9,7 @@ export const MODES: readonly Mode[] = ["guest", "user", "parent"];
 
 /** Seeded in supabase/seed.sql, which is for local development only. */
 export const DEMO_ACCOUNTS = {
-  user: { email: "student@uniguide.local", password: "password123", home: "/app/profile" },
+  user: { email: "student@uniguide.local", password: "password123", home: "/app" },
   parent: { email: "parent@uniguide.local", password: "password123", home: "/parent" },
 } as const;
 

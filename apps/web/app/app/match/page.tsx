@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { createHash } from "node:crypto";
-import { admissionBand, admissionEstimate, matchPrograms, type AdmissionModelParams, type Exclusion } from "@uniguide/matching";
+import { admissionBand, admissionEstimate, matchPrograms, scoreGoals, type AdmissionModelParams, type Exclusion } from "@uniguide/matching";
 import { ExplainButton } from "@/components/explain-button";
 import { ProgramCard } from "@/components/program-card";
+import { ScoreGoals } from "@/components/score-goals";
+import { FindUniversitiesButton } from "../matching/find-button";
 import { daysUntil, deadlineText, money } from "@/lib/format";
 import { asJson } from "@/lib/json";
 import { loadMatchInputs } from "@/lib/match-data";
@@ -12,6 +14,9 @@ import { readDisplay } from "@/lib/display-server";
 import { getUser } from "@/lib/supabase/server";
 import { selectedTrack } from "@/lib/tracks";
 import { TrackSwitcher } from "@/components/track-switcher";
+import { WelcomePrompt } from "@/components/journey/welcome-prompt";
+import { welcomeOf } from "@/lib/onboarding";
+import { getLocale } from "@/lib/i18n/server";
 
 export const metadata: Metadata = { title: "My matches" };
 
@@ -34,15 +39,17 @@ const RULES: Record<Exclusion["rule"], string> = {
 export default async function MatchPage({ searchParams }: PageProps<"/app/match">) {
   const { supabase, user } = await getUser();
   const { data: tracks } = await supabase.from("tracks").select("*").order("created_at");
-  const track = selectedTrack((await searchParams).track, tracks ?? []);
+  const params = await searchParams;
+  const track = selectedTrack(params.track, tracks ?? []);
+  const { t: all } = await getLocale();
   const inputs = await loadMatchInputs(supabase, user!.id, track);
   const { lite } = await readDisplay();
   if (!inputs) {
     return (
       <div className="rounded-2xl border border-border bg-surface p-8">
-        <h1 className="text-2xl font-semibold">Tell us what you want to study first</h1>
-        <p className="mt-2 text-muted">Choose at least the level you want, and ideally countries, subject and budget.</p>
-        <Link href="/app/profile" className="btn btn-primary mt-6">Complete your profile</Link>
+        <h1 className="text-2xl font-semibold">{all.journey.empty.profileTitle}</h1>
+        <p className="mt-2 text-muted">{all.journey.empty.profileBody}</p>
+        <Link href="/app/onboarding?screen=3" className="btn btn-primary mt-6">{all.journey.empty.profileAction}</Link>
       </div>
     );
   }
@@ -88,6 +95,23 @@ export default async function MatchPage({ searchParams }: PageProps<"/app/match"
   const byId = new Map(candidates.map((c) => [c.id!, c]));
   const feasible = results.filter((r) => !r.excluded);
   const excluded = results.filter((r) => r.excluded);
+  // Score goals (J3.1): verified test minimums of the courses that fit, or that were set aside only for a requirement,
+  // unmet first. Unverified minimums are left out.
+  const titleOf = new Map(candidates.map((c) => [c.id!, c.title!]));
+  const inReach = new Set(results.filter((r) => !r.excluded || r.exclusions.every((e) => e.rule === "ineligible")).map((r) => r.programId));
+  const goals = scoreGoals(
+    student.testScores ?? [],
+    programs
+      .filter((p) => inReach.has(p.id))
+      .flatMap((p) =>
+        p.requirements
+          .filter((q) => q.status === "verified" && q.exam && (q.kind === "language_test" || q.kind === "admissions_test") && (q.minTotal != null || q.minSections))
+          .map((q) => ({ programId: p.id, title: titleOf.get(p.id) ?? "", exam: q.exam!, examVersion: q.examVersion ?? null, minTotal: q.minTotal ?? null, minSections: q.minSections ?? null })),
+      ),
+  )
+    .map((g) => ({ ...g, title: titleOf.get(g.programId) ?? "" }))
+    .sort((a, b) => Number(a.met) - Number(b.met))
+    .slice(0, 12);
   const groups = new Map<Exclusion["rule"], typeof excluded>();
   for (const r of excluded) {
     const rule = r.exclusions[0]!.rule;
@@ -96,6 +120,7 @@ export default async function MatchPage({ searchParams }: PageProps<"/app/match"
 
   return (
     <div className="grid gap-10">
+      <WelcomePrompt welcome={welcomeOf(params.welcome)} t={all.journey.onboarding} />
       <header>
         <h1 className="text-4xl font-semibold">Your matches{track ? `: ${track.name}` : ""}</h1>
         {tracks?.length ? (
@@ -116,9 +141,16 @@ export default async function MatchPage({ searchParams }: PageProps<"/app/match"
       </header>
 
       {feasible.length === 0 ? (
+        // J3.5: while the catalogue is small, an empty list says so and offers what to do next.
         <div className="rounded-2xl border border-border bg-surface p-8">
-          <h2 className="text-xl font-semibold">Nothing fits all your limits yet</h2>
-          <p className="mt-2 text-muted">Look at why courses were set aside below, or widen your countries or budget.</p>
+          <h2 className="text-xl font-semibold">{all.journey.empty.matchTitle}</h2>
+          <p className="mt-2 max-w-[680px] text-muted">{all.journey.empty.matchBody}</p>
+          {excluded.length ? <p className="mt-2 text-muted">{all.journey.empty.whyAside}</p> : null}
+          <div className="mt-6 flex flex-wrap items-start gap-3">
+            <FindUniversitiesButton label={all.journey.empty.findUniversities} />
+            <Link href="/app/match/what-if" className="btn btn-secondary">{all.journey.empty.tryWhatIf}</Link>
+            <Link href="/courses" className="btn btn-secondary">{all.journey.empty.browse}</Link>
+          </div>
         </div>
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
@@ -190,6 +222,21 @@ export default async function MatchPage({ searchParams }: PageProps<"/app/match"
           })}
         </div>
       )}
+
+      <section id="score-goals" aria-labelledby="score-goals-title" className="grid gap-3 scroll-mt-24">
+        <h2 id="score-goals-title" className="text-2xl font-semibold">{all.journey.panels.scoreGoalsTitle}</h2>
+        <p className="max-w-[680px] text-muted">{all.journey.panels.scoreGoalsIntro}</p>
+        <ScoreGoals
+          rows={goals}
+          empty={
+            student.testScores?.length ? (
+              all.journey.panels.scoreGoalsNoMinimum
+            ) : (
+              <Link href="/app/profile#scores-section" className="underline underline-offset-2">{all.journey.panels.scoreGoalsNoScore}</Link>
+            )
+          }
+        />
+      </section>
 
       {lite && feasible.length > listSize(40, lite) ? (
         <p className="text-sm text-muted">

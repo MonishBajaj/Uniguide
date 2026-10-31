@@ -6,6 +6,7 @@ import { money, shortDate } from "@/lib/format";
 import { getUser } from "@/lib/supabase/server";
 import { removeCost } from "../actions";
 import { CostForm } from "../cost-form";
+import { courseLabel } from "@/lib/own-application";
 
 export const metadata: Metadata = { title: "Application costs" };
 
@@ -17,12 +18,12 @@ export default async function CostsPage() {
       .select("id, kind, amount, currency, paid_on, note, application_id")
       .order("paid_on", { ascending: false, nullsFirst: false })
       .order("created_at", { ascending: false }),
-    supabase.from("applications").select("id, program_cycles(programs(title, institutions(name)))"),
+    supabase.from("applications").select("id, own_title, own_institution, program_cycles(programs(title, institutions(name)))"),
     supabase.from("profiles").select("budget_currency").eq("user_id", user!.id).single(),
     loadFx(supabase),
   ]);
   const titles = new Map(
-    (apps ?? []).map((a) => [a.id, `${a.program_cycles?.programs?.title ?? "Course"}, ${a.program_cycles?.programs?.institutions?.name ?? ""}`]),
+    (apps ?? []).map((a) => [a.id, courseLabel(a)]),
   );
   const rows = (costs ?? []).map((c) => ({ ...c, amount: Number(c.amount) }));
   const totals = totalsByCurrency(rows);

@@ -5,6 +5,9 @@
  * within 160.
  */
 
+import { hi } from "./copy-hi";
+import { PARENT_HI } from "./parent-copy";
+
 export const TITLE_MAX = 60;
 export const REASON_MAX = 160;
 
@@ -15,7 +18,7 @@ export interface CopyTemplate {
 
 const en: Record<string, CopyTemplate> = {
   // Stage 1
-  "S1.01": { title: "Tell us what and where you want to study", reason: "Your level, subjects and countries decide which courses we look at." },
+  "S1.01": { title: "Tell us what and where you want to study", reason: "Your level, subjects and countries decide which courses we look at. One short form covers them." },
   "S1.01.research": { title: "Tell us about your research interests", reason: "Research courses are matched on what you want to study, so we need your interests." },
   "S1.02": { title: "Set your budget", reason: "A budget with its currency lets us compare each course's costs with what you can spend." },
   "S1.03": { title: "Choose your intake", reason: "The year you want to start decides which application rounds are still open." },
@@ -30,7 +33,7 @@ const en: Record<string, CopyTemplate> = {
   "S2.02": { title: "Find universities for your subject", reason: "We can look for more courses that fit your subject and countries." },
   "S2.03": { title: "Compare your countries", reason: "See costs, visas and work rights for {countries} side by side." },
   "S2.04": { title: "Check which English tests your matches accept", reason: "Each university lists the English tests it accepts and the score it asks for." },
-  "S2.05": { title: "Close the gap to a course's minimum score", reason: "{course} publishes a minimum score above the one you saved." },
+  "S2.05": { title: "Close the gap to a course's minimum score", reason: "{course} asks for {minimum} in {exam}. Your best so far is {score}." },
   "S2.06": { title: "Try what-if", reason: "See which courses open up if you change one thing, like your budget or countries." },
   "S2.07": { title: "Watch courses you're unsure about", reason: "We'll tell you when {course} changes a deadline or requirement." },
   // Stage 3
@@ -42,7 +45,7 @@ const en: Record<string, CopyTemplate> = {
   "S3.05.check": { title: "Decide which courses you're applying to", reason: "{course} may close soon. Check the deadline on the official page." },
   "S3.06": { title: "Look at the cost range with your parent", reason: "Talking about costs early avoids surprises later." },
   // Stage 4
-  "S4.01": { title: "Work through the checklist for {course}", reason: "{count} items on the {course} checklist are still open." },
+  "S4.01": { title: "Work through the checklist for {course}", reason: "{course} has {count} checklist {items} still open." },
   "S4.02": { title: "Start your {rule}", reason: "This applies to applicants from {residence} going to {destination}, so start it early." },
   "S4.02-check": { title: "Check {rule} with the university", reason: "We haven't verified whether this applies to you. Check this on the official page." },
   "S4.03": { title: "Ask {recommender} for a letter", reason: "{course} asks for {count} recommendation letters." },
@@ -56,7 +59,8 @@ const en: Record<string, CopyTemplate> = {
   "S4.08": { title: "Write your research statement", reason: "Research courses like {course} usually ask what you want to study and how." },
   "S4.09": { title: "Contact potential supervisors", reason: "Research courses often expect you to contact a supervisor before applying." },
   "S4.10": { title: "Build your CV", reason: "Many master's and research applications ask for a CV." },
-  "S4.11": { title: "Book your test", reason: "{course} asks for a test score and you haven't saved one." },
+  "S4.11": { title: "Book your test", reason: "{course} asks for a test score. You haven't saved or booked one yet." },
+  "S4.11.check": { title: "Book your test", reason: "{course} may ask for a test score. Check the official page, then book it." },
   "S4.12": { title: "Send your {exam} score to {course}", reason: "You've saved a {exam} score. Mark it sent once the testing service sends it." },
   "S4.13": { title: "Check your passport is valid", reason: "Your passport usually needs to be valid for your whole stay." },
   "S4.14": { title: "Record the application fee", reason: "Recording each fee keeps the total cost of applying in one place." },
@@ -76,8 +80,8 @@ const en: Record<string, CopyTemplate> = {
   "S6.03": { title: "Fill in the decision matrix", reason: "Weigh your offers on what matters to you, not only on cost." },
   "S6.04": { title: "Reply to {course} by {date}", reason: "You recorded {date} as the reply date for {course}." },
   "S6.05": { title: "Meet your offer's conditions", reason: "{course}'s offer has conditions to meet before enrolling." },
-  "S6.06": { title: "Pay the deposit for {course}", reason: "{course} asks for a deposit to hold your place." },
-  "S6.07": { title: "Let your other universities know", reason: "Declining offers you won't take frees places for other students." },
+  "S6.06": { title: "Pay the deposit for {course}", reason: "Mark the deposit paid once it's done, so the rest of your steps follow." },
+  "S6.07": { title: "Let your other universities know", reason: "Declining {course} frees the place for another student." },
   "S6.08": { title: "Get your admission document for the visa", reason: "Your visa application needs the admission document from {course}." },
   "S6.09": { title: "Share your outcome for research", reason: "Shared outcomes, kept separate from your account, help future students. It's optional." },
   // Stage 7
@@ -91,7 +95,9 @@ const en: Record<string, CopyTemplate> = {
   "S7.08": { title: "Register after you arrive", reason: "{destination} asks new residents to register their address." },
 };
 
-export const COPY: Record<"en", Record<string, CopyTemplate>> = { en };
+export type Locale = "en" | "hi";
+
+export const COPY: Record<Locale, Record<string, CopyTemplate>> = { en, hi };
 
 /** Shortens text to `max` characters, ending with "…" when cut. */
 export function fit(text: string, max: number): string {
@@ -129,6 +135,22 @@ export function render(key: string, params: Record<string, string>): { title: st
   const t = en[key];
   if (!t) throw new Error(`No copy for ${key}`);
   return { title: fillWithin(t.title, params, TITLE_MAX), reason: fillWithin(t.reason, params, REASON_MAX) };
+}
+
+/**
+ * A step's title and reason in the reader's language (journey M6, J6.2). The engine saves English; the web app
+ * translates where a step is shown, with the same parameters. A key without a translation falls back to English.
+ */
+export function renderStep(locale: Locale, key: string, params: Record<string, string>): { title: string; reason: string } {
+  const t = (locale === "hi" ? hi[key] : undefined) ?? en[key];
+  if (!t) throw new Error(`No copy for ${key}`);
+  return { title: fillWithin(t.title, params, TITLE_MAX), reason: fillWithin(t.reason, params, REASON_MAX) };
+}
+
+/** A parent title in Hindi, or null to keep the English one the engine saved. */
+export function renderParentTitle(locale: Locale, catalogueId: string, params: Record<string, string>): string | null {
+  const t = locale === "hi" ? PARENT_HI[catalogueId] : undefined;
+  return t ? fillWithin(t, params, TITLE_MAX) : null;
 }
 
 /** "15 January 2027", in the fact's own time zone when it has one. */

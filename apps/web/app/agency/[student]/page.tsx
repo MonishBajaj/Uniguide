@@ -3,8 +3,13 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PortfolioList } from "@/components/portfolio-list";
 import { GRADE_SCALES } from "@/lib/fields";
-import { countryName, daysUntil, deadlineText, label, money } from "@/lib/format";
+import { countryName, daysUntil, deadlineText, label, money, shortDate } from "@/lib/format";
 import { getUser } from "@/lib/supabase/server";
+import { OwnBadge } from "@/components/own-badge";
+import { courseOf } from "@/lib/own-application";
+import { STAGES } from "@uniguide/journey/stages";
+import { StagePath } from "@/components/journey/stage-path";
+import { getLocale } from "@/lib/i18n/server";
 
 export const metadata: Metadata = { title: "Student" };
 
@@ -12,17 +17,22 @@ export default async function AgencyStudent({ params }: PageProps<"/agency/[stud
   const { student } = await params;
   const { supabase } = await getUser();
   // Every query is limited by RLS to students with an active share for this counselor.
-  const [{ data: share }, { data: profile }, { data: scores }, { data: shortlist }, { data: apps }] = await Promise.all([
+  const [{ data: share }, { data: profile }, { data: scores }, { data: shortlist }, { data: apps }, { data: journey }] = await Promise.all([
     supabase.from("agency_shares").select("display_name, granted_at").eq("student_id", student).is("revoked_at", null).limit(1).maybeSingle(),
     supabase.from("profiles").select("residence_country, home_qualification, grade_value, grade_text, grade_scale, budget_amount, budget_currency, target_levels, target_countries").eq("user_id", student).maybeSingle(),
     supabase.from("test_scores").select("exam, exam_version, total, taken_on").eq("user_id", student),
     supabase.from("shortlists").select("programs(slug, title, institutions(name))").eq("user_id", student),
     supabase
       .from("applications")
-      .select("id, status, decision, program_cycles(label, programs(slug, title, institutions(name))), checklist_items(id, title, done, sort, deadlines(due_at, timezone, precision, status))")
+      .select("id, status, decision, own_title, own_institution, program_cycles(label, programs(slug, title, institutions(name))), checklist_items(id, title, done, sort, deadlines(due_at, timezone, precision, status))")
       .eq("user_id", student),
+    // The student's journey as they last saw it (G22, J4.4). Read only: no buttons, no links into their pages.
+    supabase.from("journey_state").select("stage, stage_progress, steps, computed_at").eq("user_id", student).maybeSingle(),
   ]);
   if (!share || !profile) notFound();
+  const { t } = await getLocale();
+  const progress = (journey?.stage_progress ?? {}) as { done?: number; total?: number; label?: string };
+  const steps = ((journey?.steps ?? []) as { id: string; title: string; reason: string }[]).slice(0, 5);
 
   return (
     <div className="mx-auto grid max-w-5xl gap-8 px-6 py-12">
@@ -31,6 +41,37 @@ export default async function AgencyStudent({ params }: PageProps<"/agency/[stud
         <h1 className="mt-2 text-4xl font-semibold">{share.display_name}</h1>
         <p className="mt-1 text-sm text-muted">Shared with you. Read only.</p>
       </header>
+
+      <section aria-labelledby="journey" className="grid gap-4 rounded-2xl border border-border bg-surface p-6 text-sm">
+        <h2 id="journey" className="text-lg font-semibold">Stage</h2>
+        {journey ? (
+          <>
+            <p className="font-semibold">Stage {journey.stage} of 7: {STAGES[journey.stage as keyof typeof STAGES].name}</p>
+            <StagePath
+              stage={journey.stage}
+              progress={{ done: progress.done ?? 0, total: progress.total ?? 0, label: progress.label ?? "" }}
+              t={t.journey}
+              headingId="journey-path"
+            />
+            <p className="text-xs text-muted">As the student last saw it, {shortDate(journey.computed_at)}.</p>
+            <h3 className="font-semibold">Next steps</h3>
+            {steps.length ? (
+              <ul className="grid gap-2">
+                {steps.map((s) => (
+                  <li key={s.id} className="rounded-lg bg-background p-3">
+                    <p className="font-semibold">{s.title}</p>
+                    <p className="text-muted">{s.reason}</p>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-muted">No open steps.</p>
+            )}
+          </>
+        ) : (
+          <p className="text-muted">The student&apos;s stage appears here once they open UniGuide.</p>
+        )}
+      </section>
 
       <section aria-labelledby="profile" className="grid gap-3 rounded-2xl border border-border bg-surface p-6 text-sm sm:grid-cols-2">
         <h2 id="profile" className="text-lg font-semibold sm:col-span-2">Profile</h2>
@@ -51,15 +92,16 @@ export default async function AgencyStudent({ params }: PageProps<"/agency/[stud
         <h2 id="apps" className="text-2xl font-semibold">Applications</h2>
         {(apps ?? []).length === 0 ? <p className="text-muted">No applications tracked yet.</p> : null}
         {(apps ?? []).map((a) => {
-          const program = a.program_cycles?.programs;
+          const course = courseOf(a);
           const items = [...a.checklist_items].sort((x, y) => x.sort - y.sort);
           return (
             <article key={a.id} className="grid gap-2 rounded-2xl border border-border bg-surface p-6">
               <div className="flex flex-wrap items-baseline justify-between gap-2">
-                <h3 className="text-lg font-semibold">{program?.title}</h3>
+                <h3 className="text-lg font-semibold">{course.title}</h3>
                 <span className="text-sm text-muted">{label(a.decision ?? a.status)}</span>
               </div>
-              <p className="text-sm text-muted">{program?.institutions?.name} · {a.program_cycles?.label}</p>
+              <p className="text-sm text-muted">{course.institution}{a.program_cycles ? ` · ${a.program_cycles.label}` : ""}</p>
+                    {course.own ? <p><OwnBadge text="Added by the student, not checked" /></p> : null}
               <ul className="grid gap-1 text-sm">
                 {items.map((i) => (
                   <li key={i.id} className={i.done ? "text-muted line-through" : ""}>

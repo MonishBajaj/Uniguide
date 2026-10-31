@@ -26,6 +26,7 @@ const Profile = z.object({
   grade_scale: z.enum(Object.keys(GRADE_SCALES) as [string, ...string[]]).nullable(),
   budget_amount: optionalNumber.refine((v) => v == null || v > 0),
   budget_currency: z.enum(CURRENCIES).nullable(),
+  intake_year: optionalNumber.refine((v) => v == null || (Number.isInteger(v) && v >= 2000 && v <= 2100)),
   target_levels: z.array(z.enum(LEVELS)),
   target_countries: z.array(z.enum(DESTINATIONS)),
   target_fields: z.array(z.enum(Object.keys(FIELDS) as [string, ...string[]])),
@@ -50,6 +51,7 @@ export async function saveProfile(_prev: FormState, form: FormData): Promise<For
     grade_scale: orNull("grade_scale"),
     budget_amount: form.get("budget_amount"),
     budget_currency: orNull("budget_currency"),
+    intake_year: form.get("intake_year"),
     target_levels: form.getAll("target_levels"),
     // The favourite goes first: the location criterion scores countries by their order.
     target_countries: [...new Set([form.get("favourite_country"), ...form.getAll("target_countries")])].filter(
@@ -93,6 +95,34 @@ export async function saveProfile(_prev: FormState, form: FormData): Promise<For
   // The first time the profile can drive a search, start it and show the student what is happening.
   if (await startFirstSearch(supabase, user.id)) redirect("/app/matching");
   return { ok: true, message: "Profile saved." };
+}
+
+// Test plans (J3.4) ---------------------------------------------------------------
+
+const Plan = z
+  .object({
+    exam: z.enum(EXAMS),
+    status: z.enum(["not_taken", "booked"]),
+    booked_for: z.preprocess((v) => v || null, z.iso.date().nullable()),
+  })
+  .refine((p) => (p.status === "booked") === (p.booked_for !== null));
+
+/** "Not taken yet" or a booking, one per test. Saving again replaces the plan for that test. */
+export async function saveTestPlan(form: FormData): Promise<void> {
+  const { supabase, user } = await getUser();
+  if (!user) redirect("/login");
+  const parsed = Plan.safeParse(Object.fromEntries(form));
+  if (!parsed.success) redirect("/app/profile?plan=invalid#test-plans");
+  await supabase.from("test_plans").upsert({ user_id: user.id, ...parsed.data }, { onConflict: "user_id,exam" });
+  revalidatePath("/app", "layout");
+  redirect("/app/profile#test-plans");
+}
+
+export async function deleteTestPlan(id: string): Promise<void> {
+  const { supabase, user } = await getUser();
+  if (!user) return;
+  await supabase.from("test_plans").delete().eq("id", id).eq("user_id", user.id);
+  revalidatePath("/app", "layout");
 }
 
 const Score = z.object({
@@ -295,3 +325,28 @@ export async function removeTrack(id: string) {
   await supabase.from("tracks").delete().eq("id", id);
   revalidatePath("/app", "layout");
 }
+
+// Document readiness (journey M5, J5.3) ----------------------------------------------
+
+const Readiness = z.object({
+  passport_expires: z.preprocess((v) => v || null, z.iso.date().nullable()),
+  transcript_ready: z.preprocess((v) => v === "on", z.boolean()),
+  translation_ready: z.preprocess((v) => v === "on", z.boolean()),
+});
+
+/** Saves the passport expiry and whether transcripts and translations are ready. Yes/no and a date; no uploads. */
+export async function saveReadiness(form: FormData): Promise<void> {
+  const { supabase, user } = await getUser();
+  if (!user) redirect("/login");
+  const parsed = Readiness.safeParse(Object.fromEntries(form));
+  if (!parsed.success) return;
+  const { passport_expires, transcript_ready, translation_ready } = parsed.data;
+  await supabase.from("readiness_items").delete().eq("user_id", user.id).in("kind", ["passport", "transcript", "translation"]);
+  await supabase.from("readiness_items").insert([
+    ...(passport_expires ? [{ user_id: user.id, kind: "passport", ready: true, expires_on: passport_expires }] : []),
+    { user_id: user.id, kind: "transcript", ready: transcript_ready },
+    { user_id: user.id, kind: "translation", ready: translation_ready },
+  ]);
+  revalidatePath("/app", "layout");
+}
+

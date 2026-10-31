@@ -1,8 +1,10 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { z } from "zod";
+import { openIntakes } from "@/lib/intakes";
 import { getUser } from "@/lib/supabase/server";
-import { ensureApplication } from "@/lib/tracker";
+import { ensureApplication, moveToIntake } from "@/lib/tracker";
 
 export type ShortlistResult = { ok: boolean; message?: string };
 
@@ -27,6 +29,39 @@ export async function removeFromShortlist(programId: string): Promise<void> {
   if (!user) return;
   await supabase.from("shortlists").delete().eq("user_id", user.id).eq("program_id", programId);
   revalidatePath("/app/shortlist");
+}
+
+/**
+ * Chooses the intake for a shortlisted course (J5.7). Only an intake with an application deadline ahead counts.
+ * A still-shortlisted application moves to it with its checklist rebuilt, once the student has agreed if ticked
+ * items would start again. A course already being prepared keeps its intake.
+ */
+export async function chooseIntake(programId: string, form: FormData): Promise<void> {
+  const cycleId = z.string().uuid().safeParse(form.get("cycle_id"));
+  if (!cycleId.success) return;
+  const { supabase, user } = await getUser();
+  if (!user) return;
+  const { data: cycles } = await supabase
+    .from("program_cycles")
+    .select("id, label, intake_year, intake_term, deadlines(kind, due_at, status, published)")
+    .eq("program_id", programId);
+  if (!openIntakes(cycles ?? [], new Date()).some((o) => o.id === cycleId.data)) return;
+  const { data: apps } = await supabase
+    .from("applications")
+    .select("id, status, cycle_id, checklist_items(done, kind), program_cycles!inner(program_id)")
+    .eq("user_id", user.id)
+    .eq("program_cycles.program_id", programId)
+    .neq("status", "withdrawn");
+  if ((apps ?? []).some((a) => a.status !== "shortlisted")) return;
+  const app = apps?.[0];
+  const moving = app != null && app.cycle_id !== cycleId.data;
+  if (moving && app.checklist_items.some((i) => i.done && i.kind !== "custom") && form.get("confirm") !== "on") return;
+  const { error } = await supabase.from("shortlists").update({ cycle_id: cycleId.data }).eq("user_id", user.id).eq("program_id", programId);
+  if (error) return;
+  if (moving) await moveToIntake(supabase, user.id, app.id, programId, cycleId.data);
+  else if (!app) await ensureApplication(supabase, user.id, programId);
+  revalidatePath("/app/shortlist");
+  revalidatePath("/app/tracker", "layout");
 }
 
 /** Moves a shortlist kept on this device (before signing in) into the account. Idempotent. */

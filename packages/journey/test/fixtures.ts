@@ -44,6 +44,9 @@ export function base(overrides: Partial<JourneyInput> = {}): JourneyInput {
     profile: emptyProfile,
     tracks: [],
     testScores: [],
+    testPlans: [],
+    readiness: [],
+    supervisorContacts: [],
     shortlist: [],
     applications: [],
     recommenders: [],
@@ -58,6 +61,7 @@ export function base(overrides: Partial<JourneyInput> = {}): JourneyInput {
     cvEntries: 0,
     portfolioItems: 0,
     lastCompletedAt: null,
+    sharedWith: { parents: [], counselors: [] },
     ...overrides,
   };
 }
@@ -67,6 +71,9 @@ export const programs: Record<string, ProgramRef> = {
   tum: { id: "p-tum", slug: "tu-beispielstadt-msc-informatik", title: "M.Sc. Informatik", institution: "Technische Universität Beispielstadt", country: "DE", level: "master" },
   state: { id: "p-state", slug: "example-state-ms-computer-science", title: "MS in Computer Science", institution: "Example State University", country: "US", level: "master" },
 };
+
+/** An own application's course: the student's words, no catalogue id, slug or level (J3.3). */
+export const ownProgram: ProgramRef = { id: null, slug: null, title: "MSc Urban Planning", institution: "Universiteit Voorbeeld", country: "NL", level: null };
 
 export function application(id: string, program: ProgramRef, overrides: Partial<ApplicationSnapshot> = {}): ApplicationSnapshot {
   return {
@@ -102,6 +109,42 @@ export const STAGE_FIXTURES: Record<string, { input: JourneyInput; stage: number
   "stage-3-shortlisted": {
     input: base({ profile: readyProfile, matchRuns: matched, shortlist: [{ program: programs.exampleton!, createdAt: "2026-10-21T10:00:00Z" }] }),
     stage: 3,
+  },
+  // M3 (J3.1): a tracked course whose verified TOEFL minimum is above the student's best score.
+  "edge-score-below-minimum": {
+    input: base({
+      profile: readyProfile,
+      matchRuns: matched,
+      testScores: [{ id: "t1", exam: "toefl_ibt", examVersion: "legacy", total: 92, takenOn: "2026-09-01" }],
+      shortlist: [{ program: programs.exampleton!, createdAt: "2026-10-21T10:00:00Z" }],
+      applications: [
+        application("a1", programs.exampleton!, {
+          requirements: [
+            { id: "q-toefl", kind: "language_test", exam: "toefl_ibt", examVersion: "legacy", minTotal: 100, testPolicy: null, countRequired: null, status: "verified", sourceUrl: "https://exampleton.ac.uk/entry" },
+          ],
+        }),
+      ],
+    }),
+    stage: 3,
+  },
+  // M3 (J3.3): a course that isn't in the catalogue. The student's own words and date, no facts.
+  "edge-own-application-preparing": {
+    input: base({
+      profile: { ...readyProfile, entryPath: "applying" },
+      applications: [application("own1", ownProgram, { status: "preparing", own: true, ownDueAt: "2026-11-20T23:59:00Z", cycle: null, deadlines: [], requirements: [],
+        checklist: [{ id: "c1", title: "Upload portfolio", done: false, dueAt: null, kind: "custom", link: null, countryRuleId: null }] })],
+    }),
+    stage: 4,
+  },
+  "edge-own-deadline-passed": {
+    input: base({
+      profile: { ...readyProfile, entryPath: "applying" },
+      applications: [
+        application("own1", ownProgram, { status: "preparing", own: true, ownDueAt: "2026-10-01T23:59:00Z", cycle: null, deadlines: [], requirements: [] }),
+        application("sent", programs.exampleton!, { status: "submitted" }),
+      ],
+    }),
+    stage: 5,
   },
   "stage-4-preparing": {
     input: base({ profile: readyProfile, matchRuns: matched, applications: [application("a1", programs.exampleton!, { status: "preparing" })] }),
@@ -168,11 +211,40 @@ export const STAGE_FIXTURES: Record<string, { input: JourneyInput; stage: number
     }),
     stage: 5,
   },
+  // M5 (J5.4): rejected everywhere, then planning for the next intake with a course still shortlisted.
+  "edge-rolled-over-after-rejections": {
+    input: base({
+      profile: { ...readyProfile, intakeYear: 2028, intakeRolledAt: "2026-10-30T12:00:00Z" },
+      matchRuns: matched,
+      shortlist: [{ program: programs.state!, createdAt: "2026-10-31T10:00:00Z" }],
+      applications: [
+        application("a1", programs.exampleton!, { status: "decided", decision: "rejected" }),
+        application("a2", programs.tum!, { status: "decided", decision: "rejected" }),
+      ],
+    }),
+    stage: 3,
+  },
   "edge-withdrawn-only": {
     input: base({ profile: readyProfile, applications: [application("a1", programs.exampleton!, { status: "withdrawn" })] }),
     stage: 2,
   },
   "edge-pending-consent": { input: base({ profile: { ...emptyProfile, consentState: "pending_parental" } }), stage: 1 },
+  // M2: consent blocks every step whatever the data says. Pending consent leaves only S1.06; revoked leaves nothing,
+  // because /consent can't help (M2 plan N17).
+  "edge-pending-consent-with-application": {
+    input: base({
+      profile: { ...readyProfile, consentState: "pending_parental" },
+      applications: [application("a1", programs.tum!, { status: "preparing" })],
+    }),
+    stage: 4,
+  },
+  "edge-revoked-consent": {
+    input: base({
+      profile: { ...readyProfile, consentState: "revoked" },
+      applications: [application("a1", programs.tum!, { status: "preparing" })],
+    }),
+    stage: 4,
+  },
   "edge-targets-only-on-a-track": {
     input: base({
       profile: { ...readyProfile, targetLevels: [], targetCountries: [], targetFields: [] },

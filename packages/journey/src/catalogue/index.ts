@@ -1,7 +1,7 @@
 import { fillWithin, render, TITLE_MAX } from "../copy";
 import { checklistFields } from "../minimum";
 import { activeApplications, computeStage } from "../stages";
-import type { JourneyInput, Level, NextStep, Stage } from "../types";
+import type { FactRef, JourneyInput, Level, NextStep, Stage } from "../types";
 import { variantsFor } from "../variants";
 import { STUDENT, courseLabel } from "./helpers";
 import { STAGE1 } from "./stage1";
@@ -34,7 +34,7 @@ export function buildCtx(input: JourneyInput, stage: Stage = computeStage(input)
     today: input.today,
     stage,
     variants: variantsFor(fields.target_levels as Level[]),
-    apps: activeApplications(input.applications),
+    apps: activeApplications(input.applications, input.profile.intakeRolledAt ?? null),
     countries: fields.target_countries,
     marked: (id) => marked.has(id),
   };
@@ -43,14 +43,36 @@ export function buildCtx(input: JourneyInput, stage: Stage = computeStage(input)
 const stepId = (def: StepDef, s: Subject) => (s.key ? `${def.id}:${s.key}` : def.id);
 
 /**
+ * Where a step's first quoted fact comes from: the fact's official page when the snapshot has it,
+ * otherwise the course page for a course's facts, or /visas for a country rule. None without a fact.
+ */
+export function sourceFor(input: JourneyInput, refs: FactRef[]): { href: string } | undefined {
+  const ref = refs[0];
+  if (!ref) return undefined;
+  if (ref.table === "country_rules") {
+    const rule = input.countryRules.find((r) => r.id === ref.id);
+    return { href: rule?.sourceUrl ?? "/visas" };
+  }
+  for (const app of input.applications) {
+    const fact = ref.table === "requirements" ? app.requirements.find((r) => r.id === ref.id) : app.deadlines.find((d) => d.id === ref.id);
+    if (fact) return fact.sourceUrl ? { href: fact.sourceUrl } : app.program.slug ? { href: `/courses/${app.program.slug}` } : undefined;
+  }
+  return undefined;
+}
+
+/**
  * Runs every available catalogue entry against the input. Steps about the student only show from
  * their stage onwards; steps about an application follow that application's own status instead.
  * Returns the open steps (unranked) and the ids of steps that apply and are done.
  */
-export function evaluateCatalogue(input: JourneyInput, stage: Stage = computeStage(input)): { open: Candidate[]; completed: string[] } {
+export function evaluateCatalogue(
+  input: JourneyInput,
+  stage: Stage = computeStage(input),
+): { open: Candidate[]; completed: string[]; marked: string[] } {
   const ctx = buildCtx(input, stage);
   const open: Candidate[] = [];
   const completed: string[] = [];
+  const marked: string[] = [];
   // Without parental consent nothing personal can be saved, so the only step is getting it (spec 4.4).
   const blocked = input.profile.consentState === "pending_parental" || input.profile.consentState === "revoked";
   CATALOGUE.forEach((def, order) => {
@@ -61,8 +83,10 @@ export function evaluateCatalogue(input: JourneyInput, stage: Stage = computeSta
       if (!perApplication && (def.stage > stage || (def.until && stage > def.until))) continue;
       if (def.applies && !def.applies(ctx, s)) continue;
       const id = stepId(def, s);
-      if (def.done(ctx, s) || (def.markable && ctx.marked(id))) {
+      const done = def.done(ctx, s);
+      if (done || (def.markable && ctx.marked(id))) {
         completed.push(id);
+        if (!done) marked.push(id);
         continue;
       }
       if (blocked && def.id !== "S1.06") continue;
@@ -70,6 +94,8 @@ export function evaluateCatalogue(input: JourneyInput, stage: Stage = computeSta
       const { title, reason } = render(def.copyKey?.(ctx, s) ?? def.id, params);
       const app = s.app;
       const track = app?.trackId ? input.tracks.find((t) => t.id === app.trackId) : undefined;
+      const factRefs = def.factRefs?.(ctx, s) ?? [];
+      const source = sourceFor(input, factRefs);
       open.push({
         id,
         catalogueId: def.id,
@@ -80,7 +106,9 @@ export function evaluateCatalogue(input: JourneyInput, stage: Stage = computeSta
         href: def.href(ctx, s),
         dueAt: def.dueAt?.(ctx, s) ?? null,
         dismissable: def.dismissable,
-        factRefs: def.factRefs?.(ctx, s) ?? [],
+        markable: Boolean(def.markable),
+        factRefs,
+        ...(source ? { source } : {}),
         ...(track ? { trackLabel: track.name } : {}),
         ...(app ? { application: { id: app.id, label: courseLabel(app) } } : {}),
         ...(def.parentTitle ? { parentTitle: fillWithin(def.parentTitle, params, TITLE_MAX) } : {}),
@@ -89,5 +117,5 @@ export function evaluateCatalogue(input: JourneyInput, stage: Stage = computeSta
       });
     }
   });
-  return { open, completed };
+  return { open, completed, marked };
 }

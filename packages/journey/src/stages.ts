@@ -1,5 +1,6 @@
 import { matchingMinimumMet } from "./minimum";
 import type { ApplicationSnapshot, JourneyInput, Stage } from "./types";
+export type { Stage } from "./types";
 
 export interface StageInfo {
   key: string;
@@ -89,9 +90,20 @@ export const STAGES: Record<Stage, StageInfo> = {
   },
 };
 
-/** Applications that still count. Withdrawn ones, and withdrawn or deferred decisions, are ignored (plan D5). */
-export function activeApplications(apps: ApplicationSnapshot[]): ApplicationSnapshot[] {
-  return apps.filter((a) => a.status !== "withdrawn" && a.decision !== "withdrawn" && a.decision !== "deferred");
+/**
+ * Applications that still count. Withdrawn ones, withdrawn or deferred decisions, offers the student declined
+ * (M5, J5.2), and rejections from before the student started planning the next intake (M5, J5.4) are ignored
+ * (plan D5). The tracker still lists them all.
+ */
+export function activeApplications(apps: ApplicationSnapshot[], rolledAt: string | null = null): ApplicationSnapshot[] {
+  return apps.filter(
+    (a) =>
+      a.status !== "withdrawn" &&
+      a.decision !== "withdrawn" &&
+      a.decision !== "deferred" &&
+      !a.declinedAt &&
+      !(rolledAt && a.decision === "rejected" && a.createdAt < rolledAt),
+  );
 }
 
 /**
@@ -102,6 +114,7 @@ export function hasOpenDeadline(app: ApplicationSnapshot, today: string): boolea
   const dates = [
     ...app.checklist.filter((i) => i.kind === "deadline" && !i.done && i.dueAt).map((i) => i.dueAt!),
     ...app.deadlines.map((d) => d.dueAt),
+    ...(app.ownDueAt ? [app.ownDueAt] : []),
   ];
   return dates.length === 0 || dates.some((d) => d.slice(0, 10) >= today);
 }
@@ -112,7 +125,7 @@ export function hasOpenDeadline(app: ApplicationSnapshot, today: string): boolea
  * never drops back to stage 3 (plan D5).
  */
 export function computeStage(input: JourneyInput): Stage {
-  const apps = activeApplications(input.applications);
+  const apps = activeApplications(input.applications, input.profile.intakeRolledAt ?? null);
   if (apps.some((a) => a.offerAcceptedAt)) return 7;
   if (apps.some((a) => a.decision === "admitted" || a.decision === "waitlisted")) return 6;
   const preparingOpen = apps.some((a) => a.status === "preparing" && hasOpenDeadline(a, input.today));

@@ -15,7 +15,7 @@ const optionalNumber = z.preprocess((v) => (v === "" || v === null ? undefined :
 const RuleInput = z
   .object({
     destination: z.string().regex(/^[A-Za-z]{2}$/),
-    kind: z.enum(["aps_certificate", "visa_info", "proof_of_funds", "visa_step", "post_study_work", "work_hours", "banking", "credential_evaluation", "other"]),
+    kind: z.enum(["aps_certificate", "visa_info", "proof_of_funds", "visa_step", "post_study_work", "work_hours", "banking", "credential_evaluation", "health_insurance", "residence_registration", "housing", "other"]),
     title: z.string().trim().min(3).max(200),
     details: z.string().trim().max(1000),
     source: z.url(),
@@ -27,16 +27,20 @@ const RuleInput = z
     hours_per_week: optionalInt,
     region: z.string().trim().max(60),
     step: z.preprocess((v) => (v === "" || v === null ? undefined : Number(v)), z.number().int().min(0).optional()),
+    // A lead time is a fact too: it needs the page's own words (journey M5, J5.5).
+    lead_days: z.preprocess((v) => (v === "" || v === null ? undefined : Number(v)), z.number().int().min(1).max(365).optional()),
+    lead_days_quote: z.preprocess((v) => (v === "" || v === null ? undefined : String(v).trim()), z.string().min(3).max(500).optional()),
   })
   .superRefine((v, ctx) => {
     const need = (ok: boolean, message: string) => ok || ctx.addIssue({ code: "custom", message });
     if (v.amount !== undefined) need(Boolean(v.currency && v.period), "An amount needs a currency and a period");
     if (v.kind === "post_study_work") need(v.months !== undefined, "A post study work rule needs months");
     if (v.kind === "work_hours") need(v.hours_per_week !== undefined, "A work hours rule needs hours per week");
+    need((v.lead_days === undefined) === (v.lead_days_quote === undefined), "A lead time needs the page's words for it, and the other way round");
   });
 
 export async function addRule(form: FormData) {
-  const fields = ["destination", "kind", "title", "details", "source", "quote", "amount", "currency", "period", "months", "hours_per_week", "region", "step"];
+  const fields = ["destination", "kind", "title", "details", "source", "quote", "amount", "currency", "period", "months", "hours_per_week", "region", "step", "lead_days", "lead_days_quote"];
   const input = RuleInput.parse(Object.fromEntries(fields.map((k) => [k, form.get(k) ?? ""])));
   const supabase = await createClient();
   const { error } = await supabase.rpc("add_country_rule", {
@@ -54,6 +58,8 @@ export async function addRule(form: FormData) {
     p_hours_per_week: input.hours_per_week,
     p_region: input.region || undefined,
     p_step: input.step,
+    p_lead_days: input.lead_days,
+    p_lead_days_quote: input.lead_days_quote,
   });
   if (error) throw new Error(error.message);
   revalidatePath("/admin/rules");

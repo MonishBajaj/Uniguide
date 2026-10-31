@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import os
 import uuid
 from collections.abc import Iterator
@@ -210,3 +211,87 @@ def test_letter_nudge_reaches_the_student_once(
     later = Mailer()
     send_letter_nudges(notifier, later, "https://uniguide.example", now=datetime.now(UTC) + timedelta(days=2))
     assert [m for m in later.sent if m.to == scenario["email"]] == []
+
+
+def test_own_applications_get_letter_nudges_but_never_deadline_reminders(
+    notifier: Connection, operator: Connection, scenario: dict[str, Any]
+) -> None:
+    """J3.3: an own application's dates are the student's. Letter due dates are theirs anyway; deadline
+    reminders quote published deadlines, which an own application never has."""
+    app = operator.execute(
+        "insert into applications (user_id, status, own_institution, own_title, own_country, own_due_at) "
+        "values (%s, 'preparing', 'Universiteit Voorbeeld', 'MSc Urban Planning', 'NL', %s) returning id",
+        (scenario["uid"], datetime.now(UTC) + timedelta(days=7)),
+    ).fetchone()
+    assert app
+    operator.execute(
+        "insert into checklist_items (application_id, user_id, title, kind, due_at) values (%s, %s, 'Portfolio', 'custom', %s)",
+        (app["id"], scenario["uid"], datetime.now(UTC) + timedelta(days=7)),
+    )
+    rec = operator.execute(
+        "insert into recommenders (user_id, name) values (%s, 'Dr Rao') returning id", (scenario["uid"],)
+    ).fetchone()
+    assert rec
+    operator.execute(
+        "insert into recommendation_requests (user_id, recommender_id, application_id, status, due_on) "
+        "values (%s, %s, %s, 'asked', %s)",
+        (scenario["uid"], rec["id"], app["id"], (datetime.now(UTC) + timedelta(days=3)).date()),
+    )
+    operator.commit()
+
+    mailer = Mailer()
+    send_letter_nudges(notifier, mailer, "https://uniguide.example")
+    assert [m.subject for m in mailer.sent if m.to == scenario["email"]] == [
+        "Letter due in 3 days: Dr Rao for MSc Urban Planning"
+    ]
+
+    reminders = Mailer()
+    send_reminders(notifier, reminders, "https://uniguide.example")
+    assert all("Urban Planning" not in m.subject + m.text for m in reminders.sent)
+
+
+def test_parent_digest_leads_with_the_journey_in_parent_safe_terms(
+    notifier: Connection, operator: Connection, parent: dict[str, Any], scenario: dict[str, Any]
+) -> None:
+    """J4.3: stage, progress, the parent note and parent titles; never a step's own title."""
+    operator.execute(
+        "insert into journey_state (user_id, stage, stage_progress, steps, engine_version, computed_at) values "
+        "(%s, 4, '{\"label\": \"0 of 1 application ready\"}', %s, 'journey-0.3.0', now())",
+        (
+            scenario["uid"],
+            json.dumps(
+                [
+                    {"title": "Draft your statement for MSc N", "reason": "Your essay."},
+                    {"title": "Send your IELTS score", "reason": "Your score 7.5."},
+                    {"title": "Work through the MSc N checklist", "parentTitle": "Working through the MSc N checklist"},
+                ]
+            ),
+        ),
+    )
+    operator.commit()
+    mailer = Mailer()
+    send_parent_digests(notifier, mailer, "https://uniguide.example")
+    [m] = [m for m in mailer.sent if m.to == parent["email"]]
+    assert m.subject == "This week: Asha is in stage 4, Prepare"
+    assert m.text.startswith("Stage 4 of 7: Prepare. 0 of 1 application ready.")
+    assert "How you can help right now:\nHelp gather documents like transcripts and certificates." in m.text
+    assert "The essays are Asha's to write" in m.text
+    assert "What Asha is working on:\n- Working through the MSc N checklist" in m.text
+    assert "MSc N, Notify U: Shortlisted" in m.text
+    for private in ("statement", "IELTS", "7.5", "Work through the MSc N checklist"):
+        assert private not in m.text
+
+
+def test_no_parent_email_once_the_student_has_arrived(
+    notifier: Connection, operator: Connection, parent: dict[str, Any], scenario: dict[str, Any]
+) -> None:
+    """M5 J5.8: the journey is done, so the weekly parent email stops."""
+    operator.execute(
+        "insert into journey_state (user_id, stage, stage_progress, steps, arrived, engine_version, computed_at) values "
+        "(%s, 7, '{\"label\": \"3 of 3 steps done before you go\"}', '[]', true, 'journey-0.4.0', now())",
+        (scenario["uid"],),
+    )
+    operator.commit()
+    mailer = Mailer()
+    send_parent_digests(notifier, mailer, "https://uniguide.example")
+    assert [m for m in mailer.sent if m.to == parent["email"]] == []

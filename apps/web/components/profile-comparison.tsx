@@ -3,10 +3,11 @@ import type { CompareVerdict, ProfileComparison as Row } from "@uniguide/matchin
 const TEXT: Record<CompareVerdict, string> = { meets: "Meets the published minimum", below: "Below the published minimum", unknown: "Cannot compare yet" };
 
 /** Grade and language against each course's published minimums. Presentational: the page supplies the rows. */
-export function ProfileComparison({ rows }: { rows: Row[] }) {
+export function ProfileComparison({ rows, scrollLabel = "Comparison table" }: { rows: Row[]; scrollLabel?: string }) {
   if (rows.length === 0) return <p className="text-muted">Shortlist a course to compare your profile with its published requirements.</p>;
   return (
-    <div className="overflow-x-auto rounded-2xl border border-border">
+    // Focusable so the table can be scrolled sideways from the keyboard on a phone.
+    <div className="overflow-x-auto rounded-2xl border border-border" tabIndex={0} role="region" aria-label={scrollLabel}>
       <table className="w-full min-w-[560px] text-left text-sm">
         <thead className="bg-surface-2">
           <tr><th scope="col" className="p-3">Course</th><th scope="col" className="p-3">Grade</th><th scope="col" className="p-3">English test</th><th scope="col" className="p-3">Published admit rate</th></tr>

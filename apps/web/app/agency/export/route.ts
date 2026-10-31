@@ -1,6 +1,7 @@
 import { toCsv } from "@/lib/csv";
 import { daysUntil, deadlineText, isFuture, label } from "@/lib/format";
 import { getUser } from "@/lib/supabase/server";
+import { courseOf } from "@/lib/own-application";
 
 /** The same rows the dashboard shows (students who shared, their applications and checklist), as CSV. No writing. */
 export async function GET() {
@@ -14,7 +15,7 @@ export async function GET() {
   const { data: apps } = students.length
     ? await supabase
         .from("applications")
-        .select("user_id, status, decision, program_cycles(programs(title)), checklist_items(done, deadlines(due_at, timezone, precision))")
+        .select("user_id, status, decision, own_title, own_institution, program_cycles(programs(title)), checklist_items(done, deadlines(due_at, timezone, precision))")
         .in("user_id", students.map((s) => s.student_id))
     : { data: [] };
 
@@ -22,7 +23,7 @@ export async function GET() {
     const mine = (apps ?? []).filter((a) => a.user_id === s.student_id);
     const items = mine.flatMap((a) => a.checklist_items);
     const next = mine
-      .flatMap((a) => a.checklist_items.filter((i) => !i.done && i.deadlines && isFuture(i.deadlines.due_at)).map((i) => ({ d: i.deadlines!, title: a.program_cycles?.programs?.title })))
+      .flatMap((a) => a.checklist_items.filter((i) => !i.done && i.deadlines && isFuture(i.deadlines.due_at)).map((i) => ({ d: i.deadlines!, title: courseOf(a).title })))
       .sort((x, y) => x.d.due_at.localeCompare(y.d.due_at))[0];
     return {
       student: s.display_name,

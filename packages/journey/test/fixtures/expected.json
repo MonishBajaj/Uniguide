@@ -4,7 +4,7 @@
     "top3": [
       "S1.01",
       "S1.02",
-      "S1.04"
+      "S1.03"
     ]
   },
   "stage-2-exploring": {
@@ -18,9 +18,33 @@
   "stage-3-shortlisted": {
     "stage": 3,
     "top3": [
+      "S3.01",
       "S1.07",
-      "S2.03",
-      "S2.04"
+      "S2.03"
+    ]
+  },
+  "edge-score-below-minimum": {
+    "stage": 3,
+    "top3": [
+      "S3.01",
+      "S3.02",
+      "S3.03"
+    ]
+  },
+  "edge-own-application-preparing": {
+    "stage": 4,
+    "top3": [
+      "S4.01:own1",
+      "S4.14:own1",
+      "S4.10"
+    ]
+  },
+  "edge-own-deadline-passed": {
+    "stage": 5,
+    "top3": [
+      "S5.01:sent",
+      "S1.07",
+      "S4.13"
     ]
   },
   "stage-4-preparing": {
@@ -28,14 +52,15 @@
     "top3": [
       "S4.14:a1",
       "S4.10",
-      "S1.07"
+      "S4.13"
     ]
   },
   "stage-5-submitted": {
     "stage": 5,
     "top3": [
       "S5.01:a1",
-      "S1.07"
+      "S1.07",
+      "S4.13"
     ]
   },
   "stage-6-admitted": {
@@ -49,9 +74,9 @@
   "stage-7-accepted": {
     "stage": 7,
     "top3": [
-      "S7.01:a1",
+      "S6.08:a1",
       "S1.07",
-      "S6.09:a1"
+      "S4.13"
     ]
   },
   "entry-exploring": {
@@ -75,7 +100,7 @@
     "top3": [
       "S4.14:a1",
       "S4.10",
-      "S1.07"
+      "S4.13"
     ]
   },
   "entry-offers": {
@@ -91,7 +116,7 @@
     "top3": [
       "S4.14:a2",
       "S4.10",
-      "S1.07"
+      "S4.13"
     ]
   },
   "edge-preparing-deadline-passed": {
@@ -99,7 +124,7 @@
     "top3": [
       "S5.01:a1",
       "S1.07",
-      "S4.14:a2"
+      "S4.13"
     ]
   },
   "edge-rejected-everywhere": {
@@ -108,6 +133,14 @@
       "S5.06",
       "S1.07",
       "S6.09:a1"
+    ]
+  },
+  "edge-rolled-over-after-rejections": {
+    "stage": 3,
+    "top3": [
+      "S3.01",
+      "S1.07",
+      "S2.03"
     ]
   },
   "edge-withdrawn-only": {
@@ -123,6 +156,16 @@
     "top3": [
       "S1.06"
     ]
+  },
+  "edge-pending-consent-with-application": {
+    "stage": 4,
+    "top3": [
+      "S1.06"
+    ]
+  },
+  "edge-revoked-consent": {
+    "stage": 4,
+    "top3": []
   },
   "edge-targets-only-on-a-track": {
     "stage": 2,

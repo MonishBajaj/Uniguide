@@ -18,6 +18,6 @@ export function ageFromBirthMonth(birthMonth: string, today = new Date()): numbe
 }
 
 /** Only redirect to paths on this site. */
-export function safeNext(next: unknown, fallback = "/app/profile"): string {
+export function safeNext(next: unknown, fallback = "/app"): string {
   return typeof next === "string" && next.startsWith("/") && !next.startsWith("//") ? next : fallback;
 }

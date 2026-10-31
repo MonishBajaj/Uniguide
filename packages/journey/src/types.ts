@@ -40,6 +40,8 @@ export interface ProfileSnapshot {
   intakeYear: number | null;
   researchInterests: string | null;
   entryPath: EntryPath | null;
+  /** When the student started planning for the next intake after rejections (M5, J5.4). */
+  intakeRolledAt?: string | null;
 }
 
 export interface TrackSnapshot {
@@ -58,13 +60,25 @@ export interface TestScore {
   takenOn: string | null;
 }
 
+/**
+ * The course an application is for. For an own application (J3.3) there is no catalogue course: id, slug and
+ * level are null, and title, institution and country are the student's own words.
+ */
+/** A planned test (J3.4): "not taken yet", or booked for a date. Only a saved score is a result. */
+export interface TestPlan {
+  exam: string;
+  examVersion: string | null;
+  status: "not_taken" | "booked";
+  bookedFor: string | null;
+}
+
 export interface ProgramRef {
-  id: string;
-  slug: string;
+  id: string | null;
+  slug: string | null;
   title: string;
   institution: string;
   country: string;
-  level: Level;
+  level: Level | null;
 }
 
 export interface Requirement {
@@ -73,7 +87,12 @@ export interface Requirement {
   exam: string | null;
   testPolicy: string | null;
   countRequired: number | null;
+  /** Test requirements only: the exam version and published minimum total (M3, J3.1). */
+  examVersion?: string | null;
+  minTotal?: number | null;
   status: FactStatus;
+  /** The official page the fact was taken from (M2, N13). */
+  sourceUrl?: string | null;
 }
 
 export interface Deadline {
@@ -82,6 +101,7 @@ export interface Deadline {
   timezone: string;
   precision: string;
   status: FactStatus;
+  sourceUrl?: string | null;
 }
 
 export interface ChecklistItem {
@@ -125,8 +145,12 @@ export interface ApplicationSnapshot {
   awardedAid: number | null;
   portalCheckedAt: string | null;
   createdAt: string;
+  /** A course that isn't in the catalogue, added by the student (J3.3). It has no cycle and no facts. */
+  own?: boolean;
+  /** An own application's deadline, as the student was given it. Counts for the stage rules and ranking, never quoted as a fact. */
+  ownDueAt?: string | null;
   program: ProgramRef;
-  cycle: { id: string; label: string; startsOn: string | null };
+  cycle: { id: string; label: string; startsOn: string | null } | null;
   requirements: Requirement[];
   deadlines: Deadline[];
   checklist: ChecklistItem[];
@@ -136,6 +160,25 @@ export interface ApplicationSnapshot {
   scoresSent: string[];
   costCount: number;
   outcomeShared: boolean;
+  // M5: after an offer, and while waiting. All student-entered dates, never facts.
+  /** The offer's conditions, if the student noted any; the text itself never leaves the student's own table. */
+  conditions?: { metAt: string | null } | null;
+  depositPaidAt?: string | null;
+  /** The course publishes a deposit deadline. */
+  hasDepositDeadline?: boolean;
+  admissionDocumentAt?: string | null;
+  declinedAt?: string | null;
+  expectedDecisionOn?: string | null;
+  /** Interview times the student logged. */
+  interviews?: string[];
+  /** Portal checks that noted something missing and aren't resolved yet. */
+  missingNotes?: number;
+  /** How many of the course's intakes still have a published application deadline ahead (J5.7). */
+  openCycles?: number;
+  /** The student chose an intake for this course on their shortlist (J5.7). */
+  intakeChosen?: boolean;
+  /** Published housing facts for the course's institution (7.3). */
+  housingFacts?: number;
 }
 
 export interface CountryRuleRow {
@@ -146,6 +189,10 @@ export interface CountryRuleRow {
   link: string | null;
   status: FactStatus;
   appliesTo: string[];
+  /** The rule's own official link, or its source page. */
+  sourceUrl?: string | null;
+  /** How many days ahead to start, from the official page (M5, J5.5). Only counts when the rule is verified. */
+  leadDays?: number | null;
 }
 
 export interface DepartureTaskRow {
@@ -165,6 +212,11 @@ export interface JourneyInput {
   profile: ProfileSnapshot;
   tracks: TrackSnapshot[];
   testScores: TestScore[];
+  testPlans: TestPlan[];
+  /** Document readiness (M5, J5.3): yes/no and a passport expiry; no uploads. */
+  readiness?: { kind: "passport" | "transcript" | "translation" | "other"; ready: boolean; expiresOn: string | null }[];
+  /** Supervisor contacts the student logged, without names (M5, J5.3). */
+  supervisorContacts?: { applicationId: string | null; reply: "none" | "positive" | "negative" }[];
   shortlist: ShortlistRow[];
   applications: ApplicationSnapshot[];
   recommenders: { id: string; name: string }[];
@@ -180,6 +232,8 @@ export interface JourneyInput {
   portfolioItems: number;
   /** When the student last completed a step (journey_events), for stalled detection (plan D13). */
   lastCompletedAt: string | null;
+  /** Names of linked parents and of counselor organisations with an active share (M2 home). */
+  sharedWith: { parents: string[]; counselors: string[] };
 }
 
 export type Band = "urgent" | "long_lead" | "stage" | "carry_over";
@@ -205,11 +259,28 @@ export interface NextStep {
   dueAt: string | null;
   rank: Band;
   dismissable: boolean;
+  /** The student can mark it done themselves (plan D8). */
+  markable: boolean;
   factRefs: FactRef[];
+  /** Where the quoted fact comes from: its official page, else the course page or /visas (M2, N4, N13). */
+  source?: { href: string };
   trackLabel?: string;
   application?: { id: string; label: string };
   /** Safe wording for the parent view; omitted means the step is never shown to parents. */
   parentTitle?: string;
+}
+
+/** A step the student snoozed or dismissed, so the steps page can bring it back. */
+export interface HiddenStep {
+  id: string;
+  catalogueId: string;
+  title: string;
+  /** Message key and parameters, so the list can be shown in the reader's language (M6, J6.2). */
+  copy: { key: string; params: Record<string, string> };
+  state: "snoozed" | "dismissed";
+  until: string | null;
+  /** The application it's about, so two hidden steps with the same title can be told apart. */
+  application?: { id: string; label: string };
 }
 
 export interface JourneyResult {
@@ -220,9 +291,15 @@ export interface JourneyResult {
   steps: NextStep[];
   /** Ids of steps that apply and are done; save_journey_state logs new ones (plan D13). */
   completed: string[];
+  /** Ids in `completed` that are done only because the student marked them. */
+  marked: string[];
+  /** Snoozed (until their date) and dismissed steps. */
+  hidden: HiddenStep[];
   urgentCount: number;
   /** A sentence for badges, e.g. "2 steps due this fortnight"; null when nothing is urgent. */
   urgentLabel: string | null;
   stalled: boolean;
+  /** Stage 7 is done: the accepted course has started, or the student said they've arrived (M5 J5.8). */
+  arrived: boolean;
   engineVersion: string;
 }

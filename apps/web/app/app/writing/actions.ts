@@ -8,6 +8,7 @@ import { getUser } from "@/lib/supabase/server";
 import { lint } from "@/lib/writing/lint";
 import { compareDrafts, REVIEW_MODEL, REVIEW_PROMPT_VERSION, reviewDraft, type Run } from "@/lib/writing/review";
 import { countWords, segment } from "@/lib/writing/segment";
+import { courseOf } from "@/lib/own-application";
 
 export type ActionState = { ok: boolean; message: string } | null;
 const PENDING = "A parent or guardian needs to confirm your account before we can save this.";
@@ -56,17 +57,17 @@ export async function startLinkedDocument(applicationId: string, kind: "why_this
   if (existing) redirect(`/app/writing/${existing.id}`);
   const { data: app } = await supabase
     .from("applications")
-    .select("decision, program_cycles(programs(title, institutions(name)))")
+    .select("decision, own_title, own_institution, program_cycles(programs(title, institutions(name)))")
     .eq("id", applicationId)
     .maybeSingle();
   if (!app || (kind === "continued_interest" && app.decision !== "waitlisted")) redirect(`/app/tracker/${applicationId}`);
-  const program = app.program_cycles?.programs;
+  const course = courseOf(app);
   const title =
     kind === "continued_interest"
-      ? `Letter of continued interest: ${program?.title ?? "course"}`
+      ? `Letter of continued interest: ${course.title}`
       : kind === "research_statement"
-        ? `Research statement: ${program?.title ?? "course"}`
-        : `Why ${program?.institutions?.name ?? "this university"}: ${program?.title ?? "course"}`;
+        ? `Research statement: ${course.title}`
+        : `Why ${course.institution || "this university"}: ${course.title}`;
   const { data, error } = await supabase
     .from("documents")
     .insert({
@@ -92,7 +93,7 @@ export async function startSupplemental(applicationId: string, form: FormData) {
     .safeParse({ question: form.get("question"), word_limit: form.get("word_limit") });
   if (!parsed.success) redirect(`/app/tracker/${applicationId}`);
   const { supabase, user } = await getUser();
-  const { data: app } = await supabase.from("applications").select("program_cycles(programs(title))").eq("id", applicationId).maybeSingle();
+  const { data: app } = await supabase.from("applications").select("own_title, own_institution, program_cycles(programs(title))").eq("id", applicationId).maybeSingle();
   if (!app) redirect("/app/tracker");
   const question = parsed.data.question;
   const { data, error } = await supabase
@@ -101,7 +102,7 @@ export async function startSupplemental(applicationId: string, form: FormData) {
       user_id: user!.id,
       application_id: applicationId,
       kind: "supplemental",
-      title: `${app.program_cycles?.programs?.title ?? "Course"}: ${question.length > 80 ? `${question.slice(0, 79)}…` : question}`.slice(0, 200),
+      title: `${courseOf(app).title}: ${question.length > 80 ? `${question.slice(0, 79)}…` : question}`.slice(0, 200),
       question,
       word_limit: parsed.data.word_limit,
     })

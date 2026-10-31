@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { resetStudent, signIn, sql, STUDENT } from "./helpers";
+import { expectStored, resetStudent, signIn, sql, STUDENT } from "./helpers";
 
 test.beforeEach(() => {
   resetStudent();
@@ -33,4 +33,15 @@ test("1.2 the profile lists what matching still needs, and fills in as the stude
   await page.reload();
   await expect(card.getByText("5 of 7 done")).toBeVisible();
   await expect(card.getByRole("link", { name: "Your research interests" })).toBeVisible();
+});
+
+test("the profile saves when the student wants to start (journey step S1.03)", async ({ browser }) => {
+  sql(`update profiles set intake_year = null where user_id = '${STUDENT}'`);
+  const page = await signIn(browser, "student@uniguide.local");
+  await page.goto("/app/profile#intake");
+  const year = String(new Date().getFullYear() + 1);
+  await page.selectOption("select[name=intake_year]", year);
+  await page.click('button:has-text("Save profile")');
+  await expect(page.getByText("Profile saved.")).toBeVisible();
+  await expectStored(`select intake_year from profiles where user_id = '${STUDENT}'`, year);
 });

@@ -1,0 +1,1 @@
+Three short screens: how UniGuide checks facts, where you are right now, and the few details your first matches need. Your answer only decides where you start. You can change anything later on your profile.

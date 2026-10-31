@@ -53,7 +53,7 @@ select is((:'snap'::jsonb) #> '{profile,targetCountries}', '["GB", "DE"]'::jsonb
 select is(jsonb_array_length((:'snap'::jsonb) -> 'applications'), 1, 'it has the application');
 select is((:'snap'::jsonb) #>> '{applications,0,program,country}', 'GB', 'with its course and country');
 select is((:'snap'::jsonb) #> '{applications,0,requirements}',
-  jsonb_build_array(jsonb_build_object('id', :'req', 'kind', 'recommendation_letters', 'exam', null, 'testPolicy', null, 'countRequired', 2, 'status', 'verified')),
+  jsonb_build_array(jsonb_build_object('id', :'req', 'kind', 'recommendation_letters', 'exam', null, 'testPolicy', null, 'countRequired', 2, 'examVersion', null, 'minTotal', null, 'status', 'verified', 'sourceUrl', null)),
   'only published requirements for the student''s applicant category');
 select is((:'snap'::jsonb) #>> '{applications,0,deadlines,0,status}', 'unverified', 'deadlines keep their status');
 select is((:'snap'::jsonb) #>> '{applications,0,checklist,0,countryRuleId}', :'rule', 'checklist items carry their country rule');
@@ -154,7 +154,8 @@ select is((select count(*)::int from public.journey_due_users('test-journey-toke
 select tests.as_postgres();
 select set_config('role', 'notifier', true);
 select ok((select count(*) from public.journey_state) >= 2, 'the notifier reads stored journeys for emails');
-select throws_ok($$ select * from public.journey_events $$, '42501', null, 'the notifier does not read events');
+-- M4 (J4.3): the notifier reads events for stage change emails, but never writes them (460_journey_emails).
+select lives_ok($$ select * from public.journey_events $$, 'the notifier reads events');
 
 select * from finish();
 rollback;

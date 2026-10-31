@@ -36,11 +36,15 @@ test("5.5 the why-this-university draft shows this course's material and which o
   // A generic draft names nothing; a specific one is counted.
   await page.locator("textarea").fill("Your world-class faculty and excellent reputation inspire me.");
   await page.click('button:has-text("Save draft")');
+  // Wait for the draft to save before reloading.
+  await expect.poll(() => sql(`select count(*) from document_versions v join documents d on d.id = v.document_id where d.user_id = '${STUDENT}' and d.kind = 'why_this_university'`)).toBe("1");
   await page.reload();
   await expect(material.getByText("does not name anything specific to this course yet", { exact: false })).toBeVisible();
 
   await page.locator("textarea").fill("Dr Raman's recent work on hospital scheduling connects to the rostering tool I built in 2025, and Exampleton's hospitals would let me test it.");
   await page.click('button:has-text("Save draft")');
+  // Wait for the draft to save before reloading.
+  await expect.poll(() => sql(`select count(*) from document_versions v join documents d on d.id = v.document_id where d.user_id = '${STUDENT}' and d.kind = 'why_this_university'`)).toBe("2");
   await page.reload();
   await expect(material.getByText("Your latest draft names 2 of 3 specific things about this course.")).toBeVisible();
 

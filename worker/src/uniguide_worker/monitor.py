@@ -125,15 +125,17 @@ def extract_program(conn: Connection, fetcher: Fetcher, extractor: PageExtractor
 
 
 def monitor(conn: Connection, fetcher: Fetcher, extractor: PageExtractor, *, limit: int = 50) -> MonitorReport:
-    """Re-check the pages of the most-shortlisted courses first, then the least recently checked."""
+    """Re-check pages in order of need: courses whose unchecked facts students' next steps rely on, then the most
+    shortlisted, then the least recently checked."""
     report = MonitorReport()
     sources = conn.execute(
         """
-        with demand as (select program_id, shortlists from public.verification_demand(1000))
+        with demand as (select program_id, shortlists, journey_steps from public.verification_demand(1000))
         select s.* from program_sources s
         left join demand d on d.program_id = s.program_id
         where s.active and (s.last_checked_at is null or s.last_checked_at < now() - interval '6 days')
-        order by coalesce(d.shortlists, 0) desc, s.last_checked_at nulls first
+        -- Pages whose unchecked facts students' next steps rely on come first (journey M6, J6.4, G25).
+        order by coalesce(d.journey_steps, 0) desc, coalesce(d.shortlists, 0) desc, s.last_checked_at nulls first
         limit %s
         """,
         (limit,),

@@ -68,8 +68,14 @@ export default async function ReviewQueue() {
       return ra - rb || a.created_at.localeCompare(b.created_at);
     })
     .slice(0, 50);
-  const wanted = (demand ?? []).filter((d) => d.facts_unverified > 0).slice(0, 10);
+  // Courses students' next steps depend on come first (journey M6, J6.4, G25), then the most shortlisted.
+  const wanted = (demand ?? []).filter((d) => d.facts_unverified > 0 || d.journey_steps > 0).slice(0, 10);
   const titles = new Map((pending ?? []).map((v) => [v.program_cycles?.program_id, v.program_cycles?.programs]));
+  const missing = wanted.map((d) => d.program_id).filter((id) => !titles.has(id));
+  if (missing.length) {
+    const { data: more } = await supabase.from("programs").select("id, slug, title, institutions(name)").in("id", missing);
+    for (const p of more ?? []) titles.set(p.id, p);
+  }
 
   return (
     <div className="mx-auto max-w-5xl px-6 py-16">
@@ -87,11 +93,15 @@ export default async function ReviewQueue() {
       {wanted.length ? (
         <section aria-labelledby="wanted" className="mt-8 rounded-2xl border border-border bg-surface p-6">
           <h2 id="wanted" className="text-lg font-semibold">Most wanted</h2>
-          <p className="text-sm text-muted">Courses students shortlisted that still have facts waiting.</p>
+          <p className="text-sm text-muted">Courses whose unchecked facts students&apos; next steps rely on, then courses students shortlisted that still have facts waiting.</p>
           <ul className="mt-3 grid gap-1 text-sm">
             {wanted.map((d) => (
               <li key={d.program_id}>
-                {titles.get(d.program_id)?.title ?? d.program_id}: {d.shortlists} shortlists, {d.facts_unverified} waiting
+                {titles.get(d.program_id)?.title ?? d.program_id}:{" "}
+                {d.journey_steps > 0 ? (
+                  <strong>{d.journey_steps === 1 ? "1 student's next steps need this" : `${d.journey_steps} students' next steps need this`}, </strong>
+                ) : null}
+                {d.shortlists} shortlists, {d.facts_unverified} waiting
                 {d.next_deadline ? `, next deadline ${shortDate(d.next_deadline)}` : ""}
               </li>
             ))}

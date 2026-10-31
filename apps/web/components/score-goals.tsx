@@ -4,8 +4,8 @@ import { label } from "@/lib/format";
 type Row = ScoreGoal & { title: string };
 
 /** The gap between the student's best score and each course's published minimum. Presentational; the page supplies the rows. */
-export function ScoreGoals({ rows }: { rows: Row[] }) {
-  if (rows.length === 0) return <p className="text-muted">Add a test score to see how it compares with each course&apos;s published minimum.</p>;
+export function ScoreGoals({ rows, empty }: { rows: Row[]; empty?: React.ReactNode }) {
+  if (rows.length === 0) return <p className="text-muted">{empty ?? "Add a test score to see how it compares with each course's published minimum."}</p>;
   return (
     <ul className="grid gap-3">
       {rows.map((r) => (

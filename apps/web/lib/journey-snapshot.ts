@@ -17,6 +17,8 @@ const program = z.object({
   country: z.string(),
   level,
 });
+/** An application's course: a catalogue course, or an own application's words with no id, slug or level (J3.3). */
+const appProgram = program.extend({ id: z.string().nullable(), slug: z.string().nullable(), level: level.nullable() });
 
 const snapshotSchema = z.object({
   profile: z.object({
@@ -35,12 +37,20 @@ const snapshotSchema = z.object({
     intakeYear: z.number().nullable(),
     researchInterests: z.string().nullable(),
     entryPath: z.enum(["exploring", "knows", "applying", "offers"]).nullable(),
+    intakeRolledAt: z.string().nullable().default(null),
   }),
   tracks: list(
     z.object({ id: z.string(), name: z.string(), targetLevels: list(level), targetCountries: list(z.string()), targetFields: list(z.string()) }),
   ),
   testScores: list(
     z.object({ id: z.string(), exam: z.string(), examVersion: z.string().nullable(), total: z.number().nullable(), takenOn: z.string().nullable() }),
+  ),
+  readiness: list(
+    z.object({ kind: z.enum(["passport", "transcript", "translation", "other"]), ready: z.boolean(), expiresOn: z.string().nullable() }),
+  ),
+  supervisorContacts: list(z.object({ applicationId: z.string().nullable(), reply: z.enum(["none", "positive", "negative"]) })),
+  testPlans: list(
+    z.object({ exam: z.string(), examVersion: z.string().nullable(), status: z.enum(["not_taken", "booked"]), bookedFor: z.string().nullable() }),
   ),
   shortlist: list(z.object({ program, createdAt: z.string() })),
   applications: list(
@@ -54,8 +64,22 @@ const snapshotSchema = z.object({
       awardedAid: z.number().nullable(),
       portalCheckedAt: z.string().nullable(),
       createdAt: z.string(),
-      program,
-      cycle: z.object({ id: z.string(), label: z.string(), startsOn: z.string().nullable() }),
+      own: z.boolean().default(false),
+      // M5: after an offer and while waiting (student-entered).
+      conditions: z.object({ metAt: z.string().nullable() }).nullable().default(null),
+      depositPaidAt: z.string().nullable().default(null),
+      hasDepositDeadline: z.boolean().default(false),
+      admissionDocumentAt: z.string().nullable().default(null),
+      declinedAt: z.string().nullable().default(null),
+      expectedDecisionOn: z.string().nullable().default(null),
+      interviews: list(z.string()),
+      missingNotes: z.number().default(0),
+      openCycles: z.number().default(0),
+      intakeChosen: z.boolean().default(false),
+      housingFacts: z.number().default(0),
+      ownDueAt: z.string().nullable().default(null),
+      program: appProgram,
+      cycle: z.object({ id: z.string(), label: z.string(), startsOn: z.string().nullable() }).nullable(),
       requirements: list(
         z.object({
           id: z.string(),
@@ -73,10 +97,22 @@ const snapshotSchema = z.object({
           exam: z.string().nullable(),
           testPolicy: z.string().nullable(),
           countRequired: z.number().nullable(),
+          examVersion: z.string().nullable().default(null),
+          minTotal: z.number().nullable().default(null),
           status: factStatus,
+          sourceUrl: z.string().nullable().default(null),
         }),
       ),
-      deadlines: list(z.object({ id: z.string(), dueAt: z.string(), timezone: z.string(), precision: z.string(), status: factStatus })),
+      deadlines: list(
+        z.object({
+          id: z.string(),
+          dueAt: z.string(),
+          timezone: z.string(),
+          precision: z.string(),
+          status: factStatus,
+          sourceUrl: z.string().nullable().default(null),
+        }),
+      ),
       checklist: list(
         z.object({
           id: z.string(),
@@ -111,8 +147,10 @@ const snapshotSchema = z.object({
       kind: z.string(),
       title: z.string(),
       link: z.string().nullable(),
+      leadDays: z.number().nullable().default(null),
       status: factStatus,
       appliesTo: list(z.string()),
+      sourceUrl: z.string().nullable().default(null),
     }),
   ),
   departureTasks: list(z.object({ applicationId: z.string(), taskKey: z.string() })),
@@ -125,6 +163,9 @@ const snapshotSchema = z.object({
   cvEntries: z.number().default(0),
   portfolioItems: z.number().default(0),
   lastCompletedAt: z.string().nullable().default(null),
+  sharedWith: z
+    .object({ parents: list(z.string()), counselors: list(z.string()) })
+    .default({ parents: [], counselors: [] }),
 });
 
 /** Checks a journey_snapshot document and adds the date. Throws naming the first wrong field. */

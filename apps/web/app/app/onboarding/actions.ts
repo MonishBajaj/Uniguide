@@ -10,6 +10,11 @@ import { LEVELS } from "@/lib/format";
 import { isCountryCode } from "@/lib/countries";
 import { startFirstSearch } from "@/lib/start-search";
 import { getUser } from "@/lib/supabase/server";
+import { z } from "zod";
+import { profileChecklist } from "@uniguide/journey";
+import { DESTINATIONS } from "@/lib/format";
+import { getLocale } from "@/lib/i18n/server";
+import { isEntryPath, onboardingEnd } from "@/lib/onboarding";
 
 export type Message = { role: "student" | "assistant"; text: string };
 export type TurnResult = { ok: boolean; reply: string; updates: OnboardingTurn["updates"] };
@@ -63,4 +68,72 @@ export async function applyUpdates(updates: OnboardingTurn["updates"]): Promise<
   revalidatePath("/app", "layout");
   if (await startFirstSearch(supabase, user!.id)) redirect("/app/matching");
   return { ok: true, message: "Saved to your profile." };
+}
+
+/* Journey M2 (J2.6): the three onboarding screens. */
+
+/** "Skip for now": the student counts as exploring, so /app doesn't send them back here. */
+export async function skipOnboarding() {
+  const { supabase, user } = await getUser();
+  if (!user) redirect("/login");
+  await supabase.from("profiles").update({ entry_path: "exploring" }).eq("user_id", user.id).is("entry_path", null);
+  revalidatePath("/app", "layout");
+  redirect("/app");
+}
+
+/** Screen 2: "Where are you right now?" */
+export async function saveEntryPath(form: FormData) {
+  const entry = form.get("entry_path");
+  if (!isEntryPath(entry)) redirect("/app/onboarding?screen=2&missing=1");
+  const { supabase, user } = await getUser();
+  if (!user) redirect("/login");
+  await supabase.from("profiles").update({ entry_path: entry }).eq("user_id", user.id);
+  redirect("/app/onboarding?screen=3");
+}
+
+export type ShortProfileState = { message: string; values: Record<string, string | string[]> } | null;
+
+const ShortProfile = z.object({
+  target_levels: z.array(z.enum(LEVELS)),
+  target_countries: z.array(z.enum(DESTINATIONS)),
+  target_fields: z.array(z.enum(Object.keys(FIELDS) as [string, ...string[]])),
+  budget_amount: z.preprocess((v) => (v === "" || v == null ? null : Number(v)), z.number().positive().finite().nullable()),
+  budget_currency: z.preprocess((v) => (v ? v : null), z.enum(CURRENCIES).nullable()),
+  intake_year: z.preprocess((v) => (v === "" || v == null ? null : Number(v)), z.number().int().min(2000).max(2100).nullable()),
+});
+
+/**
+ * Screen 3: the short profile. Saves only what matching needs, then ends where the entry answer
+ * points: first matches when matching has what it needs, otherwise the home (plan J2.6).
+ */
+export async function saveShortProfile(_prev: ShortProfileState, form: FormData): Promise<ShortProfileState> {
+  const t = (await getLocale()).t.journey.onboarding;
+  const values = {
+    target_levels: form.getAll("target_levels").map(String),
+    target_countries: form.getAll("target_countries").map(String),
+    target_fields: form.getAll("target_fields").map(String),
+    budget_amount: String(form.get("budget_amount") ?? ""),
+    budget_currency: String(form.get("budget_currency") ?? ""),
+    intake_year: String(form.get("intake_year") ?? ""),
+  };
+  const parsed = ShortProfile.safeParse(values);
+  if (!parsed.success) return { message: t.invalid, values };
+  if ((parsed.data.budget_amount == null) !== (parsed.data.budget_currency == null)) return { message: t.budgetBoth, values };
+
+  const { supabase, user } = await getUser();
+  if (!user) redirect("/login");
+  const { data: before } = await supabase.from("profiles").select("entry_path").eq("user_id", user.id).single();
+  const entry = isEntryPath(before?.entry_path) ? before.entry_path : "exploring";
+  const { data: profile, error } = await supabase
+    .from("profiles")
+    .update({ ...parsed.data, target_levels: parsed.data.target_levels as Enums<"program_level">[], entry_path: entry })
+    .eq("user_id", user.id)
+    .select()
+    .single();
+  if (error || !profile) return { message: error?.code === "42501" ? "A parent or guardian needs to confirm your account first." : t.invalid, values };
+
+  revalidatePath("/app", "layout");
+  const ready = profileChecklist(profile, 0).every((i) => i.key === "tests" || i.done);
+  if (ready && (entry === "exploring" || entry === "knows")) await startFirstSearch(supabase, user.id);
+  redirect(onboardingEnd(entry, ready));
 }

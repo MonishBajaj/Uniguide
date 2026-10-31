@@ -14,8 +14,23 @@ import {
 import type { Ctx, StepDef, Subject } from "./types";
 
 const preparing = (ctx: Ctx) => ctx.apps.filter((a) => a.status === "preparing");
+
+/** The earliest known course start among the student's applications, else 1 September of their intake year. */
+const intakeStart = (ctx: Ctx): string =>
+  ctx.apps
+    .map((a) => a.cycle?.startsOn)
+    .filter((d): d is string => Boolean(d))
+    .sort()[0] ?? `${ctx.input.profile.intakeYear ?? ctx.today.slice(0, 4)}-09-01`;
+
+const addMonths = (date: string, months: number): string => {
+  const d = new Date(`${date.slice(0, 10)}T00:00:00Z`);
+  d.setUTCMonth(d.getUTCMonth() + months);
+  return d.toISOString().slice(0, 10);
+};
 const course = (_: Ctx, s: Subject) => ({ course: courseLabel(s.app!) });
-const due = (ctx: Ctx, s: Subject) => nextDeadline(s.app!, ctx.today)?.dueAt ?? null;
+/** The next published deadline, or for an own application the student's own date (ranking only, never a fact). */
+const due = (ctx: Ctx, s: Subject) =>
+  nextDeadline(s.app!, ctx.today)?.dueAt ?? (s.app!.ownDueAt && s.app!.ownDueAt.slice(0, 10) >= ctx.today ? s.app!.ownDueAt : null);
 const tracker = (s: Subject, anchor = "") => `/app/tracker/${s.app!.id}${anchor}`;
 
 /** Rule kinds that are tasks after an offer or just information, never application steps (as in matching's checklist). */
@@ -59,7 +74,10 @@ export const STAGE4: StepDef[] = [
         .sort()[0] ?? due(ctx, s),
     factRefs: (ctx, s) => deadlineRefs(s.app!, ctx.today),
     href: (_, s) => tracker(s, "#checklist"),
-    params: (_, s) => ({ course: courseLabel(s.app!), count: String(s.app!.checklist.filter((i) => !i.done).length) }),
+    params: (_, s) => {
+      const open = s.app!.checklist.filter((i) => !i.done).length;
+      return { course: courseLabel(s.app!), count: String(open), items: open === 1 ? "item" : "items" };
+    },
   },
   {
     // Verified rules only. Any other rule becomes S4.02-check below (spec 5, stage 4 acceptance).
@@ -202,14 +220,17 @@ export const STAGE4: StepDef[] = [
     params: course,
   },
   {
-    // Waits for the supervisor contact tracker (G9).
+    // A doctorate application being prepared with no supervisor contact logged against it (G9). No AI-written emails.
     id: "S4.09",
     stage: 4,
     variants: ["research"],
     dismissable: true,
-    available: false,
-    done: () => false,
-    href: () => "/app/tracker",
+    available: true,
+    subjects: (ctx) => appSubjects(preparing(ctx).filter((a) => a.program.level === "doctorate")),
+    done: (ctx, s) => (ctx.input.supervisorContacts ?? []).some((c) => c.applicationId === s.app!.id),
+    dueAt: due,
+    href: (_, s) => tracker(s, "#supervisors"),
+    params: course,
   },
   {
     // No requirement kind says "CV" (plan D12), so this is advice for master's and research students.
@@ -224,14 +245,25 @@ export const STAGE4: StepDef[] = [
     href: () => "/app/cv",
   },
   {
-    // Waits for test bookings (G11).
+    // A course being prepared asks for a test and none of its listed exams has a score or a booking (J3.4).
+    // The 30-day lead time ranks it as "start soon" a month before the deadline; it is never shown.
     id: "S4.11",
     stage: 4,
     dismissable: true,
-    available: false,
+    available: true,
     leadDays: 30,
-    done: () => false,
-    href: () => "/app/profile#scores-section",
+    subjects: (ctx) => appSubjects(preparing(ctx).filter((a) => testRequirements(a).length > 0)),
+    done: (ctx, s) =>
+      testRequirements(s.app!).some(
+        (r) =>
+          ctx.input.testScores.some((t) => t.exam === r.exam) ||
+          ctx.input.testPlans.some((p) => p.exam === r.exam && p.status === "booked"),
+      ),
+    dueAt: (ctx, s) => due(ctx, s),
+    factRefs: (_, s) => testRequirements(s.app!).flatMap((r) => ref("requirements", r.id, r.status)),
+    href: () => "/app/profile#test-plans",
+    copyKey: (_, s) => `S4.11${checkSuffix(testRequirements(s.app!))}`,
+    params: (_, s) => ({ course: courseLabel(s.app!) }),
   },
   {
     // One per saved score whose exam the course lists, until it is marked sent (4.5).
@@ -257,14 +289,20 @@ export const STAGE4: StepDef[] = [
     params: (_, s) => ({ course: courseLabel(s.app!), exam: EXAM_NAMES[s.exam!] ?? s.exam! }),
   },
   {
-    // Waits for document readiness (G12).
+    // An application is in play and the passport expiry is missing or falls before the intake start plus 18 months
+    // (G12). The 18 months only decides when to ask; it is never shown as a country's rule (M5 plan, Decisions 8).
     id: "S4.13",
     stage: 4,
     dismissable: true,
-    available: false,
+    available: true,
     parentTitle: "Checking the passport is valid",
-    done: () => false,
-    href: () => "/app/profile",
+    // Only while some application is still in play: a student rejected everywhere has no trip to check for.
+    applies: (ctx) => ctx.apps.some((a) => a.decision !== "rejected"),
+    done: (ctx) => {
+      const passport = (ctx.input.readiness ?? []).find((r) => r.kind === "passport");
+      return passport?.expiresOn != null && passport.expiresOn >= addMonths(intakeStart(ctx), 18);
+    },
+    href: () => "/app/profile#readiness",
   },
   {
     id: "S4.14",

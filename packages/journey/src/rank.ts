@@ -1,6 +1,6 @@
 import type { Candidate } from "./catalogue";
 import { addDays, daysBetween } from "./catalogue/helpers";
-import type { Band, NextStep, Stage, StepStateRow } from "./types";
+import type { Band, HiddenStep, NextStep, Stage, StepStateRow } from "./types";
 
 /** Days ahead that count as urgent, and as "start now" for a long-lead step (spec 4.3). */
 export const URGENT_DAYS = 14;
@@ -10,10 +10,17 @@ export const STALL_DUE_DAYS = 30;
 
 const BAND_ORDER: Record<Band, number> = { urgent: 0, long_lead: 1, stage: 2, carry_over: 3 };
 
-export function bandFor(step: Pick<Candidate, "dueAt" | "leadDays" | "stage">, stage: Stage, today: string): Band {
+/** Enrollment steps after accepting an offer (G13, G14): the spec carries them into stage 7 as its own work. */
+export const ENROLLMENT_STEPS = new Set(["S6.05", "S6.06", "S6.07", "S6.08"]);
+
+/** True when a step is the current stage's own work. */
+export const inStage = (step: Pick<Candidate, "stage" | "catalogueId">, stage: Stage) =>
+  step.stage === stage || (stage === 7 && ENROLLMENT_STEPS.has(step.catalogueId));
+
+export function bandFor(step: Pick<Candidate, "dueAt" | "leadDays" | "stage" | "catalogueId">, stage: Stage, today: string): Band {
   if (step.dueAt && daysBetween(today, step.dueAt) <= URGENT_DAYS) return "urgent";
   if (step.dueAt && step.leadDays && daysBetween(today, addDays(step.dueAt, -step.leadDays)) <= URGENT_DAYS) return "long_lead";
-  return step.stage === stage ? "stage" : "carry_over";
+  return inStage(step, stage) ? "stage" : "carry_over";
 }
 
 /**
@@ -21,14 +28,26 @@ export function bandFor(step: Pick<Candidate, "dueAt" | "leadDays" | "stage">, s
  * Steps that can't be dismissed ignore both. The "done" state is read by the catalogue (plan D8).
  */
 export function applyStepState<T extends Pick<Candidate, "id" | "dismissable">>(steps: T[], stepState: StepStateRow[], today: string): T[] {
+  return splitByStepState(steps, stepState, today).visible;
+}
+
+/** The steps to show, and the ones the student snoozed or dismissed, so they can be brought back. */
+export function splitByStepState<T extends Pick<Candidate, "id" | "dismissable">>(
+  steps: T[],
+  stepState: StepStateRow[],
+  today: string,
+): { visible: T[]; hidden: { step: T; state: HiddenStep["state"]; until: string | null }[] } {
   const byId = new Map(stepState.map((r) => [r.stepId, r]));
-  return steps.filter((s) => {
+  const visible: T[] = [];
+  const hidden: { step: T; state: HiddenStep["state"]; until: string | null }[] = [];
+  for (const s of steps) {
     const row = byId.get(s.id);
-    if (!row || !s.dismissable) return true;
-    if (row.state === "dismissed") return false;
-    if (row.state === "snoozed") return !row.until || row.until.slice(0, 10) <= today;
-    return true;
-  });
+    if (row && s.dismissable && row.state === "dismissed") hidden.push({ step: s, state: "dismissed", until: null });
+    else if (row && s.dismissable && row.state === "snoozed" && row.until && row.until.slice(0, 10) > today)
+      hidden.push({ step: s, state: "snoozed", until: row.until });
+    else visible.push(s);
+  }
+  return { visible, hidden };
 }
 
 /** Bands, then due date (soonest first, undated last), then catalogue order, then id. */

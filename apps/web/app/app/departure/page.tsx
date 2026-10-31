@@ -4,8 +4,10 @@ import { FactBadge } from "@/components/facts";
 import { groupByMonth, monthName } from "@/lib/departure";
 import { loadDeparture } from "@/lib/departure-data";
 import { shortDate } from "@/lib/format";
+import { getLocale } from "@/lib/i18n/server";
 import { getUser } from "@/lib/supabase/server";
 import { setAcceptedOffer, setTaskDone } from "./actions";
+import { courseOf } from "@/lib/own-application";
 
 export const metadata: Metadata = { title: "Before you leave" };
 
@@ -16,7 +18,7 @@ export default async function DeparturePage() {
   if (!data) {
     const { data: offers } = await supabase
       .from("applications")
-      .select("id, program_cycles(programs(title, institutions(name)))")
+      .select("id, own_title, own_institution, program_cycles(programs(title, institutions(name)))")
       .eq("decision", "admitted")
       .order("created_at");
     return (
@@ -35,8 +37,8 @@ export default async function DeparturePage() {
               {offers!.map((o) => (
                 <li key={o.id} className="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-background p-3">
                   <span>
-                    <span className="font-semibold">{o.program_cycles?.programs?.title}</span>
-                    <span className="text-muted"> · {o.program_cycles?.programs?.institutions?.name}</span>
+                    <span className="font-semibold">{courseOf(o).title}</span>
+                    <span className="text-muted"> · {courseOf(o).institution}</span>
                   </span>
                   <form action={setAcceptedOffer.bind(null, o.id)}>
                     <button className="btn btn-primary btn-sm">I&apos;m taking this offer</button>
@@ -55,6 +57,8 @@ export default async function DeparturePage() {
   }
 
   const { app, program, start, tasks, done } = data;
+  const ta = (await getLocale()).t.journey.arrived;
+  const arrived = done.has("arrived");
   const today = new Date().toISOString().slice(0, 10);
   const doneCount = tasks.filter((t) => done.has(t.key)).length;
 
@@ -111,6 +115,7 @@ export default async function DeparturePage() {
                       {t.status ? <FactBadge status={t.status as Parameters<typeof FactBadge>[0]["status"]} /> : null}
                     </div>
                     <p className="text-muted">{t.body}</p>
+                    {t.leadFromSource ? <p className="text-sm text-muted">The timing comes from the official page.</p> : null}
                     {t.link ? (
                       <a href={t.link} target="_blank" rel="noreferrer" className="justify-self-start underline underline-offset-2">Official page</a>
                     ) : null}
@@ -121,6 +126,14 @@ export default async function DeparturePage() {
           </ul>
         </section>
       ))}
+
+      <section id="arrived" aria-labelledby="arrived-title" className="grid scroll-mt-24 gap-2 rounded-2xl border border-border bg-surface p-6">
+        <h2 id="arrived-title" className="text-lg font-semibold">{ta.askTitle}</h2>
+        <p className="text-muted">{arrived ? ta.doneBody : ta.askBody}</p>
+        <form action={setTaskDone.bind(null, app.id, "arrived", !arrived)}>
+          <button className={`btn btn-sm ${arrived ? "btn-secondary" : "btn-primary"}`}>{arrived ? ta.undo : ta.button}</button>
+        </form>
+      </section>
 
       <p className="text-xs text-muted">
         General steps, not immigration or legal advice. Rules change; your university and the official pages decide what applies to you.

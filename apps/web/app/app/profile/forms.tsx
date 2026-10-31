@@ -4,6 +4,7 @@ import { useActionState, useState } from "react";
 import type { Tables } from "@uniguide/db-types";
 import { CURRENCIES, EXAMS, FIELDS, GRADE_SCALES, QUALIFICATIONS } from "@/lib/fields";
 import { LEVELS, DESTINATIONS, countryName, label } from "@/lib/format";
+import { intakeYears } from "@/lib/intake";
 import { addTestScore, addTrack, applyCvItems, readCv, saveProfile, type ExtractState, type FormState } from "./actions";
 
 function Status({ state }: { state: FormState }) {
@@ -79,6 +80,18 @@ export function ProfileForm({ profile }: { profile: Tables<"profiles"> }) {
           </select>
         </label>
         <p className="text-sm text-muted sm:col-span-2">Include tuition, fees and living costs. Courses well over this are set aside, with the reason shown.</p>
+      </fieldset>
+
+      <fieldset id="intake" className="grid scroll-mt-24 gap-4 sm:grid-cols-2">
+        <legend className="mb-2 text-lg font-semibold">When do you want to start?</legend>
+        <label className="grid gap-2 text-sm font-semibold">
+          Start year
+          <select name="intake_year" defaultValue={profile.intake_year ?? ""} className="field font-normal">
+            <option value="">Not decided yet</option>
+            {intakeYears(new Date().getFullYear(), profile.intake_year).map((y) => <option key={y} value={y}>{y}</option>)}
+          </select>
+        </label>
+        <p className="text-sm text-muted sm:col-span-2">The year decides which application rounds are still open for you.</p>
       </fieldset>
 
       <fieldset id="targets" className="scroll-mt-24">

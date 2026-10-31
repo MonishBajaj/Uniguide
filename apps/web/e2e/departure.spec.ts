@@ -54,3 +54,40 @@ test("10.1 accepting an offer gives a dated pre-departure checklist with the des
   await page.click('button:has-text("Choose a different offer")');
   await expect(page.getByRole("heading", { name: "Which offer are you taking?" })).toBeVisible();
 });
+
+test("J5.5 an admin's verified health insurance rule with a lead time dates the task and brings its step", async ({ browser }) => {
+  sql(`delete from country_rules where title = 'E2E health insurance for students'`);
+  sql(`update applications set offer_accepted_at = now() where user_id = '${STUDENT}'`);
+  try {
+    const admin = await signIn(browser, "admin@uniguide.local");
+    await admin.goto("/admin/rules");
+    const form = admin.locator("form", { has: admin.getByRole("heading", { name: "Add a rule" }) });
+    await form.getByLabel("Destination (two letters)").fill("DE");
+    await form.getByLabel("Kind").selectOption("health_insurance");
+    await form.getByLabel("Title").fill("E2E health insurance for students");
+    await form.getByLabel("Official page").fill("https://example.org/e2e-insurance");
+    await form.getByLabel("Verbatim quote from the page").fill("Students must have health insurance to enrol.");
+    await form.getByLabel("Days ahead to start (lead time)").fill("30");
+    await form.getByLabel("The page's words for that lead time").fill("Apply at least four weeks before your course begins.");
+    await form.getByRole("button", { name: "Add rule" }).click();
+    const row = admin.getByRole("listitem").filter({ hasText: "E2E health insurance for students" });
+    await expect(row).toContainText("start 30 days ahead");
+
+    // Unverified: our default timing, and no step.
+    const page = await signIn(browser, "student@uniguide.local");
+    await page.goto("/app/steps");
+    await expect(page.getByRole("article").getByRole("heading", { name: "Arrange health insurance", exact: true })).toHaveCount(0);
+
+    await row.getByRole("button", { name: "Verify" }).click();
+    await expect(row.getByRole("button", { name: "Verify" })).toHaveCount(0);
+
+    await page.goto("/app/departure");
+    const task = page.getByRole("listitem").filter({ has: page.getByRole("heading", { name: "E2E health insurance for students" }) });
+    await expect(task).toContainText("By 1 Sept");
+    await expect(task).toContainText("The timing comes from the official page.");
+    await page.goto("/app/steps");
+    await expect(page.getByRole("article").getByRole("heading", { name: "Arrange health insurance", exact: true })).toBeVisible();
+  } finally {
+    sql(`delete from country_rules where title = 'E2E health insurance for students'`);
+  }
+});

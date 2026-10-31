@@ -1,15 +1,15 @@
 import { type Candidate, evaluateCatalogue } from "./catalogue";
 import { checklistFields, profileChecklist } from "./minimum";
-import { applyStepState, isStalled, rankSteps, urgentLabel } from "./rank";
+import { ENROLLMENT_STEPS, isStalled, rankSteps, splitByStepState, urgentLabel } from "./rank";
 import { activeApplications, computeStage } from "./stages";
-import type { JourneyInput, JourneyResult, Stage } from "./types";
+import type { FactRef, JourneyInput, JourneyResult, Stage } from "./types";
 import { ENGINE_VERSION } from "./version";
 
 const plural = (n: number, one: string, many: string) => (n === 1 ? one : many);
 
 /** "2 of 3 applications ready": what the current stage's progress bar shows (spec 4.1). */
 export function stageProgress(input: JourneyInput, stage: Stage, open: Candidate[], completed: string[]): JourneyResult["stageProgress"] {
-  const apps = activeApplications(input.applications);
+  const apps = activeApplications(input.applications, input.profile.intakeRolledAt ?? null);
   const of = (done: number, total: number, noun: string, nouns: string, rest: string) => ({
     done,
     total,
@@ -23,7 +23,7 @@ export function stageProgress(input: JourneyInput, stage: Stage, open: Candidate
     case 2:
       return { done: 0, total: 1, label: "No courses shortlisted yet" };
     case 3: {
-      const programs = new Set([...input.shortlist.map((s) => s.program.id), ...apps.map((a) => a.program.id)]);
+      const programs = new Set([...input.shortlist.map((s) => s.program.id), ...apps.map((a) => a.program.id ?? a.id)]);
       const chosen = apps.filter((a) => a.status !== "shortlisted").length;
       return of(chosen, programs.size, "shortlisted course", "shortlisted courses", "chosen to apply to");
     }
@@ -41,27 +41,92 @@ export function stageProgress(input: JourneyInput, stage: Stage, open: Candidate
       return { done: 0, total: offers, label: `${offers} ${plural(offers, "offer", "offers")} to decide on` };
     }
     case 7: {
-      const done = completed.filter((id) => id.startsWith("S7.")).length;
-      const total = done + open.filter((s) => s.stage === 7).length;
-      return of(done, total, "departure step", "departure steps", "done");
+      // Enrollment steps after accepting carry into stage 7 as its own work (spec stage 6, M5).
+      const own = (id: string) => id.startsWith("S7.") || ENROLLMENT_STEPS.has(id.split(":")[0]!);
+      const done = completed.filter(own).length;
+      const total = done + open.filter((s) => own(s.catalogueId)).length;
+      return of(done, total, "step", "steps", "done before you go");
     }
   }
+}
+
+export interface UpcomingDeadline {
+  applicationId: string;
+  label: string;
+  dueAt: string;
+  timezone: string;
+  status: FactRef["status"];
+  factRef: FactRef;
+  sourceUrl: string | null;
+}
+
+/**
+ * The next published deadlines of applications still to be sent (shortlisted or preparing), soonest
+ * first (M2 home, "Coming up"). Deadlines of applications already submitted or decided no longer matter.
+ */
+export function upcomingDeadlines(input: JourneyInput, limit = 3): UpcomingDeadline[] {
+  return activeApplications(input.applications, input.profile.intakeRolledAt ?? null)
+    .filter((app) => app.status === "shortlisted" || app.status === "preparing")
+    .flatMap((app) =>
+      app.deadlines
+        .filter((d) => d.status !== "unknown" && d.dueAt.slice(0, 10) >= input.today)
+        .map((d) => {
+          const status = d.status as FactRef["status"];
+          return {
+            applicationId: app.id,
+            label: `${app.program.title}, ${app.program.institution}`,
+            dueAt: d.dueAt,
+            timezone: d.timezone,
+            status,
+            factRef: { table: "deadlines", id: d.id, status },
+            sourceUrl: d.sourceUrl ?? null,
+          };
+        }),
+    )
+    .sort((a, b) => a.dueAt.localeCompare(b.dueAt) || a.applicationId.localeCompare(b.applicationId))
+    .slice(0, limit);
+}
+
+/**
+ * The student has arrived (M5 J5.8, plan R12): an accepted course's published start date has passed, or the student
+ * pressed "I've arrived" on the departure page (departure task "arrived").
+ */
+export function hasArrived(input: JourneyInput): boolean {
+  return activeApplications(input.applications, input.profile.intakeRolledAt ?? null)
+    .filter((a) => a.offerAcceptedAt && !a.declinedAt)
+    .some(
+      (a) =>
+        (a.cycle?.startsOn != null && a.cycle.startsOn <= input.today) ||
+        input.departureTasks.some((t) => t.applicationId === a.id && t.taskKey === "arrived"),
+    );
 }
 
 /** The journey for one student on one date. Pure: same input, same output. */
 export function computeJourney(input: JourneyInput): JourneyResult {
   const stage = computeStage(input);
-  const { open, completed } = evaluateCatalogue(input, stage);
-  const steps = rankSteps(applyStepState(open, input.stepState, input.today), stage, input.today);
+  const { open, completed, marked } = evaluateCatalogue(input, stage);
+  const { visible, hidden } = splitByStepState(open, input.stepState, input.today);
+  const steps = rankSteps(visible, stage, input.today);
   const urgentCount = steps.filter((s) => s.rank === "urgent").length;
   return {
     stage,
     stageProgress: stageProgress(input, stage, open, completed),
     steps,
     completed,
+    marked,
+    hidden: hidden.map(({ step, state, until }) => ({
+      id: step.id,
+      catalogueId: step.catalogueId,
+      title: step.title,
+      copy: step.copy,
+      state,
+      until,
+      ...(step.application ? { application: step.application } : {}),
+    })),
     urgentCount,
     urgentLabel: urgentLabel(urgentCount),
     stalled: isStalled(input.lastCompletedAt, steps, input.today),
+    arrived: hasArrived(input),
     engineVersion: ENGINE_VERSION,
   };
 }

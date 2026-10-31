@@ -1,6 +1,7 @@
 import { ImageResponse } from "next/og";
 import { cleanName, shareCardLines } from "@/lib/share-card";
 import { getUser } from "@/lib/supabase/server";
+import { courseOf } from "@/lib/own-application";
 
 /**
  * The "I got in" card for an admitted application, as a 1200 x 630 PNG. Only the student who owns the
@@ -12,7 +13,7 @@ export async function GET(request: Request, { params }: RouteContext<"/app/track
   if (!user) return new Response("Not found", { status: 404 });
   const { data: app } = await supabase
     .from("applications")
-    .select("user_id, decision, program_cycles(label, programs(title, institutions(name)))")
+    .select("user_id, decision, own_title, own_institution, program_cycles(label, programs(title, institutions(name)))")
     .eq("id", id)
     .maybeSingle();
   // RLS also lets linked parents and counselors read applications; the card is the student's alone.
@@ -20,8 +21,8 @@ export async function GET(request: Request, { params }: RouteContext<"/app/track
 
   const url = new URL(request.url);
   const lines = shareCardLines({
-    title: app.program_cycles?.programs?.title ?? "",
-    institution: app.program_cycles?.programs?.institutions?.name ?? "",
+    title: courseOf(app).title,
+    institution: courseOf(app).institution,
     intake: app.program_cycles?.label ?? null,
     name: cleanName(url.searchParams.get("name")),
   });
