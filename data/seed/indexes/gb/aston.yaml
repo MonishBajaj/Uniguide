@@ -1,0 +1,8 @@
+# Checked by Claude on 2026-10-31 with the crawler's own fetcher and a dry run. WORKS: dry run accepted 80 of 88 (undergraduate, foundation and postgraduate courses; standalone modules are rejected).
+# Still needs a person to open the URL and add verified_by and verified_at before it is crawled.
+institution: "Aston University"
+country: GB
+official_domain: aston.ac.uk
+indexes:
+  - url: https://www.aston.ac.uk/courses-atoz
+    kind: programs
