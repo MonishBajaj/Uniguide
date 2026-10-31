@@ -213,6 +213,28 @@ Locally, run it with `cd worker && uv run uniguide-worker serve` after `pnpm db:
 
 Payments are built (see the Payments section below); you still need provider accounts and keys. Work through the "Needs a decision or review before launch" list in BACKLOG.md: counsel review of the parental consent flow and consent ages, terms and privacy policy (both pages are drafts), F-1/OPT confirmation with your DSO, and a final product name.
 
+## 9. Application assist extension (M7)
+
+The UniGuide Assist extension lives in `apps/extension`. It talks only to the Supabase project, and the student connects it on `/extension/connect`.
+
+- **Build:** `pnpm --filter extension build` writes `apps/extension/dist`. Settings come from `SUPABASE_URL`, `SUPABASE_KEY` and `WEB_ORIGIN`, or else from `apps/web/.env.local`.
+  - `EXT_TEST=1` adds the practice portal (`apps/practice-portal`, port 4318) for tests.
+  - `EXT_STORE=1` leaves out the development key, so the Web Store assigns the id.
+- **Try it locally:**
+  1. Start the practice portal: `PRACTICE_TEST=1 node apps/practice-portal/server.mjs`.
+  2. Build with `EXT_TEST=1`.
+  3. Load `apps/extension/dist` as an unpacked extension in Chrome.
+  4. Connect it at `http://localhost:3000/extension/connect`.
+  5. Sign in to the practice portal as `tester@practice.test` / `practice-only`.
+- **Extension id:**
+  - Development and test builds have the fixed id `jifoddiefcppdaiohhilpiglhbldfnbf`, from the public key in `apps/extension/scripts/dev-key.txt`. No private key is kept.
+  - In production, set `NEXT_PUBLIC_EXTENSION_ID` to the store id. Without it, the connect page says connecting isn't available.
+- **Checks:**
+  - `pnpm --filter extension check` runs the network and action checks on `dist`.
+  - `pnpm --filter extension test` runs the unit tests and the checks against planted problems.
+  - `pnpm --filter web e2e:extension` loads the built extension in Chromium against the practice portal. It needs the local stack and the dev server.
+- **Portals:** store builds include no portal until its gate clears (plan gates G1 to G7). Each cleared portal adds its adapter in `apps/extension/src/adapters.ts` and its host in `scripts/build.mjs`.
+
 ## Payments (season pass)
 
 1. In Stripe, create a webhook endpoint `https://<your-domain>/api/webhooks/stripe` for `checkout.session.completed` and `checkout.session.async_payment_succeeded`. In Razorpay, create one at `/api/webhooks/razorpay` for `order.paid`. A payment event that does not match the pass answers 422 and is logged; check for those after launch.

@@ -214,10 +214,10 @@ Checked on 31 October 2026, against `Updated-developer-b` at `0706418`.
 
 **Interfaces:**
 - **Manifest V3:**
-  - permissions: `storage`, `sidePanel`, `scripting`, `activeTab`
+  - permissions: `storage`, `sidePanel` (the plan's `scripting` and `activeTab` were dropped in A1.5: nothing uses them, and the Web Store rejects unused permissions)
   - host permissions: the Supabase project, plus the practice portal in test builds only
   - content security policy: `connect-src` the Supabase project only
-- **Sign-in:** through `/extension/connect` on our site. The session is kept in `chrome.storage.session`; sign-out clears everything.
+- **Sign-in:** through `/extension/connect` on our site. The student enters their UniGuide password there, which makes a separate session for the extension (sharing the web app's session would break, because Supabase rotates refresh tokens). The page hands it only to our extension id. The session is kept in `chrome.storage.session`; sign-out clears everything.
 - **Consent:** pending or revoked shows only the reason.
 - **Side panel:** fields with suggested value, source, confidence and fill, copy and skip (spec 5.3). Every fill goes through the content script's single writer, which uses the guard for anything other than typing into a field.
 - **Logging:** every action is logged through the RPCs.

@@ -1,0 +1,235 @@
+{
+  "test": {
+    "tool": "rea analyze-javascript-application --artifact-format directory",
+    "rea": {
+      "id": "rea-javascript-application",
+      "name": "REA JavaScript application analyzer",
+      "version": "1"
+    },
+    "root_artifact_sha256": "edf79bab6bc8de0187910ef56f9696972d5f7a62000ff20f3d2611b1e0ea067a",
+    "statistics": {
+      "relevant_files": 5,
+      "nested_asar_containers": 0,
+      "text_bytes_read": 114407,
+      "invalid_utf8_files": 0,
+      "parsed_javascript_files": 3,
+      "skipped_javascript_files": 0,
+      "visited_ast_nodes": 13415,
+      "findings": 40,
+      "modules": 0,
+      "parse_failures": 0
+    },
+    "network_destinations": [
+      {
+        "file": "background.js",
+        "line": 30,
+        "destination": "`${SUPABASE_URL}/auth/v1/user`"
+      },
+      {
+        "file": "background.js",
+        "line": 41,
+        "destination": "`${SUPABASE_URL}/auth/v1/token?grant_type=refresh_token`"
+      },
+      {
+        "file": "background.js",
+        "line": 58,
+        "destination": "`${SUPABASE_URL}/rest/v1/${path}`"
+      },
+      {
+        "file": "background.js",
+        "line": 72,
+        "destination": "`${SUPABASE_URL}/auth/v1/logout`"
+      }
+    ],
+    "request_sites": [
+      {
+        "file": "background.js",
+        "line": 30
+      },
+      {
+        "file": "background.js",
+        "line": 41
+      },
+      {
+        "file": "background.js",
+        "line": 58
+      },
+      {
+        "file": "background.js",
+        "line": 72
+      }
+    ],
+    "listeners": [
+      {
+        "file": "background.js",
+        "line": 77
+      },
+      {
+        "file": "background.js",
+        "line": 80
+      },
+      {
+        "file": "background.js",
+        "line": 92
+      },
+      {
+        "file": "background.js",
+        "line": 106
+      },
+      {
+        "file": "background.js",
+        "line": 107
+      },
+      {
+        "file": "content.js",
+        "line": 1257
+      },
+      {
+        "file": "panel.js",
+        "line": 1118
+      }
+    ],
+    "path_strings_seen": [
+      "/",
+      "/apply/about-you",
+      "/apply/activities",
+      "/apply/declaration",
+      "/apply/fee",
+      "/apply/schooling",
+      "/apply/security-check",
+      "/apply/statement",
+      "/apply/tests",
+      "/confirmation",
+      "/review",
+      "/sign-in"
+    ],
+    "navigation_unknowns": [
+      {
+        "file": "panel.js",
+        "line": 1145,
+        "reason": "The recognized navigation destination is not a supported literal."
+      }
+    ],
+    "sender_validation_observations": 2,
+    "limitations": [
+      "CommonJS and ESM binding relationships were recovered from inert syntax and resolved only within the inventoried artifact container.",
+      "Electron relationships are derived from inert syntax; runtime registration, reachability, defaults, and enforcement remain unproven.",
+      "Graph coverage is incomplete; unavailable facts remain explicit and must not be read as absence.",
+      "JavaScript and HTML were parsed as inert text; bundle bootstrap code was never executed.",
+      "Sender, frame, URL, and origin checks are observations only; REA does not claim that they enforce a complete authorization policy.",
+      "Static imports, entrypoints, workers, endpoints, and storage relationships do not prove runtime execution.",
+      "Static paths and relationships may remain unresolved when expressions are dynamic or obfuscated.",
+      "Webpack/Rspack factories were recovered from AST literals; REA did not invoke push handlers or bundle bootstrap code."
+    ]
+  },
+  "store": {
+    "tool": "rea analyze-javascript-application --artifact-format directory",
+    "rea": {
+      "id": "rea-javascript-application",
+      "name": "REA JavaScript application analyzer",
+      "version": "1"
+    },
+    "root_artifact_sha256": "e3fad7b387e3b4c4ef2397605e854c7f2bf639d05ea477ac2f72d43593f58a14",
+    "statistics": {
+      "relevant_files": 5,
+      "nested_asar_containers": 0,
+      "text_bytes_read": 74803,
+      "invalid_utf8_files": 0,
+      "parsed_javascript_files": 3,
+      "skipped_javascript_files": 0,
+      "visited_ast_nodes": 10133,
+      "findings": 16,
+      "modules": 0,
+      "parse_failures": 0
+    },
+    "network_destinations": [
+      {
+        "file": "background.js",
+        "line": 30,
+        "destination": "`${SUPABASE_URL}/auth/v1/user`"
+      },
+      {
+        "file": "background.js",
+        "line": 41,
+        "destination": "`${SUPABASE_URL}/auth/v1/token?grant_type=refresh_token`"
+      },
+      {
+        "file": "background.js",
+        "line": 58,
+        "destination": "`${SUPABASE_URL}/rest/v1/${path}`"
+      },
+      {
+        "file": "background.js",
+        "line": 72,
+        "destination": "`${SUPABASE_URL}/auth/v1/logout`"
+      }
+    ],
+    "request_sites": [
+      {
+        "file": "background.js",
+        "line": 30
+      },
+      {
+        "file": "background.js",
+        "line": 41
+      },
+      {
+        "file": "background.js",
+        "line": 58
+      },
+      {
+        "file": "background.js",
+        "line": 72
+      }
+    ],
+    "listeners": [
+      {
+        "file": "background.js",
+        "line": 77
+      },
+      {
+        "file": "background.js",
+        "line": 80
+      },
+      {
+        "file": "background.js",
+        "line": 92
+      },
+      {
+        "file": "background.js",
+        "line": 106
+      },
+      {
+        "file": "background.js",
+        "line": 107
+      },
+      {
+        "file": "content.js",
+        "line": 536
+      },
+      {
+        "file": "panel.js",
+        "line": 397
+      }
+    ],
+    "path_strings_seen": [],
+    "navigation_unknowns": [
+      {
+        "file": "panel.js",
+        "line": 424,
+        "reason": "The recognized navigation destination is not a supported literal."
+      }
+    ],
+    "sender_validation_observations": 2,
+    "limitations": [
+      "CommonJS and ESM binding relationships were recovered from inert syntax and resolved only within the inventoried artifact container.",
+      "Electron relationships are derived from inert syntax; runtime registration, reachability, defaults, and enforcement remain unproven.",
+      "Graph coverage is incomplete; unavailable facts remain explicit and must not be read as absence.",
+      "JavaScript and HTML were parsed as inert text; bundle bootstrap code was never executed.",
+      "Sender, frame, URL, and origin checks are observations only; REA does not claim that they enforce a complete authorization policy.",
+      "Static imports, entrypoints, workers, endpoints, and storage relationships do not prove runtime execution.",
+      "Static paths and relationships may remain unresolved when expressions are dynamic or obfuscated.",
+      "Webpack/Rspack factories were recovered from AST literals; REA did not invoke push handlers or bundle bootstrap code."
+    ]
+  }
+}

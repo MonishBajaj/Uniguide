@@ -106,6 +106,8 @@ jobs:
         run: pnpm --filter web e2e:demo
       - name: Community features (switched on)
         run: pnpm --filter web e2e:community
+      - name: Application assist extension, against the practice portal (M7)
+        run: pnpm --filter web e2e:extension
       - uses: actions/upload-artifact@v4
         if: failure()
         with:

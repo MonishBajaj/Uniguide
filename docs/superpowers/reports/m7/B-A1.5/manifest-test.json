@@ -1,0 +1,46 @@
+{
+  "manifest_version": 3,
+  "name": "UniGuide Application Assist",
+  "short_name": "UniGuide Assist",
+  "version": "0.1.0",
+  "description": "Fill your own applications from your own UniGuide profile, one field at a time. Nothing is ever submitted for you.",
+  "minimum_chrome_version": "116",
+  "permissions": [
+    "storage",
+    "sidePanel"
+  ],
+  "host_permissions": [
+    "http://127.0.0.1/*"
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "side_panel": {
+    "default_path": "panel.html"
+  },
+  "action": {
+    "default_title": "UniGuide Assist"
+  },
+  "externally_connectable": {
+    "matches": [
+      "http://localhost/*"
+    ]
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'; connect-src http://127.0.0.1:54321; base-uri 'none'; form-action 'none'"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "http://127.0.0.1/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_idle",
+      "all_frames": false
+    }
+  ],
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA1OnMHUMllwCABj2aIrl5I+PyDWM6WaNvgb6juEMmZxpLSxc1qzyKgACb7AKuN+cSPx7zQakbPXxYp4sT9tYjzbIdqyBehpftFCfxMgUWrns/MSbbcvfuhFLBfCn1kQnB/yu3As++l+i8i4Vp1/yhbUAGr49BOqDcCiTJ6iPAw/H1zkRYRoGoTEFLukVsurNnXDNK7xpIx9FGLEvvKdBKNC5nqRlYi/Wr9KSTKZ96Mv30ajsu8OCLGH+JYV47SgxTM5hY+TiQVp8QVbA8jFPnQyyG/20lZIE0BByJ/2G0KEIj6fN9rV3yqO6YSNVgANUfZtqd9hBW0gYQKhDLElmLUQIDAQAB"
+}

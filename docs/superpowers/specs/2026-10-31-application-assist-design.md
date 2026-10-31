@@ -382,7 +382,7 @@ It is not a copy of any real portal.
 ### 7.7 Network and permissions
 
 - **Host permissions:** the Supabase project, and the portal hosts that are cleared. Nothing else, so the practice portal is reached only in test builds.
-- **Permissions:** `storage`, `sidePanel`, `scripting`, `activeTab`. No `tabs` beyond what the side panel needs; no history, downloads or cookies.
+- **Permissions:** `storage` and `sidePanel` only (A1.5). No `tabs`, `scripting`, `activeTab`, history, downloads or cookies. The content script is declared for supported portal hosts.
 - **Content Security Policy:** `connect-src` allows only the Supabase project.
 - **Model calls** go to the Supabase Edge Function. The function holds the provider key and never receives student values.
 
