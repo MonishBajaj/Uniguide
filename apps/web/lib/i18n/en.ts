@@ -368,6 +368,13 @@ export const en = {
       trackerFind: "Find the courses you're applying to",
       trackerAddOwn: "Add a course that isn't listed",
     },
+    parent: {
+      helpNow: "How you can help right now",
+      workingOn: (name: string) => `What ${name} is working on`,
+      nothingNow: "Nothing to share right now.",
+      updated: (date: string) => `Updated ${date}.`,
+      notYet: (name: string) => `${name}'s progress appears here once they open UniGuide.`,
+    },
     panels: {
       scoreGoalsTitle: "Score goals",
       scoreGoalsNoScore: "Add a test score to your profile to see it against each course's minimum.",

@@ -7,8 +7,20 @@ import { getRoles } from "@/lib/roles";
 import { getUser } from "@/lib/supabase/server";
 import { OwnBadge } from "@/components/own-badge";
 import { courseOf } from "@/lib/own-application";
+import { STAGES } from "@uniguide/journey/stages";
+import { StagePath } from "@/components/journey/stage-path";
+import { getLocale } from "@/lib/i18n/server";
+import { shortDate } from "@/lib/format";
 
 export const metadata: Metadata = { title: "My child", robots: { index: false } };
+
+/** What parent_journey() returns: never a step's own title, reason, link, facts or date. */
+interface ParentJourney {
+  stage: number;
+  progress: { done: number; total: number; label: string };
+  computedAt: string;
+  steps: { parentTitle: string; stage: number }[];
+}
 
 /** Read-only view for a parent. RLS limits every query to students linked to this parent; writing and grades are never shared. */
 export default async function ParentPage() {
@@ -27,6 +39,11 @@ export default async function ParentPage() {
       .select("id, user_id, status, decision, own_title, own_institution, program_cycles(label, programs(slug, title, institutions(name))), checklist_items(id, title, done, sort, deadlines(due_at, timezone, precision))")
       .in("user_id", studentIds),
   ]);
+  const { t } = await getLocale();
+  // The journey in parent-safe terms (J4.2): stage, progress and parent titles only, never a step's own text.
+  const journeys = new Map(
+    await Promise.all(parentOf.map(async (l) => [l.student_id, (await supabase.rpc("parent_journey", { p_student: l.student_id })).data as ParentJourney | null] as const)),
+  );
 
   return (
     <div className="mx-auto grid max-w-5xl gap-10 px-6 py-12">
@@ -54,6 +71,35 @@ export default async function ParentPage() {
                 <button className="btn btn-secondary btn-sm">{digestOn.get(link.student_id) ? "Turn off" : "Turn on"}</button>
               </form>
             </div>
+
+            {(() => {
+              const j = journeys.get(link.student_id);
+              if (!j) return <p className="text-muted">{t.journey.parent.notYet(link.student_name)}</p>;
+              const stage = STAGES[j.stage as keyof typeof STAGES];
+              return (
+                <div className="grid gap-5 rounded-2xl border border-border bg-surface p-6">
+                  <div className="grid gap-1">
+                    <p className="font-semibold">{t.journey.nav.helpStage(j.stage, stage.name)}</p>
+                    <StagePath stage={j.stage} progress={j.progress} t={t.journey} headingId={`path-${link.student_id}`} />
+                    <p className="text-xs text-muted">{t.journey.parent.updated(shortDate(j.computedAt))}</p>
+                  </div>
+                  <section aria-labelledby={`help-${link.student_id}`} className="grid gap-1">
+                    <h3 id={`help-${link.student_id}`} className="text-lg font-semibold">{t.journey.parent.helpNow}</h3>
+                    <p>{stage.parentNote.replace(/\{name\}/g, link.student_name)}</p>
+                  </section>
+                  <section aria-labelledby={`work-${link.student_id}`} className="grid gap-1">
+                    <h3 id={`work-${link.student_id}`} className="text-lg font-semibold">{t.journey.parent.workingOn(link.student_name)}</h3>
+                    {j.steps.length ? (
+                      <ul className="grid list-disc gap-1 pl-5">
+                        {j.steps.map((s, i) => <li key={i}>{s.parentTitle}</li>)}
+                      </ul>
+                    ) : (
+                      <p className="text-muted">{t.journey.parent.nothingNow}</p>
+                    )}
+                  </section>
+                </div>
+              );
+            })()}
 
             <dl className="grid gap-3 rounded-2xl border border-border bg-surface p-6 text-sm sm:grid-cols-3">
               <div><dt className="text-muted">Shortlisted courses</dt><dd className="text-lg font-semibold">{listed.length}</dd></div>

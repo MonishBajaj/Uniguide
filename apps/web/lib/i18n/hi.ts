@@ -403,6 +403,13 @@ export const hi: Dict = {
       trackerFind: "जिन कोर्स में आवेदन कर रहे हैं उन्हें ढूँढें",
       trackerAddOwn: "ऐसा कोर्स जोड़ें जो सूची में नहीं है",
     },
+    parent: {
+      helpNow: "आप अभी कैसे मदद कर सकते हैं",
+      workingOn: (name: string) => `${name} अभी किस पर काम कर रहे हैं`,
+      nothingNow: "अभी साझा करने को कुछ नहीं है।",
+      updated: (date: string) => `${date} को अपडेट किया गया।`,
+      notYet: (name: string) => `${name} के UniGuide खोलने पर उनकी प्रगति यहाँ दिखेगी।`,
+    },
     panels: {
       scoreGoalsTitle: "स्कोर लक्ष्य",
       scoreGoalsNoScore: "हर कोर्स के न्यूनतम के मुक़ाबले देखने के लिए अपनी प्रोफ़ाइल में टेस्ट स्कोर जोड़ें।",

@@ -3,11 +3,22 @@ import type { Dict } from "@/lib/i18n/en";
 const STAGE_NUMBERS = ["1", "2", "3", "4", "5", "6", "7"] as const;
 
 /** The seven stages as an ordered list; the current one is marked and shows its progress (spec 6.2). */
-export function StagePath({ stage, progress, t }: { stage: number; progress: { done: number; total: number; label: string }; t: Dict["journey"] }) {
+export function StagePath({
+  stage,
+  progress,
+  t,
+  headingId = "journey-path",
+}: {
+  stage: number;
+  progress: { done: number; total: number; label: string };
+  t: Dict["journey"];
+  /** Unique per page: the parent view shows one path per linked student. */
+  headingId?: string;
+}) {
   const pct = progress.total ? Math.round((progress.done / progress.total) * 100) : 0;
   return (
-    <section aria-labelledby="journey-path" className="grid gap-3">
-      <h2 id="journey-path" className="sr-only">{t.home.path}</h2>
+    <section aria-labelledby={headingId} className="grid gap-3">
+      <h2 id={headingId} className="sr-only">{t.home.path}</h2>
       <ol className="grid grid-cols-7 gap-1.5">
         {STAGE_NUMBERS.map((n) => {
           const i = Number(n);

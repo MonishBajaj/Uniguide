@@ -1831,6 +1831,9 @@ isOneToOne: false
               "student_name": string,"usable": boolean
             }[]
                            },
+"parent_journey":
+{ Args: { "p_student": string }; Returns: Json
+                           },
 "parental_consent_age":
 { Args: { "p_country": string }; Returns: number
                            },
