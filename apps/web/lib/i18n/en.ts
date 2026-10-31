@@ -375,6 +375,13 @@ export const en = {
       updated: (date: string) => `Updated ${date}.`,
       notYet: (name: string) => `${name}'s progress appears here once they open UniGuide.`,
     },
+    updates: {
+      title: "Your journey",
+      reached: (n: number, name: string) => `You reached stage ${n}: ${name}`,
+      started: (n: number, name: string) => `Your journey started in stage ${n}: ${name}`,
+      dueSoon: "Due soon",
+      allSteps: "See all your steps",
+    },
     panels: {
       scoreGoalsTitle: "Score goals",
       scoreGoalsNoScore: "Add a test score to your profile to see it against each course's minimum.",

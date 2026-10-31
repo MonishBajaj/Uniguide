@@ -410,6 +410,13 @@ export const hi: Dict = {
       updated: (date: string) => `${date} को अपडेट किया गया।`,
       notYet: (name: string) => `${name} के UniGuide खोलने पर उनकी प्रगति यहाँ दिखेगी।`,
     },
+    updates: {
+      title: "आपका सफ़र",
+      reached: (n: number, name: string) => `आप चरण ${n} पर पहुँचे: ${name}`,
+      started: (n: number, name: string) => `आपका सफ़र चरण ${n} से शुरू हुआ: ${name}`,
+      dueSoon: "जल्द देय",
+      allSteps: "अपने सभी कदम देखें",
+    },
     panels: {
       scoreGoalsTitle: "स्कोर लक्ष्य",
       scoreGoalsNoScore: "हर कोर्स के न्यूनतम के मुक़ाबले देखने के लिए अपनी प्रोफ़ाइल में टेस्ट स्कोर जोड़ें।",
