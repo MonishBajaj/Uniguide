@@ -351,6 +351,29 @@ Checked against `Updated-developer-b` at `164575c` on 31 October 2026.
 - **CI on #4** is green apart from the four accepted e2e failures.
 - **Screenshots** of every new or changed screen at both widths, sent at the end of J5.1, J5.4, J5.6 and J5.8.
 
+## Finishing M5: exit gate (31 October 2026)
+
+- **Spec "done when": met.**
+  - `journey-enrollment.spec.ts` walks one student from admitted to arrived. Each task has a step: the deposit, the admission document, the visa, housing, health insurance and registration. Each step completes, and "I've arrived" turns the home into "You made it".
+  - `journey-no-offers.spec.ts` takes a rejected-everywhere student to the next intake, back to shortlisting, with their decisions kept.
+- **Local results:**
+
+  | Suite | Result |
+  |---|---|
+  | pgTAP | 699 pass |
+  | Unit tests | journey 153, matching 124, web 294 pass |
+  | Typecheck, lint | Clean |
+  | Worker | pytest 397 pass; ruff and mypy clean |
+  | e2e (app) | 131 pass; only the four failures accepted at the M2 gate |
+  | e2e demo | 3 pass |
+  | e2e community | 6 pass |
+  | Axe audit | No serious or critical issues at 1280 and 390 px, in English and Hindi, on: "After you accept", `/app/next-intake`, the profile's documents, the application page while waiting, the shortlist's intake choice, the departure page and "You made it" |
+  | `diff-fixtures` | One deliberate change: `arrived: false` added to every fixture (J5.8) |
+
+- **One regression from J5.3, fixed in its own commit.** `journey-edges.spec.ts` left the seed student's research interests set. `profile-completeness.spec.ts` then counted one more field done. The spec now clears them afterwards.
+- **Deviation from R7, recorded in BACKLOG.md.** S7.04 and S7.08 come from verified country rules only, like the other rule steps. No country has those rules yet, so the steps stay quiet until a verifier adds them.
+- **Catalogue:** 61 steps, 59 on. S2.07 and S3.06 wait for a decision.
+
 ## Handing over to M6
 
 M6 (polish) builds on:
