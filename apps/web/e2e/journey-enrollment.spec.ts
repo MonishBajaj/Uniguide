@@ -54,6 +54,8 @@ test("after accepting, each enrollment step goes once it's marked, and the visa 
   // Undo brings a step back.
   await page.goto("/app/offers#after-accept");
   await panel.getByRole("button", { name: "Undo : Mark received" }).click();
+  // Wait for the undo to save before reading the steps.
+  await expect(panel.getByRole("button", { name: "Mark received", exact: true })).toBeVisible();
   expect(await steps(page)).toContain("Get your admission document for the visa");
 });
 
@@ -136,7 +138,9 @@ test("one student from admitted to arrived: a step for every task, and each comp
 
   // Arrived.
   await page.goto("/app/departure#arrived");
-  await page.getByRole("region", { name: "Have you arrived?" }).getByRole("button", { name: "I've arrived" }).click();
+  const ask = page.getByRole("region", { name: "Have you arrived?" });
+  await ask.getByRole("button", { name: "I've arrived" }).click();
+  await expect(ask.getByRole("button", { name: "I haven't arrived yet" })).toBeVisible();
   await page.goto("/app");
   await expect(page.getByRole("region", { name: "You made it" })).toBeVisible();
 });
