@@ -1,4 +1,4 @@
-import type { Role } from "@uniguide/portal-adapters";
+import { ROLE_NAMES } from "@uniguide/portal-adapters";
 
 // The panel's words, in English and Hindi. The portal's own labels and the student's values are never
 // translated. The Hindi needs a native speaker's review, like the web app's (BACKLOG).
@@ -85,34 +85,7 @@ const en = {
   suggestUnavailable: "Suggestions aren't available right now. Fill it yourself.",
   suggestRejected: "Left for you.",
   confirmedBadge: "Suggested, confirmed by you",
-  roleNames: {
-    "person.given_names": "Given names",
-    "person.family_name": "Family name",
-    "person.full_name": "Full name",
-    "person.date_of_birth": "Date of birth",
-    "contact.email": "Email address",
-    "contact.residence_country": "Country you live in",
-    "contact.phone": "Phone number",
-    "education.school_name": "School or college name",
-    "education.qualification": "Qualification",
-    "education.grade.scale": "Grading scale",
-    "education.grade.value": "Overall grade",
-    "education.still_studying": "Whether you're still studying",
-    "education.expected_completion": "When you expect to finish",
-    "tests.english.taken": "Whether you've taken an English test",
-    "tests.english.exam": "Which English test",
-    "tests.english.total": "English test overall score",
-    "tests.english.taken_on": "English test date",
-    "activities[].role": "Activity: what you did",
-    "activities[].organisation": "Activity: organisation",
-    "activities[].description": "Activity: description",
-    "essay.personal_statement": "Personal statement",
-    "security.challenge": "A security check",
-    "fee.waiver": "Fee waiver",
-    "fee.waiver_reason": "Reason for a fee waiver",
-    "declaration.confirm": "A declaration",
-    "declaration.signature": "A signature",
-  } as Record<Role, string>,
+  roleNames: ROLE_NAMES.en,
 };
 
 export type Dict = typeof en;
@@ -200,34 +173,7 @@ const hi: Dict = {
   suggestUnavailable: "सुझाव अभी उपलब्ध नहीं हैं। इसे खुद भरें।",
   suggestRejected: "आपके लिए छोड़ा।",
   confirmedBadge: "सुझाव, आपने पुष्टि की",
-  roleNames: {
-    "person.given_names": "दिए गए नाम",
-    "person.family_name": "पारिवारिक नाम",
-    "person.full_name": "पूरा नाम",
-    "person.date_of_birth": "जन्म तिथि",
-    "contact.email": "ईमेल पता",
-    "contact.residence_country": "आप जिस देश में रहते हैं",
-    "contact.phone": "फ़ोन नंबर",
-    "education.school_name": "स्कूल या कॉलेज का नाम",
-    "education.qualification": "योग्यता",
-    "education.grade.scale": "ग्रेडिंग पैमाना",
-    "education.grade.value": "कुल ग्रेड",
-    "education.still_studying": "क्या आप अभी पढ़ रहे हैं",
-    "education.expected_completion": "आप कब तक पूरा करेंगे",
-    "tests.english.taken": "क्या आपने अंग्रेज़ी टेस्ट दिया है",
-    "tests.english.exam": "कौन-सा अंग्रेज़ी टेस्ट",
-    "tests.english.total": "अंग्रेज़ी टेस्ट का कुल स्कोर",
-    "tests.english.taken_on": "अंग्रेज़ी टेस्ट की तारीख",
-    "activities[].role": "गतिविधि: आपने क्या किया",
-    "activities[].organisation": "गतिविधि: संस्था",
-    "activities[].description": "गतिविधि: विवरण",
-    "essay.personal_statement": "व्यक्तिगत वक्तव्य",
-    "security.challenge": "एक सुरक्षा जाँच",
-    "fee.waiver": "शुल्क में छूट",
-    "fee.waiver_reason": "शुल्क छूट का कारण",
-    "declaration.confirm": "एक घोषणा",
-    "declaration.signature": "एक हस्ताक्षर",
-  } as Record<Role, string>,
+  roleNames: ROLE_NAMES.hi,
 };
 
 export const DICTS = { en, hi };

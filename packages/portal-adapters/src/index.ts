@@ -4,3 +4,4 @@ export { CONFIDENT, identifyPage, matchPage, type FieldMatch, type PageId, type 
 export { resolveValue, type DraftChoice, type Resolution } from "./resolve";
 export type { AiPolicy, FillProfile } from "./profile";
 export { guard, guardLogReason, GUARD_WORDS_EN, GUARD_WORDS_HI, type GuardBlock, type GuardContext, type GuardDecision } from "./guard";
+export { ROLE_NAMES } from "./names";

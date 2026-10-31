@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { AssistLog } from "@/components/assist-log";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PortfolioList } from "@/components/portfolio-list";
@@ -30,7 +31,7 @@ export default async function AgencyStudent({ params }: PageProps<"/agency/[stud
     supabase.from("journey_state").select("stage, stage_progress, steps, computed_at").eq("user_id", student).maybeSingle(),
   ]);
   if (!share || !profile) notFound();
-  const { t } = await getLocale();
+  const { t, locale } = await getLocale();
   const progress = (journey?.stage_progress ?? {}) as { done?: number; total?: number; label?: string };
   const steps = ((journey?.steps ?? []) as { id: string; title: string; reason: string }[]).slice(0, 5);
 
@@ -110,6 +111,7 @@ export default async function AgencyStudent({ params }: PageProps<"/agency/[stud
                   </li>
                 ))}
               </ul>
+              <AssistLog supabase={supabase} applicationId={a.id} locale={locale} t={t.assist} counselor headingLevel={4} />
             </article>
           );
         })}

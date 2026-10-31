@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { AssistLog } from "@/components/assist-log";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { COST_KINDS, totalsByCurrency, type CostKind } from "@/lib/application-costs";
@@ -46,7 +47,7 @@ export const metadata: Metadata = { title: "Application" };
 export default async function ApplicationPage({ params, searchParams }: PageProps<"/app/tracker/[id]">) {
   const { id } = await params;
   const justStarted = (await searchParams).applying === "1";
-  const { t: all } = await getLocale();
+  const { t: all, locale } = await getLocale();
   const { supabase, user } = await getUser();
   const [{ data: app }, { data: outcome }, { data: consent }, { data: events }, { data: scores }, { data: costs }, { data: profile }, { data: tracks }, { data: linkedDocs }] = await Promise.all([
     supabase
@@ -594,6 +595,8 @@ export default async function ApplicationPage({ params, searchParams }: PageProp
           ))}
         </ol>
       </section>
+
+      <AssistLog supabase={supabase} applicationId={app.id} locale={locale} t={all.assist} />
 
       <form action={deleteApplication.bind(null, app.id)}>
         <button className="btn btn-secondary btn-sm">Delete this application</button>

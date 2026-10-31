@@ -258,3 +258,15 @@ export async function deleteDocument(documentId: string) {
   await supabase.from("documents").delete().eq("id", documentId);
   redirect("/app/writing");
 }
+
+/**
+ * M7 A1.7: choose which saved version is the final draft, the only one the UniGuide Assist extension can offer
+ * for a portal's essay field. Row-level security keeps it to the student's own document, and a trigger
+ * (check_final_version) accepts only one of that document's own versions. Null clears it.
+ */
+export async function setFinalDraft(documentId: string, versionId: string | null) {
+  const { supabase } = await getUser();
+  const { error } = await supabase.from("documents").update({ final_version_id: versionId }).eq("id", documentId);
+  if (error) throw new Error(error.message);
+  revalidatePath(`/app/writing/${documentId}`);
+}

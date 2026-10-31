@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { label, shortDate } from "@/lib/format";
+import { getLocale } from "@/lib/i18n/server";
 import { getUser } from "@/lib/supabase/server";
 import { loadFaculty } from "@/lib/faculty";
 import { courseMaterial, namedInDraft, WHY_QUESTIONS, type MaterialItem } from "@/lib/why-helper";
@@ -10,7 +11,7 @@ import { researchChecks } from "@/lib/writing/research";
 import { classifyPrompt, PROMPT_TYPES } from "@/lib/writing/supplemental";
 import { segment } from "@/lib/writing/segment";
 import type { RubricResult, ComparisonResult } from "@/lib/writing/review";
-import { deleteDocument } from "../actions";
+import { deleteDocument, setFinalDraft } from "../actions";
 import { Editor } from "./editor";
 import { FeedbackButtons } from "./feedback-buttons";
 
@@ -27,6 +28,8 @@ const CRITERION: Record<string, string> = {
 export default async function DocumentPage({ params }: PageProps<"/app/writing/[id]">) {
   const { id } = await params;
   const { supabase, user } = await getUser();
+  const { t: all } = await getLocale();
+  const ta = all.assist;
   const [{ data: doc }, { data: versions }, { data: reviews }, { data: allowance }] = await Promise.all([
     supabase.from("documents").select("*").eq("id", id).maybeSingle(),
     supabase.from("document_versions").select("id, body, word_count, created_at").eq("document_id", id).order("created_at", { ascending: false }),
@@ -224,8 +227,32 @@ export default async function DocumentPage({ params }: PageProps<"/app/writing/[
 
       <section aria-labelledby="history" className="grid gap-3 rounded-2xl border border-border bg-surface p-5 text-sm">
         <h2 id="history" className="text-lg font-semibold">Drafts and authorship record</h2>
-        <ul className="grid gap-1">
-          {(versions ?? []).map((v) => <li key={v.id}>{shortDate(v.created_at)} · {v.word_count} words</li>)}
+        <p className="text-muted">{ta.finalHelp}</p>
+        {!doc.final_version_id && (versions ?? []).length ? <p className="text-muted">{ta.noFinal}</p> : null}
+        <ul className="grid gap-2" id="versions">
+          {(versions ?? []).map((v) => {
+            const final = doc.final_version_id === v.id;
+            return (
+              <li key={v.id} className="flex flex-wrap items-center gap-x-3 gap-y-1" data-final={final ? "true" : undefined}>
+                <span>{shortDate(v.created_at)} · {v.word_count} words</span>
+                {final ? (
+                  <>
+                    <span className="rounded-full border border-verified/40 px-2 py-0.5 text-xs font-semibold text-verified">{ta.isFinal}</span>
+                    <form action={setFinalDraft.bind(null, doc.id, null)}>
+                      <button className="btn btn-secondary btn-sm">{ta.stopFinal}</button>
+                    </form>
+                  </>
+                ) : (
+                  <form action={setFinalDraft.bind(null, doc.id, v.id)}>
+                    <button className="btn btn-secondary btn-sm">
+                      {ta.useAsFinal}
+                      <span className="sr-only">: {shortDate(v.created_at)}, {v.word_count} words</span>
+                    </button>
+                  </form>
+                )}
+              </li>
+            );
+          })}
         </ul>
         <div className="flex gap-2">
           <a href={`/app/writing/${doc.id}/authorship`} className="btn btn-secondary btn-sm">Export record (JSON)</a>
