@@ -39,8 +39,17 @@ _DEGREE_PREFIX = re.compile(
 
 
 _DEGREE_SUFFIX = re.compile(
-    r"(?:\s*\([^)]*\)|\s+(?:PhD|Ph\.?D\.?|MS|M\.S\.|MA|M\.A\.|MSc|MFA|MBA|MEng|BS|BA|BFA))$", re.IGNORECASE
+    r"(?:\s*\([^)]*\)|\s*/\s*[A-Za-z]+"
+    r"|\s+(?:PhD|Ph\.?D\.?|MS|M\.S\.|MA|M\.A\.|MSc|MRes|MPhil|PGDip|PGCert|PGCE|LLM|MFA|MBA|MEng|BSc|BA|BEng|BFA|BS))$",
+    re.IGNORECASE,
 )
+
+
+def _strip_suffixes(title: str) -> str:
+    """Remove trailing degree labels one after another: 'X MSc / PGDip (Dubai)' becomes 'X'."""
+    while (stripped := _DEGREE_SUFFIX.sub("", title, count=1).strip()) != title:
+        title = stripped
+    return title
 
 
 def repair_title(title: str, quote: str) -> str:
@@ -54,7 +63,7 @@ def repair_title(title: str, quote: str) -> str:
     plain = _DEGREE_PREFIX.sub("", title, count=1)
     candidates = [title, plain]
     for form in (title, plain):
-        stripped = _DEGREE_SUFFIX.sub("", form).strip()
+        stripped = _strip_suffixes(form)
         candidates += [stripped, _DEGREE_PREFIX.sub("", stripped, count=1)]
     for form in list(candidates):
         candidates += [form.replace(" and ", " & "), form.replace(" & ", " and ")]
