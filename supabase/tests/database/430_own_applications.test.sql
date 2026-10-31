@@ -58,7 +58,8 @@ select is(jsonb_path_query_first(:'snap'::jsonb, '$.applications[*] ? (@.program
     "trackId": null, "offerAcceptedAt": null, "depositDueAt": null, "awardedAid": null, "portalCheckedAt": null,
     "documents": [], "letters": [], "scoresSent": [], "costCount": 0, "outcomeShared": false,
     "conditions": null, "depositPaidAt": null, "hasDepositDeadline": false, "admissionDocumentAt": null, "declinedAt": null,
-    "expectedDecisionOn": null, "interviews": [], "missingNotes": 0, "housingFacts": 0}'::jsonb,
+    "expectedDecisionOn": null, "interviews": [], "missingNotes": 0, "housingFacts": 0,
+    "openCycles": 0, "intakeChosen": false}'::jsonb,
   'an own application is in the snapshot with its own words and no facts');
 select is(jsonb_path_query_first(:'snap'::jsonb, '$.applications[*] ? (@.program.slug == "own-catalogue").own'), 'false'::jsonb,
   'a catalogue application says it is not own');

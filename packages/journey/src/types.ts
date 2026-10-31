@@ -173,6 +173,10 @@ export interface ApplicationSnapshot {
   interviews?: string[];
   /** Portal checks that noted something missing and aren't resolved yet. */
   missingNotes?: number;
+  /** How many of the course's intakes still have a published application deadline ahead (J5.7). */
+  openCycles?: number;
+  /** The student chose an intake for this course on their shortlist (J5.7). */
+  intakeChosen?: boolean;
   /** Published housing facts for the course's institution (7.3). */
   housingFacts?: number;
 }

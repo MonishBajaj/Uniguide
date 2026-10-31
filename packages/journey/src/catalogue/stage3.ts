@@ -1,5 +1,5 @@
 import { formatDate } from "../copy";
-import { courseLabel, daysBetween, known, nextDeadline, ref } from "./helpers";
+import { appSubjects, courseLabel, daysBetween, known, nextDeadline, ref } from "./helpers";
 import type { Ctx, StepDef } from "./types";
 
 /** The tracked-but-not-started application whose next deadline is soonest. */
@@ -55,13 +55,16 @@ export const STAGE3: StepDef[] = [
     href: () => "/app/shortlist#costs",
   },
   {
-    // Shortlist rows have no cycle yet (plan D11).
+    // A shortlisted course with more than one intake still open, until the student picks one (M5 J5.7, plan R10).
+    // A course already being prepared keeps its intake, so it never asks.
     id: "S3.04",
     stage: 3,
     dismissable: true,
-    available: false,
-    done: () => false,
+    available: true,
+    subjects: (ctx) => appSubjects(ctx.apps.filter((a) => a.status === "shortlisted" && (a.openCycles ?? 0) > 1)),
+    done: (_, s) => s.app!.intakeChosen === true,
     href: () => "/app/shortlist",
+    params: (_, s) => ({ course: courseLabel(s.app!) }),
   },
   {
     // Can't be dismissed while nothing is being prepared and a deadline is within 10 weeks.

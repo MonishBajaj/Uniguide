@@ -429,6 +429,15 @@ export const en = {
       remove: "Remove",
       none: "No contacts logged yet.",
     },
+    intakeChoice: {
+      title: "Which intake?",
+      intro: "This course has more than one intake open. Choose the one you're applying for.",
+      applyBy: (date: string) => `apply by ${date}`,
+      confirm: (n: number) => `I understand the checklist for this course starts again for the new intake (${n} ticked ${n === 1 ? "item" : "items"}). Items you added yourself are kept.`,
+      choose: "Choose this intake",
+      chosen: (name: string) => `Applying for ${name}`,
+      intake: (name: string) => `Intake: ${name}`,
+    },
     waiting: {
       title: "While you wait",
       intro: "Log interviews and when you expect to hear. These are your own dates: they only shape your steps, and are never shown as the university's.",

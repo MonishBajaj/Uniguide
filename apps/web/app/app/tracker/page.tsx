@@ -7,6 +7,7 @@ import { daysUntil, deadlineText } from "@/lib/format";
 import { letterProgress, lettersNeeded } from "@/lib/recommendations";
 import { scoreNeeds, sentProgress } from "@/lib/score-sending";
 import { getLocale } from "@/lib/i18n/server";
+import { intakeName } from "@/lib/intakes";
 import { getUser } from "@/lib/supabase/server";
 import { inTrack } from "@/lib/tracks";
 import { TrackSwitcher } from "@/components/track-switcher";
@@ -30,7 +31,7 @@ export default async function TrackerPage({ searchParams }: PageProps<"/app/trac
   const { data } = await supabase
     .from("applications")
     .select(
-      "id, status, due_at, decision, declined_at, portal_checked_at, track_id, own_title, own_institution, own_country, own_due_at, program_cycles(label, requirements(kind, exam, test_policy, count_required), programs(slug, title, institutions(name, country))), checklist_items(done, deadlines(due_at, timezone, precision)), score_reports(test_scores(exam)), recommendation_requests(status)",
+      "id, status, due_at, decision, declined_at, portal_checked_at, track_id, own_title, own_institution, own_country, own_due_at, program_cycles(label, intake_year, intake_term, requirements(kind, exam, test_policy, count_required), programs(slug, title, institutions(name, country))), checklist_items(done, deadlines(due_at, timezone, precision)), score_reports(test_scores(exam)), recommendation_requests(status)",
     )
     .order("due_at", { ascending: true, nullsFirst: false });
   const apps = (data ?? []).filter((a) => inTrack(a.track_id, trackFilter)).map((a) => ({
@@ -97,6 +98,7 @@ export default async function TrackerPage({ searchParams }: PageProps<"/app/trac
                   <article key={a.id} className="grid gap-2 rounded-xl bg-background p-3 text-sm">
                     <Link href={`/app/tracker/${a.id}`} className="font-semibold underline-offset-2 hover:underline">{a.course.title}</Link>
                     <p className="text-muted">{a.course.institution}</p>
+                    {a.program_cycles ? <p className="text-muted">{all.journey.intakeChoice.intake(intakeName(a.program_cycles))}</p> : null}
                     {a.course.own ? <p><OwnBadge text={all.journey.own.badge} /></p> : null}
                     {a.declined_at ? <p className="font-semibold text-muted">{all.journey.decline.label}</p> : null}
                     <p>
@@ -141,6 +143,7 @@ export default async function TrackerPage({ searchParams }: PageProps<"/app/trac
                   <td className="p-3">
                     <Link href={`/app/tracker/${a.id}`} className="font-semibold underline-offset-2 hover:underline">{a.course.title}</Link>
                     <div className="text-muted">{a.course.institution}</div>
+                    {a.program_cycles ? <div className="text-muted">{all.journey.intakeChoice.intake(intakeName(a.program_cycles))}</div> : null}
                     {a.course.own ? <OwnBadge text={all.journey.own.badge} /> : null}
                   </td>
                   <td className="p-3">{t.status[a.status]}</td>

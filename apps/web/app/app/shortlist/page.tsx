@@ -9,10 +9,11 @@ import { cardDeadline } from "@/lib/card-deadline";
 import { loadCurrentCycles, loadFx, toStudentProfile } from "@/lib/catalog";
 import { money, shortDate } from "@/lib/format";
 import { getLocale } from "@/lib/i18n/server";
+import { intakeName, openIntakes } from "@/lib/intakes";
 import { shortlistPanels } from "@/lib/shortlist-panels";
 import { getUser } from "@/lib/supabase/server";
 import { startApplyingTo } from "../tracker/actions";
-import { removeFromShortlist } from "./actions";
+import { chooseIntake, removeFromShortlist } from "./actions";
 import { MergeLocalShortlist } from "./merge-local";
 
 export const metadata: Metadata = { title: "Shortlist" };
@@ -21,7 +22,7 @@ export default async function ShortlistPage() {
   const { supabase, user } = await getUser();
   const { t: all } = await getLocale();
   const t = all.journey.panels;
-  const { data: rows } = await supabase.from("shortlists").select("program_id").order("created_at");
+  const { data: rows } = await supabase.from("shortlists").select("program_id, cycle_id").order("created_at");
   const ids = (rows ?? []).map((r) => r.program_id);
   const { data: cards } = ids.length
     ? await supabase.from("program_cards").select("*").in("id", ids)
@@ -29,9 +30,21 @@ export default async function ShortlistPage() {
   const cycles = await loadCurrentCycles(supabase, ids);
   // Each course's application, if it's tracked, for the "I'm applying" button (J3.2).
   const { data: apps } = ids.length
-    ? await supabase.from("applications").select("id, status, program_cycles!inner(program_id)").in("program_cycles.program_id", ids)
+    ? await supabase
+        .from("applications")
+        .select("id, status, cycle_id, checklist_items(done, kind), program_cycles!inner(program_id, intake_year, intake_term)")
+        .in("program_cycles.program_id", ids)
+        .neq("status", "withdrawn")
     : { data: [] };
   const appFor = new Map((apps ?? []).map((a) => [a.program_cycles.program_id, a]));
+  // Every intake of each course, for the intake choice (J5.7).
+  const { data: allCycles } = ids.length
+    ? await supabase.from("program_cycles").select("id, program_id, label, intake_year, intake_term, deadlines(kind, due_at, status, published)").in("program_id", ids)
+    : { data: [] };
+  const now = new Date();
+  const intakesFor = (programId: string) => openIntakes((allCycles ?? []).filter((c) => c.program_id === programId), now);
+  const chosenFor = new Map((rows ?? []).map((r) => [r.program_id, r.cycle_id]));
+  const ti = all.journey.intakeChoice;
 
   return (
     <div className="grid gap-8">
@@ -81,6 +94,38 @@ export default async function ShortlistPage() {
                       </button>
                     </form>
                   </div>
+                  {(() => {
+                    const app = appFor.get(card.id!);
+                    const open = intakesFor(card.id!);
+                    const chosen = chosenFor.get(card.id!) ?? null;
+                    if (open.length < 2 || (app && app.status !== "shortlisted")) return null;
+                    const current = chosen ?? app?.cycle_id ?? null;
+                    const ticked = app ? app.checklist_items.filter((i) => i.done && i.kind !== "custom").length : 0;
+                    return (
+                      <form action={chooseIntake.bind(null, card.id!)} className="grid gap-3 rounded-xl border border-border bg-surface p-4 text-sm">
+                        <fieldset className="grid gap-2">
+                          <legend className="font-semibold">{ti.title}<span className="sr-only">: {card.title}</span></legend>
+                          <p className="text-muted">{chosen && app ? ti.chosen(intakeName(app.program_cycles)) : ti.intro}</p>
+                          {open.map((o) => (
+                            <label key={o.id} className="flex flex-wrap items-center gap-2">
+                              <input type="radio" name="cycle_id" value={o.id} required defaultChecked={o.id === current} className="size-4" />
+                              <span>{o.name} · {ti.applyBy(shortDate(o.applyBy))}</span>
+                              <FactBadge status={o.status as Parameters<typeof FactBadge>[0]["status"]} />
+                            </label>
+                          ))}
+                        </fieldset>
+                        {ticked > 0 ? (
+                          <label className="flex items-start gap-2">
+                            <input type="checkbox" name="confirm" required className="mt-0.5 size-4" />
+                            <span>{ti.confirm(ticked)}</span>
+                          </label>
+                        ) : null}
+                        <button className="btn btn-secondary btn-sm justify-self-start">
+                          {ti.choose}<span className="sr-only">: {card.title}</span>
+                        </button>
+                      </form>
+                    );
+                  })()}
                 </div>
               );
             })}

@@ -74,6 +74,8 @@ const snapshotSchema = z.object({
       expectedDecisionOn: z.string().nullable().default(null),
       interviews: list(z.string()),
       missingNotes: z.number().default(0),
+      openCycles: z.number().default(0),
+      intakeChosen: z.boolean().default(false),
       housingFacts: z.number().default(0),
       ownDueAt: z.string().nullable().default(null),
       program: appProgram,

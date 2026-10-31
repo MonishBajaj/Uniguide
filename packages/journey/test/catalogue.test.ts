@@ -9,7 +9,7 @@ const ids = (input: JourneyInput) => evaluateCatalogue(input).open.map((s) => s.
 
 /** M1 plan "Deviations". S1.03 turned on in M2 with the profile's intake field. Changing this list is a deliberate act. */
 const UNAVAILABLE = [
-  "S2.07", "S3.04", "S3.06",
+  "S2.07", "S3.06",
 ];
 
 const LONG = "A".repeat(120);
@@ -60,6 +60,7 @@ function everything(): JourneyInput {
       }),
       application("short", { ...long, id: "p3" }, {
         deadlines: [{ id: "d-short", dueAt: "2027-09-10T23:59:00Z", timezone: "Europe/Berlin", precision: "date", status: "verified" }],
+        openCycles: 2,
       }),
       application("sent", { ...long, id: "p4" }, {
         status: "submitted",
@@ -654,5 +655,22 @@ describe("interviews, expected decisions and missing documents (J5.6)", () => {
     const step = evaluateCatalogue(sent({ expectedDecisionOn: "2027-02-14" })).open.find((s) => s.catalogueId === "S5.04")!;
     expect(step.href).toBe("/app/tracker/a1#decision");
     expect(step.dueAt).toBeNull();
+  });
+});
+
+describe("choosing the intake (J5.7)", () => {
+  const shortlisted = (extra: Record<string, unknown>) =>
+    base({ profile: readyProfile, applications: [application("a1", programs.tum!, { status: "shortlisted", ...extra })] });
+
+  it("asks when a shortlisted course has more than one intake open, until one is chosen", () => {
+    expect(ids(shortlisted({ openCycles: 1 }))).not.toContain("S3.04");
+    const step = evaluateCatalogue(shortlisted({ openCycles: 2 })).open.find((s) => s.catalogueId === "S3.04")!;
+    expect(step.href).toBe("/app/shortlist");
+    expect(step.title).toMatch(/^Confirm the intake for /);
+    expect(evaluateCatalogue(shortlisted({ openCycles: 2, intakeChosen: true })).completed).toContain("S3.04:a1");
+  });
+
+  it("never asks about a course already being prepared", () => {
+    expect(ids(shortlisted({ openCycles: 3, status: "preparing" }))).not.toContain("S3.04");
   });
 });
