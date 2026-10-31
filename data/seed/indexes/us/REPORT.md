@@ -21,7 +21,7 @@ is verified by a person: no file has `verified_by`, so none is crawled yet.
 | UT Austin | 42 of 176 |
 | Northwestern | 35 of 91 |
 
-## Weak or unfinished (2)
+## Weak or unfinished (3)
 
 | University | Problem |
 |---|---|
