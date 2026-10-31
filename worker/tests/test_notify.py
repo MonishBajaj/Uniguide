@@ -280,3 +280,18 @@ def test_parent_digest_leads_with_the_journey_in_parent_safe_terms(
     assert "MSc N, Notify U: Shortlisted" in m.text
     for private in ("statement", "IELTS", "7.5", "Work through the MSc N checklist"):
         assert private not in m.text
+
+
+def test_no_parent_email_once_the_student_has_arrived(
+    notifier: Connection, operator: Connection, parent: dict[str, Any], scenario: dict[str, Any]
+) -> None:
+    """M5 J5.8: the journey is done, so the weekly parent email stops."""
+    operator.execute(
+        "insert into journey_state (user_id, stage, stage_progress, steps, arrived, engine_version, computed_at) values "
+        "(%s, 7, '{\"label\": \"3 of 3 steps done before you go\"}', '[]', true, 'journey-0.4.0', now())",
+        (scenario["uid"],),
+    )
+    operator.commit()
+    mailer = Mailer()
+    send_parent_digests(notifier, mailer, "https://uniguide.example")
+    assert [m for m in mailer.sent if m.to == parent["email"]] == []

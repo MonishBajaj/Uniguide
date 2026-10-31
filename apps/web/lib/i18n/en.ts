@@ -429,6 +429,22 @@ export const en = {
       remove: "Remove",
       none: "No contacts logged yet.",
     },
+    arrived: {
+      title: "You made it",
+      body: (institution: string) =>
+        `Welcome to ${institution}. This journey is done, so we've stopped sending journey emails. Everything you tracked is still here.`,
+      bodyNoCourse: "Welcome. This journey is done, so we've stopped sending journey emails. Everything you tracked is still here.",
+      links: "Settling in",
+      arrival: "Your arrival checklist",
+      arrivalGuide: (institution: string) => `Arriving at ${institution}`,
+      studentLife: (institution: string) => `Student life and support at ${institution}`,
+      tracker: "Your applications",
+      askTitle: "Have you arrived?",
+      askBody: "Tell us once you're there, and we'll stop sending journey emails.",
+      doneBody: "Welcome. Your journey is marked done.",
+      button: "I've arrived",
+      undo: "I haven't arrived yet",
+    },
     intakeChoice: {
       title: "Which intake?",
       intro: "This course has more than one intake open. Choose the one you're applying for.",

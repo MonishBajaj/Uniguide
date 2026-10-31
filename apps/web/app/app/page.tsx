@@ -43,6 +43,40 @@ export default async function JourneyHome({ searchParams }: PageProps<"/app">) {
   // Revoked consent: nothing personal may be used, so no steps; the layout's banner explains why.
   if (consentState === "revoked") return <div className="grid gap-6">{greeting}</div>;
 
+  // Stage 7 done (M5 J5.8): "You made it", with settling-in links and no step list.
+  if (result.arrived) {
+    const going = input.applications.find((a) => a.offerAcceptedAt && !a.declinedAt);
+    const institution = going?.program.institution ?? "";
+    return (
+      <div className="grid gap-8">
+        <header>{greeting}</header>
+        <section aria-labelledby="made-it" className="grid gap-4 rounded-2xl border border-border bg-surface p-6">
+          <h2 id="made-it" className="text-3xl font-semibold">{j.arrived.title}</h2>
+          <p className="max-w-2xl text-lg">{institution ? j.arrived.body(institution) : j.arrived.bodyNoCourse}</p>
+          <h3 className="font-semibold">{j.arrived.links}</h3>
+          <ul className="grid gap-2">
+            <li><Link href="/app/departure" className="font-semibold text-accent underline underline-offset-2">{j.arrived.arrival}</Link></li>
+            {going?.program.slug ? (
+              <li>
+                <Link href={`/courses/${going.program.slug}/arrival`} className="font-semibold text-accent underline underline-offset-2">
+                  {j.arrived.arrivalGuide(institution)}
+                </Link>
+              </li>
+            ) : null}
+            {going?.program.slug ? (
+              <li>
+                <Link href={`/courses/${going.program.slug}#student-life`} className="font-semibold text-accent underline underline-offset-2">
+                  {j.arrived.studentLife(institution)}
+                </Link>
+              </li>
+            ) : null}
+            <li><Link href="/app/tracker" className="font-semibold text-accent underline underline-offset-2">{j.arrived.tracker}</Link></li>
+          </ul>
+        </section>
+      </div>
+    );
+  }
+
   const stageName = j.stages[String(result.stage) as keyof typeof j.stages].name;
   const next = result.steps.slice(0, 3);
   const status = readStatus(await searchParams);

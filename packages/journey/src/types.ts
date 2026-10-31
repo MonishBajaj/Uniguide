@@ -297,5 +297,7 @@ export interface JourneyResult {
   /** A sentence for badges, e.g. "2 steps due this fortnight"; null when nothing is urgent. */
   urgentLabel: string | null;
   stalled: boolean;
+  /** Stage 7 is done: the accepted course has started, or the student said they've arrived (M5 J5.8). */
+  arrived: boolean;
   engineVersion: string;
 }

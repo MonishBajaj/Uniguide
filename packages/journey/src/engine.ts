@@ -87,6 +87,20 @@ export function upcomingDeadlines(input: JourneyInput, limit = 3): UpcomingDeadl
     .slice(0, limit);
 }
 
+/**
+ * The student has arrived (M5 J5.8, plan R12): an accepted course's published start date has passed, or the student
+ * pressed "I've arrived" on the departure page (departure task "arrived").
+ */
+export function hasArrived(input: JourneyInput): boolean {
+  return activeApplications(input.applications, input.profile.intakeRolledAt ?? null)
+    .filter((a) => a.offerAcceptedAt && !a.declinedAt)
+    .some(
+      (a) =>
+        (a.cycle?.startsOn != null && a.cycle.startsOn <= input.today) ||
+        input.departureTasks.some((t) => t.applicationId === a.id && t.taskKey === "arrived"),
+    );
+}
+
 /** The journey for one student on one date. Pure: same input, same output. */
 export function computeJourney(input: JourneyInput): JourneyResult {
   const stage = computeStage(input);
@@ -111,6 +125,7 @@ export function computeJourney(input: JourneyInput): JourneyResult {
     urgentCount,
     urgentLabel: urgentLabel(urgentCount),
     stalled: isStalled(input.lastCompletedAt, steps, input.today),
+    arrived: hasArrived(input),
     engineVersion: ENGINE_VERSION,
   };
 }

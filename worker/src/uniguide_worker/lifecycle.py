@@ -139,7 +139,9 @@ def due_lifecycle(conn: Connection, site_url: str, now: datetime) -> list[Lifecy
     out: list[LifecycleMessage] = []
     states = {
         r["user_id"]: r
-        for r in conn.execute("select user_id, stage, steps, stalled, computed_at from journey_state").fetchall()
+        for r in conn.execute(
+            "select user_id, stage, steps, stalled, arrived, computed_at from journey_state"
+        ).fetchall()
     }
     # Reaching stage 4, 6 or 7 recently. A student's first journey also logs the stage it starts in; that isn't
     # reaching a stage, so only an entry after an earlier one counts.
@@ -158,6 +160,9 @@ def due_lifecycle(conn: Connection, site_url: str, now: datetime) -> list[Lifecy
     for r in conn.execute("select * from public.notifier_lifecycle_recipients()").fetchall():
         uid, token = r["user_id"], r["unsubscribe_token"]
         age = (now - r["created_at"]).days
+        state = states.get(uid)
+        if state is not None and state["arrived"]:
+            continue  # the student has arrived: the journey is done, so no more journey emails (M5 J5.8)
 
         def add(
             kind: str, period: str, subject: str, body: str, uid: Any = uid, email: str = r["email"], token: str = token
@@ -175,7 +180,6 @@ def due_lifecycle(conn: Connection, site_url: str, now: datetime) -> list[Lifecy
             for e in entered.get(uid, []):
                 add("stage_change", str(e["id"]), *stage_email(e["stage"], site_url))
 
-        state = states.get(uid)
         if r["digest"] and now.weekday() == 0 and state is not None and journey.is_fresh(state["computed_at"], now):
             digest = journey_digest(state, _digest_items(conn, uid, now), site_url)
             if digest:

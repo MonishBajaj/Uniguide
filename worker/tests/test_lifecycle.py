@@ -220,13 +220,15 @@ STEPS = [
 ]
 
 
-def set_journey(operator: Connection, uid: Any, *, stage: int = 4, stalled: bool = False, age_days: int = 1) -> None:
+def set_journey(
+    operator: Connection, uid: Any, *, stage: int = 4, stalled: bool = False, age_days: int = 1, arrived: bool = False
+) -> None:
     operator.execute(
-        "insert into journey_state (user_id, stage, stage_progress, steps, stalled, engine_version, computed_at) "
-        'values (%s, %s, \'{"done": 0, "total": 1, "label": "0 of 1 application ready"}\', %s, %s, \'journey-0.3.0\', %s) '
+        "insert into journey_state (user_id, stage, stage_progress, steps, stalled, arrived, engine_version, computed_at) "
+        'values (%s, %s, \'{"done": 0, "total": 1, "label": "0 of 1 application ready"}\', %s, %s, %s, \'journey-0.3.0\', %s) '
         "on conflict (user_id) do update set stage = excluded.stage, steps = excluded.steps, stalled = excluded.stalled, "
-        "computed_at = excluded.computed_at",
-        (uid, stage, json.dumps(STEPS), stalled, MONDAY - timedelta(days=age_days)),
+        "arrived = excluded.arrived, computed_at = excluded.computed_at",
+        (uid, stage, json.dumps(STEPS), stalled, arrived, MONDAY - timedelta(days=age_days)),
     )
     operator.commit()
 
@@ -328,3 +330,14 @@ def test_the_nudge_never_follows_a_shortened_title_with_a_full_stop() -> None:
     digest = journey_digest(state, [], "https://uniguide.example")
     assert digest is not None
     assert "The most urgent step: Work through the checklist for MSc Data Science, Univers…\n" in digest[1]
+
+
+def test_an_arrived_student_gets_no_more_journey_emails(
+    notifier: Connection, operator: Connection, make_student: Make
+) -> None:
+    """M5 J5.8: once the student has arrived, no digest, stage email or re-engagement."""
+    s = make_student(deadline_in_days=10)
+    enter_stages(operator, s["uid"], (6, 30), (7, 1))
+    set_journey(operator, s["uid"], stage=7, arrived=True)
+    assert sent(notifier, MONDAY, s["email"]) == []
+    assert sent(notifier, TUESDAY, s["email"]) == []

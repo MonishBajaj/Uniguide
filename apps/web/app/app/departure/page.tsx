@@ -4,6 +4,7 @@ import { FactBadge } from "@/components/facts";
 import { groupByMonth, monthName } from "@/lib/departure";
 import { loadDeparture } from "@/lib/departure-data";
 import { shortDate } from "@/lib/format";
+import { getLocale } from "@/lib/i18n/server";
 import { getUser } from "@/lib/supabase/server";
 import { setAcceptedOffer, setTaskDone } from "./actions";
 import { courseOf } from "@/lib/own-application";
@@ -56,6 +57,8 @@ export default async function DeparturePage() {
   }
 
   const { app, program, start, tasks, done } = data;
+  const ta = (await getLocale()).t.journey.arrived;
+  const arrived = done.has("arrived");
   const today = new Date().toISOString().slice(0, 10);
   const doneCount = tasks.filter((t) => done.has(t.key)).length;
 
@@ -123,6 +126,14 @@ export default async function DeparturePage() {
           </ul>
         </section>
       ))}
+
+      <section id="arrived" aria-labelledby="arrived-title" className="grid scroll-mt-24 gap-2 rounded-2xl border border-border bg-surface p-6">
+        <h2 id="arrived-title" className="text-lg font-semibold">{ta.askTitle}</h2>
+        <p className="text-muted">{arrived ? ta.doneBody : ta.askBody}</p>
+        <form action={setTaskDone.bind(null, app.id, "arrived", !arrived)}>
+          <button className={`btn btn-sm ${arrived ? "btn-secondary" : "btn-primary"}`}>{arrived ? ta.undo : ta.button}</button>
+        </form>
+      </section>
 
       <p className="text-xs text-muted">
         General steps, not immigration or legal advice. Rules change; your university and the official pages decide what applies to you.

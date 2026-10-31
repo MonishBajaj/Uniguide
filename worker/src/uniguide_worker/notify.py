@@ -207,8 +207,11 @@ def send_parent_digests(conn: Connection, mailer: Mailer, site_url: str, now: da
             (now, r["student_id"]),
         ).fetchall()
         state = conn.execute(
-            "select stage, stage_progress, steps, computed_at from journey_state where user_id = %s", (r["student_id"],)
+            "select stage, stage_progress, steps, arrived, computed_at from journey_state where user_id = %s",
+            (r["student_id"],),
         ).fetchone()
+        if state is not None and state["arrived"]:
+            continue  # the student has arrived: the journey is done, so the weekly email stops (M5 J5.8)
         if state is not None and not journey.is_fresh(state["computed_at"], now):
             state = None  # an old journey isn't reported as this week's
         if not apps and state is None:
