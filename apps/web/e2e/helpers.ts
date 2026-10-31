@@ -40,11 +40,11 @@ export function resetStudent() {
        delete from enrichment_jobs where user_id = '${STUDENT}';
        delete from journey_step_state where user_id = '${STUDENT}';
        insert into enrichment_jobs (user_id, status, stage) values ('${STUDENT}', 'done', 'done');
-       update profiles set residence_country = 'IN', target_levels = '{master}', target_countries = '{GB,US,DE}',
+       update profiles set residence_country = 'IN', target_levels = '{master}', target_countries = '{GB,US,DE}', target_fields = '{}',
          home_qualification = 'bachelor_4yr', grade_value = 8.4, grade_scale = 'gpa_10', budget_amount = 60000,
          budget_currency = 'USD', prior_credits = null, prior_credit_system = null, class_percentile = null,
          preferences = '{}', consent_state = 'not_required', entry_path = 'exploring',
-         target_fields = '{}', intake_year = null, intake_rolled_at = null where user_id = '${STUDENT}'`);
+         intake_year = null, intake_rolled_at = null where user_id = '${STUDENT}'`);
 }
 
 /** The applicant back to a full profile with exactly one preparing application, on a placeholder course. */
