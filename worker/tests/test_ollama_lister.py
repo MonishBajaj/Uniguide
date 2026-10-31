@@ -38,6 +38,7 @@ def test_lists_courses_from_the_model_answer() -> None:
     run = _lister(httpx.MockTransport(handler)).list_courses("https://u.example/courses", "page text", LINKS)
     body = seen[0]
     assert body["model"] == "ollama-test" and body["stream"] is False
+    assert body["think"] is False  # a thinking model (qwen3) would spend minutes reasoning before it answers
     assert body["format"] == CourseList.model_json_schema()
     user = body["messages"][1]["content"]  # type: ignore[index]
     assert "<page>\npage text\n</page>" in user and "1. MSc Robotics -> https://u.example/robotics" in user

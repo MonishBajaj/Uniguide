@@ -92,6 +92,7 @@ class OllamaCourseLister:
                 json={
                     "model": self.model,
                     "stream": False,
+                    "think": False,  # a thinking model (qwen3) would reason for minutes before it answers
                     "format": CourseList.model_json_schema(),
                     "options": {"temperature": 0, "num_ctx": NUM_CTX},
                     "messages": [
