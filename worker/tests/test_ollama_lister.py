@@ -21,7 +21,9 @@ LINKS = (("MSc Robotics", "https://u.example/robotics"),)
 
 
 def _lister(handler: httpx.MockTransport) -> OllamaCourseLister:
-    return OllamaCourseLister(model="ollama-test", client=httpx.Client(transport=handler, base_url="http://ollama.test"))
+    return OllamaCourseLister(
+        model="ollama-test", client=httpx.Client(transport=handler, base_url="http://ollama.test")
+    )
 
 
 def _reply(content: str, done_reason: str = "stop") -> dict[str, object]:
@@ -95,7 +97,11 @@ def test_cut_off_or_unparseable_answers_yield_no_courses() -> None:
 
 def _settings(**kwargs: object) -> Settings:
     return Settings(
-        worker_database_url=None, operator_database_url=None, data_gov_api_key=None, crawler_contact="x", **kwargs  # type: ignore[arg-type]
+        worker_database_url=None,
+        operator_database_url=None,
+        data_gov_api_key=None,
+        crawler_contact="x",
+        **kwargs,  # type: ignore[arg-type]
     )
 
 
@@ -132,7 +138,11 @@ def test_factory_explains_what_is_missing() -> None:
         ("Advanced Chemical Engineering MSc / PGDip", "Advanced Chemical Engineering", "Advanced Chemical Engineering"),
         ("Law LLM", "Law", "Law"),
         ("Education MRes / PGCert", "Education", "Education"),
-        ("Accounting Information and Management PhD", "Accounting Information & Management", "Accounting Information & Management"),
+        (
+            "Accounting Information and Management PhD",
+            "Accounting Information & Management",
+            "Accounting Information & Management",
+        ),
         ("Master of Science in Arts and Letters", "Arts & Letters", "Arts & Letters"),
     ],
 )
@@ -144,7 +154,11 @@ def test_expanded_degree_titles_are_repaired_only_when_the_quote_has_the_plain_n
 
 def test_a_repaired_title_reaches_the_caller_with_its_quote_unchanged() -> None:
     reply = CourseList(
-        courses=[ListedCourse(title="Master of Science in Robotics", level="master", url="https://u.example/r", quote="Robotics")]
+        courses=[
+            ListedCourse(
+                title="Master of Science in Robotics", level="master", url="https://u.example/r", quote="Robotics"
+            )
+        ]
     )
     handler = httpx.MockTransport(lambda request: httpx.Response(200, json=_reply(reply.model_dump_json())))
     run = _lister(handler).list_courses("https://u.example", "t", LINKS)
