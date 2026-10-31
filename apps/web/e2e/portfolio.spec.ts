@@ -58,6 +58,8 @@ test("6.4 a student uploads work and links, orders them, shares a 7-day link, an
   await page.fill("input[name=name]", "Asha");
   await page.check("input[name=agree]");
   await page.click('button:has-text("Share")');
+  // Wait for the share to save before the counselor looks.
+  await expect(page.getByText("Example Consultancy (local)")).toBeVisible();
   const counselor = await signIn(browser, "counselor@uniguide.local");
   await counselor.goto("/agency");
   await counselor.click('a:has-text("Asha")');
