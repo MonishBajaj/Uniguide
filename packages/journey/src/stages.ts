@@ -90,9 +90,12 @@ export const STAGES: Record<Stage, StageInfo> = {
   },
 };
 
-/** Applications that still count. Withdrawn ones, and withdrawn or deferred decisions, are ignored (plan D5). */
+/**
+ * Applications that still count. Withdrawn ones, withdrawn or deferred decisions, and offers the student
+ * declined (M5, J5.2) are ignored (plan D5).
+ */
 export function activeApplications(apps: ApplicationSnapshot[]): ApplicationSnapshot[] {
-  return apps.filter((a) => a.status !== "withdrawn" && a.decision !== "withdrawn" && a.decision !== "deferred");
+  return apps.filter((a) => a.status !== "withdrawn" && a.decision !== "withdrawn" && a.decision !== "deferred" && !a.declinedAt);
 }
 
 /**

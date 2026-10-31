@@ -52,6 +52,24 @@ test("after accepting, each enrollment step goes once it's marked, and the visa 
   expect(await steps(page)).toContain("Get your admission document for the visa");
 });
 
+test("after accepting, each other offer has a step until it's declined, and the tracker says so (J5.2)", async ({ browser }) => {
+  sql(`insert into applications (user_id, cycle_id, status, decision)
+         select '${STUDENT}', c.id, 'decided', 'admitted' from program_cycles c join programs p on p.id = c.program_id
+         where p.slug = 'tum-msc-informatics' and c.is_current`);
+  const page = await signIn(browser, "student@uniguide.local");
+  expect(await steps(page)).toContain("Let your other universities know");
+
+  await page.goto("/app/offers#others");
+  const others = page.getByRole("region", { name: "Your other offers" });
+  await expect(others).toBeInViewport();
+  await others.getByRole("button", { name: /^I've declined this offer : M\.Sc\. Informatics/ }).click();
+  await expect(others.getByText(/^Declined on/)).toBeVisible();
+  expect(await steps(page)).not.toContain("Let your other universities know");
+
+  await page.goto("/app/tracker");
+  await expect(page.getByRole("article").filter({ hasText: "M.Sc. Informatics" })).toContainText("Declined");
+});
+
 test("a parent never sees the conditions", async ({ browser }) => {
   sql(`insert into offer_conditions (application_id, user_id, conditions)
          select id, user_id, 'IELTS 7.0 in every band' from applications where user_id = '${STUDENT}'`);

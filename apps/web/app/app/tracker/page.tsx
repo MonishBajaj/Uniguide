@@ -30,7 +30,7 @@ export default async function TrackerPage({ searchParams }: PageProps<"/app/trac
   const { data } = await supabase
     .from("applications")
     .select(
-      "id, status, due_at, decision, portal_checked_at, track_id, own_title, own_institution, own_country, own_due_at, program_cycles(label, requirements(kind, exam, test_policy, count_required), programs(slug, title, institutions(name, country))), checklist_items(done, deadlines(due_at, timezone, precision)), score_reports(test_scores(exam)), recommendation_requests(status)",
+      "id, status, due_at, decision, declined_at, portal_checked_at, track_id, own_title, own_institution, own_country, own_due_at, program_cycles(label, requirements(kind, exam, test_policy, count_required), programs(slug, title, institutions(name, country))), checklist_items(done, deadlines(due_at, timezone, precision)), score_reports(test_scores(exam)), recommendation_requests(status)",
     )
     .order("due_at", { ascending: true, nullsFirst: false });
   const apps = (data ?? []).filter((a) => inTrack(a.track_id, trackFilter)).map((a) => ({
@@ -98,6 +98,7 @@ export default async function TrackerPage({ searchParams }: PageProps<"/app/trac
                     <Link href={`/app/tracker/${a.id}`} className="font-semibold underline-offset-2 hover:underline">{a.course.title}</Link>
                     <p className="text-muted">{a.course.institution}</p>
                     {a.course.own ? <p><OwnBadge text={all.journey.own.badge} /></p> : null}
+                    {a.declined_at ? <p className="font-semibold text-muted">{all.journey.decline.label}</p> : null}
                     <p>
                       {a.next
                         ? t.due(deadlineText(a.next.due_at, a.next.timezone, a.next.precision), daysUntil(a.next.due_at))
@@ -147,7 +148,7 @@ export default async function TrackerPage({ searchParams }: PageProps<"/app/trac
                     {a.next ? deadlineText(a.next.due_at, a.next.timezone, a.next.precision) : a.ownDue ? `${all.journey.own.yourDate}: ${ownDate(a.ownDue)}` : t.notKnown}
                   </td>
                   <td className="p-3">{a.done} / {a.total}</td>
-                  <td className="p-3">{a.decision ?? ""}</td>
+                  <td className="p-3">{a.declined_at ? all.journey.decline.label : (a.decision ?? "")}</td>
                   <td className="p-3">{checkedAgo(a.portal_checked_at)}</td>
                 </tr>
               ))}

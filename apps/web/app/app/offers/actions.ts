@@ -74,3 +74,15 @@ export async function setEnrollmentMark(applicationId: string, mark: (typeof MAR
   revalidatePath("/app", "layout");
 }
 
+/** "I've declined this offer" (journey M5, J5.2, G14), or undo it. Never the accepted offer. */
+export async function setDeclined(applicationId: string, declined: boolean): Promise<void> {
+  const { supabase, user } = await getUser();
+  if (!user || !z.uuid().safeParse(applicationId).success) return;
+  await supabase
+    .from("applications")
+    .update({ declined_at: declined ? new Date().toISOString() : null })
+    .eq("id", applicationId)
+    .is("offer_accepted_at", null);
+  revalidatePath("/app", "layout");
+}
+

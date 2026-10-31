@@ -81,7 +81,26 @@ export const STAGE6: StepDef[] = [
     href: afterAccept,
     params: course,
   },
-  { id: "S6.07", stage: 6, dismissable: true, available: false, done: () => false, href: () => "/app/offers" },
+  {
+    // Once one offer is accepted, each other offer or waitlist place still open, until the student declines it
+    // (G14). Read from every application, since a declined one no longer counts anywhere else.
+    id: "S6.07",
+    stage: 6,
+    dismissable: true,
+    available: true,
+    parentTitle: "Letting the other universities know",
+    subjects: (ctx) =>
+      accepted(ctx)
+        ? appSubjects(
+            ctx.input.applications.filter(
+              (a) => !a.offerAcceptedAt && (a.decision === "admitted" || a.decision === "waitlisted") && a.status !== "withdrawn",
+            ),
+          )
+        : [],
+    done: (_, s) => s.app!.declinedAt != null,
+    href: () => "/app/offers#others",
+    params: course,
+  },
   {
     // Every destination needs some admission document for a student visa (M5 plan R2); the help names examples.
     id: "S6.08",

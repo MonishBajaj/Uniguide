@@ -16,6 +16,7 @@ import { DecisionMatrix } from "./matrix";
 import { OwnBadge } from "@/components/own-badge";
 import { courseOf } from "@/lib/own-application";
 import { AfterAccept } from "./after-accept";
+import { setDeclined } from "./actions";
 
 export const metadata: Metadata = { title: "Compare offers" };
 
@@ -61,13 +62,15 @@ export default async function OffersPage({ searchParams }: PageProps<"/app/offer
     const course = card ? { title: card.title!, institution: card.institution_name!, own: false } : courseOf({ own_title: app.own_title, own_institution: app.own_institution });
     return { app, card, cost, course };
   });
-  const admitted = rows.filter((r) => r.app.decision === "admitted");
+  const admitted = rows.filter((r) => r.app.decision === "admitted" && !r.app.declined_at);
   const titleOf = (r: (typeof rows)[number]) => r.course.title;
   const first = firstReply(admitted.map((r) => ({ title: titleOf(r), due: r.app.deposit_due_at })));
   const tally = tallyGutChecks((matrix?.gut_checks as Check[] | undefined) ?? []);
   const budget = profile?.budget_amount && profile.budget_currency ? { amount: Number(profile.budget_amount), currency: profile.budget_currency } : null;
   // After you accept (J5.1): the accepted offer's conditions, deposit and admission document.
   const acceptedRow = rows.find((r) => r.app.offer_accepted_at);
+  // The other offers and waitlist places, to decline once one is accepted (J5.2).
+  const others = rows.filter((r) => r !== acceptedRow);
   const { data: conditions } = acceptedRow
     ? await supabase.from("offer_conditions").select("conditions, met_at").eq("application_id", acceptedRow.app.id).maybeSingle()
     : { data: null };
@@ -95,6 +98,32 @@ export default async function OffersPage({ searchParams }: PageProps<"/app/offer
             conditions: conditions ? { text: conditions.conditions, metAt: conditions.met_at } : null,
           }}
         />
+      ) : null}
+
+      {acceptedRow && others.length ? (
+        <section id="others" aria-labelledby="others-title" className="grid scroll-mt-24 gap-3 rounded-2xl border border-border bg-surface p-6">
+          <h2 id="others-title" className="text-2xl font-semibold">{all.journey.decline.title}</h2>
+          <p className="max-w-2xl text-sm text-muted">{all.journey.decline.intro}</p>
+          <ul className="grid gap-2">
+            {others.map((r) => (
+              <li key={r.app.id} className="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-background p-3">
+                <span className="font-semibold">{titleOf(r)}</span>
+                {r.app.declined_at ? (
+                  <span className="flex items-center gap-3">
+                    <span className="text-sm text-muted">{all.journey.decline.declinedOn(shortDate(r.app.declined_at))}</span>
+                    <form action={setDeclined.bind(null, r.app.id, false)}>
+                      <button className="btn btn-secondary btn-sm">{all.journey.decline.undo}<span className="sr-only">: {titleOf(r)}</span></button>
+                    </form>
+                  </span>
+                ) : (
+                  <form action={setDeclined.bind(null, r.app.id, true)}>
+                    <button className="btn btn-primary btn-sm">{all.journey.decline.declined}<span className="sr-only">: {titleOf(r)}</span></button>
+                  </form>
+                )}
+              </li>
+            ))}
+          </ul>
+        </section>
       ) : null}
 
       {first ? (

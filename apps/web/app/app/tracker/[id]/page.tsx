@@ -8,6 +8,7 @@ import { letterProgress, lettersNeeded, LETTER_STATUSES, type LetterStatus } fro
 import { scoreNeeds, sentProgress } from "@/lib/score-sending";
 import { WAITLIST_STEPS } from "@/lib/waitlist";
 import { setAcceptedOffer } from "../../departure/actions";
+import { setDeclined } from "../../offers/actions";
 import { startLinkedDocument, startSupplemental } from "../../writing/actions";
 import { daysUntil, deadlineText, label, money, shortDate } from "@/lib/format";
 import { getLocale } from "@/lib/i18n/server";
@@ -410,6 +411,24 @@ export default async function ApplicationPage({ params, searchParams }: PageProp
               <form action={setAcceptedOffer.bind(null, app.id)} className="grid gap-2 text-sm">
                 <p className="text-muted">Mark it as your choice to get a pre-departure timeline: housing, insurance, travel and the visa steps for your destination.</p>
                 <button className="btn btn-primary btn-sm justify-self-start">I&apos;m accepting this offer</button>
+              </form>
+            )}
+          </div>
+        ) : null}
+
+        {(app.decision === "admitted" || app.decision === "waitlisted") && !app.offer_accepted_at ? (
+          // Declining an offer the student won't take (J5.2, G14).
+          <div className="flex flex-wrap items-center gap-3 border-t border-border pt-4 text-sm">
+            {app.declined_at ? (
+              <>
+                <span className="text-muted">{all.journey.decline.declinedOn(shortDate(app.declined_at))}</span>
+                <form action={setDeclined.bind(null, app.id, false)}>
+                  <button className="btn btn-secondary btn-sm">{all.journey.decline.undo}</button>
+                </form>
+              </>
+            ) : (
+              <form action={setDeclined.bind(null, app.id, true)}>
+                <button className="btn btn-secondary btn-sm">{all.journey.decline.declined}</button>
               </form>
             )}
           </div>

@@ -400,6 +400,14 @@ export const en = {
       doneOn: (date: string) => `Done on ${date}.`,
       undo: "Undo",
     },
+    decline: {
+      title: "Your other offers",
+      intro: "Tell each university you won't take their place, the way their offer letter asks, then mark it here.",
+      declined: "I've declined this offer",
+      declinedOn: (date: string) => `Declined on ${date}.`,
+      undo: "Undo",
+      label: "Declined",
+    },
     panels: {
       scoreGoalsTitle: "Score goals",
       scoreGoalsNoScore: "Add a test score to your profile to see it against each course's minimum.",

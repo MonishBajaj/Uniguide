@@ -10,7 +10,7 @@ const ids = (input: JourneyInput) => evaluateCatalogue(input).open.map((s) => s.
 /** M1 plan "Deviations". S1.03 turned on in M2 with the profile's intake field. Changing this list is a deliberate act. */
 const UNAVAILABLE = [
   "S2.07", "S3.04", "S3.06", "S4.09", "S4.13",
-  "S5.02", "S5.03", "S5.04", "S6.07", "S7.03", "S7.04", "S7.08",
+  "S5.02", "S5.03", "S5.04", "S7.03", "S7.04", "S7.08",
 ];
 
 const LONG = "A".repeat(120);
@@ -509,3 +509,36 @@ describe("after accepting an offer (J5.1)", () => {
     expect(ids(accepted({ hasDepositDeadline: true, depositPaidAt: "2026-10-30T00:00:00Z" }))).not.toContain("S6.06");
   });
 });
+
+describe("declining other offers (J5.2)", () => {
+  const offers = (declinedAt: string | null = null) =>
+    base({
+      profile: readyProfile,
+      applications: [
+        application("going", programs.exampleton!, { status: "decided", decision: "admitted", offerAcceptedAt: "2026-10-20T00:00:00Z" }),
+        application("other", programs.tum!, { status: "decided", decision: "admitted", declinedAt }),
+        application("wait", programs.state!, { status: "decided", decision: "waitlisted" }),
+      ],
+    });
+
+  it("asks to let each other university know once an offer is accepted", () => {
+    const steps = evaluateCatalogue(offers()).open.filter((s) => s.catalogueId === "S6.07");
+    expect(steps.map((s) => s.id).sort()).toEqual(["S6.07:other", "S6.07:wait"]);
+    expect(steps[0]!.href).toBe("/app/offers#others");
+    expect(steps.find((s) => s.id === "S6.07:other")!.reason).toContain("Declining M.Sc. Informatik");
+  });
+
+  it("completes the step when declined, and a declined offer no longer counts", () => {
+    const r = evaluateCatalogue(offers("2026-10-25T00:00:00Z"));
+    expect(r.completed).toContain("S6.07:other");
+    expect(r.open.map((s) => s.id)).toContain("S6.07:wait");
+    expect(r.open.some((s) => s.application?.id === "other" && s.catalogueId !== "S6.07")).toBe(false);
+  });
+
+  it("asks nothing before an offer is accepted", () => {
+    const input = offers();
+    const before = { ...input, applications: input.applications.map((a) => ({ ...a, offerAcceptedAt: null })) };
+    expect(ids(before)).not.toContain("S6.07");
+  });
+});
+
