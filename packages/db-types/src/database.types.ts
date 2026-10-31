@@ -133,6 +133,46 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"assist_events": {
+                  Row: {
+                    "at": string,"field_role": string | null,"id": number,"kind": string,"page": string | null,"reason": string | null,"run_id": string,"source": string | null,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "at"?: string,"field_role"?: string | null,"id"?: never,"kind": string,"page"?: string | null,"reason"?: string | null,"run_id": string,"source"?: string | null,"user_id": string
+                  }
+                  Update: {
+                    "at"?: string,"field_role"?: string | null,"id"?: never,"kind"?: string,"page"?: string | null,"reason"?: string | null,"run_id"?: string,"source"?: string | null,"user_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "assist_events_run_id_fkey"
+      columns: ["run_id"]
+isOneToOne: false
+      referencedRelation: "assist_runs"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"assist_runs": {
+                  Row: {
+                    "adapter_version": string,"application_id": string | null,"ended_at": string | null,"feature": string,"id": string,"outcome": string | null,"portal": string,"started_at": string,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "adapter_version": string,"application_id"?: string | null,"ended_at"?: string | null,"feature": string,"id"?: string,"outcome"?: string | null,"portal": string,"started_at"?: string,"user_id": string
+                  }
+                  Update: {
+                    "adapter_version"?: string,"application_id"?: string | null,"ended_at"?: string | null,"feature"?: string,"id"?: string,"outcome"?: string | null,"portal"?: string,"started_at"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "assist_runs_application_id_fkey"
+      columns: ["application_id"]
+isOneToOne: false
+      referencedRelation: "applications"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"checklist_items": {
                   Row: {
                     "application_id": string,"country_rule_id": string | null,"created_at": string,"deadline_id": string | null,"details": string | null,"done": boolean,"done_at": string | null,"due_at": string | null,"id": string,"kind": string,"link": string | null,"requirement_id": string | null,"sort": number,"title": string,"user_id": string
@@ -479,14 +519,14 @@ isOneToOne: false
                   ]
                 },"documents": {
                   Row: {
-                    "application_id": string | null,"created_at": string,"id": string,"kind": Database["public"]['Enums']["document_kind"],"question": string | null,"title": string,"updated_at": string,"user_id": string,"word_limit": number | null
+                    "application_id": string | null,"created_at": string,"final_version_id": string | null,"id": string,"kind": Database["public"]['Enums']["document_kind"],"question": string | null,"title": string,"updated_at": string,"user_id": string,"word_limit": number | null
                   }
                   ComputedFields: never
                   Insert: {
-                    "application_id"?: string | null,"created_at"?: string,"id"?: string,"kind": Database["public"]['Enums']["document_kind"],"question"?: string | null,"title": string,"updated_at"?: string,"user_id": string,"word_limit"?: number | null
+                    "application_id"?: string | null,"created_at"?: string,"final_version_id"?: string | null,"id"?: string,"kind": Database["public"]['Enums']["document_kind"],"question"?: string | null,"title": string,"updated_at"?: string,"user_id": string,"word_limit"?: number | null
                   }
                   Update: {
-                    "application_id"?: string | null,"created_at"?: string,"id"?: string,"kind"?: Database["public"]['Enums']["document_kind"],"question"?: string | null,"title"?: string,"updated_at"?: string,"user_id"?: string,"word_limit"?: number | null
+                    "application_id"?: string | null,"created_at"?: string,"final_version_id"?: string | null,"id"?: string,"kind"?: Database["public"]['Enums']["document_kind"],"question"?: string | null,"title"?: string,"updated_at"?: string,"user_id"?: string,"word_limit"?: number | null
                   }
                   Relationships: [
                     {
@@ -1177,6 +1217,38 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
+                },"program_ai_policies": {
+                  Row: {
+                    "created_at": string,"evidence_quote": string,"id": string,"policy": string,"program_id": string,"published": boolean,"source_id": string | null,"status": Database["public"]['Enums']["fact_status"],"verified_at": string | null,"verified_by": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"evidence_quote": string,"id"?: string,"policy": string,"program_id": string,"published"?: boolean,"source_id"?: string | null,"status"?: Database["public"]['Enums']["fact_status"],"verified_at"?: string | null,"verified_by"?: string | null
+                  }
+                  Update: {
+                    "created_at"?: string,"evidence_quote"?: string,"id"?: string,"policy"?: string,"program_id"?: string,"published"?: boolean,"source_id"?: string | null,"status"?: Database["public"]['Enums']["fact_status"],"verified_at"?: string | null,"verified_by"?: string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "program_ai_policies_program_id_fkey"
+      columns: ["program_id"]
+isOneToOne: false
+      referencedRelation: "program_cards"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "program_ai_policies_program_id_fkey"
+      columns: ["program_id"]
+isOneToOne: false
+      referencedRelation: "programs"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "program_ai_policies_source_id_fkey"
+      columns: ["source_id"]
+isOneToOne: false
+      referencedRelation: "sources"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"program_cycles": {
                   Row: {
                     "created_at": string,"id": string,"intake_term": string,"intake_year": number,"is_current": boolean,"label": string,"program_id": string,"starts_on": string | null
@@ -1757,6 +1829,9 @@ isOneToOne: false
 "add_org_member":
 { Args: { "p_email": string,"p_org": string,"p_role"?: string }; Returns: string
                            },
+"add_program_ai_policy":
+{ Args: { "p_policy": string,"p_program_id": string,"p_quote": string,"p_source_url": string }; Returns: string
+                           },
 "add_program_cycle":
 { Args: { "p_intake_term": string,"p_intake_year": number,"p_program_id": string,"p_starts_on"?: string }; Returns: string
                            },
@@ -1783,6 +1858,9 @@ isOneToOne: false
                            },
 "answer_ama_question":
 { Args: { "p_answer": string,"p_post": string }; Returns: undefined
+                           },
+"application_portal":
+{ Args: { "p_cycle_id": string }; Returns: string
                            },
 "can_answer":
 { Args: { "p_parent": string,"uid": string }; Returns: boolean
@@ -1816,8 +1894,17 @@ isOneToOne: false
 "credit_balance":
 { Args: { "p_uid"?: string }; Returns: number
                            },
+"end_assist_run":
+{ Args: { "p_outcome": string,"p_run_id": string }; Returns: undefined
+                           },
 "fact_table":
 { Args: { "p_subject": Database["public"]['Enums']["fact_subject"] }; Returns: string
+                           },
+"fill_profile":
+{ Args: { "p_application_id": string }; Returns: Json
+                           },
+"final_draft_text":
+{ Args: { "p_document_id": string }; Returns: string
                            },
 "fx_convert":
 { Args: { "p_amount": number,"p_from": string,"p_to": string }; Returns: number
@@ -1865,6 +1952,12 @@ isOneToOne: false
                            },
 "journey_subject":
 { Args: { "p_token": string,"p_user": string }; Returns: string
+                           },
+"log_assist_event":
+{ Args: { "p_field_role"?: string,"p_kind": string,"p_page"?: string,"p_reason"?: string,"p_run_id": string,"p_source"?: string }; Returns: undefined
+                           },
+"mark_application_submitted":
+{ Args: { "p_application_id": string,"p_how": string,"p_run_id"?: string }; Returns: undefined
                            },
 "match_faculty":
 { Args: { "p_fields"?: (string)[],"p_institution_id": string,"p_limit"?: number,"p_query"?: string,"p_query_embedding"?: string }; Returns: {
@@ -1936,6 +2029,9 @@ isOneToOne: false
                            },
 "portfolio_owner":
 { Args: { "p_name": string }; Returns: string
+                           },
+"program_ai_policy":
+{ Args: { "p_program_id": string }; Returns: string
                            },
 "promote_fact_version":
 { Args: { "p_method"?: Database["public"]['Enums']["verification_method"],"p_reviewer_name"?: string,"p_status"?: Database["public"]['Enums']["fact_status"],"p_verified_at"?: string,"p_version_id": string }; Returns: string
@@ -2066,6 +2162,9 @@ isOneToOne: false
         isOneToOne: false
         isSetofReturn: true
       } },
+"start_assist_run":
+{ Args: { "p_adapter_version": string,"p_application_id": string,"p_feature": string,"p_portal": string }; Returns: string
+                           },
 "start_enrichment":
 { Args: { "p_program_ids": (string)[] }; Returns: string
                            },
@@ -2092,6 +2191,9 @@ isOneToOne: false
 { Args: { "p_rule_id": string }; Returns: undefined
                            },
 "verify_institution_fact":
+{ Args: { "p_id": string }; Returns: undefined
+                           },
+"verify_program_ai_policy":
 { Args: { "p_id": string }; Returns: undefined
                            },
 "verify_program_stat":

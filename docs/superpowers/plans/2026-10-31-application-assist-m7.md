@@ -47,7 +47,7 @@ Both work only in the student's own browser, never submit, and never write anyth
 - **Host permissions:** cleared portals only.
 - **Real-portal fixtures** contain no portal page copy, scripts or assets.
 - **The usual project rules:**
-  - migrations start at `20270107`, with pgTAP and RLS on every table, then `pnpm db:types`
+  - migrations: A1.1 is `20270107000001`. From 31 October 2026, new migrations use the real current timestamp (owner's decision), with pgTAP and RLS on every table, then `pnpm db:types`. A real-timestamp migration sorts before every 2027-dated one, so it can't change the assist or journey objects; how to handle such a change is an open owner decision (`docs/SETUP.md`, "Migrations dated 2027")
   - interface copy through `lib/i18n` in English and Hindi
   - WCAG 2.1 AA, with axe on new pages at 1280 and 390 px
   - every spec sets up and removes its own data, and waits for each save before reading the result
@@ -73,6 +73,8 @@ Checked on 31 October 2026, against `Updated-developer-b` at `0706418`.
 | R12 | "Apply" from a course in the tracker | The tracker has no way to talk to an extension. | `externally_connectable` limited to our web app's origin. The Apply button checks that the extension is installed and signed in (otherwise it links to install), then opens the portal and hands the run to the extension (A2.4). |
 | R13 | A clean-room source about the competitor | The agent writing this plan also did the analysis behind `behavioural-spec.md`, using only public material the owner approved. | Disclosed in spec section 2. **An independent review before store submission** (G3) checks that the product's wording, interface and names don't echo the competitor's. |
 | R14 | Chrome Manifest V3 sign-in through our Supabase auth | The web app uses Supabase sessions in cookies; an extension can't share them. | A sign-in page on our site hands a session to the extension through `externally_connectable`. The extension keeps it in `chrome.storage.session`, never on the page and never in `localStorage` (A1.5). |
+
+| R15 | Fill contact details | Profiles hold a display name (which may be a nickname), a birth month, a residence country and the sign-in email. They hold no legal name, full date of birth, address or phone number. | `fill_profile` returns the email and residence country only. Fields asking for a legal name, date of birth, address or phone are left for the student (logged as `left`). We don't start collecting more personal data for this; that's a later owner decision (A1.1). |
 
 ## Deviations from the instructions (decisions M7 takes)
 
@@ -133,7 +135,7 @@ Checked on 31 October 2026, against `Updated-developer-b` at `0706418`.
 
 **Interfaces:**
 - **`fill_profile(p_application_id)`:**
-  - Returns identity and contact details, education with grades as entered, test scores, activities, the course's AI policy and final-draft ids.
+  - Returns the email and residence country (R15), education with grades as entered, test scores, activities from the CV, the course's portal and AI policy, and final-draft ids.
   - Only for the caller's own application, and nothing while consent is pending or revoked.
 - **`log_assist_event(...)`, `start_assist_run(...)`, `end_assist_run(...)`:** events record the field role, kind and source, never a value.
 - **`mark_application_submitted(p_application_id, p_how)`:** for the caller's own application only.
