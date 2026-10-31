@@ -1,7 +1,7 @@
 // The side panel's state, kept pure so it can be tested without a browser (spec 5.3).
-import { resolveValue, type DraftChoice, type FieldMatch, type FillProfile, type Role } from "@uniguide/portal-adapters";
+import { resolveValue, ROLES, type Adapter, type DraftChoice, type FieldMatch, type FillProfile, type Role } from "@uniguide/portal-adapters";
 import { adapterByPortal } from "../adapters";
-import type { AccountState, EventKind, FieldView, FillResult, ScanResult, ToBackground } from "../messages";
+import type { AccountState, EventKind, FieldView, FillResult, ScanResult, SuggestOutcome, ToBackground } from "../messages";
 import type { MsgKey } from "./i18n";
 
 /**
@@ -21,7 +21,8 @@ export interface Row {
   label: string;
   required: boolean;
   confidence: number;
-  via: FieldView["via"];
+  /** "suggested": the student confirmed a suggested role for a field the rules couldn't match (A1.6). */
+  via: FieldView["via"] | "suggested";
   group: Group;
   /** What Fill writes: the stored value, or the portal option that means the same. */
   value?: string;
@@ -31,6 +32,9 @@ export interface Row {
   reason?: string;
   draft?: { paste: boolean; choices: DraftChoice[] };
   status: RowStatus;
+  suggestion?: { status: "asking" | "suggested" | "none" | "limit" | "unavailable" | "rejected"; role?: Role };
+  /** The role the student confirmed; sent with the fill, so the page writer can check it again. */
+  confirmedRole?: Role;
 }
 
 export type Phase = "loading" | "signed_out" | "consent" | "choose" | "unsupported" | "ready";
@@ -62,32 +66,72 @@ export function buildRows(scan: ScanResult | null | undefined, profile: FillProf
   if (!scan || !profile) return [];
   const adapter = adapterByPortal(scan.portal);
   if (!adapter) return [];
-  return scan.fields.map((f) => {
-    // The resolver only reads the field's description, never the element.
-    const r = resolveValue(f as FieldMatch, profile, adapter);
-    const row: Row = {
-      key: f.key,
-      ...(f.index ? { index: f.index } : {}),
-      role: f.role,
-      label: f.label,
-      required: f.required,
-      confidence: f.confidence,
-      via: f.via,
-      group: "review",
-      status: "ready",
-    };
-    switch (r.status) {
-      case "value":
-        return { ...row, group: "fill", value: r.value, shown: f.options?.find((o) => o.value === r.value)?.text ?? r.value, source: r.source };
-      case "draft":
-        return { ...row, group: "essay", draft: { paste: r.paste, choices: r.choices }, source: r.source };
-      case "needs_student":
-        return { ...row, group: f.role && (f.role as string).startsWith("essay.") ? "essay" : "review", reason: r.reason };
-      case "pause":
-      case "never":
-        return { ...row, group: "yours", reason: r.reason };
-    }
-  });
+  return scan.fields.map((f) => rowFor(f, profile, adapter));
+}
+
+function rowFor(f: FieldView, profile: FillProfile, adapter: Adapter): Row {
+  // The resolver only reads the field's description, never the element.
+  const r = resolveValue(f as FieldMatch, profile, adapter);
+  const row: Row = {
+    key: f.key,
+    ...(f.index ? { index: f.index } : {}),
+    role: f.role,
+    label: f.label,
+    required: f.required,
+    confidence: f.confidence,
+    via: f.via,
+    group: "review",
+    status: "ready",
+  };
+  switch (r.status) {
+    case "value":
+      return { ...row, group: "fill", value: r.value, shown: f.options?.find((o) => o.value === r.value)?.text ?? r.value, source: r.source };
+    case "draft":
+      return { ...row, group: "essay", draft: { paste: r.paste, choices: r.choices }, source: r.source };
+    case "needs_student":
+      return { ...row, group: f.role && (f.role as string).startsWith("essay.") ? "essay" : "review", reason: r.reason };
+    case "pause":
+    case "never":
+      return { ...row, group: "yours", reason: r.reason };
+  }
+}
+
+// ---------------------------------------------------------------------------------------------- suggestions (A1.6)
+
+/** Only a field the rules couldn't match can be suggested, and only before the student has confirmed one. */
+export const canSuggest = (r: Row) =>
+  r.group === "review" && r.reason === "no_match" && r.via === "none" && !r.confirmedRole && r.label.trim() !== "";
+
+/** A row can be filled only with a value, and a suggested role only once the student has confirmed it. */
+export const canFill = (r: Row) => r.group === "fill" && r.value !== undefined && (r.via !== "suggested" || r.confirmedRole !== undefined);
+
+const withSuggestion = (s: PanelState, key: string, index: number | undefined, suggestion: Row["suggestion"]): PanelState => ({
+  ...s,
+  rows: s.rows.map((r) => (same(r, key, index) ? { ...r, suggestion } : r)),
+});
+
+export const asking = (s: PanelState, key: string, index?: number) => withSuggestion(s, key, index, { status: "asking" });
+
+export function gotSuggestion(s: PanelState, key: string, index: number | undefined, o: SuggestOutcome): PanelState {
+  return withSuggestion(s, key, index, o.outcome === "role" ? { status: "suggested", role: o.role } : { status: o.outcome });
+}
+
+export const rejectSuggestion = (s: PanelState, key: string, index?: number) => withSuggestion(s, key, index, { status: "rejected" });
+
+/** The student says the suggestion is right: the row is worked out again as if the rules had found that role. */
+export function confirmSuggestion(s: PanelState, key: string, index?: number): PanelState {
+  const row = s.rows.find((r) => same(r, key, index));
+  const role = row?.suggestion?.status === "suggested" ? row.suggestion.role : undefined;
+  const field = s.scan?.fields.find((f) => f.key === key && (index === undefined || f.index === index));
+  const adapter = s.scan ? adapterByPortal(s.scan.portal) : null;
+  if (!row || !role || !field || !adapter || !s.profile) return s;
+  const next: Row = {
+    ...rowFor({ ...field, role, action: ROLES[role].action }, s.profile, adapter),
+    via: "suggested",
+    confirmedRole: role,
+    suggestion: { status: "suggested", role },
+  };
+  return { ...s, rows: s.rows.map((r) => (same(r, key, index) ? next : r)) };
 }
 
 const same = (r: Row, key: string, index?: number) => r.key === key && (index === undefined || r.index === index);

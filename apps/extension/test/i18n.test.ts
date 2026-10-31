@@ -17,3 +17,13 @@ describe("panel words", () => {
     expect(pickLocale(["fr"])).toBe("en");
   });
 });
+
+describe("role names", () => {
+  it("names every role in both languages", async () => {
+    const { ROLES } = await import("@uniguide/portal-adapters");
+    for (const role of Object.keys(ROLES)) {
+      expect(DICTS.en.roleNames[role as keyof typeof ROLES], role).toBeTruthy();
+      expect(DICTS.hi.roleNames[role as keyof typeof ROLES], role).toBeTruthy();
+    }
+  });
+});

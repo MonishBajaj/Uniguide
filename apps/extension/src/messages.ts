@@ -28,6 +28,7 @@ export type ToBackground =
   | { to: "background"; type: "start"; applicationId: string; portal: string; adapterVersion: string }
   | { to: "background"; type: "log"; kind: EventKind; role: Role | null; page: string | null; source: string | null; reason: string | null }
   | { to: "background"; type: "end"; outcome: "stopped" | "abandoned" }
+  | { to: "background"; type: "suggest"; label: string }
   | { to: "background"; type: "signOut" }
   | { to: "background"; type: "connect" };
 
@@ -70,6 +71,9 @@ export type FillResult =
 /** Panel → content script. */
 export type ToContent =
   | { to: "content"; type: "scan" }
-  | { to: "content"; type: "fill"; key: string; index?: number; value: string; overwrite: boolean };
+  | { to: "content"; type: "fill"; key: string; index?: number; value: string; overwrite: boolean; confirmedRole?: Role };
+
+/** What the suggest-field-role function said about one unmatched field (A1.6). */
+export type SuggestOutcome = { outcome: "role"; role: Role } | { outcome: "none" | "limit" | "unavailable" };
 
 export type { FillProfile };

@@ -2,7 +2,7 @@
 // would, and only after the guard allows it. It never clicks, never submits, never navigates and never sends
 // a key. It asks before replacing what's already there, picks only an exactly matching option, and never
 // truncates.
-import { guard, guardLogReason, matchPage, type Adapter, type FieldMatch } from "@uniguide/portal-adapters";
+import { guard, guardLogReason, isRole, matchPage, ROLES, type Adapter, type FieldMatch, type Role } from "@uniguide/portal-adapters";
 import type { FillResult } from "./messages";
 
 export interface FillRequest {
@@ -10,11 +10,18 @@ export interface FillRequest {
   index?: number;
   value: string;
   overwrite: boolean;
+  /** For a field the rules couldn't match: the role the student confirmed from a suggestion (A1.6). */
+  confirmedRole?: Role;
 }
 
 export function fill(doc: Document, adapter: Adapter, req: FillRequest): FillResult {
-  const m = matchPage(doc, adapter).find((x) => x.key === req.key && (req.index === undefined || x.index === req.index));
+  let m = matchPage(doc, adapter).find((x) => x.key === req.key && (req.index === undefined || x.index === req.index));
   if (!m) return { status: "not_found" };
+  if (req.confirmedRole !== undefined) {
+    // Only for a field with no match: a confirmed suggestion never replaces what the rules found.
+    if (m.role !== null || m.via !== "none" || !isRole(req.confirmedRole)) return { status: "blocked", why: "confirmed_role", logReason: "guard" };
+    m = { ...m, role: req.confirmedRole, action: ROLES[req.confirmedRole].action };
+  }
   // The student pressed Fill for this one field: that starts this action (rule 2).
   const decision = guard.allowFill(m, { doc, adapter, run: { active: true, startedByStudent: true } });
   if (!decision.allow) return { status: "blocked", why: decision.why, logReason: guardLogReason(decision) ?? "guard" };

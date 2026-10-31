@@ -67,6 +67,8 @@ async function openPanel(): Promise<Page> {
 const events = () => sql(`select coalesce(string_agg(kind || ':' || coalesce(field_role, '-'), ',' order by id), '') from assist_events where user_id = '${APPLICANT}'`);
 
 test.beforeAll(async () => {
+  // Lets the context see and route the extension's service worker requests (the suggestion test).
+  process.env.PW_EXPERIMENTAL_SERVICE_WORKER_NETWORK_EVENTS = "1";
   resetAssist();
   execFileSync("node", [join(ROOT, "apps/extension/scripts/build.mjs"), DIST], { env: { ...process.env, EXT_TEST: "1", WEB_ORIGIN: WEB } });
   portalServer = spawn("node", [join(ROOT, "apps/practice-portal/server.mjs")], { env: { ...process.env, PORT: "4318", PRACTICE_TEST: "1" }, stdio: "ignore" });
@@ -175,6 +177,50 @@ test("a choice the portal doesn't offer is left alone, never converted", async (
   await expect(portal.locator("#field-grade_scale")).toHaveValue("");
   // The grade itself goes in exactly as entered.
   await expect(panel.locator("#row-field-grade_value")).toContainText("2:1");
+});
+
+test("a field the rules don't know can get a suggested role, filled only once the student confirms it", async () => {
+  sql(`update profiles set home_qualification = 'bachelor_4yr', grade_value = 8.4, grade_text = null, grade_scale = 'gpa_10'
+       where user_id = '${APPLICANT}'`);
+  await portal.goto(`${PORTAL}/apply/about-you`);
+  // A field worded the way another portal might word it, which the practice map doesn't have.
+  await portal.evaluate(() =>
+    document.querySelector("form[data-page]")!.insertAdjacentHTML(
+      "beforeend",
+      '<label for="reach">Where can we reach you?</label><input id="reach" name="reach" type="email">',
+    ),
+  );
+  const sent: unknown[] = [];
+  await ctx.route("**/functions/v1/suggest-field-role", async (route) => {
+    sent.push(route.request().postDataJSON());
+    await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ role: "contact.email" }) });
+  });
+  await panel.reload();
+  await panel.getByRole("button", { name: "Use this application" }).click();
+
+  const row = panel.locator("#row-reach");
+  await expect(row).toContainText("We don't know what this field asks.");
+  await panel.getByRole("button", { name: "Suggest what this asks: Where can we reach you?" }).click();
+  await expect(row).toContainText("This field may ask for: Email address");
+
+  // Only the label and our role list went out: no value, no page, no profile.
+  expect(sent).toHaveLength(1);
+  const body = sent[0] as { label: string; roles: string[] };
+  expect(Object.keys(body).sort()).toEqual(["label", "roles"]);
+  expect(body.label).toBe("Where can we reach you?");
+  expect(body.roles).toContain("contact.email");
+  expect(JSON.stringify(body)).not.toContain("applicant@uniguide.local");
+
+  // A suggestion alone fills nothing.
+  await expect(panel.getByRole("button", { name: "Fill: Where can we reach you?" })).toHaveCount(0);
+  await expect(portal.locator("#reach")).toHaveValue("");
+
+  await panel.getByRole("button", { name: "Yes, use this: Where can we reach you?" }).click();
+  await expect(row).toContainText("Suggested, confirmed by you");
+  await panel.getByRole("button", { name: "Fill: Where can we reach you?" }).click();
+  await expect(portal.locator("#reach")).toHaveValue("applicant@uniguide.local");
+  await expect(row).toContainText("Filled");
+  await ctx.unroute("**/functions/v1/suggest-field-role");
 });
 
 test("while consent is pending the panel shows only the reason", async () => {

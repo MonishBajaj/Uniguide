@@ -414,3 +414,8 @@ enabled = true
 # formatted with uppercase keywords, indent 2, max width 180, trailing commas,
 # and column/key alignment. Set to "null" to emit raw, unformatted SQL.
 # format_options = "{\"keywordCase\":\"upper\",\"indent\":2,\"maxWidth\":180,\"commaStyle\":\"trailing\"}"
+
+# M7 A1.6: suggested roles for unmatched fields. Only signed-in students (their JWT is checked here, then
+# again by take_role_suggestion). Set its key with `supabase secrets set ANTHROPIC_API_KEY=...`.
+[functions.suggest-field-role]
+verify_jwt = true

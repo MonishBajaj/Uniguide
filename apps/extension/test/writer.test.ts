@@ -67,3 +67,33 @@ describe("the single writer", () => {
     expect(fill(doc, practice, { key: "field-expected_completion", value: "2027-05", overwrite: false })).toEqual({ status: "not_found" });
   });
 });
+
+describe("a field the student matched by confirming a suggestion (A1.6)", () => {
+  const withUnknown = () => {
+    const doc = fixture("about-you");
+    doc.querySelector("form[data-page]")!.insertAdjacentHTML("beforeend", `<label for="reach">Where can we reach you?</label><input id="reach" name="reach" type="email">`);
+    return doc;
+  };
+
+  it("isn't filled without the confirmed role", () => {
+    const doc = withUnknown();
+    expect(fill(doc, practice, { key: "reach", value: "a@b.c", overwrite: false })).toMatchObject({ status: "blocked" });
+    expect(value(doc, "reach")).toBe("");
+  });
+
+  it("is filled with it", () => {
+    const doc = withUnknown();
+    expect(fill(doc, practice, { key: "reach", value: "a@b.c", overwrite: false, confirmedRole: "contact.email" })).toEqual({ status: "filled" });
+    expect(value(doc, "reach")).toBe("a@b.c");
+  });
+
+  it("never lets a confirmed role replace one the rules already found", () => {
+    const doc = fixture("about-you");
+    expect(fill(doc, practice, { key: "field-given_names", value: "x", overwrite: false, confirmedRole: "contact.email" })).toMatchObject({ status: "blocked" });
+  });
+
+  it("never fills a confirmed sign, pay or security role", () => {
+    const doc = withUnknown();
+    expect(fill(doc, practice, { key: "reach", value: "x", overwrite: false, confirmedRole: "declaration.signature" })).toMatchObject({ status: "blocked" });
+  });
+});

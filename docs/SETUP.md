@@ -233,6 +233,10 @@ The UniGuide Assist extension lives in `apps/extension`. It talks only to the Su
   - `pnpm --filter extension check` runs the network and action checks on `dist`.
   - `pnpm --filter extension test` runs the unit tests and the checks against planted problems.
   - `pnpm --filter web e2e:extension` loads the built extension in Chromium against the practice portal. It needs the local stack and the dev server.
+- **Suggested roles (A1.6):** deploy the Edge Function with `supabase functions deploy suggest-field-role` and give it the model key with `supabase secrets set ANTHROPIC_API_KEY=...`. The key stays with the function; the extension never has it.
+  - The function takes only a field's label and our role list, and uses `claude-haiku-5-5`.
+  - Each student may ask 30 times an hour and 200 times a day (`take_role_suggestion`). The limit table keeps who asked and when, never the label.
+  - Locally the Edge runtime is off (`supabase/config.toml`), so the panel says suggestions aren't available. The end-to-end test stands in for the function.
 - **Portals:** store builds include no portal until its gate clears (plan gates G1 to G7). Each cleared portal adds its adapter in `apps/extension/src/adapters.ts` and its host in `scripts/build.mjs`.
 
 ## Payments (season pass)

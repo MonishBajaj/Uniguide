@@ -2,9 +2,27 @@
 // shows is built from text nodes, never HTML, because portal labels come from the page.
 import { CONFIDENT } from "@uniguide/portal-adapters";
 import { TEST_BUILD, WEB_ORIGIN } from "../config";
-import type { AccountState, BackgroundReply, FillResult, ScanResult, ToBackground, ToContent } from "../messages";
+import type { AccountState, BackgroundReply, FillResult, ScanResult, SuggestOutcome, ToBackground, ToContent } from "../messages";
 import { DICTS, pickLocale, type MsgKey } from "./i18n";
-import { applyFill, buildRows, copied, dismissPrompt, initial, logFor, phaseOf, skipped, sourceKey, type PanelState, type Row } from "./state";
+import {
+  applyFill,
+  asking,
+  buildRows,
+  canFill,
+  canSuggest,
+  confirmSuggestion,
+  copied,
+  dismissPrompt,
+  gotSuggestion,
+  initial,
+  logFor,
+  phaseOf,
+  rejectSuggestion,
+  skipped,
+  sourceKey,
+  type PanelState,
+  type Row,
+} from "./state";
 
 const locale = pickLocale(navigator.languages);
 const t = DICTS[locale];
@@ -75,10 +93,14 @@ async function rescan() {
   const samePage = state.scan?.page.pageId === scan?.page.pageId;
   const rows = buildRows(scan, state.profile).map((r) => {
     const old = samePage ? before.find((o) => o.key === r.key && o.index === r.index) : undefined;
-    return old ? { ...r, status: old.status } : r;
+    return old ? { ...r, status: old.status, ...(old.suggestion ? { suggestion: old.suggestion } : {}) } : r;
   });
   const { prompt: _p, notice: _n, ...rest } = state;
   state = { ...rest, scan, rows };
+  // A suggestion the student confirmed on this page stays confirmed.
+  for (const old of samePage ? before : []) {
+    if (old.confirmedRole) state = confirmSuggestion(state, old.key, old.index);
+  }
   if (phaseOf(state) === "ready" && !runStarted && state.applicationId && scan) {
     runStarted = true;
     await bg({ to: "background", type: "start", applicationId: state.applicationId, portal: scan.portal, adapterVersion: scan.adapterVersion }).catch(() => {
@@ -90,11 +112,21 @@ async function rescan() {
 
 async function doFill(row: Row, overwrite = false, value = row.value) {
   if (value === undefined || busy) return;
+  // A suggested role is filled only after the student has confirmed it (A1.6).
+  if (row.group === "fill" && !canFill(row)) return;
+  if (row.via === "suggested" && !row.confirmedRole) return;
   busy = true;
   try {
     const result =
-      (await toPage<FillResult>({ to: "content", type: "fill", key: row.key, ...(row.index ? { index: row.index } : {}), value, overwrite })) ??
-      ({ status: "not_found" } as FillResult);
+      (await toPage<FillResult>({
+        to: "content",
+        type: "fill",
+        key: row.key,
+        ...(row.index ? { index: row.index } : {}),
+        value,
+        overwrite,
+        ...(row.confirmedRole ? { confirmedRole: row.confirmedRole } : {}),
+      })) ?? ({ status: "not_found" } as FillResult);
     state = applyFill(state, row.key, row.index, result);
     if (result.status === "confirm_overwrite" && state.prompt) state.prompt.value = value;
     if (result.status === "filled") await log(row, row.group === "essay" ? "pasted_draft" : "filled");
@@ -116,6 +148,16 @@ async function doCopy(row: Row, text = row.value, kind: "copied" | "copied_draft
 async function doSkip(row: Row) {
   state = skipped(state, row.key, row.index);
   await log(row, "skipped");
+  render();
+}
+
+async function doSuggest(row: Row) {
+  state = asking(state, row.key, row.index);
+  render();
+  const outcome = await bg<SuggestOutcome>({ to: "background", type: "suggest", label: row.label }).catch(
+    (): SuggestOutcome => ({ outcome: "unavailable" }),
+  );
+  state = gotSuggestion(state, row.key, row.index, outcome);
   render();
 }
 
@@ -235,7 +277,8 @@ function rowView(row: Row): Node {
   const id = `row-${row.key}${row.index ? `-${row.index}` : ""}`;
   const name = `${row.label}${row.index && row.index > 1 ? ` (${row.index})` : ""}`;
   const meta: Child[] = [];
-  if (row.via === "map") meta.push(t.confidenceMap);
+  if (row.via === "suggested") meta.push(h("span", { class: "badge" }, t.confirmedBadge));
+  else if (row.via === "map") meta.push(t.confidenceMap);
   else if (row.via === "label") {
     const pct = Math.round(row.confidence * 100);
     meta.push(row.confidence >= CONFIDENT ? t.confidenceLabel(pct) : t.confidenceLow(pct));
@@ -275,6 +318,7 @@ function rowView(row: Row): Node {
   } else {
     const key = `reason_${row.reason ?? "no_match"}` as MsgKey;
     body.push(h("span", { class: "reason" }, key in t ? (t[key] as string) : t.reason_no_match));
+    if (canSuggest(row)) suggestionView(row, name, body, actions);
     if (row.group === "review") actions.push(button(t.skip, () => doSkip(row), { "aria-label": `${t.skip}: ${name}`, class: "secondary" }));
   }
 
@@ -296,6 +340,44 @@ function rowView(row: Row): Node {
     notice && notice !== (status ? t[status] : null) ? h("span", { class: "notice", role: "status" }, notice) : null,
     actions.length ? h("div", { class: "actions" }, ...actions) : null,
   );
+}
+
+/** "Suggest what this asks" for a field with no match, and the student's answer to the suggestion (A1.6). */
+function suggestionView(row: Row, name: string, body: Child[], actions: Child[]) {
+  const sg = row.suggestion;
+  switch (sg?.status) {
+    case undefined:
+      actions.push(button(t.suggest, () => doSuggest(row), { "aria-label": `${t.suggest}: ${name}` }));
+      body.push(h("span", { class: "source" }, t.suggestPrivacy));
+      return;
+    case "asking":
+      body.push(h("span", { class: "notice", role: "status" }, t.asking));
+      return;
+    case "suggested": {
+      const roleName = sg.role ? t.roleNames[sg.role] : "";
+      body.push(
+        h("span", { class: "suggestion" }, h("span", { class: "badge" }, t.suggestedBadge), " ", t.suggestedAs(roleName)),
+        h("span", { class: "source" }, t.suggestConfirm),
+      );
+      actions.push(
+        button(t.useThis, () => ((state = confirmSuggestion(state, row.key, row.index)), render()), { "aria-label": `${t.useThis}: ${name}` }),
+        button(t.notRight, () => ((state = rejectSuggestion(state, row.key, row.index)), render()), { "aria-label": `${t.notRight}: ${name}`, class: "secondary" }),
+      );
+      return;
+    }
+    case "none":
+      body.push(h("span", { class: "notice" }, t.suggestNone));
+      return;
+    case "limit":
+      body.push(h("span", { class: "notice" }, t.suggestLimit));
+      return;
+    case "unavailable":
+      body.push(h("span", { class: "notice" }, t.suggestUnavailable));
+      return;
+    case "rejected":
+      body.push(h("span", { class: "notice" }, t.suggestRejected));
+      return;
+  }
 }
 
 async function signOutNow() {

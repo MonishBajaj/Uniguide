@@ -1537,6 +1537,20 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"role_suggestion_calls": {
+                  Row: {
+                    "at": string,"id": number,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "at"?: string,"id"?: never,"user_id": string
+                  }
+                  Update: {
+                    "at"?: string,"id"?: never,"user_id"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
                 },"score_reports": {
                   Row: {
                     "application_id": string,"created_at": string,"id": string,"note": string | null,"received_on": string | null,"sent_on": string,"test_score_id": string,"user_id": string
@@ -2167,6 +2181,9 @@ isOneToOne: false
                            },
 "start_enrichment":
 { Args: { "p_program_ids": (string)[] }; Returns: string
+                           },
+"take_role_suggestion":
+{ Args: Record<PropertyKey, never>; Returns: string
                            },
 "unsubscribe":
 { Args: { "p_kind": string,"p_token": string }; Returns: boolean

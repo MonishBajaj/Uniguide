@@ -1,7 +1,8 @@
 // The background worker: the UniGuide session, the current run and the audit log (spec 7.1).
 import { WEB_ORIGIN } from "./config";
-import type { AccountState, Application, BackgroundReply, ConsentState, ToBackground } from "./messages";
-import { acceptSession, getSession, rest, rpc, SignedOut, signOut } from "./supabase";
+import type { AccountState, Application, BackgroundReply, ConsentState, SuggestOutcome, ToBackground } from "./messages";
+import { ROLES } from "@uniguide/portal-adapters";
+import { acceptSession, getSession, invoke, rest, rpc, SignedOut, signOut } from "./supabase";
 
 chrome.runtime.onInstalled.addListener(() => {
   void chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true });
@@ -118,10 +119,25 @@ async function handle(msg: ToBackground): Promise<unknown> {
     }
     case "end":
       return endRun(msg.outcome);
+    case "suggest":
+      return suggest(msg.label);
     case "signOut":
       await endRun("stopped");
       return signOut();
     case "connect":
       return chrome.tabs.create({ url: `${WEB_ORIGIN}/extension/connect` });
   }
+}
+
+/**
+ * A suggested role for one unmatched field (A1.6). Only the field's visible label and our role list are sent:
+ * the function refuses anything else. The answer is a suggestion; the student confirms it in the panel.
+ */
+async function suggest(label: string): Promise<SuggestOutcome> {
+  const roles = Object.keys(ROLES);
+  const { status, data } = await invoke<{ role?: string | null }>("suggest-field-role", { label, roles });
+  if (status === 429) return { outcome: "limit" };
+  if (status !== 200 || !data) return { outcome: "unavailable" };
+  const role = data.role;
+  return typeof role === "string" && roles.includes(role) ? { outcome: "role", role: role as keyof typeof ROLES } : { outcome: "none" };
 }

@@ -109,6 +109,29 @@ export async function rest<T>(path: string, body?: unknown): Promise<T> {
 
 export const rpc = <T>(fn: string, args: Record<string, unknown>) => rest<T>(`rpc/${fn}`, args);
 
+/** Call one of our Edge Functions as the signed-in student. Returns the status, so callers can tell a limit from a failure. */
+export async function invoke<T>(fn: string, body: unknown): Promise<{ status: number; data: T | null }> {
+  const s = await current();
+  if (!s) throw new SignedOut();
+  const res = await fetch(`${SUPABASE_URL}/functions/v1/${fn}`, {
+    method: "POST",
+    headers: { ...authHeaders(s.access_token), accept: "application/json" },
+    body: JSON.stringify(body),
+  });
+  if (res.status === 401) {
+    await save(null);
+    throw new SignedOut();
+  }
+  const text = await res.text().catch(() => "");
+  let data: T | null = null;
+  try {
+    data = text ? (JSON.parse(text) as T) : null;
+  } catch {
+    data = null;
+  }
+  return { status: res.status, data };
+}
+
 /** Forget everything, and end the session at Supabase too. */
 export async function signOut(): Promise<void> {
   const s = await getSession();

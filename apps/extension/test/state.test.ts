@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { AccountState } from "../src/messages";
-import { applyFill, buildRows, copied, initial, logFor, phaseOf, skipped, sourceKey, type PanelState } from "../src/panel/state";
+import { applyFill, asking, buildRows, canFill, canSuggest, confirmSuggestion, copied, gotSuggestion, initial, logFor, phaseOf, rejectSuggestion, skipped, sourceKey, type PanelState } from "../src/panel/state";
 import { profile, scanOf } from "./helpers";
 
 const account = (over: Partial<AccountState> = {}): AccountState => ({
@@ -150,5 +150,61 @@ describe("source wording", () => {
     expect(sourceKey("testScores[2].total")).toBe("srcTests");
     expect(sourceKey("activities[0].title")).toBe("srcCv");
     expect(sourceKey("finalDraft")).toBe("srcDraft");
+  });
+});
+
+describe("suggested roles for unmatched fields (A1.6)", () => {
+  // A field the practice map doesn't know, labelled the way another portal might.
+  const withUnknown = (): PanelState => {
+    const s = ready("about-you");
+    const field = { key: "field-contact_email", name: "contact_email", control: "email", label: "Where can we reach you?", role: null, confidence: 0, via: "none" as const, action: "student" as const, required: true, visible: true };
+    const scan = { ...s.scan!, fields: [...s.scan!.fields, field] };
+    return { ...s, scan, rows: buildRows(scan, s.profile) };
+  };
+  const row = (s: PanelState) => s.rows.find((r) => r.key === "field-contact_email")!;
+
+  it("offers a suggestion only for a field with no match", () => {
+    const s = withUnknown();
+    expect(row(s)).toMatchObject({ group: "review", reason: "no_match" });
+    expect(canSuggest(row(s))).toBe(true);
+    expect(canSuggest(s.rows.find((r) => r.key === "field-email")!)).toBe(false);
+  });
+
+  it("never offers a fill on a suggestion until the student confirms it", () => {
+    let s = gotSuggestion(asking(withUnknown(), "field-contact_email"), "field-contact_email", undefined, { outcome: "role", role: "contact.email" });
+    expect(row(s)).toMatchObject({ group: "review", suggestion: { status: "suggested", role: "contact.email" } });
+    expect(row(s).value).toBeUndefined();
+    expect(canFill(row(s))).toBe(false);
+
+    s = confirmSuggestion(s, "field-contact_email");
+    expect(row(s)).toMatchObject({ group: "fill", via: "suggested", confirmedRole: "contact.email", value: "applicant@uniguide.local" });
+    expect(canFill(row(s))).toBe(true);
+  });
+
+  it("drops a suggestion the student says is wrong", () => {
+    let s = gotSuggestion(withUnknown(), "field-contact_email", undefined, { outcome: "role", role: "contact.email" });
+    s = rejectSuggestion(s, "field-contact_email");
+    expect(row(s)).toMatchObject({ group: "review", reason: "no_match", suggestion: { status: "rejected" } });
+    expect(canFill(row(s))).toBe(false);
+  });
+
+  it("keeps a confirmed sign, pay or security role off limits", () => {
+    let s = gotSuggestion(withUnknown(), "field-contact_email", undefined, { outcome: "role", role: "declaration.signature" });
+    s = confirmSuggestion(s, "field-contact_email");
+    expect(row(s)).toMatchObject({ group: "yours" });
+    expect(canFill(row(s))).toBe(false);
+  });
+
+  it("says so when there's no suggestion, or the limit is reached", () => {
+    let s = gotSuggestion(withUnknown(), "field-contact_email", undefined, { outcome: "none" });
+    expect(row(s).suggestion).toEqual({ status: "none" });
+    s = gotSuggestion(s, "field-contact_email", undefined, { outcome: "limit" });
+    expect(row(s).suggestion).toEqual({ status: "limit" });
+  });
+
+  it("logs a fill of a confirmed suggestion by its role, like any other", () => {
+    let s = gotSuggestion(withUnknown(), "field-contact_email", undefined, { outcome: "role", role: "contact.email" });
+    s = confirmSuggestion(s, "field-contact_email");
+    expect(logFor(s, row(s), "filled")).toMatchObject({ role: "contact.email", source: "contact.email" });
   });
 });
