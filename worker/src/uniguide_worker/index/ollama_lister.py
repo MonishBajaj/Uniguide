@@ -38,15 +38,30 @@ _DEGREE_PREFIX = re.compile(
 )
 
 
-def repair_title(title: str, quote: str) -> str:
-    """Undo a small model's habit of expanding 'Robotics' to 'Master of Science in Robotics'.
+_DEGREE_SUFFIX = re.compile(
+    r"(?:\s*\([^)]*\)|\s+(?:PhD|Ph\.?D\.?|MS|M\.S\.|MA|M\.A\.|MSc|MFA|MBA|MEng|BS|BA|BFA))$", re.IGNORECASE
+)
 
-    The plain name is used only when the quote really contains it, so the crawl's check stays strict.
+
+def repair_title(title: str, quote: str) -> str:
+    """Undo a small model's habit of rewriting a title: 'Robotics' becomes 'Master of Science in Robotics' or
+    'Robotics (MS)', and '&' becomes 'and'.
+
+    A rewritten title is replaced by one of its plain forms only when the quote really contains that form, so the
+    crawl's check stays strict.
     """
-    if normalise(title) in normalise(quote):
-        return title
+    heard = normalise(quote)
     plain = _DEGREE_PREFIX.sub("", title, count=1)
-    return plain if plain != title and normalise(plain) in normalise(quote) else title
+    candidates = [title, plain]
+    for form in (title, plain):
+        stripped = _DEGREE_SUFFIX.sub("", form).strip()
+        candidates += [stripped, _DEGREE_PREFIX.sub("", stripped, count=1)]
+    for form in list(candidates):
+        candidates += [form.replace(" and ", " & "), form.replace(" & ", " and ")]
+    for candidate in candidates:
+        if candidate and normalise(candidate) in heard:
+            return candidate
+    return title
 
 
 class OllamaCourseLister:

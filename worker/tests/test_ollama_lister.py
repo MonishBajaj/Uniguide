@@ -123,6 +123,12 @@ def test_factory_explains_what_is_missing() -> None:
         ("Master of Science in Robotics", "Robotic Systems", "Master of Science in Robotics"),
         ("Robotics", "Robotics", "Robotics"),
         ("Master of Science in Robotics", "Master of Science in Robotics", "Master of Science in Robotics"),
+        ("Acting (BFA)", "Acting", "Acting"),
+        ("Actuarial Science (MS, GRAD Cert)", "Actuarial Science", "Actuarial Science"),
+        ("Advanced Manufacturing MS", "Advanced Manufacturing", "Advanced Manufacturing"),
+        ("Astronomy PhD", "Astronomy PhD", "Astronomy PhD"),
+        ("Accounting Information and Management PhD", "Accounting Information & Management", "Accounting Information & Management"),
+        ("Master of Science in Arts and Letters", "Arts & Letters", "Arts & Letters"),
     ],
 )
 def test_expanded_degree_titles_are_repaired_only_when_the_quote_has_the_plain_name(
