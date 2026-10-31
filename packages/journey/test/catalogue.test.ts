@@ -10,7 +10,7 @@ const ids = (input: JourneyInput) => evaluateCatalogue(input).open.map((s) => s.
 /** M1 plan "Deviations". S1.03 turned on in M2 with the profile's intake field. Changing this list is a deliberate act. */
 const UNAVAILABLE = [
   "S2.07", "S3.04", "S3.06",
-  "S5.02", "S5.03", "S5.04", "S7.03", "S7.04", "S7.08",
+  "S5.02", "S5.03", "S5.04",
 ];
 
 const LONG = "A".repeat(120);
@@ -24,6 +24,9 @@ function everything(): JourneyInput {
     { id: "r-funds", destination: "DE", kind: "proof_of_funds", title: "Blocked account", link: null, status: "verified", appliesTo: [] },
     { id: "r-cred", destination: "DE", kind: "credential_evaluation", title: "Anabin check", link: null, status: "verified", appliesTo: [] },
     { id: "r-bank", destination: "DE", kind: "banking", title: "Bank account", link: null, status: "verified", appliesTo: [] },
+    { id: "r-ins", destination: "DE", kind: "health_insurance", title: "Health insurance", link: null, status: "verified", appliesTo: [], leadDays: 60 },
+    { id: "r-reg", destination: "DE", kind: "residence_registration", title: "Register", link: null, status: "verified", appliesTo: [] },
+    { id: "r-house", destination: "DE", kind: "housing", title: "Housing", link: null, status: "verified", appliesTo: [] },
   ];
   const req = (id: string, kind: never | string, extra = {}) => ({ id, kind, exam: null, testPolicy: null, countRequired: null, status: "verified", ...extra }) as never;
   return base({
@@ -580,6 +583,44 @@ describe("no offers yet, and the next intake (J5.4)", () => {
     // A rejection after the rollover still counts.
     const later = { ...rolled, applications: [...rolled.applications, application("a3", programs.state!, { status: "decided", decision: "rejected", createdAt: "2026-11-01T00:00:00Z" })] };
     expect(buildCtx(later).stage).toBe(5);
+  });
+});
+
+describe("housing, health insurance and registration (J5.5)", () => {
+  const rule = (kind: string, status: "verified" | "unverified" = "verified", leadDays: number | null = null): CountryRuleRow => ({
+    id: `r-${kind}`, destination: "DE", kind, title: kind, link: null, status, appliesTo: [], leadDays,
+  });
+  const going = (rules: CountryRuleRow[], housingFacts = 0) =>
+    base({
+      profile: readyProfile,
+      countryRules: rules,
+      applications: [
+        application("a1", programs.tum!, {
+          status: "decided", decision: "admitted", offerAcceptedAt: "2026-10-01T00:00:00Z", admissionDocumentAt: "2026-10-05T00:00:00Z",
+          cycle: { id: "c", label: "2027-summer", startsOn: "2027-04-01" }, housingFacts,
+        }),
+      ],
+    });
+
+  it("asks for insurance and registration from verified rules, dated by a verified lead time", () => {
+    const open = evaluateCatalogue(going([rule("health_insurance", "verified", 60), rule("residence_registration")])).open;
+    const ins = open.find((s) => s.catalogueId === "S7.04")!;
+    expect(ins.reason).toBe("Germany asks students to have health insurance.");
+    expect(ins.dueAt).toBe("2027-01-31");
+    expect(ins.factRefs).toEqual([{ table: "country_rules", id: "r-health_insurance", status: "verified" }]);
+    expect(open.find((s) => s.catalogueId === "S7.08")!.dueAt).toBeNull();
+  });
+
+  it("never acts on an unverified rule or lead time", () => {
+    expect(ids(going([rule("health_insurance", "unverified", 60)]))).not.toContain("S7.04");
+  });
+
+  it("asks for housing when the university publishes housing facts or a housing rule exists, done with the housing task", () => {
+    expect(ids(going([]))).not.toContain("S7.03");
+    expect(ids(going([], 2))).toContain("S7.03");
+    expect(ids(going([rule("housing")]))).toContain("S7.03");
+    const done = { ...going([], 2), departureTasks: [{ applicationId: "a1", taskKey: "accommodation" }] };
+    expect(evaluateCatalogue(done).completed).toContain("S7.03:a1");
   });
 });
 

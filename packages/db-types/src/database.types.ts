@@ -331,14 +331,14 @@ isOneToOne: false
                   ]
                 },"country_rules": {
                   Row: {
-                    "amount": number | null,"applies_to": (string)[],"created_at": string,"currency": string | null,"destination": string,"details": string | null,"evidence_quote": string | null,"hours_per_week": number | null,"id": string,"kind": string,"link": string | null,"months": number | null,"period": string | null,"published": boolean,"region": string | null,"source_id": string | null,"status": Database["public"]['Enums']["fact_status"],"step": number | null,"title": string,"verified_at": string | null,"verified_by": string | null
+                    "amount": number | null,"applies_to": (string)[],"created_at": string,"currency": string | null,"destination": string,"details": string | null,"evidence_quote": string | null,"hours_per_week": number | null,"id": string,"kind": string,"lead_days": number | null,"lead_days_quote": string | null,"link": string | null,"months": number | null,"period": string | null,"published": boolean,"region": string | null,"source_id": string | null,"status": Database["public"]['Enums']["fact_status"],"step": number | null,"title": string,"verified_at": string | null,"verified_by": string | null
                   }
                   ComputedFields: never
                   Insert: {
-                    "amount"?: number | null,"applies_to"?: (string)[],"created_at"?: string,"currency"?: string | null,"destination": string,"details"?: string | null,"evidence_quote"?: string | null,"hours_per_week"?: number | null,"id"?: string,"kind": string,"link"?: string | null,"months"?: number | null,"period"?: string | null,"published"?: boolean,"region"?: string | null,"source_id"?: string | null,"status"?: Database["public"]['Enums']["fact_status"],"step"?: number | null,"title": string,"verified_at"?: string | null,"verified_by"?: string | null
+                    "amount"?: number | null,"applies_to"?: (string)[],"created_at"?: string,"currency"?: string | null,"destination": string,"details"?: string | null,"evidence_quote"?: string | null,"hours_per_week"?: number | null,"id"?: string,"kind": string,"lead_days"?: number | null,"lead_days_quote"?: string | null,"link"?: string | null,"months"?: number | null,"period"?: string | null,"published"?: boolean,"region"?: string | null,"source_id"?: string | null,"status"?: Database["public"]['Enums']["fact_status"],"step"?: number | null,"title": string,"verified_at"?: string | null,"verified_by"?: string | null
                   }
                   Update: {
-                    "amount"?: number | null,"applies_to"?: (string)[],"created_at"?: string,"currency"?: string | null,"destination"?: string,"details"?: string | null,"evidence_quote"?: string | null,"hours_per_week"?: number | null,"id"?: string,"kind"?: string,"link"?: string | null,"months"?: number | null,"period"?: string | null,"published"?: boolean,"region"?: string | null,"source_id"?: string | null,"status"?: Database["public"]['Enums']["fact_status"],"step"?: number | null,"title"?: string,"verified_at"?: string | null,"verified_by"?: string | null
+                    "amount"?: number | null,"applies_to"?: (string)[],"created_at"?: string,"currency"?: string | null,"destination"?: string,"details"?: string | null,"evidence_quote"?: string | null,"hours_per_week"?: number | null,"id"?: string,"kind"?: string,"lead_days"?: number | null,"lead_days_quote"?: string | null,"link"?: string | null,"months"?: number | null,"period"?: string | null,"published"?: boolean,"region"?: string | null,"source_id"?: string | null,"status"?: Database["public"]['Enums']["fact_status"],"step"?: number | null,"title"?: string,"verified_at"?: string | null,"verified_by"?: string | null
                   }
                   Relationships: [
                     {
@@ -1717,7 +1717,7 @@ isOneToOne: false
 { Args: { "p_code": string,"p_parent_name": string }; Returns: string
                            },
 "add_country_rule":
-{ Args: { "p_amount"?: number,"p_applies_to"?: (string)[],"p_currency"?: string,"p_destination": string,"p_details"?: string,"p_hours_per_week"?: number,"p_kind": string,"p_link"?: string,"p_months"?: number,"p_period"?: string,"p_quote": string,"p_region"?: string,"p_source_url": string,"p_step"?: number,"p_title": string }; Returns: string
+{ Args: { "p_amount"?: number,"p_applies_to"?: (string)[],"p_currency"?: string,"p_destination": string,"p_details"?: string,"p_hours_per_week"?: number,"p_kind": string,"p_lead_days"?: number,"p_lead_days_quote"?: string,"p_link"?: string,"p_months"?: number,"p_period"?: string,"p_quote": string,"p_region"?: string,"p_source_url": string,"p_step"?: number,"p_title": string }; Returns: string
                            },
 "add_institution_fact":
 { Args: { "p_amount"?: number,"p_currency"?: string,"p_details"?: string,"p_hours_per_week"?: number,"p_institution": string,"p_kind": string,"p_link"?: string,"p_period"?: string,"p_program"?: string,"p_quote": string,"p_source_url": string,"p_title": string }; Returns: string

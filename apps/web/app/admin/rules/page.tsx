@@ -32,7 +32,7 @@ export default async function RulesAdmin() {
             <li key={r.id} className="flex flex-wrap items-start justify-between gap-3 rounded-xl border border-border bg-surface p-4 text-sm">
               <div className="grid gap-1">
                 <span className="font-semibold">{countryName(r.destination)}: {r.title}</span>
-                <span className="text-muted">{r.kind}{r.applies_to.length ? ` · for ${r.applies_to.join(", ")}` : " · everyone"}</span>
+                <span className="text-muted">{r.kind}{r.applies_to.length ? ` · for ${r.applies_to.join(", ")}` : " · everyone"}{r.lead_days ? ` · start ${r.lead_days} days ahead` : ""}</span>
                 {r.evidence_quote ? <q className="text-muted italic">{r.evidence_quote}</q> : null}
                 {r.url ? <a href={r.url} target="_blank" rel="noreferrer" className="underline underline-offset-2">{new URL(r.url).hostname}</a> : null}
               </div>
@@ -58,6 +58,9 @@ export default async function RulesAdmin() {
               <option value="work_hours">Part time work hours</option>
               <option value="banking">Money and banking</option>
               <option value="credential_evaluation">Qualification assessment service</option>
+              <option value="health_insurance">Health insurance</option>
+              <option value="residence_registration">Registering after arrival</option>
+              <option value="housing">Housing</option>
               <option value="other">Other</option>
             </select>
           </label>
@@ -82,6 +85,8 @@ export default async function RulesAdmin() {
             <label className="grid gap-1 text-sm">Hours per week<input name="hours_per_week" type="number" min="1" max="80" className="field" /></label>
             <label className="grid gap-1 text-sm">Step number (visa steps)<input name="step" type="number" min="0" className="field" /></label>
             <label className="grid gap-1 text-sm sm:col-span-3">Region (for example london; empty for the whole country)<input name="region" maxLength={60} className="field" /></label>
+            <label className="grid gap-1 text-sm">Days ahead to start (lead time)<input name="lead_days" type="number" min="1" max="365" className="field" /></label>
+            <label className="grid gap-1 text-sm sm:col-span-2">The page&apos;s words for that lead time<input name="lead_days_quote" maxLength={500} className="field" /></label>
           </fieldset>
           <button className="btn btn-primary justify-self-start">Add rule</button>
         </form>

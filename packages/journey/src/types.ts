@@ -187,6 +187,8 @@ export interface CountryRuleRow {
   appliesTo: string[];
   /** The rule's own official link, or its source page. */
   sourceUrl?: string | null;
+  /** How many days ahead to start, from the official page (M5, J5.5). Only counts when the rule is verified. */
+  leadDays?: number | null;
 }
 
 export interface DepartureTaskRow {

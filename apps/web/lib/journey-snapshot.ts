@@ -145,6 +145,7 @@ const snapshotSchema = z.object({
       kind: z.string(),
       title: z.string(),
       link: z.string().nullable(),
+      leadDays: z.number().nullable().default(null),
       status: factStatus,
       appliesTo: list(z.string()),
       sourceUrl: z.string().nullable().default(null),

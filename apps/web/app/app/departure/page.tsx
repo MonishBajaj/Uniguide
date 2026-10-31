@@ -112,6 +112,7 @@ export default async function DeparturePage() {
                       {t.status ? <FactBadge status={t.status as Parameters<typeof FactBadge>[0]["status"]} /> : null}
                     </div>
                     <p className="text-muted">{t.body}</p>
+                    {t.leadFromSource ? <p className="text-sm text-muted">The timing comes from the official page.</p> : null}
                     {t.link ? (
                       <a href={t.link} target="_blank" rel="noreferrer" className="justify-self-start underline underline-offset-2">Official page</a>
                     ) : null}

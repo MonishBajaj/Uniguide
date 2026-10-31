@@ -31,6 +31,14 @@ describe("departureTimeline", () => {
     expect(v.due).toBe("2027-06-28");
     expect(v.body).toMatch(/official page/);
   });
+  it("uses a verified rule's own lead time from the official page, and our default otherwise (J5.5)", () => {
+    const ins = { id: "00000000-0000-0000-0000-00000000000c", kind: "health_insurance", title: "Health insurance", details: null, link: "https://example.org/ins", status: "verified", lead_days: 30 };
+    const sourced = departureTimeline([ins], "2027-09-20").find((t) => t.key === `rule:${ins.id}`)!;
+    expect(sourced).toMatchObject({ due: "2027-08-21", leadFromSource: true });
+    const unverified = departureTimeline([{ ...ins, status: "unverified" }], "2027-09-20").find((t) => t.key === `rule:${ins.id}`)!;
+    expect(unverified.due).toBe("2027-07-26");
+    expect(unverified.leadFromSource).toBeUndefined();
+  });
   it("leaves dates empty without a start", () => {
     expect(departureTimeline([visa], null).every((t) => t.due === null)).toBe(true);
   });

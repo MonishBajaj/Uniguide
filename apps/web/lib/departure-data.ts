@@ -25,7 +25,7 @@ export async function loadDeparture(supabase: Supabase, userId: string) {
   if (!app || !program?.institutions) return null;
   const { data: rules } = await supabase
     .from("country_rules")
-    .select("id, kind, title, details, link, status, applies_to")
+    .select("id, kind, title, details, link, status, applies_to, lead_days")
     .eq("destination", program.institutions.country)
     .order("kind");
   const residence = profile?.residence_country;
