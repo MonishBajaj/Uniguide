@@ -1,0 +1,38 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Check your application · Practice Portal</title>
+<style>
+body{font:16px/1.5 system-ui,sans-serif;margin:0;color:#1c1c1c;background:#fafaf7}
+header{display:flex;justify-content:space-between;align-items:center;padding:12px 24px;background:#2d3a4a;color:#fff}
+header a,header button{color:#fff;background:transparent;border:1px solid #fff}
+.banner{background:#fff4cc;padding:8px 24px;font-size:14px}
+main{max-width:720px;margin:0 auto;padding:24px}
+.sections{display:flex;gap:16px;list-style:none;padding:0;font-size:14px;flex-wrap:wrap}
+.sections [aria-current]{font-weight:700;text-decoration:underline}
+label{display:block;font-weight:600;margin-top:16px}
+input[type=text],input[type=email],input[type=tel],input[type=date],input[type=month],select,textarea{display:block;width:100%;max-width:480px;padding:8px;margin-top:4px;font:inherit}
+textarea{min-height:120px}
+fieldset{border:1px solid #ccc;margin-top:16px;padding:12px}
+.hint{color:#555;font-size:14px}
+.errors{border:2px solid #b00020;padding:12px;margin:16px 0}
+.actions{margin-top:24px;display:flex;gap:12px;flex-wrap:wrap}
+button{font:inherit;padding:8px 16px}
+.danger{background:#b00020;color:#fff;border:0}
+[hidden]{display:none}
+</style></head>
+<body>
+<header><span>Practice Portal</span><form method="post" action="/sign-out"><button id="sign-out">Sign out</button></form></header>
+<p class="banner" role="note">A practice portal for testing only. Never enter real personal details here.</p>
+<main><nav aria-label="Application sections"><ol class="sections"><li>About you</li><li>Your education</li><li>Tests and activities</li><li>Personal statement</li><li>Fee and declaration</li></ol></nav><h1>Check your application</h1><p>Check every answer. When you submit, you can't change it.</p>
+     <table id="review-table"><tbody><tr><th scope="row">Given names</th><td>Test</td><td><a href="/apply/about-you">Change<span hidden=""> Given names</span></a></td></tr><tr><th scope="row">Family name</th><td>Student</td><td><a href="/apply/about-you">Change<span hidden=""> Family name</span></a></td></tr><tr><th scope="row">Email address</th><td>tester@practice.test</td><td><a href="/apply/about-you">Change<span hidden=""> Email address</span></a></td></tr><tr><th scope="row">Date of birth</th><td>2007-05-01</td><td><a href="/apply/about-you">Change<span hidden=""> Date of birth</span></a></td></tr><tr><th scope="row">Country you live in</th><td>IN</td><td><a href="/apply/about-you">Change<span hidden=""> Country you live in</span></a></td></tr><tr><th scope="row">Phone number (optional)</th><td></td><td><a href="/apply/about-you">Change<span hidden=""> Phone number (optional)</span></a></td></tr><tr><th scope="row">Name of school or college</th><td>City School</td><td><a href="/apply/schooling">Change<span hidden=""> Name of school or college</span></a></td></tr><tr><th scope="row">Qualification</th><td>cbse_12</td><td><a href="/apply/schooling">Change<span hidden=""> Qualification</span></a></td></tr><tr><th scope="row">How your grade is given</th><td>percentage</td><td><a href="/apply/schooling">Change<span hidden=""> How your grade is given</span></a></td></tr><tr><th scope="row">Your overall grade</th><td>91.4</td><td><a href="/apply/schooling">Change<span hidden=""> Your overall grade</span></a></td></tr><tr><th scope="row">Are you still studying there?</th><td>yes</td><td><a href="/apply/schooling">Change<span hidden=""> Are you still studying there?</span></a></td></tr><tr><th scope="row">When do you expect to finish?</th><td>2027-05</td><td><a href="/apply/schooling">Change<span hidden=""> When do you expect to finish?</span></a></td></tr><tr><th scope="row">Have you taken an English language test?</th><td>yes</td><td><a href="/apply/tests">Change<span hidden=""> Have you taken an English language test?</span></a></td></tr><tr><th scope="row">Which test?</th><td>ielts_academic</td><td><a href="/apply/tests">Change<span hidden=""> Which test?</span></a></td></tr><tr><th scope="row">Overall score</th><td>7.5</td><td><a href="/apply/tests">Change<span hidden=""> Overall score</span></a></td></tr><tr><th scope="row">Date you took it</th><td></td><td><a href="/apply/tests">Change<span hidden=""> Date you took it</span></a></td></tr><tr><th scope="row">Why do you want to study this course?</th><td>Synthetic practice text written for this test run.</td><td><a href="/apply/statement">Change<span hidden=""> Why do you want to study this course?</span></a></td></tr><tr><th scope="row">Why are you asking for a waiver?</th><td>Synthetic test reason</td><td><a href="/apply/fee">Change<span hidden=""> Why are you asking for a waiver?</span></a></td></tr><tr><th scope="row">Type your full name to sign</th><td>Test Student</td><td><a href="/apply/declaration">Change<span hidden=""> Type your full name to sign</span></a></td></tr><tr><th scope="row">Activity 1</th><td>Robotics club lead, City School</td><td><a href="/apply/activities">Change</a></td></tr></tbody></table>
+     <form method="post" action="/review"><div class="actions"><button class="danger" id="submit-application" name="action" value="submit">Submit my application</button>
+     <a id="back" href="/apply/declaration">Back</a></div></form></main>
+<script>
+// Conditional questions: show a question only when the answer it depends on matches.
+function refresh(){document.querySelectorAll("[data-show-field]").forEach(function(el){
+  var f=el.getAttribute("data-show-field"),want=el.getAttribute("data-show-equals");
+  var inputs=document.querySelectorAll('[name="'+f+'"]'),val="";
+  inputs.forEach(function(i){if((i.type==="radio"||i.type==="checkbox")){if(i.checked)val=i.type==="checkbox"?"on":i.value}else{val=i.value}});
+  el.hidden=val!==want;});}
+document.addEventListener("change",refresh);document.addEventListener("input",refresh);refresh();
+</script>
+</body></html>

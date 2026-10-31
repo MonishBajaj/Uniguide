@@ -12,6 +12,8 @@ importers:
         specifier: 2.122.0
         version: 2.122.0
 
+  apps/practice-portal: {}
+
   apps/web:
     dependencies:
       '@anthropic-ai/sdk':

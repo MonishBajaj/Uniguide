@@ -1,0 +1,703 @@
+{
+  "tool": "rea inspect-web-page --include-accessibility-text --include-storage-keys",
+  "pages": [
+    {
+      "capture": "sign-in",
+      "url": "/sign-in",
+      "title": "Sign in · Practice Portal",
+      "fields": [
+        {
+          "id": "email",
+          "label": "Email address",
+          "control": "email",
+          "inAccessibilityTree": true
+        },
+        {
+          "id": "password",
+          "label": "Password",
+          "control": "password",
+          "inAccessibilityTree": true
+        }
+      ],
+      "buttons": [
+        "Sign in"
+      ],
+      "networkRequests": 0,
+      "storageKeys": {
+        "local_storage_keys": [],
+        "session_storage_keys": [],
+        "indexed_db_names": [],
+        "cache_names": []
+      },
+      "linkDestinations": [
+        "approved"
+      ],
+      "radioNamesWithSpace": []
+    },
+    {
+      "capture": "dashboard",
+      "url": "/",
+      "title": "Your application · Practice Portal",
+      "fields": [],
+      "buttons": [
+        "Sign out",
+        "Withdraw this application"
+      ],
+      "networkRequests": 0,
+      "storageKeys": {
+        "local_storage_keys": [],
+        "session_storage_keys": [],
+        "indexed_db_names": [],
+        "cache_names": []
+      },
+      "linkDestinations": [
+        "approved"
+      ],
+      "radioNamesWithSpace": []
+    },
+    {
+      "capture": "about-you",
+      "url": "/apply/about-you",
+      "title": "Your details · Practice Portal",
+      "fields": [
+        {
+          "id": "field-given_names",
+          "label": "Given names",
+          "control": "text",
+          "inAccessibilityTree": true
+        },
+        {
+          "id": "field-family_name",
+          "label": "Family name",
+          "control": "text",
+          "inAccessibilityTree": true
+        },
+        {
+          "id": "field-email",
+          "label": "Email address",
+          "control": "email",
+          "inAccessibilityTree": true
+        },
+        {
+          "id": "field-date_of_birth",
+          "label": "Date of birth",
+          "control": "date",
+          "inAccessibilityTree": true
+        },
+        {
+          "id": "field-country_of_residence",
+          "label": "Country you live in",
+          "control": "select",
+          "inAccessibilityTree": true
+        },
+        {
+          "id": "field-phone",
+          "label": "Phone number (optional)",
+          "control": "tel",
+          "inAccessibilityTree": true
+        }
+      ],
+      "buttons": [
+        "Save",
+        "Save and continue",
+        "Show date picker Show date picker",
+        "Sign out"
+      ],
+      "networkRequests": 0,
+      "storageKeys": {
+        "local_storage_keys": [],
+        "session_storage_keys": [],
+        "indexed_db_names": [],
+        "cache_names": []
+      },
+      "linkDestinations": [
+        "approved"
+      ],
+      "radioNamesWithSpace": []
+    },
+    {
+      "capture": "about-you--errors",
+      "url": "/apply/about-you",
+      "title": "Your details · Practice Portal",
+      "fields": [
+        {
+          "id": "field-given_names",
+          "label": "Given names",
+          "control": "text",
+          "inAccessibilityTree": true
+        },
+        {
+          "id": "field-family_name",
+          "label": "Family name",
+          "control": "text",
+          "inAccessibilityTree": true
+        },
+        {
+          "id": "field-email",
+          "label": "Email address",
+          "control": "email",
+          "inAccessibilityTree": true
+        },
+        {
+          "id": "field-date_of_birth",
+          "label": "Date of birth",
+          "control": "date",
+          "inAccessibilityTree": true
+        },
+        {
+          "id": "field-country_of_residence",
+          "label": "Country you live in",
+          "control": "select",
+          "inAccessibilityTree": true
+        },
+        {
+          "id": "field-phone",
+          "label": "Phone number (optional)",
+          "control": "tel",
+          "inAccessibilityTree": true
+        }
+      ],
+      "buttons": [
+        "Save",
+        "Save and continue",
+        "Show date picker Show date picker",
+        "Sign out"
+      ],
+      "networkRequests": 0,
+      "storageKeys": {
+        "local_storage_keys": [],
+        "session_storage_keys": [],
+        "indexed_db_names": [],
+        "cache_names": []
+      },
+      "linkDestinations": [
+        "approved"
+      ],
+      "radioNamesWithSpace": []
+    },
+    {
+      "capture": "schooling",
+      "url": "/apply/schooling",
+      "title": "Your most recent school or college · Practice Portal",
+      "fields": [
+        {
+          "id": "field-school_name",
+          "label": "Name of school or college",
+          "control": "text",
+          "inAccessibilityTree": true
+        },
+        {
+          "id": "field-qualification",
+          "label": "Qualification",
+          "control": "select",
+          "inAccessibilityTree": true
+        },
+        {
+          "id": "field-grade_scale",
+          "label": "How your grade is given",
+          "control": "select",
+          "inAccessibilityTree": true
+        },
+        {
+          "id": "field-grade_value",
+          "label": "Your overall grade",
+          "control": "text",
+          "inAccessibilityTree": true
+        },
+        {
+          "id": "field-still_studying",
+          "label": "Are you still studying there?",
+          "control": "radio",
+          "inAccessibilityTree": true
+        }
+      ],
+      "buttons": [
+        "Save",
+        "Save and continue",
+        "Sign out"
+      ],
+      "networkRequests": 0,
+      "storageKeys": {
+        "local_storage_keys": [],
+        "session_storage_keys": [],
+        "indexed_db_names": [],
+        "cache_names": []
+      },
+      "linkDestinations": [
+        "approved"
+      ],
+      "radioNamesWithSpace": [
+        " Yes",
+        " No"
+      ]
+    },
+    {
+      "capture": "schooling--studying",
+      "url": "/apply/schooling",
+      "title": "Your most recent school or college · Practice Portal",
+      "fields": [
+        {
+          "id": "field-school_name",
+          "label": "Name of school or college",
+          "control": "text",
+          "inAccessibilityTree": true
+        },
+        {
+          "id": "field-qualification",
+          "label": "Qualification",
+          "control": "select",
+          "inAccessibilityTree": true
+        },
+        {
+          "id": "field-grade_scale",
+          "label": "How your grade is given",
+          "control": "select",
+          "inAccessibilityTree": true
+        },
+        {
+          "id": "field-grade_value",
+          "label": "Your overall grade",
+          "control": "text",
+          "inAccessibilityTree": true
+        },
+        {
+          "id": "field-still_studying",
+          "label": "Are you still studying there?",
+          "control": "radio",
+          "inAccessibilityTree": true
+        },
+        {
+          "id": "field-expected_completion",
+          "label": "When do you expect to finish?",
+          "control": "month",
+          "inAccessibilityTree": true
+        }
+      ],
+      "buttons": [
+        "Save",
+        "Save and continue",
+        "Show month picker Show month picker",
+        "Sign out"
+      ],
+      "networkRequests": 0,
+      "storageKeys": {
+        "local_storage_keys": [],
+        "session_storage_keys": [],
+        "indexed_db_names": [],
+        "cache_names": []
+      },
+      "linkDestinations": [
+        "approved"
+      ],
+      "radioNamesWithSpace": [
+        " Yes",
+        " No"
+      ]
+    },
+    {
+      "capture": "tests",
+      "url": "/apply/tests",
+      "title": "English language tests · Practice Portal",
+      "fields": [
+        {
+          "id": "field-english_test_taken",
+          "label": "Have you taken an English language test?",
+          "control": "radio",
+          "inAccessibilityTree": true
+        }
+      ],
+      "buttons": [
+        "Save",
+        "Save and continue",
+        "Sign out"
+      ],
+      "networkRequests": 0,
+      "storageKeys": {
+        "local_storage_keys": [],
+        "session_storage_keys": [],
+        "indexed_db_names": [],
+        "cache_names": []
+      },
+      "linkDestinations": [
+        "approved"
+      ],
+      "radioNamesWithSpace": [
+        " Yes",
+        " No"
+      ]
+    },
+    {
+      "capture": "tests--taken",
+      "url": "/apply/tests",
+      "title": "English language tests · Practice Portal",
+      "fields": [
+        {
+          "id": "field-english_test_taken",
+          "label": "Have you taken an English language test?",
+          "control": "radio",
+          "inAccessibilityTree": true
+        },
+        {
+          "id": "field-english_test",
+          "label": "Which test?",
+          "control": "select",
+          "inAccessibilityTree": true
+        },
+        {
+          "id": "field-english_overall",
+          "label": "Overall score",
+          "control": "text",
+          "inAccessibilityTree": true
+        },
+        {
+          "id": "field-english_date",
+          "label": "Date you took it",
+          "control": "date",
+          "inAccessibilityTree": true
+        }
+      ],
+      "buttons": [
+        "Save",
+        "Save and continue",
+        "Show date picker Show date picker",
+        "Sign out"
+      ],
+      "networkRequests": 0,
+      "storageKeys": {
+        "local_storage_keys": [],
+        "session_storage_keys": [],
+        "indexed_db_names": [],
+        "cache_names": []
+      },
+      "linkDestinations": [
+        "approved"
+      ],
+      "radioNamesWithSpace": [
+        " Yes",
+        " No"
+      ]
+    },
+    {
+      "capture": "activities",
+      "url": "/apply/activities",
+      "title": "Activities · Practice Portal",
+      "fields": [
+        {
+          "id": "field-activity_1_role",
+          "label": "What you did",
+          "control": "text",
+          "inAccessibilityTree": true
+        },
+        {
+          "id": "field-activity_1_organisation",
+          "label": "Organisation",
+          "control": "text",
+          "inAccessibilityTree": true
+        },
+        {
+          "id": "field-activity_1_description",
+          "label": "Tell us about it",
+          "control": "textarea",
+          "inAccessibilityTree": true
+        }
+      ],
+      "buttons": [
+        "Add another activity",
+        "Save",
+        "Save and continue",
+        "Sign out"
+      ],
+      "networkRequests": 0,
+      "storageKeys": {
+        "local_storage_keys": [],
+        "session_storage_keys": [],
+        "indexed_db_names": [],
+        "cache_names": []
+      },
+      "linkDestinations": [
+        "approved"
+      ],
+      "radioNamesWithSpace": []
+    },
+    {
+      "capture": "activities--two",
+      "url": "/apply/activities",
+      "title": "Activities · Practice Portal",
+      "fields": [
+        {
+          "id": "field-activity_1_role",
+          "label": "What you did",
+          "control": "text",
+          "inAccessibilityTree": true
+        },
+        {
+          "id": "field-activity_1_organisation",
+          "label": "Organisation",
+          "control": "text",
+          "inAccessibilityTree": true
+        },
+        {
+          "id": "field-activity_1_description",
+          "label": "Tell us about it",
+          "control": "textarea",
+          "inAccessibilityTree": true
+        },
+        {
+          "id": "field-activity_2_role",
+          "label": "What you did",
+          "control": "text",
+          "inAccessibilityTree": true
+        },
+        {
+          "id": "field-activity_2_organisation",
+          "label": "Organisation",
+          "control": "text",
+          "inAccessibilityTree": true
+        },
+        {
+          "id": "field-activity_2_description",
+          "label": "Tell us about it",
+          "control": "textarea",
+          "inAccessibilityTree": true
+        }
+      ],
+      "buttons": [
+        "Add another activity",
+        "Save",
+        "Save and continue",
+        "Sign out"
+      ],
+      "networkRequests": 0,
+      "storageKeys": {
+        "local_storage_keys": [],
+        "session_storage_keys": [],
+        "indexed_db_names": [],
+        "cache_names": []
+      },
+      "linkDestinations": [
+        "approved"
+      ],
+      "radioNamesWithSpace": []
+    },
+    {
+      "capture": "statement",
+      "url": "/apply/statement",
+      "title": "Personal statement · Practice Portal",
+      "fields": [
+        {
+          "id": "field-statement",
+          "label": "Why do you want to study this course?",
+          "control": "textarea",
+          "inAccessibilityTree": true
+        }
+      ],
+      "buttons": [
+        "Save",
+        "Save and continue",
+        "Sign out"
+      ],
+      "networkRequests": 0,
+      "storageKeys": {
+        "local_storage_keys": [],
+        "session_storage_keys": [],
+        "indexed_db_names": [],
+        "cache_names": []
+      },
+      "linkDestinations": [
+        "approved"
+      ],
+      "radioNamesWithSpace": []
+    },
+    {
+      "capture": "security-check",
+      "url": "/apply/security-check",
+      "title": "Quick security check · Practice Portal",
+      "fields": [
+        {
+          "id": "field-check_word",
+          "label": "Type the word PRACTICE in capital letters",
+          "control": "text",
+          "inAccessibilityTree": true
+        }
+      ],
+      "buttons": [
+        "Save",
+        "Save and continue",
+        "Sign out"
+      ],
+      "networkRequests": 0,
+      "storageKeys": {
+        "local_storage_keys": [],
+        "session_storage_keys": [],
+        "indexed_db_names": [],
+        "cache_names": []
+      },
+      "linkDestinations": [
+        "approved"
+      ],
+      "radioNamesWithSpace": []
+    },
+    {
+      "capture": "fee",
+      "url": "/apply/fee",
+      "title": "Application fee · Practice Portal",
+      "fields": [
+        {
+          "id": "field-fee_waiver",
+          "label": "I want to ask for a fee waiver",
+          "control": "checkbox",
+          "inAccessibilityTree": true
+        }
+      ],
+      "buttons": [
+        "Pay the fee",
+        "Save",
+        "Save and continue",
+        "Sign out"
+      ],
+      "networkRequests": 0,
+      "storageKeys": {
+        "local_storage_keys": [],
+        "session_storage_keys": [],
+        "indexed_db_names": [],
+        "cache_names": []
+      },
+      "linkDestinations": [
+        "approved"
+      ],
+      "radioNamesWithSpace": []
+    },
+    {
+      "capture": "fee--waiver",
+      "url": "/apply/fee",
+      "title": "Application fee · Practice Portal",
+      "fields": [
+        {
+          "id": "field-fee_waiver",
+          "label": "I want to ask for a fee waiver",
+          "control": "checkbox",
+          "inAccessibilityTree": true
+        },
+        {
+          "id": "field-fee_waiver_reason",
+          "label": "Why are you asking for a waiver?",
+          "control": "textarea",
+          "inAccessibilityTree": true
+        }
+      ],
+      "buttons": [
+        "Pay the fee",
+        "Save",
+        "Save and continue",
+        "Sign out"
+      ],
+      "networkRequests": 0,
+      "storageKeys": {
+        "local_storage_keys": [],
+        "session_storage_keys": [],
+        "indexed_db_names": [],
+        "cache_names": []
+      },
+      "linkDestinations": [
+        "approved"
+      ],
+      "radioNamesWithSpace": []
+    },
+    {
+      "capture": "declaration",
+      "url": "/apply/declaration",
+      "title": "Declaration · Practice Portal",
+      "fields": [
+        {
+          "id": "field-declare",
+          "label": "I declare that my application is complete and accurate, and that my personal statement is my own work.",
+          "control": "checkbox",
+          "inAccessibilityTree": true
+        },
+        {
+          "id": "field-signed_name",
+          "label": "Type your full name to sign",
+          "control": "text",
+          "inAccessibilityTree": true
+        }
+      ],
+      "buttons": [
+        "Sign and continue",
+        "Sign out"
+      ],
+      "networkRequests": 0,
+      "storageKeys": {
+        "local_storage_keys": [],
+        "session_storage_keys": [],
+        "indexed_db_names": [],
+        "cache_names": []
+      },
+      "linkDestinations": [
+        "approved"
+      ],
+      "radioNamesWithSpace": []
+    },
+    {
+      "capture": "review",
+      "url": "/review",
+      "title": "Check your application · Practice Portal",
+      "fields": [],
+      "buttons": [
+        "Sign out",
+        "Submit my application"
+      ],
+      "networkRequests": 0,
+      "storageKeys": {
+        "local_storage_keys": [],
+        "session_storage_keys": [],
+        "indexed_db_names": [],
+        "cache_names": []
+      },
+      "linkDestinations": [
+        "approved"
+      ],
+      "radioNamesWithSpace": []
+    },
+    {
+      "capture": "confirmation",
+      "url": "/confirmation",
+      "title": "Application received · Practice Portal",
+      "fields": [],
+      "buttons": [
+        "Sign out"
+      ],
+      "networkRequests": 0,
+      "storageKeys": {
+        "local_storage_keys": [],
+        "session_storage_keys": [],
+        "indexed_db_names": [],
+        "cache_names": []
+      },
+      "linkDestinations": [
+        "approved"
+      ],
+      "radioNamesWithSpace": []
+    },
+    {
+      "capture": "dashboard--submitted",
+      "url": "/",
+      "title": "Your application · Practice Portal",
+      "fields": [],
+      "buttons": [
+        "Sign out",
+        "Withdraw this application"
+      ],
+      "networkRequests": 0,
+      "storageKeys": {
+        "local_storage_keys": [],
+        "session_storage_keys": [],
+        "indexed_db_names": [],
+        "cache_names": []
+      },
+      "linkDestinations": [
+        "approved"
+      ],
+      "radioNamesWithSpace": []
+    }
+  ]
+}

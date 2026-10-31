@@ -1,0 +1,706 @@
+{
+  "portal": "practice",
+  "mapVersion": "practice-map-1",
+  "recordedOn": "2026-10-31",
+  "howRecorded": "REA step A on our own practice portal (A1.2): REA observed the session and inspected every page; field records read from the page and cross-checked against REA's accessibility tree. Synthetic data only.",
+  "origin": "http://127.0.0.1:4318",
+  "signIn": {
+    "path": "/sign-in",
+    "by": "student",
+    "note": "The student signs in. The extension never reads or fills the password field."
+  },
+  "dashboard": {
+    "path": "/",
+    "start": "continue-application",
+    "status": "status"
+  },
+  "sections": [
+    {
+      "title": "About you"
+    },
+    {
+      "title": "Your education"
+    },
+    {
+      "title": "Tests and activities"
+    },
+    {
+      "title": "Personal statement"
+    },
+    {
+      "title": "Fee and declaration"
+    }
+  ],
+  "pages": [
+    {
+      "id": "about-you",
+      "path": "/apply/about-you",
+      "kind": "form",
+      "title": "Your details",
+      "section": "About you",
+      "fields": [
+        {
+          "role": "person.given_names",
+          "label": "Given names",
+          "control": "text",
+          "required": true,
+          "find": {
+            "id": "field-given_names",
+            "name": "given_names"
+          },
+          "source": null,
+          "action": "student",
+          "note": "R15: profiles hold no legal name."
+        },
+        {
+          "role": "person.family_name",
+          "label": "Family name",
+          "control": "text",
+          "required": true,
+          "find": {
+            "id": "field-family_name",
+            "name": "family_name"
+          },
+          "source": null,
+          "action": "student",
+          "note": "R15."
+        },
+        {
+          "role": "contact.email",
+          "label": "Email address",
+          "control": "email",
+          "required": true,
+          "find": {
+            "id": "field-email",
+            "name": "email"
+          },
+          "source": "contact.email",
+          "action": "fill"
+        },
+        {
+          "role": "person.date_of_birth",
+          "label": "Date of birth",
+          "control": "date",
+          "required": true,
+          "find": {
+            "id": "field-date_of_birth",
+            "name": "date_of_birth"
+          },
+          "source": null,
+          "action": "student",
+          "note": "R15: profiles hold only a birth month."
+        },
+        {
+          "role": "contact.residence_country",
+          "label": "Country you live in",
+          "control": "select",
+          "required": true,
+          "find": {
+            "id": "field-country_of_residence",
+            "name": "country_of_residence"
+          },
+          "options": [
+            {
+              "value": "IN",
+              "text": "India"
+            },
+            {
+              "value": "GB",
+              "text": "United Kingdom"
+            },
+            {
+              "value": "US",
+              "text": "United States"
+            },
+            {
+              "value": "DE",
+              "text": "Germany"
+            },
+            {
+              "value": "NG",
+              "text": "Nigeria"
+            },
+            {
+              "value": "OTHER",
+              "text": "Somewhere else"
+            }
+          ],
+          "source": "contact.residenceCountry",
+          "action": "fill",
+          "note": "Option values are ISO codes; no match pauses."
+        },
+        {
+          "role": "contact.phone",
+          "label": "Phone number (optional)",
+          "control": "tel",
+          "required": false,
+          "find": {
+            "id": "field-phone",
+            "name": "phone"
+          },
+          "source": null,
+          "action": "student",
+          "note": "R15."
+        }
+      ],
+      "controls": {
+        "continue": "save-continue",
+        "save": "save-only",
+        "back": "back"
+      }
+    },
+    {
+      "id": "schooling",
+      "path": "/apply/schooling",
+      "kind": "form",
+      "title": "Your most recent school or college",
+      "section": "Your education",
+      "fields": [
+        {
+          "role": "education.school_name",
+          "label": "Name of school or college",
+          "control": "text",
+          "required": true,
+          "find": {
+            "id": "field-school_name",
+            "name": "school_name"
+          },
+          "source": null,
+          "action": "student",
+          "note": "Not in the profile."
+        },
+        {
+          "role": "education.qualification",
+          "label": "Qualification",
+          "control": "select",
+          "required": true,
+          "find": {
+            "id": "field-qualification",
+            "name": "qualification"
+          },
+          "options": [
+            {
+              "value": "cbse_12",
+              "text": "CBSE Class XII"
+            },
+            {
+              "value": "isc_12",
+              "text": "ISC Class XII"
+            },
+            {
+              "value": "ib_diploma",
+              "text": "IB Diploma"
+            },
+            {
+              "value": "a_levels",
+              "text": "A levels"
+            },
+            {
+              "value": "bachelor_4yr",
+              "text": "Bachelor's degree (4 years)"
+            },
+            {
+              "value": "other",
+              "text": "Another qualification"
+            }
+          ],
+          "source": "education.qualification",
+          "action": "confirm",
+          "note": "Only an exact option match; otherwise pause."
+        },
+        {
+          "role": "education.grade.scale",
+          "label": "How your grade is given",
+          "control": "select",
+          "required": true,
+          "find": {
+            "id": "field-grade_scale",
+            "name": "grade_scale"
+          },
+          "options": [
+            {
+              "value": "percentage",
+              "text": "Percentage"
+            },
+            {
+              "value": "gpa_4",
+              "text": "GPA out of 4"
+            },
+            {
+              "value": "gpa_10",
+              "text": "GPA out of 10"
+            },
+            {
+              "value": "ib_points",
+              "text": "IB points out of 45"
+            }
+          ],
+          "source": "education.grade.scale",
+          "action": "confirm",
+          "note": "Only an exact option match; no conversion."
+        },
+        {
+          "role": "education.grade.value",
+          "label": "Your overall grade",
+          "control": "text",
+          "required": true,
+          "find": {
+            "id": "field-grade_value",
+            "name": "grade_value"
+          },
+          "hint": "Exactly as it appears on your marksheet.",
+          "source": "education.grade",
+          "action": "confirm",
+          "note": "Exactly as entered, no conversion."
+        },
+        {
+          "role": "education.still_studying",
+          "label": "Are you still studying there?",
+          "control": "radio",
+          "required": true,
+          "find": {
+            "id": "field-still_studying",
+            "name": "still_studying",
+            "optionIds": {
+              "yes": "field-still_studying-yes",
+              "no": "field-still_studying-no"
+            }
+          },
+          "options": [
+            {
+              "value": "yes",
+              "text": "Yes"
+            },
+            {
+              "value": "no",
+              "text": "No"
+            }
+          ],
+          "source": null,
+          "action": "student"
+        },
+        {
+          "role": "education.expected_completion",
+          "label": "When do you expect to finish?",
+          "control": "month",
+          "required": true,
+          "find": {
+            "id": "field-expected_completion",
+            "name": "expected_completion"
+          },
+          "showWhen": {
+            "field": "still_studying",
+            "equals": "yes"
+          },
+          "source": null,
+          "action": "student"
+        }
+      ],
+      "controls": {
+        "continue": "save-continue",
+        "save": "save-only",
+        "back": "back"
+      }
+    },
+    {
+      "id": "tests",
+      "path": "/apply/tests",
+      "kind": "form",
+      "title": "English language tests",
+      "section": "Tests and activities",
+      "fields": [
+        {
+          "role": "tests.english.taken",
+          "label": "Have you taken an English language test?",
+          "control": "radio",
+          "required": true,
+          "find": {
+            "id": "field-english_test_taken",
+            "name": "english_test_taken",
+            "optionIds": {
+              "yes": "field-english_test_taken-yes",
+              "no": "field-english_test_taken-no"
+            }
+          },
+          "options": [
+            {
+              "value": "yes",
+              "text": "Yes"
+            },
+            {
+              "value": "no",
+              "text": "No"
+            }
+          ],
+          "source": "testScores",
+          "action": "confirm",
+          "note": "Yes only when an English test score exists."
+        },
+        {
+          "role": "tests.english.exam",
+          "label": "Which test?",
+          "control": "select",
+          "required": true,
+          "find": {
+            "id": "field-english_test",
+            "name": "english_test"
+          },
+          "options": [
+            {
+              "value": "ielts_academic",
+              "text": "IELTS Academic"
+            },
+            {
+              "value": "toefl_ibt",
+              "text": "TOEFL iBT"
+            },
+            {
+              "value": "pte_academic",
+              "text": "PTE Academic"
+            },
+            {
+              "value": "duolingo",
+              "text": "Duolingo English Test"
+            }
+          ],
+          "showWhen": {
+            "field": "english_test_taken",
+            "equals": "yes"
+          },
+          "source": "testScores[].exam",
+          "action": "confirm",
+          "note": "Only an exact option match."
+        },
+        {
+          "role": "tests.english.total",
+          "label": "Overall score",
+          "control": "text",
+          "required": true,
+          "find": {
+            "id": "field-english_overall",
+            "name": "english_overall"
+          },
+          "showWhen": {
+            "field": "english_test_taken",
+            "equals": "yes"
+          },
+          "source": "testScores[].total",
+          "action": "confirm",
+          "note": "As recorded."
+        },
+        {
+          "role": "tests.english.taken_on",
+          "label": "Date you took it",
+          "control": "date",
+          "required": false,
+          "find": {
+            "id": "field-english_date",
+            "name": "english_date"
+          },
+          "showWhen": {
+            "field": "english_test_taken",
+            "equals": "yes"
+          },
+          "source": "testScores[].takenOn",
+          "action": "confirm"
+        }
+      ],
+      "controls": {
+        "continue": "save-continue",
+        "save": "save-only",
+        "back": "back"
+      }
+    },
+    {
+      "id": "activities",
+      "path": "/apply/activities",
+      "kind": "form",
+      "title": "Activities",
+      "section": "Tests and activities",
+      "fields": [
+        {
+          "role": "activities[].role",
+          "label": "What you did",
+          "control": "text",
+          "required": true,
+          "find": {
+            "idPattern": "field-activity_{n}_role",
+            "namePattern": "activity_{n}_role"
+          },
+          "source": "activities[].title",
+          "action": "confirm",
+          "note": "One portal entry per CV entry the student picks."
+        },
+        {
+          "role": "activities[].organisation",
+          "label": "Organisation",
+          "control": "text",
+          "required": false,
+          "find": {
+            "idPattern": "field-activity_{n}_organisation",
+            "namePattern": "activity_{n}_organisation"
+          },
+          "source": "activities[].organisation",
+          "action": "confirm"
+        },
+        {
+          "role": "activities[].description",
+          "label": "Tell us about it",
+          "control": "textarea",
+          "required": false,
+          "find": {
+            "idPattern": "field-activity_{n}_description",
+            "namePattern": "activity_{n}_description"
+          },
+          "maxlength": 300,
+          "source": null,
+          "action": "student",
+          "note": "CV bullets are not this answer; the student writes it."
+        }
+      ],
+      "group": {
+        "name": "activity",
+        "min": 1,
+        "max": 5,
+        "containerIdPattern": "activity-{n}",
+        "add": "add-activity"
+      },
+      "controls": {
+        "continue": "save-continue",
+        "save": "save-only",
+        "back": "back"
+      }
+    },
+    {
+      "id": "statement",
+      "path": "/apply/statement",
+      "kind": "form",
+      "title": "Personal statement",
+      "section": "Personal statement",
+      "fields": [
+        {
+          "role": "essay.personal_statement",
+          "label": "Why do you want to study this course?",
+          "control": "textarea",
+          "required": true,
+          "find": {
+            "id": "field-statement",
+            "name": "statement"
+          },
+          "wordLimit": 650,
+          "hint": "Up to 650 words. Write it yourself.",
+          "source": "finalDraft",
+          "action": "confirm",
+          "note": "Paste only the student's own final draft, after confirmation, and only when the AI policy allows; never generated."
+        }
+      ],
+      "controls": {
+        "continue": "save-continue",
+        "save": "save-only",
+        "back": "back"
+      }
+    },
+    {
+      "id": "security-check",
+      "path": "/apply/security-check",
+      "kind": "security",
+      "title": "Quick security check",
+      "section": "Fee and declaration",
+      "fields": [
+        {
+          "role": "security.challenge",
+          "label": "Type the word PRACTICE in capital letters",
+          "control": "text",
+          "required": true,
+          "find": {
+            "id": "field-check_word",
+            "name": "check_word"
+          },
+          "source": null,
+          "action": "pause",
+          "note": "CAPTCHA stand-in: pause and hand over; never answered."
+        }
+      ],
+      "controls": {
+        "continue": "save-continue",
+        "save": "save-only",
+        "back": "back"
+      }
+    },
+    {
+      "id": "fee",
+      "path": "/apply/fee",
+      "kind": "fee",
+      "title": "Application fee",
+      "section": "Fee and declaration",
+      "fields": [
+        {
+          "role": "fee.waiver",
+          "label": "I want to ask for a fee waiver",
+          "control": "checkbox",
+          "required": false,
+          "find": {
+            "id": "field-fee_waiver",
+            "name": "fee_waiver"
+          },
+          "source": null,
+          "action": "never",
+          "note": "Never-click."
+        },
+        {
+          "role": "fee.waiver_reason",
+          "label": "Why are you asking for a waiver?",
+          "control": "textarea",
+          "required": true,
+          "find": {
+            "id": "field-fee_waiver_reason",
+            "name": "fee_waiver_reason"
+          },
+          "showWhen": {
+            "field": "fee_waiver",
+            "equals": "on"
+          },
+          "source": null,
+          "action": "student",
+          "note": "The student's own words."
+        }
+      ],
+      "controls": {
+        "continue": "save-continue",
+        "save": "save-only",
+        "back": "back"
+      }
+    },
+    {
+      "id": "declaration",
+      "path": "/apply/declaration",
+      "kind": "declaration",
+      "title": "Declaration",
+      "section": "Fee and declaration",
+      "fields": [
+        {
+          "role": "declaration.confirm",
+          "label": "I declare that my application is complete and accurate, and that my personal statement is my own work.",
+          "control": "checkbox",
+          "required": true,
+          "find": {
+            "id": "field-declare",
+            "name": "declare"
+          },
+          "source": null,
+          "action": "never",
+          "note": "Never-click."
+        },
+        {
+          "role": "declaration.signature",
+          "label": "Type your full name to sign",
+          "control": "text",
+          "required": true,
+          "find": {
+            "id": "field-signed_name",
+            "name": "signed_name"
+          },
+          "source": null,
+          "action": "never",
+          "note": "Never-fill: signing is the student's act."
+        }
+      ],
+      "controls": {
+        "back": "back"
+      }
+    }
+  ],
+  "review": {
+    "path": "/review",
+    "marker": "review-table",
+    "stop": true,
+    "note": "Guided apply stops here. The student checks and submits."
+  },
+  "confirmation": {
+    "path": "/confirmation",
+    "marker": "confirmation",
+    "reference": "reference",
+    "note": "Seeing this marker lets the extension offer 'mark as submitted' (confirmation_page)."
+  },
+  "errors": {
+    "marker": "error-summary",
+    "note": "After Continue, errors here mean: stop, show them, let the student fix."
+  },
+  "conditionalAttribute": {
+    "field": "data-show-field",
+    "equals": "data-show-equals",
+    "hiddenBy": "hidden"
+  },
+  "neverClick": [
+    {
+      "id": "pay-fee",
+      "page": "fee",
+      "kind": "payment",
+      "what": "Pays the application fee"
+    },
+    {
+      "id": "field-fee_waiver",
+      "page": "fee",
+      "kind": "payment",
+      "what": "Asks for a fee waiver"
+    },
+    {
+      "id": "field-declare",
+      "page": "declaration",
+      "kind": "declaration",
+      "what": "Makes the declaration"
+    },
+    {
+      "id": "sign-continue",
+      "page": "declaration",
+      "kind": "sign",
+      "what": "Signs the declaration and continues"
+    },
+    {
+      "id": "submit-application",
+      "page": "review",
+      "kind": "submit",
+      "what": "Submits the application"
+    },
+    {
+      "id": "withdraw-application",
+      "page": "dashboard",
+      "kind": "withdraw",
+      "what": "Withdraws the application"
+    },
+    {
+      "id": "sign-in",
+      "page": "sign-in",
+      "kind": "account",
+      "what": "Signs in (the student does this; we never handle portal passwords)"
+    },
+    {
+      "id": "sign-out",
+      "page": "*",
+      "kind": "account",
+      "what": "Signs out"
+    }
+  ],
+  "allowedClicks": [
+    {
+      "id": "continue-application",
+      "what": "Opens the next unfinished page"
+    },
+    {
+      "id": "save-continue",
+      "what": "Saves this page and goes on (a form submit button, but not the final submission)"
+    },
+    {
+      "id": "save-only",
+      "what": "Saves this page"
+    },
+    {
+      "id": "add-activity",
+      "what": "Adds an activity entry"
+    },
+    {
+      "id": "back",
+      "what": "Goes to the previous page"
+    }
+  ]
+}
