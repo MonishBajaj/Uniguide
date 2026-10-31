@@ -47,7 +47,7 @@ Both work only in the student's own browser, never submit, and never write anyth
 - **Host permissions:** cleared portals only.
 - **Real-portal fixtures** contain no portal page copy, scripts or assets.
 - **The usual project rules:**
-  - migrations start at `20270107`, with pgTAP and RLS on every table, then `pnpm db:types`
+  - migrations: A1.1 is `20270107000001`. From 31 October 2026, new migrations use the real current timestamp (owner's decision), with pgTAP and RLS on every table, then `pnpm db:types`. A real-timestamp migration sorts before every 2027-dated one, so it can't change the assist or journey objects; how to handle such a change is an open owner decision (`docs/SETUP.md`, "Migrations dated 2027")
   - interface copy through `lib/i18n` in English and Hindi
   - WCAG 2.1 AA, with axe on new pages at 1280 and 390 px
   - every spec sets up and removes its own data, and waits for each save before reading the result

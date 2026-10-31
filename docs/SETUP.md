@@ -25,6 +25,49 @@ Everything runs locally without accounts (see the README). This guide puts it on
 4. **Auth email** (Authentication → Emails → SMTP): the built-in sender is rate limited and for testing only. Add an SMTP provider (Resend works) before real users sign up.
 5. **Keys** (Project Settings → API Keys): copy the project URL and the **publishable** key (`sb_publishable_…`). The web app never needs the secret or service-role key.
 
+### Migrations dated 2027
+
+**Which migrations.** Some migration files are named with dates in January 2027, ahead of the real date:
+
+- the journey system: `20270101000001` to `20270106000002`
+- `develop`'s institution rankings: `20270101000002` to `20270101000006`
+- application assist: `20270107000001`
+
+They are **not renamed**: a hosted database records migrations by filename, so a rename would look like a new migration.
+
+**What this means for deploys:**
+
+- Supabase applies migrations in filename order, and `db push` refuses a local migration that sorts before the last one already applied to the hosted database.
+- Until the 2027 dates are in the past, a deploy that adds a migration sorting earlier than the latest applied one needs `--include-all`:
+
+  ```bash
+  pnpm exec supabase db push --include-all
+  ```
+
+  Locally, the same applies after pulling such a migration:
+
+  ```bash
+  pnpm exec supabase migration up --local --include-all
+  ```
+
+- Check what `--include-all` will apply before running it on the hosted project:
+
+  ```bash
+  pnpm exec supabase migration list
+  ```
+
+**New migrations from 31 October 2026** use the real current timestamp (normal Supabase convention), with one limit while the 2027 files are ahead of real time:
+
+- A real-timestamp migration sorts **before** every 2027-dated one.
+- So it must not change anything those files create, such as the journey or assist tables and functions. A fresh database (local reset, CI, a new hosted project) would apply it before those objects exist.
+- A change to those objects needs a decision first; see the M7 plan.
+
+**Dependencies, checked on 31 October 2026:**
+
+- `develop`'s 2027-dated migrations (institution rankings and `search_programs`) touch only tables from 2026-dated migrations.
+- None of the journey or assist migrations touch rankings or `search_programs`.
+- Neither group depends on the other, so filename order between them doesn't matter.
+
 ## 2. Worker database roles
 
 The worker uses three Postgres roles, none of which can read what it does not need:
