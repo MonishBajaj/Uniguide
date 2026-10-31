@@ -96,9 +96,18 @@ Parental consent emails need `RESEND_API_KEY` in production; without it the requ
 | `DATA_GOV_API_KEY` | free at [api.data.gov/signup](https://api.data.gov/signup/): College Scorecard importer |
 | `OPENALEX_API_KEY` | [openalex.org](https://openalex.org/): faculty import for research degrees |
 | `RESEND_API_KEY`, `EMAIL_FROM` | reminder and update emails (without a key the notifier only prints what it would send) |
+| `MAILPIT_URL` | local development only: with no Resend key, deliver emails to the Supabase stack's Mailpit (`http://127.0.0.1:54324`) instead of printing them |
 | `CRAWLER_CONTACT` | an email site owners can reach you at; sent in the User-Agent |
 
 Run imports from your machine (`uv run uniguide-worker import --help`).
+
+To read the emails locally, run the notifier with Mailpit and open `http://127.0.0.1:54324`:
+
+```bash
+cd worker && MAILPIT_URL=http://127.0.0.1:54324 NOTIFIER_DATABASE_URL=postgresql://notifier:notifier_local@127.0.0.1:54322/postgres uv run uniguide-worker notify
+```
+
+Weekly digests (the journey digest, or the deadline digest for a student whose journey wasn't computed in the last 8 days) go out on Mondays. Stage emails go out when a student reaches stage 4, 6 or 7, for 7 days afterwards.
 
 ## 6. Scheduled jobs
 

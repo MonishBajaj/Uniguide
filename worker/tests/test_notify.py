@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import os
 import uuid
 from collections.abc import Iterator
@@ -247,3 +248,35 @@ def test_own_applications_get_letter_nudges_but_never_deadline_reminders(
     reminders = Mailer()
     send_reminders(notifier, reminders, "https://uniguide.example")
     assert all("Urban Planning" not in m.subject + m.text for m in reminders.sent)
+
+
+def test_parent_digest_leads_with_the_journey_in_parent_safe_terms(
+    notifier: Connection, operator: Connection, parent: dict[str, Any], scenario: dict[str, Any]
+) -> None:
+    """J4.3: stage, progress, the parent note and parent titles; never a step's own title."""
+    operator.execute(
+        "insert into journey_state (user_id, stage, stage_progress, steps, engine_version, computed_at) values "
+        "(%s, 4, '{\"label\": \"0 of 1 application ready\"}', %s, 'journey-0.3.0', now())",
+        (
+            scenario["uid"],
+            json.dumps(
+                [
+                    {"title": "Draft your statement for MSc N", "reason": "Your essay."},
+                    {"title": "Send your IELTS score", "reason": "Your score 7.5."},
+                    {"title": "Work through the MSc N checklist", "parentTitle": "Working through the MSc N checklist"},
+                ]
+            ),
+        ),
+    )
+    operator.commit()
+    mailer = Mailer()
+    send_parent_digests(notifier, mailer, "https://uniguide.example")
+    [m] = [m for m in mailer.sent if m.to == parent["email"]]
+    assert m.subject == "This week: Asha is in stage 4, Prepare"
+    assert m.text.startswith("Stage 4 of 7: Prepare. 0 of 1 application ready.")
+    assert "How you can help right now:\nHelp gather documents like transcripts and certificates." in m.text
+    assert "The essays are Asha's to write" in m.text
+    assert "What Asha is working on:\n- Working through the MSc N checklist" in m.text
+    assert "MSc N, Notify U: Shortlisted" in m.text
+    for private in ("statement", "IELTS", "7.5", "Work through the MSc N checklist"):
+        assert private not in m.text

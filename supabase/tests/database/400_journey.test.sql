@@ -154,7 +154,8 @@ select is((select count(*)::int from public.journey_due_users('test-journey-toke
 select tests.as_postgres();
 select set_config('role', 'notifier', true);
 select ok((select count(*) from public.journey_state) >= 2, 'the notifier reads stored journeys for emails');
-select throws_ok($$ select * from public.journey_events $$, '42501', null, 'the notifier does not read events');
+-- M4 (J4.3): the notifier reads events for stage change emails, but never writes them (460_journey_emails).
+select lives_ok($$ select * from public.journey_events $$, 'the notifier reads events');
 
 select * from finish();
 rollback;

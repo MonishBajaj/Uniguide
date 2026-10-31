@@ -1,0 +1,51 @@
+{
+  "1": {
+    "name": "Set up",
+    "forText": "Telling UniGuide who you are and what you want.",
+    "doneWhen": "Matching has what it needs.",
+    "usuallyTakes": "15 minutes",
+    "parentNote": "Help set a realistic budget, including living costs, before {name} falls for courses that don't fit it."
+  },
+  "2": {
+    "name": "Explore",
+    "forText": "Seeing what is possible for you.",
+    "doneWhen": "At least one course is on your shortlist.",
+    "usuallyTakes": "1 to 3 weeks",
+    "parentNote": "Ask about the reasons behind each country, not just the rankings."
+  },
+  "3": {
+    "name": "Shortlist",
+    "forText": "Deciding where to apply.",
+    "doneWhen": "You are preparing at least one application.",
+    "usuallyTakes": "1 to 4 weeks",
+    "parentNote": "Look at the cost range of each shortlisted course together."
+  },
+  "4": {
+    "name": "Prepare",
+    "forText": "Getting each application ready before its deadline.",
+    "doneWhen": "Every application you chose is submitted.",
+    "usuallyTakes": "6 to 10 weeks",
+    "parentNote": "Help gather documents like transcripts and certificates. The essays are {name}'s to write: encouragement helps more than edits."
+  },
+  "5": {
+    "name": "Submit and wait",
+    "forText": "Keeping track of what you've sent.",
+    "doneWhen": "A decision is recorded.",
+    "usuallyTakes": "4 to 16 weeks",
+    "parentNote": "This stage is mostly waiting. Patience is the most useful help."
+  },
+  "6": {
+    "name": "Decide",
+    "forText": "Choosing the right offer and securing your place.",
+    "doneWhen": "One offer is accepted.",
+    "usuallyTakes": "1 to 4 weeks",
+    "parentNote": "This is where parents matter most. Compare the true cost of each offer together."
+  },
+  "7": {
+    "name": "Go",
+    "forText": "Getting there and settling in.",
+    "doneWhen": "Your pre-departure checklist is done and you have arrived.",
+    "usuallyTakes": "6 to 12 weeks",
+    "parentNote": "Proof of funds usually needs your documents. Start early."
+  }
+}
