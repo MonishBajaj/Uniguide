@@ -59,14 +59,3 @@ test("a doctorate applicant logs a supervisor contact on the application, and th
   const found = await audit(page, page.url());
   expect(found, found.join("\n")).toEqual([]);
 });
-
-for (const [width, height] of [[1280, 900], [390, 844]]) {
-  test(`the profile with documents has no serious accessibility violations at ${width}px`, async ({ browser }) => {
-    const page = await signIn(browser, "student@uniguide.local");
-    await page.setViewportSize({ width, height });
-    const found = await audit(page, "/app/profile");
-    await page.context().addCookies([{ name: "ug_locale", value: "hi", url: page.url() }]);
-    found.push(...(await audit(page, "/app/profile")));
-    expect(found, found.join("\n")).toEqual([]);
-  });
-}

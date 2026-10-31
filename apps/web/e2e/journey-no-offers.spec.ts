@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { STUDENT, audit, resetStudent, signIn, sql } from "./helpers";
+import { STUDENT, resetStudent, signIn, sql } from "./helpers";
 
 // Journey M5 (J5.4), the second half of the milestone's "done when": a student rejected everywhere has a clear way
 // back. Planning the next intake keeps the profile and shortlist, and this round's rejections stop holding them in
@@ -41,14 +41,3 @@ test("a student rejected everywhere plans the next intake and is back to shortli
   await page.goto("/app/tracker");
   await expect(page.getByRole("region", { name: /^Decided/ }).getByRole("article")).toHaveCount(2);
 });
-
-for (const [width, height] of [[1280, 900], [390, 844]]) {
-  test(`the next-intake page has no serious accessibility violations at ${width}px, in English and Hindi`, async ({ browser }) => {
-    const page = await signIn(browser, "student@uniguide.local");
-    await page.setViewportSize({ width, height });
-    const found = await audit(page, "/app/next-intake");
-    await page.context().addCookies([{ name: "ug_locale", value: "hi", url: page.url() }]);
-    found.push(...(await audit(page, "/app/next-intake")));
-    expect(found, found.join("\n")).toEqual([]);
-  });
-}

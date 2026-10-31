@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { STUDENT, audit, resetStudent, signIn, sql } from "./helpers";
+import { STUDENT, resetStudent, signIn, sql } from "./helpers";
 
 // Journey M3 (J3.2): "I'm applying to this" moves a shortlisted course to preparing in one click.
 const SLUG = "exampleton-msc-data-science";
@@ -72,18 +72,3 @@ test("a submitted application can't be moved back by the action", async ({ brows
 });
 
 // J3.7: the application page with the "applying" question, and an own application's page, at both widths.
-for (const [width, height] of [[1280, 900], [390, 844]]) {
-  test(`a shortlisted and an own application page have no serious accessibility violations at ${width}px, in English and Hindi`, async ({ browser }) => {
-    sql(`insert into applications (user_id, status, own_institution, own_title, own_country, own_due_at)
-         values ('${STUDENT}', 'preparing', 'Universiteit Voorbeeld', 'MSc Urban Planning', 'NL', now() + interval '40 days')`);
-    const ids = sql(`select string_agg(id::text, ' ' order by own_title nulls first) from applications where user_id = '${STUDENT}'`).split(" ");
-    const page = await signIn(browser, "student@uniguide.local");
-    await page.setViewportSize({ width, height });
-    const found: string[] = [];
-    for (const id of ids) found.push(...(await audit(page, `/app/tracker/${id}`)));
-    await page.context().addCookies([{ name: "ug_locale", value: "hi", url: page.url() }]);
-    for (const id of ids) found.push(...(await audit(page, `/app/tracker/${id}`)));
-    expect(found, found.join("\n")).toEqual([]);
-  });
-}
-

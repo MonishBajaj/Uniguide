@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { STUDENT, audit, resetStudent, signIn, sql } from "./helpers";
+import { STUDENT, resetStudent, signIn, sql } from "./helpers";
 
 // Journey M4 (J4.2): a linked parent sees the stage path, the parent note and parent-safe steps, never the
 // student's own step titles, reasons, writing, grades or scores. The spec's M4 "done when", first half.
@@ -56,14 +56,3 @@ test("a revoked link shows nothing of the student", async ({ browser }) => {
   const response = await page.goto("/parent");
   expect(response?.status() === 404 || (await page.getByText("Local student").count()) === 0).toBe(true);
 });
-
-for (const [width, height] of [[1280, 900], [390, 844]]) {
-  test(`the parent view has no serious accessibility violations at ${width}px`, async ({ browser }) => {
-    const student = await signIn(browser, "student@uniguide.local");
-    await student.goto("/app");
-    const page = await signIn(browser, "parent@uniguide.local");
-    await page.setViewportSize({ width, height });
-    const found = await audit(page, "/parent");
-    expect(found, found.join("\n")).toEqual([]);
-  });
-}

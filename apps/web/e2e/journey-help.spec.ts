@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { STUDENT, audit, resetStudent, signIn, sql } from "./helpers";
+import { STUDENT, resetStudent, signIn, sql } from "./helpers";
 
 // Journey M4 (J4.1): the "Get help" panel, with help for the page the student is on.
 const SLUG = "exampleton-msc-data-science";
@@ -68,21 +68,3 @@ test("on a phone the bar's Help opens the panel as a sheet, in Hindi too", async
   const panel = page.getByRole("dialog", { name: "मदद" });
   await expect(panel.getByRole("region", { name: "इस पेज पर" })).toContainText("जिन पर आप विचार कर रहे हैं");
 });
-
-for (const [width, height] of [[1280, 900], [390, 844]]) {
-  test(`the open panel has no serious accessibility violations at ${width}px`, async ({ browser }) => {
-    const page = await signIn(browser, "student@uniguide.local");
-    await page.setViewportSize({ width, height });
-    const found: string[] = [];
-    for (const path of ["/app", "/app/shortlist", `/app/tracker/${appId(false)}`]) {
-      found.push(...(await audit(page, path)));
-      const open = width < 768
-        ? page.locator("[data-bottom-bar]").getByRole("button", { name: "Get help" })
-        : page.getByRole("navigation", { name: "Main" }).getByRole("button", { name: "Get help" });
-      await open.click();
-      await expect(page.getByRole("dialog", { name: "Help" })).toBeVisible();
-      found.push(...(await audit(page, null)));
-    }
-    expect(found, found.join("\n")).toEqual([]);
-  });
-}

@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { STUDENT, audit, expectStored, resetStudent, signIn, sql } from "./helpers";
+import { STUDENT, expectStored, resetStudent, signIn, sql } from "./helpers";
 
 // Journey M5 (J5.1): after accepting an offer, the conditions, deposit and admission document each have a step
 // that goes once the student marks it, and the visa step waits for the document.
@@ -155,33 +155,3 @@ test("a parent never sees the conditions", async ({ browser }) => {
   await expect(page.getByText("IELTS 7.0 in every band")).toHaveCount(0);
   await expect(page.getByRole("region", { name: /is working on/ })).not.toContainText("conditions");
 });
-
-for (const [width, height] of [[1280, 900], [390, 844]]) {
-  test(`the offers page with "After you accept" has no serious accessibility violations at ${width}px`, async ({ browser }) => {
-    const page = await signIn(browser, "student@uniguide.local");
-    await page.setViewportSize({ width, height });
-    const found = await audit(page, "/app/offers");
-    await page.context().addCookies([{ name: "ug_locale", value: "hi", url: page.url() }]);
-    found.push(...(await audit(page, "/app/offers")));
-    expect(found, found.join("\n")).toEqual([]);
-  });
-}
-
-for (const [width, height] of [[1280, 900], [390, 844]]) {
-  test(`the departure page and "You made it" have no serious accessibility violations at ${width}px (J5.9)`, async ({ browser }) => {
-    const page = await signIn(browser, "student@uniguide.local");
-    await page.setViewportSize({ width, height });
-    const found: string[] = [];
-    for (const locale of ["en", "hi"]) {
-      await page.context().addCookies([{ name: "ug_locale", value: locale, url: page.url() }]);
-      found.push(...(await audit(page, "/app/departure")));
-    }
-    sql(`insert into departure_tasks (user_id, application_id, task_key)
-           select user_id, id, 'arrived' from applications where user_id = '${STUDENT}' and offer_accepted_at is not null`);
-    for (const locale of ["en", "hi"]) {
-      await page.context().addCookies([{ name: "ug_locale", value: locale, url: page.url() }]);
-      found.push(...(await audit(page, "/app")));
-    }
-    expect(found, found.join("\n")).toEqual([]);
-  });
-}

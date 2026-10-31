@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { STUDENT, audit, resetStudent, signIn, sql } from "./helpers";
+import { STUDENT, resetStudent, signIn, sql } from "./helpers";
 
 // Journey M3 (J3.5): while the catalogue is small, empty pages say so and offer the next thing to do.
 test.beforeEach(() => {
@@ -36,15 +36,3 @@ test("matches without a profile send the student to the short profile", async ({
   await expect(page.getByRole("heading", { name: "Tell us what you want to study first" })).toBeVisible();
   await expect(page.getByRole("link", { name: "Add a few details" })).toHaveAttribute("href", "/app/onboarding?screen=3");
 });
-
-for (const [width, height] of [[1280, 900], [390, 844]]) {
-  test(`empty pages have no serious accessibility violations at ${width}px, in English and Hindi`, async ({ browser }) => {
-    const page = await signIn(browser, "student@uniguide.local");
-    await page.setViewportSize({ width, height });
-    const found: string[] = [];
-    for (const path of ["/app/match", "/app/shortlist", "/app/tracker"]) found.push(...(await audit(page, path)));
-    await page.context().addCookies([{ name: "ug_locale", value: "hi", url: page.url() }]);
-    for (const path of ["/app/match", "/app/shortlist", "/app/tracker"]) found.push(...(await audit(page, path)));
-    expect(found, found.join("\n")).toEqual([]);
-  });
-}

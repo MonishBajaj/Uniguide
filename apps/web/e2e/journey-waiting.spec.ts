@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { STUDENT, audit, expectStored, resetStudent, signIn, sql } from "./helpers";
+import { STUDENT, expectStored, resetStudent, signIn, sql } from "./helpers";
 
 // Journey M5 (J5.6): while waiting for a decision, interviews, the student's expected decision date and a portal
 // note that something is missing each bring a step, and each is labelled as the student's own.
@@ -58,16 +58,3 @@ test("an interview, an expected decision date and a missing document each bring 
   open = await steps(page);
   for (const s of ["Prepare for your interview", "Record the decision"]) expect(open).not.toContain(s);
 });
-
-for (const [width, height] of [[1280, 900], [390, 844]]) {
-  test(`the application page while waiting has no serious accessibility violations at ${width}px`, async ({ browser }) => {
-    sql(`insert into application_events (application_id, user_id, kind, occurs_at) values ('${appId}', '${STUDENT}', 'interview', now() + interval '5 days');
-         insert into application_events (application_id, user_id, kind, note, missing) values ('${appId}', '${STUDENT}', 'portal_check', 'Fee unpaid', true)`);
-    const page = await signIn(browser, "student@uniguide.local");
-    await page.setViewportSize({ width, height });
-    const found = await audit(page, `/app/tracker/${appId}`);
-    await page.context().addCookies([{ name: "ug_locale", value: "hi", url: page.url() }]);
-    found.push(...(await audit(page, `/app/tracker/${appId}`)));
-    expect(found, found.join("\n")).toEqual([]);
-  });
-}

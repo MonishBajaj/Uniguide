@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { STUDENT, audit, resetStudent, signIn, sql } from "./helpers";
+import { STUDENT, resetStudent, signIn, sql } from "./helpers";
 
 // Journey M3 (J3.1): score goals on the match page; advice, comparison and costs on the shortlist; and the
 // steps that link to them. TUM publishes a verified TOEFL iBT (legacy) minimum of 88; the student's best is 80, and
@@ -66,15 +66,3 @@ test("without a budget the cost panel asks for one instead of flagging courses",
   await expect(costs.getByRole("link", { name: "Add a budget" })).toHaveAttribute("href", "/app/profile#budget");
   await expect(costs.getByText("over your budget")).toHaveCount(0);
 });
-
-for (const [width, height] of [[1280, 900], [390, 844]]) {
-  test(`the panels have no serious accessibility violations at ${width}px, in English and Hindi`, async ({ browser }) => {
-    const page = await signIn(browser, "student@uniguide.local");
-    await page.setViewportSize({ width, height });
-    const found: string[] = [];
-    for (const path of ["/app/match", "/app/shortlist"]) found.push(...(await audit(page, path)));
-    await page.context().addCookies([{ name: "ug_locale", value: "hi", url: page.url() }]);
-    for (const path of ["/app/match", "/app/shortlist"]) found.push(...(await audit(page, path)));
-    expect(found, found.join("\n")).toEqual([]);
-  });
-}

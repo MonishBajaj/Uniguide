@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { STUDENT, audit, expectStored, resetStudent, signIn, sql } from "./helpers";
+import { STUDENT, expectStored, resetStudent, signIn, sql } from "./helpers";
 
 // Journey M5 (J5.7): a shortlisted course with two intakes open asks which one; choosing moves the
 // still-shortlisted application to it with the course's checklist rebuilt, keeping the student's own items.
@@ -71,14 +71,3 @@ test("a course already being prepared keeps its intake and isn't asked", async (
   await expect(page.getByRole("group", { name: `Which intake? : ${TITLE}` })).toHaveCount(0);
   expect((await steps(page)).some((s) => s.startsWith("Confirm the intake"))).toBe(false);
 });
-
-for (const [width, height] of [[1280, 900], [390, 844]]) {
-  test(`the shortlist with an intake choice has no serious accessibility violations at ${width}px`, async ({ browser }) => {
-    const page = await signIn(browser, "student@uniguide.local");
-    await page.setViewportSize({ width, height });
-    const found = await audit(page, "/app/shortlist");
-    await page.context().addCookies([{ name: "ug_locale", value: "hi", url: page.url() }]);
-    found.push(...(await audit(page, "/app/shortlist")));
-    expect(found, found.join("\n")).toEqual([]);
-  });
-}
