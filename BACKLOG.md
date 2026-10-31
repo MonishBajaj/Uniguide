@@ -24,9 +24,9 @@ Weeks 1–4 foundation; weeks 5–6 tracker, checklists, reminders, .ics, outcom
 | **Native-speaker review of the Hindi interface** (15.4) | `apps/web/lib/i18n/hi.ts`, written plainly but not yet reviewed; the footer says so in Hindi. Not yet translated: the profile forms, application pages, writing coach and server messages. Country and level names, and dates, are still in English |
 | **Legal review before switching on community features** (11.1, 11.3, 11.4, 11.6) | Built behind `COMMUNITY_ENABLED` (off). Before turning it on: terms for user posts, moderation policy and response times, takedown contact, defamation risk in reviews, and a privacy-policy update. Every post is pre-moderated, adults only, pseudonymous, with contact details blocked |
 
-## Journey system (after M5)
+## Journey system (after M6)
 
-M1 (the engine), M2 (navigation, home, steps page, onboarding), M3 (panels, "I'm applying", own applications, test plans, empty states), M4 (help panel, parent and counselor views, journey emails) and M5 (enrollment, edge paths and arrival) are built; see `docs/superpowers/plans/2026-10-30-journey-m1-engine.md`, `2026-10-30-journey-m2-shell.md`, `2026-10-30-journey-m3-wiring.md`, `2026-10-31-journey-m4-help-parent.md` and `2026-10-31-journey-m5-enrollment.md`. Decisions taken by the owner on 30 October 2026: students can explore without a test score; "opened" and "viewed" steps are marked done by the student; "today" is the UTC date until profiles store a time zone; the daily recompute is a token-guarded route called by GitHub Actions. The spec's open questions keep their defaults (no paywall, "UniGuide" in one constant, advise 6 to 10 shortlisted courses and never require it, lead times 21/30/21 for ranking only and never shown).
+M1 (the engine), M2 (navigation, home, steps page, onboarding), M3 (panels, "I'm applying", own applications, test plans, empty states), M4 (help panel, parent and counselor views, journey emails), M5 (enrollment, edge paths and arrival) and M6 (Hindi steps, one accessibility audit, data saver, verification demand, `docs/JOURNEY.md`) are built; how it works is in `docs/JOURNEY.md`, and the plans are `docs/superpowers/plans/2026-10-30-journey-m1-engine.md`, `2026-10-30-journey-m2-shell.md`, `2026-10-30-journey-m3-wiring.md`, `2026-10-31-journey-m4-help-parent.md`, `2026-10-31-journey-m5-enrollment.md` and `2026-10-31-journey-m6-polish.md`. Decisions taken by the owner on 30 October 2026: students can explore without a test score; "opened" and "viewed" steps are marked done by the student; "today" is the UTC date until profiles store a time zone; the daily recompute is a token-guarded route called by GitHub Actions. The spec's open questions keep their defaults (no paywall, "UniGuide" in one constant, advise 6 to 10 shortlisted courses and never require it, lead times 21/30/21 for ranking only and never shown).
 
 Catalogue steps written but switched off until the piece they need exists:
 
@@ -36,7 +36,12 @@ Catalogue steps written but switched off until the piece they need exists:
 
 - Own applications (G1) never become catalogue courses; a reviewer cannot convert one (spec open question 4). Record any request for that here.
 - "Today" in the student's own time zone needs a time zone on the profile.
-- **Accepted limits from M2 (owner, 30 October 2026):** Hindi users see English step titles and reasons until M6 translates them by copy key; on phones, Offers sits under More even in stage 6 (the step cards link straight to it).
+- **Accepted limits from M2 (owner, 30 October 2026):** on phones, Offers sits under More even in stage 6 (the step cards link straight to it). (Step titles in Hindi came with M6.)
+- **Accepted limits from M6 (defaults in the M6 plan):**
+  - All Hindi, including the step templates in `packages/journey/src/copy-hi.ts` and `parent-copy.ts`, needs a native speaker's review.
+  - Dates inside step reasons, and fact labels such as "Unverified, confirm on the official page", stay in English for Hindi readers. Hindi dates would need the engine to pass raw dates as parameters. The parent page outside its journey section, and the counselor pages, are English only.
+  - Emails stay English until profiles store a language.
+  - Verification demand counts journeys from the last 14 days. It counts deadlines, requirements and country rules, which are the facts steps quote.
 - **Accepted limits from M5 (defaults in the M5 plan):**
   - No country has housing, health insurance or registration rules yet, so S7.03 (without housing facts), S7.04 and S7.08 stay quiet until a verifier adds and verifies them in `/admin/rules`. S7.04 and S7.08 use verified rules only, like the other rule steps (plan R7).
   - Interview times are kept as the student typed them and shown in UTC until profiles store a time zone. Logged interviews and portal notes can't be deleted, only a "missing" note marked sorted.
