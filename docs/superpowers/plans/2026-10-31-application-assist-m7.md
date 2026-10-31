@@ -42,7 +42,7 @@ Both work only in the student's own browser, never submit, and never write anyth
   - no features while consent is pending or revoked
   - an audit log
 - **No REA on competitors.** REA and every other tool stay off EZCollegeApp and any other competitor's products. Nobody signs up for or installs them.
-- **No REA on real portals until cleared.** REA steps A and C run on a real portal only after that portal's gate (G1 or G2) is cleared. Until then they run on the practice portal.
+- **No REA on real portals until cleared.** REA runs on a real portal only after that portal's gate (G1, G2, G4 to G7) is cleared, and only within what the permission allows. Until then it runs on the practice portal, and real-portal maps are made by hand.
 - **Network:** our Supabase project only.
 - **Host permissions:** cleared portals only.
 - **Real-portal fixtures** contain no portal page copy, scripts or assets.
@@ -84,8 +84,12 @@ Checked on 31 October 2026, against `Updated-developer-b` at `0706418`.
 
 | Gate | What clears it | What it unlocks |
 |---|---|---|
-| G1 Common App | Written permission from Common App, or counsel's sign-off, for assisted fill and for REA mapping on the owner's test account | A3.2 (Common App assisted fill). Guided apply stays off unless the permission covers navigation. |
-| G2 UCAS | Counsel's sign-off, or UCAS's written permission, for both features, for REA steps A and C on the owner's test account, and for the fixture format in R2 | A3.1 (UCAS adapter, both features) |
+| G1 Common App | Either Common App's written permission or a positive lawyer's review. The owner is pursuing both in parallel, and G1 stays open until one comes back positive. | A3.2 (Common App assisted fill). Guided apply stays off unless the permission covers navigation. |
+| G2 UCAS | As G1, for UCAS: both features, the hand-made map and fixture format (R2), and any REA use | A3.1 (UCAS adapter, both features) |
+| G4 Slate, per university | The university's graduate admissions office gives permission, or a lawyer gives a positive review, for that university's portal. First: UW–Madison, University of Georgia, University of Missouri. | A4.x for that university |
+| G5 OUAC | First, a person reads the full terms and declaration (our fetch was blocked by a bot challenge). Then permission or a positive lawyer's review. | A5.1 |
+| G6 uni-assist | Permission, or a positive lawyer's review | A6.1 |
+| G7 Studielink | Permission, or a positive lawyer's review | A7.1 |
 | G3 Clean-room review | Someone who hasn't read the competitor material compares our extension's wording, interface and names with `docs/research/behavioural-spec.md` and the competitor's public store listing, and signs off | Store submission (A2.6) |
 
 ## Review focus
@@ -273,7 +277,7 @@ All copy goes through `lib/i18n` in English and Hindi.
 - [ ] **Full e2e:** a practice-portal session in which the student fills, copies and skips across all pages, with the run logged.
 - [ ] **REA step C (practice portal):** observe a full assisted-fill session. Record fields touched, navigations (the student's own only) and network requests. The page session, the extension's request log and the content security policy together must show only our Supabase project. Save the evidence in `docs/superpowers/reports/m7/C-A1.8/`.
 - [ ] REA step B on the final build.
-- [ ] Draft the Chrome Web Store listing and privacy disclosure (spec 7.7).
+- [ ] Draft the Chrome Web Store listing and privacy disclosure (spec 7.8).
 - [ ] Every suite, then commit `A1.8 Assisted fill audit and docs`.
 
 ## Phase 2: Guided apply
@@ -306,13 +310,16 @@ All copy goes through `lib/i18n` in English and Hindi.
 ### Task A2.3: Essays and AI-policy mode
 
 **Interfaces:**
-- **Essay fields:** with a final draft and an allowing policy, offer to paste it, and paste only after confirmation. With no final draft, leave the field and list it.
-- **Courses that ban AI help, or whose policy is unknown:** never touch the field; list it for the student.
+- **Essay fields:** with a final draft and a verified "allows" policy, offer to paste it, and paste only after confirmation. With no final draft, leave the field and list it.
+- **Courses that ban AI help, or whose policy is unknown:**
+  - never paste
+  - offer "Copy my final draft" to the clipboard, so the student can paste it themselves
+  - list the field for the student
 
 - [ ] **Failing tests first:**
   - no paste without confirmation
   - no paste without a final draft
-  - a banning course is never touched
+  - a banning or unknown-policy course is never pasted into, but its final draft can be copied to the clipboard
   - nothing is ever generated: there's no code path from the Edge Function to an essay field
 - [ ] Commit `A2.3 Essays and AI-policy mode`.
 
@@ -348,16 +355,26 @@ All copy goes through `lib/i18n` in English and Hindi.
 
 ## Phase 3: Real portals (each behind its gate)
 
+### How real-portal maps are made (all of phases 3 to 7)
+
+- **By hand.** The owner records field labels and identifiers by hand while using their own test account normally, with the synthetic profile only.
+  - Never submit, and never enter real data.
+  - No REA capture.
+- **Our own structured data.** The map is written as our own data in the adapter's map format (spec 7.3 and 7.4):
+  - section and page order
+  - each field's role, our short wording for its label, and the identifier needed to find it
+  - required and conditional fields
+  - the review and confirmation pages
+  - every submit, pay, sign, certify and declaration control
+- **REA on a real portal** runs only after that portal's gate is cleared, and only within what the permission allows. If the permission covers observation, REA steps A and C may then check the hand-made map and record runs. If it doesn't, runtime evidence comes from the extension's own run log, the guard's log and the build's static audit (step B).
+- **Owner review.** The map is shown to the owner before its adapter is written.
+
 ### Task A3.1: UCAS (after G2)
 
-- [ ] **REA step A, on the owner's signed-in UCAS test account, synthetic profile only:**
-  - Map section and page order, field labels and identifiers, required and conditional fields, the review page, the confirmation page, and every submit, pay, sign, certify and declaration control.
-  - Never submit, and never enter real data.
-  - Save the map as our own structured data only (R2).
-  - **Show the map to the owner before writing the adapter.**
+- [ ] Hand-made map, shown to the owner.
 - [ ] UCAS adapter with failing fixture tests first, and host permission added.
 - [ ] REA step B on the new build.
-- [ ] **REA step C** on the owner's test account: an assisted fill session, then a guided-apply run that must stop at the review page and pause on unknown pages. Save the evidence.
+- [ ] **Runtime evidence** on the owner's test account: an assisted fill session, then a guided-apply run that must stop at the review page and pause on unknown pages. Recorded with REA step C only if the G2 permission allows it, otherwise from the run and guard logs. Save the evidence.
 - [ ] Commit `A3.1 UCAS adapter`.
 
 ### Task A3.2: Common App assisted fill (after G1)
@@ -366,17 +383,55 @@ All copy goes through `lib/i18n` in English and Hindi.
 - [ ] Guided apply stays unsupported unless the G1 permission explicitly covers moving through the application.
 - [ ] Commit `A3.2 Common App assisted fill`.
 
-## Decisions (defaults used unless the owner says otherwise)
+## Later phases: more portals, in target-country order
+
+The order follows the documented Wave 1 country order (US, GB, CA, AU, DE, IE, then NL), as no live user figures exist yet. Re-order once real usage data exists. Each phase is the same shape as A3.1:
+- a hand-made map, shown to the owner
+- an adapter with failing fixture tests first
+- REA step B on the build
+- runtime evidence on the owner's test account
+- REA only within the gate's permission
+
+Each phase supports assisted fill, plus guided apply where the permission allows it.
+
+### Phase 4: Slate-hosted graduate applications (US), per university, after G4
+
+- [ ] **A4.1 UW–Madison**, then **A4.2 University of Georgia**, then **A4.3 University of Missouri.**
+  - Each university's form is different, so each gets its own adapter. They share a Slate base: common page furniture and never-click controls.
+  - Commit `A4.n Slate: <university>`.
+
+### Phase 5: OUAC (CA), after G5
+
+- [ ] **A5.1:** a person reads OUAC's terms and applicant declaration first. Its third-party-content rule fits our paste-own-draft-only rule.
+- [ ] Commit `A5.1 OUAC adapter`.
+
+### Phase 6: uni-assist (DE), after G6
+
+- [ ] **A6.1:** stops before uni-assist's fee payment. Never converts grades: uni-assist does its own conversion.
+- [ ] Commit `A6.1 uni-assist adapter`.
+
+### Phase 7: Studielink (NL), after G7
+
+- [ ] **A7.1:** never touches sign-in (including DigiD).
+- [ ] Commit `A7.1 Studielink adapter`.
+
+## Decisions (owner's answers of 31 October 2026 included)
+
+- **G1 and G2:** the owner is emailing Common App and UCAS for written permission, and having a lawyer review the terms findings at the same time. Each gate stays open until one of those comes back positive for that portal.
+- **Later portals:** uni-assist, Studielink, OUAC and Slate (three universities first) were checked (spec 3.3) and added as phases 4 to 7.
+- **Real-portal maps** are made by hand (phase 3 note). REA runs on real portals only within a cleared gate's permission.
+
+
 
 1. **Clean-room review before store submission (G3).** The same agent wrote both the research and this plan, so a person who hasn't read the competitor material checks the result. **Default: yes.**
 2. **Practice portal first;** real portals only after their gates. **Default: yes.**
 3. **Common App guided apply:** not supported without written permission. **Default: yes.**
-4. **Unknown AI policy is treated as a ban** on touching essay fields. **Default: yes.**
+4. **Unknown AI policy counts as a ban.** Factual fill still works. The student can copy their own final draft to the clipboard and paste it themselves. Only automatic paste is disabled. **Owner: yes.**
 5. **No "fill all" in assisted fill.** Filling a whole page in one go is guided apply's job, with its pauses. **Default: yes.**
 6. **Model help through a Supabase Edge Function,** labels only, opt-in per field, confirmed by the student. **Default: yes.**
 7. **Real-portal fixtures** are our own structured data (identifiers and roles), not page captures. **Default: yes.**
 8. **The audit log** keeps actions, roles and sources, never values. **Default: yes.**
-9. **Counselors with a share** can read the assist log. Parents can't. **Default: yes.**
+9. **Counselors with an active share** can read the assist log, read-only, without values (values are never stored). Parents can't. **Owner: yes.**
 10. **Session storage:** the extension's Supabase session lives in `chrome.storage.session`, so it's cleared when the browser closes, and the student signs in again per browser session. **Default: yes.**
 
 ## Verification

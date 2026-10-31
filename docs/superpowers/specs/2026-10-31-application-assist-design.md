@@ -75,21 +75,39 @@ They have no bots or automation clause. Use of Apply is governed by the applican
 |---|---|---|
 | (a) An extension that fills one field when the student clicks | **Not forbidden** by any clause read. The student acts for themselves. We only paste the student's own statement, never generated text, which is consistent with the declaration. | **Likely allowed**, subject to counsel's sign-off |
 | (b) An extension that moves through the application from page to page | **Not forbidden** by any clause read. It must not disrupt the site (4.1.7). We stop before the declaration, payment and submit steps. | **Likely allowed**, subject to counsel's sign-off |
-| REA mapping and observation (steps A and C) | REA's capture of structure, scripts and network is arguably "extracting" and reverse-engineering (4.1.1). Saving page captures as test fixtures in our repo is arguably including portions of the website in other software (4.1.3). | **Not allowed** without written permission. Fixtures must not contain UCAS page content (see 7.3). |
+| REA mapping and observation (steps A and C) | REA's capture of structure, scripts and network is arguably "extracting" and reverse-engineering (4.1.1). Saving page captures as test fixtures in our repo is arguably including portions of the website in other software (4.1.3). | **Not allowed** without written permission. Fixtures must not contain UCAS page content (see 7.4). |
 
 **Result:** UCAS is a **candidate for both features**. Its adapter can't be built until the mapping question is resolved, because REA mapping on UCAS needs permission (plan, gate G2).
 
-### 3.3 The lists
+### 3.3 Later portals (checked 31 October 2026, same split)
+
+Ordered by our target countries. There are no live user figures yet, so this uses the documented Wave 1 order: US, GB, CA, AU, DE, IE, with NL after.
+
+| Portal | Terms read | (a) Fill on click | (b) Move through the application | REA steps A and C |
+|---|---|---|---|---|
+| **Slate graduate applications (US)**, per university | The application and account pages at University of Wisconsin–Madison, University of Georgia and University of Missouri link no terms of use, only university privacy notices. Technolutions processes applicant data on behalf of each university, which controls its own form. No clause found forbids tools. | Not forbidden by anything found | Not forbidden by anything found | Not addressed |
+| **OUAC (CA)** | Couldn't read first-hand: the site serves a bot challenge to automated fetches, so a person must read it. Secondary sources say: one account per applicant; keep credentials confidential; content "written by a third party" can affect an application. | Unknown | Unknown | Unknown |
+| **uni-assist (DE)** | General Terms and Conditions, a service contract. Nothing on tools, extensions or reverse-engineering. A representative needs a signed power of attorney; payments only through its portal. | Not forbidden by anything found | Not forbidden by anything found | Not addressed |
+| **Studielink (NL)** | General terms and conditions. Answer truthfully; keep login details confidential; Studielink is protected against "unlawful use or misuse" and may pursue those responsible. Nothing on tools. | Not forbidden by anything found | Not forbidden by anything found | Not addressed |
+
+**What this means for each:**
+
+- **Slate:** each university's form is different. An adapter is per university, not per platform, and its gate is cleared per university, by its graduate admissions office or by counsel.
+- **Every portal in this table** keeps its gate closed until written permission or counsel's positive review, as with G1 and G2. "Not forbidden" is not the same as permitted.
+- **Phases:** each portal becomes a later phase of the plan, in the order of the table.
+
+### 3.4 The lists
 
 | List | Portals |
 |---|---|
 | Don't support | Common App, guided apply |
 | Permission needed before any work | Common App assisted fill; REA steps A and C on any real portal |
-| Candidate for both features, pending counsel | UCAS |
+| Candidate for both features, pending counsel | UCAS; Slate (per university); uni-assist; Studielink |
+| Unknown, terms not yet read by a person | OUAC |
 
 **What this means for the build:**
 
-- **Until a portal is cleared,** all mapping, adapter, runtime and end-to-end work runs against a **practice portal** we build and own (section 7.4). REA steps A, B and C apply there without restriction.
+- **Until a portal is cleared,** all mapping, adapter, runtime and end-to-end work runs against a **practice portal** we build and own (section 7.5). REA steps A, B and C apply there without restriction.
 - **Clearing a portal later** adds its adapter. The engine, guard, panel and tests don't change.
 
 ## 4. Rules (binding for both features)
@@ -124,8 +142,11 @@ They have no bots or automation clause. Use of Apply is governed by the applican
    - It never generates or edits text in a field (no ghostwriting).
    - With no final draft, the field stays empty and is listed for review.
 7. **AI-policy mode per course:**
-   - For a course whose policy bans AI help, the extension does factual fill only, and never touches its essay fields, not even to paste the student's own draft.
-   - A course whose policy is unknown is treated as banning AI help (decision 4).
+   - For a course whose policy bans AI help, and for any course whose policy is unknown, which counts as a ban:
+     - factual fill still works
+     - the extension never pastes into an essay field
+     - the panel can copy the student's own final draft to the clipboard, for the student to paste themselves
+   - Automatic paste works only for courses whose verified policy allows it.
 8. **Consent:** no extension feature works while the student's consent is pending or revoked.
 9. **Audit log:** every run and every field filled, skipped or left is logged and visible to the student.
 10. **Submitted status:** when the portal's confirmation page is detected, or the student says they've submitted, the tracker application moves to submitted.
@@ -291,7 +312,13 @@ Anything else is blocked, logged, and pauses the run. The guard never sends keys
 - a deliberately wrong adapter that labels a submit button as next-page must be blocked
 - the same for a pay link, a declaration checkbox, and a confirm button inside a frame
 
-### 7.3 Adapter reference data and fixtures
+### 7.3 How real-portal maps are made
+
+- **By hand, not by REA capture.** The owner records field labels and identifiers by hand while using their own test account normally, with the synthetic profile only. They never submit and never enter real data.
+- **Our own data.** The map is written as our own structured data: roles, our short wording for each label, identifiers needed to find each field, and the never-click controls.
+- **REA on a real portal** runs only after that portal's gate is cleared, and only within what the permission allows.
+
+### 7.4 Adapter reference data and fixtures
 
 A portal map records:
 
@@ -306,7 +333,7 @@ A portal map records:
 - **Practice portal:** fixtures are captured pages.
 - **Real portals:** fixtures keep only what's needed to find fields (identifiers and roles), written as our own structured data. No page copy, scripts or assets are stored. This respects UCAS 4.1.3 and Common App (d), and is subject to counsel.
 
-### 7.4 The practice portal
+### 7.5 The practice portal
 
 **What it is:** an application portal we build and own, served locally for tests. It has:
 
@@ -328,7 +355,7 @@ It is not a copy of any real portal.
 - running REA steps A to C without restriction until a real portal is cleared
 - continuing to serve as the always-on regression suite afterwards
 
-### 7.5 Data model
+### 7.6 Data model
 
 - **`fill_profile(p_application_id)` RPC:**
   - security definer, `search_path = ''`
@@ -340,14 +367,14 @@ It is not a copy of any real portal.
 - **`program_ai_policies`:** a sourced fact (program, policy: allows / limited / bans, quote, source, status), through the existing review pipeline. Unknown counts as "bans".
 - **Portal per application:** taken from the cycle's application deadline `owning_system`, so no new column. Own applications pick their portal when created.
 
-### 7.6 Network and permissions
+### 7.7 Network and permissions
 
 - **Host permissions:** the Supabase project, and the portal hosts that are cleared. Nothing else, so the practice portal is reached only in test builds.
 - **Permissions:** `storage`, `sidePanel`, `scripting`, `activeTab`. No `tabs` beyond what the side panel needs; no history, downloads or cookies.
 - **Content Security Policy:** `connect-src` allows only the Supabase project.
 - **Model calls** go to the Supabase Edge Function. The function holds the provider key and never receives student values.
 
-### 7.7 Chrome Web Store compliance
+### 7.8 Chrome Web Store compliance
 
 - **Single purpose:** help students complete their own college applications with their own UniGuide data.
 - **Privacy disclosure:**
@@ -363,7 +390,7 @@ REA is used only on our own build, and on portals and accounts we're cleared to 
 
 | Step | Where it runs | When | Output |
 |---|---|---|---|
-| A. Portal mapping | On the practice portal now. On a real portal only after gate G2, on the owner's own signed-in test account, with the synthetic profile. Never submits, never real data. | Before writing each adapter | The portal map and fixtures; shown to the owner before the adapter is written |
+| A. Portal mapping | On the practice portal only. Real-portal maps are made by hand (7.3); REA runs on a real portal only after its gate, within the permission. | Before writing each adapter | The portal map and fixtures; shown to the owner before the adapter is written |
 | B. Static audit of our build | Every extension build, in CI and locally | After each build | Declared permissions, every network destination, any code path that can click or submit, third-party code. Fails if a destination isn't our Supabase project, or if a click path reaches a never-click control. |
 | C. Runtime verification | On the practice portal now. On real portals after G2, on the owner's test accounts. | Each guided-apply build | Fields touched, navigations, network requests, where it stopped. Saved as evidence in the milestone report. |
 
@@ -373,9 +400,12 @@ REA is used only on our own build, and on portals and accounts we're cleared to 
 - **Some network traffic escapes step C.** Requests made by the extension's service worker may sit outside REA's page session. Step C therefore also uses the extension's own request log, and the content security policy.
 - **Step B can miss things.** REA's static findings are candidates and don't prove complete coverage. Step B is backed by our own build checks: a network allowlist test, and a check that no code outside the guard uses click, submit or navigation APIs.
 
-## 9. Open questions for the owner
+## 9. Owner decisions (31 October 2026)
 
-1. Will you ask Common App and UCAS for written permission, or should we rely on counsel's sign-off? (Plan, gates G1 and G2.)
-2. Should counselors with a share see the audit log? (Default: yes, read-only.)
-3. How should the AI-policy fact be filled in at first? (Default: unknown, treated as a ban, until verified.)
-4. Are there portals other than UCAS you want considered next? Each needs its own terms check first.
+1. **Permission and counsel, in parallel.** The owner is emailing Common App and UCAS for written permission, and having a lawyer review these terms findings at the same time. G1 and G2 stay open until one of the two comes back positive for each portal.
+2. **Counselors with an active share** see the assist log, read-only, without values.
+3. **An unknown AI policy counts as a ban:**
+   - factual fill still works
+   - the student can copy their own final draft into an essay field themselves
+   - only automatic paste is disabled
+4. **Later portals:** uni-assist, Studielink, OUAC and Slate-hosted graduate applications (three universities first) were checked (3.3) and are added as later phases, in target-country order.
