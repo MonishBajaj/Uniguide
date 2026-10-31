@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { shortDate } from "@/lib/format";
 import { getUser } from "@/lib/supabase/server";
 import { getLocale } from "@/lib/i18n/server";
+import { localizeJourney } from "@/lib/journey-copy";
 import { getJourney } from "@/lib/journey-request.server";
 
 export const metadata: Metadata = { title: "Updates" };
@@ -20,7 +21,7 @@ const daysAgo = (days: number) => new Date(Date.now() - days * 86_400_000).toISO
 
 export default async function NotificationsPage() {
   const { supabase, user } = await getUser();
-  const { t } = await getLocale();
+  const { t, locale } = await getLocale();
   const u = t.journey.updates;
   const [{ data }, { data: stageEvents }] = await Promise.all([
     supabase.from("notifications").select("*, programs(slug, title)").order("created_at", { ascending: false }).limit(100),
@@ -35,7 +36,7 @@ export default async function NotificationsPage() {
     .reverse();
   let urgent: { id: string; title: string; href: string }[] = [];
   try {
-    urgent = (await getJourney()).result.steps.filter((s) => s.rank === "urgent");
+    urgent = localizeJourney((await getJourney()).result, locale).steps.filter((s) => s.rank === "urgent");
   } catch {
     // The page still lists course updates when the journey can't be read.
   }

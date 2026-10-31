@@ -10,6 +10,7 @@ import { StepStatus } from "@/components/journey/step-status";
 import { readStatus } from "@/lib/journey-actions";
 import { dueTimezone } from "@/lib/journey-dates";
 import { getLocale } from "@/lib/i18n/server";
+import { localizeJourney } from "@/lib/journey-copy";
 import type { LoadedJourney } from "@/lib/journey-request";
 import { getJourney, saveJourney } from "@/lib/journey-request.server";
 
@@ -21,7 +22,7 @@ export const metadata: Metadata = { title: "Home" };
  * from the journey engine: the stage, its progress, the next three steps and their order.
  */
 export default async function JourneyHome({ searchParams }: PageProps<"/app">) {
-  const { t } = await getLocale();
+  const { t, locale } = await getLocale();
   const j = t.journey;
 
   let journey: LoadedJourney;
@@ -31,7 +32,9 @@ export default async function JourneyHome({ searchParams }: PageProps<"/app">) {
     console.error(`journey home: ${e instanceof Error ? e.message : e}`);
     return <JourneyError title={j.home.errorTitle} body={j.home.errorBody} retry={j.home.retry} href="/app" />;
   }
-  const { input, result } = journey;
+  const { input } = journey;
+  // Shown in the reader's language; the saved journey stays English (M6, J6.2).
+  const result = localizeJourney(journey.result, locale);
   const { consentState, entryPath, displayName } = input.profile;
 
   // Onboarding only for students who may save personal data, are still setting up and haven't answered yet.

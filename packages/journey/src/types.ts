@@ -275,6 +275,8 @@ export interface HiddenStep {
   id: string;
   catalogueId: string;
   title: string;
+  /** Message key and parameters, so the list can be shown in the reader's language (M6, J6.2). */
+  copy: { key: string; params: Record<string, string> };
   state: "snoozed" | "dismissed";
   until: string | null;
   /** The application it's about, so two hidden steps with the same title can be told apart. */

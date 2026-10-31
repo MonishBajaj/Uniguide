@@ -4,6 +4,7 @@ import { JourneyError } from "@/components/journey/journey-error";
 import { StepCard } from "@/components/journey/step-card";
 import { StepStatus } from "@/components/journey/step-status";
 import { getLocale } from "@/lib/i18n/server";
+import { localizeJourney } from "@/lib/journey-copy";
 import { readStatus } from "@/lib/journey-actions";
 import { dueTimezone } from "@/lib/journey-dates";
 import type { LoadedJourney } from "@/lib/journey-request";
@@ -16,7 +17,7 @@ const BANDS: Band[] = ["urgent", "long_lead", "stage", "carry_over"];
 
 /** Every open step, grouped the way the engine ranks them, with snooze, dismiss and bring back (G18). */
 export default async function AllSteps({ searchParams }: PageProps<"/app/steps">) {
-  const { t } = await getLocale();
+  const { t, locale } = await getLocale();
   const j = t.journey;
 
   let journey: LoadedJourney;
@@ -26,7 +27,9 @@ export default async function AllSteps({ searchParams }: PageProps<"/app/steps">
     console.error(`journey steps: ${e instanceof Error ? e.message : e}`);
     return <JourneyError title={j.home.errorTitle} body={j.home.errorBody} retry={j.home.retry} href="/app/steps" />;
   }
-  const { input, result } = journey;
+  const { input } = journey;
+  // Shown in the reader's language; the saved journey stays English (M6, J6.2).
+  const result = localizeJourney(journey.result, locale);
   await saveJourney();
   const status = readStatus(await searchParams);
   const stageName = j.stages[String(result.stage) as keyof typeof j.stages].name;

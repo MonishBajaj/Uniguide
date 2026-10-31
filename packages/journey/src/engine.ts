@@ -118,6 +118,7 @@ export function computeJourney(input: JourneyInput): JourneyResult {
       id: step.id,
       catalogueId: step.catalogueId,
       title: step.title,
+      copy: step.copy,
       state,
       until,
       ...(step.application ? { application: step.application } : {}),

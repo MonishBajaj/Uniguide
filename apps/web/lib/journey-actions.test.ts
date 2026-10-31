@@ -5,7 +5,7 @@ import { allowedAction, readStatus, returnPath } from "./journey-actions";
 const step = (id: string, over: Partial<NextStep> = {}) => ({ id, dismissable: true, markable: false, ...over }) as NextStep;
 const result: Pick<JourneyResult, "steps" | "hidden" | "marked"> = {
   steps: [step("S2.03", { markable: true }), step("S1.06", { dismissable: false }), step("S4.14:a1")],
-  hidden: [{ id: "S2.01", catalogueId: "S2.01", title: "Look through your matches", state: "dismissed", until: null }],
+  hidden: [{ id: "S2.01", catalogueId: "S2.01", title: "Look through your matches", copy: { key: "S2.01", params: {} }, state: "dismissed", until: null }],
   marked: ["S2.04"],
 };
 

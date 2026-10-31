@@ -5,6 +5,9 @@
  * within 160.
  */
 
+import { hi } from "./copy-hi";
+import { PARENT_HI } from "./parent-copy";
+
 export const TITLE_MAX = 60;
 export const REASON_MAX = 160;
 
@@ -92,7 +95,9 @@ const en: Record<string, CopyTemplate> = {
   "S7.08": { title: "Register after you arrive", reason: "{destination} asks new residents to register their address." },
 };
 
-export const COPY: Record<"en", Record<string, CopyTemplate>> = { en };
+export type Locale = "en" | "hi";
+
+export const COPY: Record<Locale, Record<string, CopyTemplate>> = { en, hi };
 
 /** Shortens text to `max` characters, ending with "…" when cut. */
 export function fit(text: string, max: number): string {
@@ -130,6 +135,22 @@ export function render(key: string, params: Record<string, string>): { title: st
   const t = en[key];
   if (!t) throw new Error(`No copy for ${key}`);
   return { title: fillWithin(t.title, params, TITLE_MAX), reason: fillWithin(t.reason, params, REASON_MAX) };
+}
+
+/**
+ * A step's title and reason in the reader's language (journey M6, J6.2). The engine saves English; the web app
+ * translates where a step is shown, with the same parameters. A key without a translation falls back to English.
+ */
+export function renderStep(locale: Locale, key: string, params: Record<string, string>): { title: string; reason: string } {
+  const t = (locale === "hi" ? hi[key] : undefined) ?? en[key];
+  if (!t) throw new Error(`No copy for ${key}`);
+  return { title: fillWithin(t.title, params, TITLE_MAX), reason: fillWithin(t.reason, params, REASON_MAX) };
+}
+
+/** A parent title in Hindi, or null to keep the English one the engine saved. */
+export function renderParentTitle(locale: Locale, catalogueId: string, params: Record<string, string>): string | null {
+  const t = locale === "hi" ? PARENT_HI[catalogueId] : undefined;
+  return t ? fillWithin(t, params, TITLE_MAX) : null;
 }
 
 /** "15 January 2027", in the fact's own time zone when it has one. */

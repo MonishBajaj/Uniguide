@@ -33,7 +33,7 @@ describe("journey copy", () => {
   it("takes the English stage text from the journey engine, so there is one source", () => {
     for (const [n, s] of Object.entries(STAGES)) {
       const copy = en.journey.stages[n as keyof typeof en.journey.stages];
-      expect(copy).toEqual({ name: s.name, forText: s.forText, doneWhen: s.doneWhen, usuallyTakes: s.usuallyTakes });
+      expect(copy).toEqual({ name: s.name, forText: s.forText, doneWhen: s.doneWhen, usuallyTakes: s.usuallyTakes, parentNote: s.parentNote });
     }
   });
 });
@@ -73,5 +73,16 @@ describe("journey components", () => {
     const allowed = new Set(["Uniguide"]);
     const found = files.flatMap((f) => hardCodedText(f).filter((t) => !allowed.has(t)).map((t) => `${f.slice(root.length + 1)}: ${t}`));
     expect(found).toEqual([]);
+  });
+});
+
+describe("the stage progress line (M6, J6.2)", () => {
+  it("reads in English exactly as the engine writes it", async () => {
+    const { stageProgress } = await import("@uniguide/journey");
+    const cases: [number, number, number][] = [[1, 2, 5], [3, 1, 4], [4, 1, 1], [5, 0, 2], [6, 0, 2], [7, 3, 4]];
+    for (const [stage, done, total] of cases) {
+      expect(en.journey.progress(stage, done, total)).toMatch(new RegExp(`^${stage === 6 ? total : `${done} of ${total}`} `));
+    }
+    expect(typeof stageProgress).toBe("function");
   });
 });

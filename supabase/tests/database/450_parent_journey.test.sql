@@ -37,8 +37,8 @@ select public.parent_journey(:'s') as pj \gset
 select is((:'pj'::jsonb) -> 'stage', '4'::jsonb, 'a parent sees the stage');
 select is((:'pj'::jsonb) -> 'progress', '{"done": 1, "total": 2, "label": "1 of 2 applications ready"}'::jsonb, 'and the progress line');
 select is(jsonb_array_length((:'pj'::jsonb) -> 'steps'), 5, 'at most five steps');
-select is((:'pj'::jsonb) #> '{steps,0}', '{"parentTitle": "Working through the MSc X checklist", "stage": 4}'::jsonb,
-  'steps keep their order and carry only the parent title and stage');
+select is((:'pj'::jsonb) #> '{steps,0}', '{"parentTitle": "Working through the MSc X checklist", "stage": 4, "catalogueId": null, "params": {}}'::jsonb,
+  'steps keep their order and carry only the parent title, stage, catalogue id and parent-safe values (M6, J6.2)');
 select ok(not exists (select 1 from jsonb_array_elements((:'pj'::jsonb) -> 'steps') e where e ?| array['title', 'reason', 'href', 'dueAt', 'factRefs', 'source', 'id']),
   'no step carries its own title, reason, link, date, facts or id');
 select ok((:'pj'::text) not like '%statement%' and (:'pj'::text) not like '%IELTS%' and (:'pj'::text) not like '%7.5%',

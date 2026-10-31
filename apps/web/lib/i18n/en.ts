@@ -254,8 +254,27 @@ export const en = {
     },
     // English stage text comes from the journey engine, so there is one source (M2 plan, J2.5).
     stages: Object.fromEntries(
-      Object.entries(STAGES).map(([n, s]) => [n, { name: s.name, forText: s.forText, doneWhen: s.doneWhen, usuallyTakes: s.usuallyTakes }]),
-    ) as Record<"1" | "2" | "3" | "4" | "5" | "6" | "7", { name: string; forText: string; doneWhen: string; usuallyTakes: string }>,
+      Object.entries(STAGES).map(([n, s]) => [
+        n,
+        { name: s.name, forText: s.forText, doneWhen: s.doneWhen, usuallyTakes: s.usuallyTakes, parentNote: s.parentNote },
+      ]),
+    ) as Record<
+      "1" | "2" | "3" | "4" | "5" | "6" | "7",
+      { name: string; forText: string; doneWhen: string; usuallyTakes: string; parentNote: string }
+    >,
+    // The stage progress line, in the reader's language (M6, J6.2). English reads as the engine's own label.
+    progress: (stage: number, done: number, total: number): string => {
+      const of = (one: string, many: string, rest: string) => `${done} of ${total} ${total === 1 ? one : many} ${rest}`;
+      switch (stage) {
+        case 1: return of("profile detail", "profile details", "added");
+        case 2: return "No courses shortlisted yet";
+        case 3: return of("shortlisted course", "shortlisted courses", "chosen to apply to");
+        case 4: return of("application", "applications", "ready");
+        case 5: return of("decision", "decisions", "received");
+        case 6: return `${total} ${total === 1 ? "offer" : "offers"} to decide on`;
+        default: return of("step", "steps", "done before you go");
+      }
+    },
     explainer: { title: "About this stage", forText: "For", doneWhen: "Done when", usuallyTakes: "Usually takes" },
     bands: { urgent: "Due soon", long_lead: "Start soon", stage: "This stage", carry_over: "Also open" },
     home: {

@@ -60,8 +60,11 @@ describe("markable, hidden and marked", () => {
     };
     const r = computeJourney(input);
     expect(r.hidden).toEqual([
-      { id: "S2.01", catalogueId: "S2.01", title: "Look through your matches", state: "dismissed", until: null },
-      { id: "S2.03", catalogueId: "S2.03", title: "Compare your countries", state: "snoozed", until: "2026-11-09T00:00:00Z" },
+      { id: "S2.01", catalogueId: "S2.01", title: "Look through your matches", copy: { key: "S2.01", params: {} }, state: "dismissed", until: null },
+      {
+        id: "S2.03", catalogueId: "S2.03", title: "Compare your countries", copy: expect.objectContaining({ key: "S2.03" }),
+        state: "snoozed", until: "2026-11-09T00:00:00Z",
+      },
     ]);
     expect(r.steps.map((s) => s.id)).not.toContain("S2.01");
     // Steps about an application keep its label, so two hidden "Record the application fee" steps differ.

@@ -5,6 +5,7 @@ export { activeApplications, computeStage, hasOpenDeadline, STAGES, type StageIn
 export { checklistFields, matchingMinimumMet, profileChecklist, type ProfileChecklistItem, type ProfileFields } from "./minimum";
 export { variantsFor } from "./variants";
 export { CATALOGUE, ROUTES, buildCtx, evaluateCatalogue, resolveHref, sourceFor, type Candidate, type Ctx, type StepDef, type Subject } from "./catalogue";
-export { COPY, REASON_MAX, TITLE_MAX, fit, formatDate, render } from "./copy";
+export { COPY, REASON_MAX, TITLE_MAX, fit, formatDate, render, renderParentTitle, renderStep, type Locale } from "./copy";
+export { PARENT_HI } from "./parent-copy";
 export { STALL_DUE_DAYS, STALL_IDLE_DAYS, URGENT_DAYS, applyStepState, splitByStepState, bandFor, isStalled, rankSteps, urgentLabel } from "./rank";
 export { stageProgress } from "./engine";

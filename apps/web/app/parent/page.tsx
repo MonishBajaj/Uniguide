@@ -7,9 +7,9 @@ import { getRoles } from "@/lib/roles";
 import { getUser } from "@/lib/supabase/server";
 import { OwnBadge } from "@/components/own-badge";
 import { courseOf } from "@/lib/own-application";
-import { STAGES } from "@uniguide/journey/stages";
 import { StagePath } from "@/components/journey/stage-path";
 import { getLocale } from "@/lib/i18n/server";
+import { localizeProgress, parentStepTitle } from "@/lib/journey-copy";
 import { shortDate } from "@/lib/format";
 
 export const metadata: Metadata = { title: "My child", robots: { index: false } };
@@ -19,7 +19,7 @@ interface ParentJourney {
   stage: number;
   progress: { done: number; total: number; label: string };
   computedAt: string;
-  steps: { parentTitle: string; stage: number }[];
+  steps: { parentTitle: string; stage: number; catalogueId?: string; params?: Record<string, string> }[];
 }
 
 /** Read-only view for a parent. RLS limits every query to students linked to this parent; writing and grades are never shared. */
@@ -39,7 +39,7 @@ export default async function ParentPage() {
       .select("id, user_id, status, decision, own_title, own_institution, program_cycles(label, programs(slug, title, institutions(name))), checklist_items(id, title, done, sort, deadlines(due_at, timezone, precision))")
       .in("user_id", studentIds),
   ]);
-  const { t } = await getLocale();
+  const { t, locale } = await getLocale();
   // The journey in parent-safe terms (J4.2): stage, progress and parent titles only, never a step's own text.
   const journeys = new Map(
     await Promise.all(parentOf.map(async (l) => [l.student_id, (await supabase.rpc("parent_journey", { p_student: l.student_id })).data as ParentJourney | null] as const)),
@@ -75,12 +75,18 @@ export default async function ParentPage() {
             {(() => {
               const j = journeys.get(link.student_id);
               if (!j) return <p className="text-muted">{t.journey.parent.notYet(link.student_name)}</p>;
-              const stage = STAGES[j.stage as keyof typeof STAGES];
+              // The stage's name and note in the reader's language (M6, J6.2).
+              const stage = t.journey.stages[String(j.stage) as keyof typeof t.journey.stages];
               return (
                 <div className="grid gap-5 rounded-2xl border border-border bg-surface p-6">
                   <div className="grid gap-1">
                     <p className="font-semibold">{t.journey.nav.helpStage(j.stage, stage.name)}</p>
-                    <StagePath stage={j.stage} progress={j.progress} t={t.journey} headingId={`path-${link.student_id}`} />
+                    <StagePath
+                      stage={j.stage}
+                      progress={{ ...j.progress, label: localizeProgress(j.stage, j.progress, locale) }}
+                      t={t.journey}
+                      headingId={`path-${link.student_id}`}
+                    />
                     <p className="text-xs text-muted">{t.journey.parent.updated(shortDate(j.computedAt))}</p>
                   </div>
                   <section aria-labelledby={`help-${link.student_id}`} className="grid gap-1">
@@ -91,7 +97,7 @@ export default async function ParentPage() {
                     <h3 id={`work-${link.student_id}`} className="text-lg font-semibold">{t.journey.parent.workingOn(link.student_name)}</h3>
                     {j.steps.length ? (
                       <ul className="grid list-disc gap-1 pl-5">
-                        {j.steps.map((s, i) => <li key={i}>{s.parentTitle}</li>)}
+                        {j.steps.map((s, i) => <li key={i}>{parentStepTitle(s, locale)}</li>)}
                       </ul>
                     ) : (
                       <p className="text-muted">{t.journey.parent.nothingNow}</p>
