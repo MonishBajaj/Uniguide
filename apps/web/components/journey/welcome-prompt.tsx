@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { AppLink as Link } from "@/components/lite";
 import type { Dict } from "@/lib/i18n/en";
 import type { Welcome } from "@/lib/onboarding";
 

@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { AppLink as Link } from "@/components/lite";
 import { dismissStep, markStepDone, snoozeStep } from "@/app/app/steps/actions";
 import { formatDate, type NextStep } from "@uniguide/journey";
 import { FactBadge } from "@/components/facts";

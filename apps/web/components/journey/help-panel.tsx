@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { AppLink as Link } from "@/components/lite";
 
 export interface HelpCopy {
   heading: string;

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { AppLink as Link } from "@/components/lite";
 import { redirect } from "next/navigation";
 import { STAGES, upcomingDeadlines } from "@uniguide/journey";
 import { JourneyError } from "@/components/journey/journey-error";

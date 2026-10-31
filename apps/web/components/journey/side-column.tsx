@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { AppLink as Link } from "@/components/lite";
 import { formatDate, type JourneyInput, type UpcomingDeadline } from "@uniguide/journey";
 import { FactBadge } from "@/components/facts";
 import type { Dict } from "@/lib/i18n/en";
