@@ -15,7 +15,8 @@ test.beforeEach(() => {
 
 test.afterEach(() => {
   sql(`delete from readiness_items where user_id = '${STUDENT}'; delete from supervisor_contacts where user_id = '${STUDENT}';
-       delete from institutions where name = 'E2E Research University'`);
+       delete from institutions where name = 'E2E Research University';
+       update profiles set research_interests = null where user_id = '${STUDENT}'`);
 });
 
 const steps = async (page: Page) => {
