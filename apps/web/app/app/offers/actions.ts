@@ -41,3 +41,36 @@ export async function recordGutCheck(input: unknown): Promise<{ ok: boolean }> {
   revalidatePath("/app/offers");
   return { ok: !error };
 }
+
+// After you accept (journey M5, J5.1): the student's own record of conditions, deposit and admission document.
+
+/** Saves the offer's conditions in the student's words; an empty box removes them. */
+export async function saveConditions(applicationId: string, form: FormData): Promise<void> {
+  const text = String(form.get("conditions") ?? "").trim().slice(0, 1000);
+  const { supabase, user } = await getUser();
+  if (!user || !z.uuid().safeParse(applicationId).success) return;
+  if (text) {
+    await supabase.from("offer_conditions").upsert({ application_id: applicationId, user_id: user.id, conditions: text });
+  } else {
+    await supabase.from("offer_conditions").delete().eq("application_id", applicationId);
+  }
+  revalidatePath("/app", "layout");
+}
+
+const MARKS = ["conditions", "deposit", "document"] as const;
+
+/** Marks conditions met, the deposit paid or the admission document received; or undoes it. */
+export async function setEnrollmentMark(applicationId: string, mark: (typeof MARKS)[number], done: boolean): Promise<void> {
+  const { supabase, user } = await getUser();
+  if (!user || !z.uuid().safeParse(applicationId).success || !MARKS.includes(mark)) return;
+  const at = done ? new Date().toISOString() : null;
+  if (mark === "conditions") {
+    await supabase.from("offer_conditions").update({ met_at: at }).eq("application_id", applicationId);
+  } else if (mark === "deposit") {
+    await supabase.from("applications").update({ deposit_paid_at: at }).eq("id", applicationId);
+  } else {
+    await supabase.from("applications").update({ admission_document_received_at: at }).eq("id", applicationId);
+  }
+  revalidatePath("/app", "layout");
+}
+

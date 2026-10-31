@@ -85,7 +85,7 @@
     "urgentCount": 0,
     "urgentLabel": null,
     "stalled": false,
-    "engineVersion": "journey-0.3.0"
+    "engineVersion": "journey-0.4.0"
   },
   "stage-2-exploring": {
     "stage": 2,
@@ -180,7 +180,7 @@
     "urgentCount": 0,
     "urgentLabel": null,
     "stalled": false,
-    "engineVersion": "journey-0.3.0"
+    "engineVersion": "journey-0.4.0"
   },
   "stage-3-shortlisted": {
     "stage": 3,
@@ -274,7 +274,7 @@
     "urgentCount": 0,
     "urgentLabel": null,
     "stalled": false,
-    "engineVersion": "journey-0.3.0"
+    "engineVersion": "journey-0.4.0"
   },
   "edge-score-below-minimum": {
     "stage": 3,
@@ -424,7 +424,7 @@
     "urgentCount": 0,
     "urgentLabel": null,
     "stalled": false,
-    "engineVersion": "journey-0.3.0"
+    "engineVersion": "journey-0.4.0"
   },
   "edge-own-application-preparing": {
     "stage": 4,
@@ -547,7 +547,7 @@
     "urgentCount": 0,
     "urgentLabel": null,
     "stalled": false,
-    "engineVersion": "journey-0.3.0"
+    "engineVersion": "journey-0.4.0"
   },
   "edge-own-deadline-passed": {
     "stage": 5,
@@ -635,7 +635,7 @@
     "urgentCount": 0,
     "urgentLabel": null,
     "stalled": false,
-    "engineVersion": "journey-0.3.0"
+    "engineVersion": "journey-0.4.0"
   },
   "stage-4-preparing": {
     "stage": 4,
@@ -741,7 +741,7 @@
     "urgentCount": 0,
     "urgentLabel": null,
     "stalled": false,
-    "engineVersion": "journey-0.3.0"
+    "engineVersion": "journey-0.4.0"
   },
   "stage-5-submitted": {
     "stage": 5,
@@ -805,7 +805,7 @@
     "urgentCount": 0,
     "urgentLabel": null,
     "stalled": false,
-    "engineVersion": "journey-0.3.0"
+    "engineVersion": "journey-0.4.0"
   },
   "stage-6-admitted": {
     "stage": 6,
@@ -894,36 +894,38 @@
     "urgentCount": 0,
     "urgentLabel": null,
     "stalled": false,
-    "engineVersion": "journey-0.3.0"
+    "engineVersion": "journey-0.4.0"
   },
   "stage-7-accepted": {
     "stage": 7,
     "stageProgress": {
       "done": 0,
       "total": 1,
-      "label": "0 of 1 departure step done"
+      "label": "0 of 1 step done before you go"
     },
     "steps": [
       {
-        "id": "S7.01:a1",
-        "catalogueId": "S7.01",
-        "stage": 7,
-        "title": "Apply for your student visa",
-        "reason": "Visa processing can take weeks, so apply as soon as you can.",
+        "id": "S6.08:a1",
+        "catalogueId": "S6.08",
+        "stage": 6,
+        "title": "Get your admission document for the visa",
+        "reason": "Your visa application needs the admission document from M.Sc. Informatik, Technische Universität Beispielstadt.",
         "copy": {
-          "key": "S7.01",
-          "params": {}
+          "key": "S6.08",
+          "params": {
+            "course": "M.Sc. Informatik, Technische Universität Beispielstadt"
+          }
         },
-        "href": "/visas",
+        "href": "/app/offers#after-accept",
         "dueAt": null,
         "dismissable": true,
-        "markable": true,
+        "markable": false,
         "factRefs": [],
         "application": {
           "id": "a1",
           "label": "M.Sc. Informatik, Technische Universität Beispielstadt"
         },
-        "parentTitle": "Applying for the student visa",
+        "parentTitle": "Getting the admission document for the visa",
         "rank": "stage"
       },
       {
@@ -979,7 +981,7 @@
     "urgentCount": 0,
     "urgentLabel": null,
     "stalled": false,
-    "engineVersion": "journey-0.3.0"
+    "engineVersion": "journey-0.4.0"
   },
   "entry-exploring": {
     "stage": 2,
@@ -1074,7 +1076,7 @@
     "urgentCount": 0,
     "urgentLabel": null,
     "stalled": false,
-    "engineVersion": "journey-0.3.0"
+    "engineVersion": "journey-0.4.0"
   },
   "entry-knows": {
     "stage": 2,
@@ -1169,7 +1171,7 @@
     "urgentCount": 0,
     "urgentLabel": null,
     "stalled": false,
-    "engineVersion": "journey-0.3.0"
+    "engineVersion": "journey-0.4.0"
   },
   "entry-applying": {
     "stage": 4,
@@ -1275,7 +1277,7 @@
     "urgentCount": 0,
     "urgentLabel": null,
     "stalled": false,
-    "engineVersion": "journey-0.3.0"
+    "engineVersion": "journey-0.4.0"
   },
   "entry-offers": {
     "stage": 6,
@@ -1362,7 +1364,7 @@
     "urgentCount": 0,
     "urgentLabel": null,
     "stalled": false,
-    "engineVersion": "journey-0.3.0"
+    "engineVersion": "journey-0.4.0"
   },
   "edge-split-submitted-preparing": {
     "stage": 4,
@@ -1493,7 +1495,7 @@
     "urgentCount": 0,
     "urgentLabel": null,
     "stalled": false,
-    "engineVersion": "journey-0.3.0"
+    "engineVersion": "journey-0.4.0"
   },
   "edge-preparing-deadline-passed": {
     "stage": 5,
@@ -1581,7 +1583,7 @@
     "urgentCount": 0,
     "urgentLabel": null,
     "stalled": false,
-    "engineVersion": "journey-0.3.0"
+    "engineVersion": "journey-0.4.0"
   },
   "edge-rejected-everywhere": {
     "stage": 5,
@@ -1686,7 +1688,7 @@
     "urgentCount": 0,
     "urgentLabel": null,
     "stalled": false,
-    "engineVersion": "journey-0.3.0"
+    "engineVersion": "journey-0.4.0"
   },
   "edge-withdrawn-only": {
     "stage": 2,
@@ -1781,7 +1783,7 @@
     "urgentCount": 0,
     "urgentLabel": null,
     "stalled": false,
-    "engineVersion": "journey-0.3.0"
+    "engineVersion": "journey-0.4.0"
   },
   "edge-pending-consent": {
     "stage": 1,
@@ -1815,7 +1817,7 @@
     "urgentCount": 0,
     "urgentLabel": null,
     "stalled": false,
-    "engineVersion": "journey-0.3.0"
+    "engineVersion": "journey-0.4.0"
   },
   "edge-pending-consent-with-application": {
     "stage": 4,
@@ -1854,7 +1856,7 @@
     "urgentCount": 0,
     "urgentLabel": null,
     "stalled": false,
-    "engineVersion": "journey-0.3.0"
+    "engineVersion": "journey-0.4.0"
   },
   "edge-revoked-consent": {
     "stage": 4,
@@ -1875,7 +1877,7 @@
     "urgentCount": 0,
     "urgentLabel": null,
     "stalled": false,
-    "engineVersion": "journey-0.3.0"
+    "engineVersion": "journey-0.4.0"
   },
   "edge-targets-only-on-a-track": {
     "stage": 2,
@@ -1950,7 +1952,7 @@
     "urgentCount": 0,
     "urgentLabel": null,
     "stalled": false,
-    "engineVersion": "journey-0.3.0"
+    "engineVersion": "journey-0.4.0"
   },
   "edge-doctorate-needs-research-interests": {
     "stage": 1,
@@ -2007,6 +2009,6 @@
     "urgentCount": 0,
     "urgentLabel": null,
     "stalled": false,
-    "engineVersion": "journey-0.3.0"
+    "engineVersion": "journey-0.4.0"
   }
 }

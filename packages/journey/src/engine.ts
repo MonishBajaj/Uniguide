@@ -1,6 +1,6 @@
 import { type Candidate, evaluateCatalogue } from "./catalogue";
 import { checklistFields, profileChecklist } from "./minimum";
-import { isStalled, rankSteps, splitByStepState, urgentLabel } from "./rank";
+import { ENROLLMENT_STEPS, isStalled, rankSteps, splitByStepState, urgentLabel } from "./rank";
 import { activeApplications, computeStage } from "./stages";
 import type { FactRef, JourneyInput, JourneyResult, Stage } from "./types";
 import { ENGINE_VERSION } from "./version";
@@ -41,9 +41,11 @@ export function stageProgress(input: JourneyInput, stage: Stage, open: Candidate
       return { done: 0, total: offers, label: `${offers} ${plural(offers, "offer", "offers")} to decide on` };
     }
     case 7: {
-      const done = completed.filter((id) => id.startsWith("S7.")).length;
-      const total = done + open.filter((s) => s.stage === 7).length;
-      return of(done, total, "departure step", "departure steps", "done");
+      // Enrollment steps after accepting carry into stage 7 as its own work (spec stage 6, M5).
+      const own = (id: string) => id.startsWith("S7.") || ENROLLMENT_STEPS.has(id.split(":")[0]!);
+      const done = completed.filter(own).length;
+      const total = done + open.filter((s) => own(s.catalogueId)).length;
+      return of(done, total, "step", "steps", "done before you go");
     }
   }
 }

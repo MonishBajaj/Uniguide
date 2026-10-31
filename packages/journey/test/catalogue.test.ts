@@ -10,7 +10,7 @@ const ids = (input: JourneyInput) => evaluateCatalogue(input).open.map((s) => s.
 /** M1 plan "Deviations". S1.03 turned on in M2 with the profile's intake field. Changing this list is a deliberate act. */
 const UNAVAILABLE = [
   "S2.07", "S3.04", "S3.06", "S4.09", "S4.13",
-  "S5.02", "S5.03", "S5.04", "S6.05", "S6.06", "S6.07", "S6.08", "S7.03", "S7.04", "S7.08",
+  "S5.02", "S5.03", "S5.04", "S6.07", "S7.03", "S7.04", "S7.08",
 ];
 
 const LONG = "A".repeat(120);
@@ -68,6 +68,14 @@ function everything(): JourneyInput {
         decision: "admitted",
         offerAcceptedAt: "2027-06-01T00:00:00Z",
         cycle: { id: "c-going", label: "2027-winter", startsOn: "2027-09-20" },
+        conditions: { metAt: null },
+        depositDueAt: "2027-09-05T00:00:00Z",
+      }),
+      application("going2", { ...long, id: "p9" }, {
+        status: "decided",
+        decision: "admitted",
+        offerAcceptedAt: "2027-06-01T00:00:00Z",
+        admissionDocumentAt: "2027-07-01T00:00:00Z",
       }),
     ],
   });
@@ -353,10 +361,12 @@ describe("steps by situation", () => {
     expect(u.reason).toContain("Check the deadline on the official page");
   });
 
-  it("starts Go steps after an offer is accepted", () => {
+  it("starts Go steps after an offer is accepted, the visa once the admission document is in (M5)", () => {
     const input = STAGE_FIXTURES["stage-7-accepted"]!.input;
-    expect(ids(input)).toContain("S7.01");
+    expect(ids(input)).toContain("S6.08");
     expect(buildCtx(input).stage).toBe(7);
+    const received = { ...input, applications: input.applications.map((a) => ({ ...a, admissionDocumentAt: "2026-10-31T00:00:00Z" })) };
+    expect(ids(received)).toContain("S7.01");
   });
 
   it("never quotes an unknown fact", () => {
@@ -464,5 +474,38 @@ describe("test plans (J3.4)", () => {
     const rank = (dueAt: string) => computeJourney(input("preparing", [], dueAt)).steps.find((x) => x.catalogueId === "S4.11")!.rank;
     expect(rank("2026-12-12T23:59:00Z")).toBe("long_lead"); // 40 days ahead: inside 30 + 14
     expect(rank("2027-03-01T23:59:00Z")).toBe("stage");
+  });
+});
+
+describe("after accepting an offer (J5.1)", () => {
+  const accepted = (over: Partial<import("../src").ApplicationSnapshot> = {}) =>
+    base({
+      profile: readyProfile,
+      applications: [application("a1", programs.exampleton!, { status: "decided", decision: "admitted", offerAcceptedAt: "2026-10-20T00:00:00Z", ...over })],
+    });
+
+  it("asks for the admission document, then the visa once it has arrived", () => {
+    expect(ids(accepted())).toContain("S6.08");
+    expect(ids(accepted())).not.toContain("S7.01");
+    const received = accepted({ admissionDocumentAt: "2026-10-25T00:00:00Z" });
+    expect(ids(received)).not.toContain("S6.08");
+    expect(ids(received)).toContain("S7.01");
+  });
+
+  it("asks to meet noted conditions until they're marked met, without a parent title", () => {
+    const s = evaluateCatalogue(accepted({ conditions: { metAt: null } })).open.find((x) => x.catalogueId === "S6.05")!;
+    expect(s.href).toBe("/app/offers#after-accept");
+    expect(s.parentTitle).toBeUndefined();
+    expect(ids(accepted({ conditions: { metAt: "2026-10-28T00:00:00Z" } }))).not.toContain("S6.05");
+    expect(ids(accepted())).not.toContain("S6.05");
+  });
+
+  it("asks for the deposit when one is due, until it's paid", () => {
+    expect(ids(accepted())).not.toContain("S6.06");
+    expect(ids(accepted({ hasDepositDeadline: true }))).toContain("S6.06");
+    const due = evaluateCatalogue(accepted({ depositDueAt: "2026-11-10T00:00:00Z" })).open.find((x) => x.catalogueId === "S6.06")!;
+    expect(due.dueAt).toBe("2026-11-10T00:00:00Z");
+    expect(due.parentTitle).toBe("Paying the deposit");
+    expect(ids(accepted({ hasDepositDeadline: true, depositPaidAt: "2026-10-30T00:00:00Z" }))).not.toContain("S6.06");
   });
 });

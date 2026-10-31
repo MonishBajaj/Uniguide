@@ -36,13 +36,14 @@ function ruleStep(id: string, kind: string, href: string, parentTitle: string): 
 export const STAGE7: StepDef[] = [
   {
     // Done when the destination's visa rule task is ticked; with no published visa rule the student marks it done.
+    // Waits for the admission document the visa needs (S6.08, M5 plan R3).
     id: "S7.01",
     stage: 7,
     dismissable: true,
     available: true,
     markable: true,
     parentTitle: "Applying for the student visa",
-    subjects: (ctx) => acceptedApps(ctx).map((app) => ({ key: app.id, app })),
+    subjects: (ctx) => acceptedApps(ctx).filter((a) => a.admissionDocumentAt).map((app) => ({ key: app.id, app })),
     done: (ctx, s) =>
       ctx.input.countryRules.some(
         (r) => r.kind === "visa_info" && r.destination === s.app!.program.country && departureDone(ctx, s.app!.id, `rule:${r.id}`),

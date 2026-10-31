@@ -40,6 +40,8 @@ export interface ProfileSnapshot {
   intakeYear: number | null;
   researchInterests: string | null;
   entryPath: EntryPath | null;
+  /** When the student started planning for the next intake after rejections (M5, J5.4). */
+  intakeRolledAt?: string | null;
 }
 
 export interface TrackSnapshot {
@@ -158,6 +160,21 @@ export interface ApplicationSnapshot {
   scoresSent: string[];
   costCount: number;
   outcomeShared: boolean;
+  // M5: after an offer, and while waiting. All student-entered dates, never facts.
+  /** The offer's conditions, if the student noted any; the text itself never leaves the student's own table. */
+  conditions?: { metAt: string | null } | null;
+  depositPaidAt?: string | null;
+  /** The course publishes a deposit deadline. */
+  hasDepositDeadline?: boolean;
+  admissionDocumentAt?: string | null;
+  declinedAt?: string | null;
+  expectedDecisionOn?: string | null;
+  /** Interview times the student logged. */
+  interviews?: string[];
+  /** Portal checks that noted something missing and aren't resolved yet. */
+  missingNotes?: number;
+  /** Published housing facts for the course's institution (7.3). */
+  housingFacts?: number;
 }
 
 export interface CountryRuleRow {

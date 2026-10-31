@@ -77,8 +77,8 @@ const en: Record<string, CopyTemplate> = {
   "S6.03": { title: "Fill in the decision matrix", reason: "Weigh your offers on what matters to you, not only on cost." },
   "S6.04": { title: "Reply to {course} by {date}", reason: "You recorded {date} as the reply date for {course}." },
   "S6.05": { title: "Meet your offer's conditions", reason: "{course}'s offer has conditions to meet before enrolling." },
-  "S6.06": { title: "Pay the deposit for {course}", reason: "{course} asks for a deposit to hold your place." },
-  "S6.07": { title: "Let your other universities know", reason: "Declining offers you won't take frees places for other students." },
+  "S6.06": { title: "Pay the deposit for {course}", reason: "Mark the deposit paid once it's done, so the rest of your steps follow." },
+  "S6.07": { title: "Let your other universities know", reason: "Declining {course} frees the place for another student." },
   "S6.08": { title: "Get your admission document for the visa", reason: "Your visa application needs the admission document from {course}." },
   "S6.09": { title: "Share your outcome for research", reason: "Shared outcomes, kept separate from your account, help future students. It's optional." },
   // Stage 7

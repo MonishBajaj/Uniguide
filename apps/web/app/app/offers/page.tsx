@@ -15,6 +15,7 @@ import { GutCheck } from "./gut-check";
 import { DecisionMatrix } from "./matrix";
 import { OwnBadge } from "@/components/own-badge";
 import { courseOf } from "@/lib/own-application";
+import { AfterAccept } from "./after-accept";
 
 export const metadata: Metadata = { title: "Compare offers" };
 
@@ -33,7 +34,7 @@ export default async function OffersPage({ searchParams }: PageProps<"/app/offer
   const [{ data: apps }, { data: profile }, { data: matrix }, fx] = await Promise.all([
     supabase
       .from("applications")
-      .select("id, cycle_id, decision, awarded_aid, awarded_aid_currency, deposit_due_at, own_title, own_institution, program_cycles(label, program_id)")
+      .select("id, cycle_id, decision, awarded_aid, awarded_aid_currency, deposit_due_at, offer_accepted_at, deposit_paid_at, admission_document_received_at, declined_at, own_title, own_institution, program_cycles(label, program_id)")
       .in("decision", ["admitted", "waitlisted"])
       .order("created_at"),
     supabase.from("profiles").select("budget_amount, budget_currency").eq("user_id", user!.id).single(),
@@ -65,6 +66,11 @@ export default async function OffersPage({ searchParams }: PageProps<"/app/offer
   const first = firstReply(admitted.map((r) => ({ title: titleOf(r), due: r.app.deposit_due_at })));
   const tally = tallyGutChecks((matrix?.gut_checks as Check[] | undefined) ?? []);
   const budget = profile?.budget_amount && profile.budget_currency ? { amount: Number(profile.budget_amount), currency: profile.budget_currency } : null;
+  // After you accept (J5.1): the accepted offer's conditions, deposit and admission document.
+  const acceptedRow = rows.find((r) => r.app.offer_accepted_at);
+  const { data: conditions } = acceptedRow
+    ? await supabase.from("offer_conditions").select("conditions, met_at").eq("application_id", acceptedRow.app.id).maybeSingle()
+    : { data: null };
 
   return (
     <div className="grid gap-10">
@@ -76,6 +82,20 @@ export default async function OffersPage({ searchParams }: PageProps<"/app/offer
           {withTerm(t.conditional, <Term id="conditional_offer">{t.conditionalTerm}</Term>)}
         </p>
       </header>
+
+      {acceptedRow ? (
+        <AfterAccept
+          t={all.journey.enroll}
+          app={{
+            id: acceptedRow.app.id,
+            title: titleOf(acceptedRow),
+            depositDueAt: acceptedRow.app.deposit_due_at,
+            depositPaidAt: acceptedRow.app.deposit_paid_at,
+            documentAt: acceptedRow.app.admission_document_received_at,
+            conditions: conditions ? { text: conditions.conditions, metAt: conditions.met_at } : null,
+          }}
+        />
+      ) : null}
 
       {first ? (
         <section aria-labelledby="decision-day" className="grid gap-1 rounded-2xl border border-accent/40 bg-surface p-6">

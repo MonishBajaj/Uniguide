@@ -10,10 +10,17 @@ export const STALL_DUE_DAYS = 30;
 
 const BAND_ORDER: Record<Band, number> = { urgent: 0, long_lead: 1, stage: 2, carry_over: 3 };
 
-export function bandFor(step: Pick<Candidate, "dueAt" | "leadDays" | "stage">, stage: Stage, today: string): Band {
+/** Enrollment steps after accepting an offer (G13, G14): the spec carries them into stage 7 as its own work. */
+export const ENROLLMENT_STEPS = new Set(["S6.05", "S6.06", "S6.07", "S6.08"]);
+
+/** True when a step is the current stage's own work. */
+export const inStage = (step: Pick<Candidate, "stage" | "catalogueId">, stage: Stage) =>
+  step.stage === stage || (stage === 7 && ENROLLMENT_STEPS.has(step.catalogueId));
+
+export function bandFor(step: Pick<Candidate, "dueAt" | "leadDays" | "stage" | "catalogueId">, stage: Stage, today: string): Band {
   if (step.dueAt && daysBetween(today, step.dueAt) <= URGENT_DAYS) return "urgent";
   if (step.dueAt && step.leadDays && daysBetween(today, addDays(step.dueAt, -step.leadDays)) <= URGENT_DAYS) return "long_lead";
-  return step.stage === stage ? "stage" : "carry_over";
+  return inStage(step, stage) ? "stage" : "carry_over";
 }
 
 /**
