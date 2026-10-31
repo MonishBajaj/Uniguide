@@ -135,6 +135,14 @@
       "S6.09:a1"
     ]
   },
+  "edge-rolled-over-after-rejections": {
+    "stage": 3,
+    "top3": [
+      "S3.01",
+      "S1.07",
+      "S2.03"
+    ]
+  },
   "edge-withdrawn-only": {
     "stage": 2,
     "top3": [

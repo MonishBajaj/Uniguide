@@ -56,7 +56,8 @@ export const STAGE5: StepDef[] = [
     params: course,
   },
   {
-    // A new track for the next intake is the nearest thing to G20's "no offers" path that exists.
+    // The "no offers yet" path (G20, G21, M5 J5.4). Planning the next intake sets intakeRolledAt, after which these
+    // rejections no longer count, so the step goes and the student is back in stage 2 or 3.
     id: "S5.06",
     stage: 5,
     dismissable: true,
@@ -65,6 +66,6 @@ export const STAGE5: StepDef[] = [
     parentTitle: "Planning for the next intake",
     applies: (ctx) => ctx.apps.length > 0 && ctx.apps.every((a) => a.decision === "rejected"),
     done: () => false,
-    href: () => "/app/profile#tracks",
+    href: () => "/app/next-intake",
   },
 ];

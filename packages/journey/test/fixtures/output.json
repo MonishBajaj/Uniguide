@@ -1783,7 +1783,7 @@
           "key": "S5.06",
           "params": {}
         },
-        "href": "/app/profile#tracks",
+        "href": "/app/next-intake",
         "dueAt": null,
         "dismissable": true,
         "markable": true,
@@ -1862,6 +1862,100 @@
       "S1.04",
       "S4.16:a1",
       "S4.16:a2"
+    ],
+    "marked": [],
+    "hidden": [],
+    "urgentCount": 0,
+    "urgentLabel": null,
+    "stalled": false,
+    "engineVersion": "journey-0.4.0"
+  },
+  "edge-rolled-over-after-rejections": {
+    "stage": 3,
+    "stageProgress": {
+      "done": 0,
+      "total": 1,
+      "label": "0 of 1 shortlisted course chosen to apply to"
+    },
+    "steps": [
+      {
+        "id": "S3.01",
+        "catalogueId": "S3.01",
+        "stage": 3,
+        "title": "Build a balanced shortlist",
+        "reason": "Most students apply to 6 to 10 courses with different entry requirements.",
+        "copy": {
+          "key": "S3.01",
+          "params": {}
+        },
+        "href": "/app/shortlist#advice",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": true,
+        "factRefs": [],
+        "rank": "stage"
+      },
+      {
+        "id": "S1.07",
+        "catalogueId": "S1.07",
+        "stage": 1,
+        "title": "Invite a parent to follow along",
+        "reason": "A parent can see your plans and costs, but never your writing or scores.",
+        "copy": {
+          "key": "S1.07",
+          "params": {}
+        },
+        "href": "/app/sharing#family",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [],
+        "rank": "carry_over"
+      },
+      {
+        "id": "S2.03",
+        "catalogueId": "S2.03",
+        "stage": 2,
+        "title": "Compare your countries",
+        "reason": "See costs, visas and work rights for United Kingdom, Germany and United States side by side.",
+        "copy": {
+          "key": "S2.03",
+          "params": {
+            "countries": "United Kingdom, Germany and United States"
+          }
+        },
+        "href": "/compare/countries?c=GB&c=DE&c=US",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": true,
+        "factRefs": [],
+        "parentTitle": "Comparing countries",
+        "rank": "carry_over"
+      },
+      {
+        "id": "S2.04",
+        "catalogueId": "S2.04",
+        "stage": 2,
+        "title": "Check which English tests your matches accept",
+        "reason": "Each university lists the English tests it accepts and the score it asks for.",
+        "copy": {
+          "key": "S2.04",
+          "params": {}
+        },
+        "href": "/english-tests",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": true,
+        "factRefs": [],
+        "rank": "carry_over"
+      }
+    ],
+    "completed": [
+      "S1.01",
+      "S1.02",
+      "S1.03",
+      "S1.04",
+      "S2.01"
     ],
     "marked": [],
     "hidden": [],

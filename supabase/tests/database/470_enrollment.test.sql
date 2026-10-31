@@ -52,6 +52,8 @@ select is((:'app'::jsonb) ->> 'expectedDecisionOn', '2027-03-01', 'the expected 
 select is(jsonb_array_length((:'app'::jsonb) -> 'interviews'), 1, 'the interview');
 select is((:'app'::jsonb) -> 'missingNotes', '0'::jsonb, 'the missing note is resolved');
 select ok(public.journey_snapshot() -> 'profile' ? 'intakeRolledAt', 'the profile says when the student rolled over');
+select lives_ok($$ update public.profiles set intake_rolled_at = now(), intake_year = 2028 where user_id = auth.uid() $$, 'a student plans for the next intake');
+select ok((public.journey_snapshot() -> 'profile' ->> 'intakeRolledAt') is not null, 'and the snapshot says when');
 
 -- Arrival is stored with the journey.
 select public.save_journey_state('{"stage": 7, "completed": [], "arrived": true, "engineVersion": "journey-0.4.0"}');

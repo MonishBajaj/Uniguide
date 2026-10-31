@@ -33,6 +33,7 @@ export const ROUTES: Record<string, string[]> = {
   "/visas/funds": [],
   "/courses/[slug]/arrival": [],
   "/app/notifications": [],
+  "/app/next-intake": [],
   "/accessibility": [],
 };
 

@@ -9,7 +9,7 @@ const plural = (n: number, one: string, many: string) => (n === 1 ? one : many);
 
 /** "2 of 3 applications ready": what the current stage's progress bar shows (spec 4.1). */
 export function stageProgress(input: JourneyInput, stage: Stage, open: Candidate[], completed: string[]): JourneyResult["stageProgress"] {
-  const apps = activeApplications(input.applications);
+  const apps = activeApplications(input.applications, input.profile.intakeRolledAt ?? null);
   const of = (done: number, total: number, noun: string, nouns: string, rest: string) => ({
     done,
     total,
@@ -65,7 +65,7 @@ export interface UpcomingDeadline {
  * first (M2 home, "Coming up"). Deadlines of applications already submitted or decided no longer matter.
  */
 export function upcomingDeadlines(input: JourneyInput, limit = 3): UpcomingDeadline[] {
-  return activeApplications(input.applications)
+  return activeApplications(input.applications, input.profile.intakeRolledAt ?? null)
     .filter((app) => app.status === "shortlisted" || app.status === "preparing")
     .flatMap((app) =>
       app.deadlines

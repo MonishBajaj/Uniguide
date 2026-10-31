@@ -211,6 +211,19 @@ export const STAGE_FIXTURES: Record<string, { input: JourneyInput; stage: number
     }),
     stage: 5,
   },
+  // M5 (J5.4): rejected everywhere, then planning for the next intake with a course still shortlisted.
+  "edge-rolled-over-after-rejections": {
+    input: base({
+      profile: { ...readyProfile, intakeYear: 2028, intakeRolledAt: "2026-10-30T12:00:00Z" },
+      matchRuns: matched,
+      shortlist: [{ program: programs.state!, createdAt: "2026-10-31T10:00:00Z" }],
+      applications: [
+        application("a1", programs.exampleton!, { status: "decided", decision: "rejected" }),
+        application("a2", programs.tum!, { status: "decided", decision: "rejected" }),
+      ],
+    }),
+    stage: 3,
+  },
   "edge-withdrawn-only": {
     input: base({ profile: readyProfile, applications: [application("a1", programs.exampleton!, { status: "withdrawn" })] }),
     stage: 2,

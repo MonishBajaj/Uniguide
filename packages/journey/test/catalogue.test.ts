@@ -567,3 +567,19 @@ describe("document readiness and supervisor contacts (J5.3)", () => {
   });
 });
 
+describe("no offers yet, and the next intake (J5.4)", () => {
+  it("sends a student rejected everywhere to the next-intake page", () => {
+    const s = evaluateCatalogue(STAGE_FIXTURES["edge-rejected-everywhere"]!.input).open.find((x) => x.catalogueId === "S5.06")!;
+    expect(s.href).toBe("/app/next-intake");
+  });
+
+  it("stops counting earlier rejections once the student plans the next intake", () => {
+    const rolled = STAGE_FIXTURES["edge-rolled-over-after-rejections"]!.input;
+    expect(buildCtx(rolled).stage).toBe(3);
+    expect(ids(rolled)).not.toContain("S5.06");
+    // A rejection after the rollover still counts.
+    const later = { ...rolled, applications: [...rolled.applications, application("a3", programs.state!, { status: "decided", decision: "rejected", createdAt: "2026-11-01T00:00:00Z" })] };
+    expect(buildCtx(later).stage).toBe(5);
+  });
+});
+

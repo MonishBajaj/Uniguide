@@ -29,6 +29,7 @@ export const HELP_ROUTES = [
   "/app/profile",
   "/app/sharing",
   "/app/notifications",
+  "/app/next-intake",
 ] as const;
 
 export type HelpRoute = (typeof HELP_ROUTES)[number];

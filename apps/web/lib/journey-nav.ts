@@ -21,6 +21,7 @@ const SECTIONS: [string, NavSection][] = [
   ["/app/recommenders", "applications"],
   ["/app/cv", "applications"],
   ["/app/portfolio", "applications"],
+  ["/app/next-intake", "applications"],
   ["/app/offers", "offers"],
   ["/app/departure", "departure"],
   ["/visas", "departure"],

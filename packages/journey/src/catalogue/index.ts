@@ -34,7 +34,7 @@ export function buildCtx(input: JourneyInput, stage: Stage = computeStage(input)
     today: input.today,
     stage,
     variants: variantsFor(fields.target_levels as Level[]),
-    apps: activeApplications(input.applications),
+    apps: activeApplications(input.applications, input.profile.intakeRolledAt ?? null),
     countries: fields.target_countries,
     marked: (id) => marked.has(id),
   };
