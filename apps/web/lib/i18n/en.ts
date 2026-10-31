@@ -326,6 +326,8 @@ export const en = {
       noFacts: "This course isn't in our catalogue, so there are no checked requirements or deadlines. Add your own checklist items below.",
       yourDate: "Your date",
       noSharing: "Outcomes can only be shared for courses in our catalogue.",
+      scoresNote: "Record each score you send to this university. Check which tests it asks for in what it sent you.",
+      lettersNote: "Check how many letters this university asks for, then add each request here.",
     },
     plans: {
       title: "Planned tests",

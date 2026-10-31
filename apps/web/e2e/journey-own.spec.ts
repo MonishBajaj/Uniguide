@@ -38,6 +38,9 @@ test("from \"I'm already applying\", the student adds an unlisted course and it 
   await expect(page.getByText("Added by you, not checked")).toBeVisible();
   await expect(page.getByText(`Your date: 1 February ${nextYear}`)).toBeVisible();
   await expect(page.getByRole("link", { name: "Course facts and sources" })).toHaveCount(0);
+  // No wording that suggests we will publish this course's facts later.
+  await expect(page.getByText(/not published yet|No test requirements are published/)).toHaveCount(0);
+  await expect(page.getByText("Record each score you send to this university.", { exact: false })).toBeVisible();
   expect(sql(`select status || ',' || own_country from applications where user_id = '${STUDENT}'`)).toBe("preparing,NL");
 
   await page.goto("/app/tracker");

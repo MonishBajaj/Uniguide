@@ -188,6 +188,8 @@ export default async function ApplicationPage({ params, searchParams }: PageProp
               {needs.some((n) => !n.required) ? `; optional: ${needs.filter((n) => !n.required).map((n) => n.label).join(", ")}` : ""}.
               {progress.needed ? ` Sent ${progress.sent} of ${progress.needed}.` : ""} Confirm on the official page.
             </p>
+          ) : course.own ? (
+            <p className="text-sm text-muted">{all.journey.own.scoresNote}</p>
           ) : (
             <p className="text-sm text-muted">No test requirements are published for this course yet. Check the official page.</p>
           )}
@@ -241,7 +243,11 @@ export default async function ApplicationPage({ params, searchParams }: PageProp
           <Link href="/app/recommenders" className="text-sm underline underline-offset-2">Manage recommenders</Link>
         </div>
         <p className="text-sm text-muted">
-          {letters.needed != null ? `This course asks for ${letters.needed} letter${letters.needed === 1 ? "" : "s"}. ` : "The number of letters is not published yet; check the official page. "}
+          {letters.needed != null
+            ? `This course asks for ${letters.needed} letter${letters.needed === 1 ? "" : "s"}. `
+            : course.own
+              ? `${all.journey.own.lettersNote} `
+              : "The number of letters is not published yet; check the official page. "}
           {app.recommendation_requests.length ? `${letters.submitted} submitted, ${letters.lined_up} agreed or submitted.` : ""}
           {letters.short ? ` Ask ${letters.short} more ${letters.short === 1 ? "person" : "people"}.` : ""}
         </p>
