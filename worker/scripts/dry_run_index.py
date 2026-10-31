@@ -39,7 +39,8 @@ def main(args: list[str]) -> None:
         sample = " / ".join(c.title[:40] for c in accepted[:3])
         why = " | rejected: " + " ; ".join(r[:230] for r in reasons[:3]) if reasons else ""
         seconds = run.latency_ms // 1000
-        print(f"{name}: listed {len(run.courses)}, accepted {len(accepted)} ({seconds}s) e.g. {sample}{why}", flush=True)
+        counts = f"listed {len(run.courses)}, accepted {len(accepted)} ({seconds}s)"
+        print(f"{name}: {counts} e.g. {sample}{why}", flush=True)
 
 
 if __name__ == "__main__":
