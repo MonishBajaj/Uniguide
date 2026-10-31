@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import { AppLink as Link } from "@/components/lite";
 import { navSection, type NavSection } from "@/lib/journey-nav";
+import { HelpButton } from "./help-dialog";
 import type { NavItem } from "./nav-items";
 
 const ICONS: Record<"home" | "explore" | "applications" | "help" | "more", ReactNode> = {
@@ -41,19 +42,17 @@ const IN_MORE: NavSection[] = ["shortlist", "offers", "departure"];
 
 /**
  * Phone navigation (spec 6.1): Home, Explore, Applications, Help and More, fixed to the bottom.
- * Help and More open a sheet above the bar; Escape or a tap outside closes it.
+ * More opens a sheet above the bar; Escape or a tap outside closes it. Help opens the help panel (J4.1).
  */
 export function BottomBar({
   items,
-  help,
   labels,
 }: {
   items: NavItem[];
-  help: ReactNode;
   labels: { nav: string; help: string; more: string; close: string; notReached: string };
 }) {
   const current = navSection(usePathname());
-  const [open, setOpen] = useState<"help" | "more" | null>(null);
+  const [open, setOpen] = useState<"more" | null>(null);
   const bar = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -91,7 +90,7 @@ export function BottomBar({
       </li>
     );
   };
-  const toggle = (name: "help" | "more", icon: "help" | "more", text: string, active = false) => (
+  const toggle = (name: "more", icon: "more", text: string, active = false) => (
     <li>
       <button
         type="button"
@@ -128,34 +127,35 @@ export function BottomBar({
               {labels.close}
             </button>
           </div>
-          {open === "help" ? (
-            help
-          ) : (
-            <ul className="grid gap-1">
-              {IN_MORE.map((section) => {
-                const it = item(section);
-                return (
-                  <li key={section}>
-                    <Link
-                      href={it.href}
-                      aria-current={current === section ? "page" : undefined}
-                      className={`flex min-h-12 items-center rounded-lg px-3 ${current === section ? "bg-surface-2 font-semibold" : it.reached === false ? "text-muted" : ""}`}
-                    >
-                      {it.label}
-                      {it.reached === false ? <span className="sr-only"> ({labels.notReached})</span> : null}
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
-          )}
+          <ul className="grid gap-1">
+            {IN_MORE.map((section) => {
+              const it = item(section);
+              return (
+                <li key={section}>
+                  <Link
+                    href={it.href}
+                    aria-current={current === section ? "page" : undefined}
+                    className={`flex min-h-12 items-center rounded-lg px-3 ${current === section ? "bg-surface-2 font-semibold" : it.reached === false ? "text-muted" : ""}`}
+                  >
+                    {it.label}
+                    {it.reached === false ? <span className="sr-only"> ({labels.notReached})</span> : null}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
         </div>
       ) : null}
       <ul className="grid grid-cols-5 px-1 pt-1">
         {link("home")}
         {link("explore")}
         {link("applications")}
-        {toggle("help", "help", labels.help)}
+        <li>
+          <HelpButton className={`${tab} w-full text-foreground`}>
+            <Icon name="help" />
+            <span>{labels.help}</span>
+          </HelpButton>
+        </li>
         {toggle("more", "more", labels.more, current != null && IN_MORE.includes(current))}
       </ul>
     </nav>

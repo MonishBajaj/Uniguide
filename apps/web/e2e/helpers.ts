@@ -65,8 +65,10 @@ export async function expectStored(query: string, expected: string) {
 }
 
 /** Serious and critical WCAG 2.1 AA violations on a page, one line each (15.2). */
-export async function audit(page: Page, path: string): Promise<string[]> {
-  await page.goto(path);
+/** Serious or critical axe violations on `path`, or on the page as it is now when `path` is null. */
+export async function audit(page: Page, path: string | null): Promise<string[]> {
+  if (path) await page.goto(path);
+  path ??= `${new URL(page.url()).pathname} (as shown)`;
   const { violations } = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"]).analyze();
   return violations
     .filter((v) => v.impact === "serious" || v.impact === "critical")

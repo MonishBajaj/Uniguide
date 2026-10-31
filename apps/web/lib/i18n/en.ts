@@ -246,6 +246,11 @@ export const en = {
       helpNoStage: "Your stage shows on your home page.",
       guide: "How applying abroad works",
       glossary: "Words used in applications",
+      helpTitle: "Help",
+      onThisPage: "On this page",
+      askCourse: "Ask about this course",
+      inviteParent: "Ask a parent to follow along",
+      shareCounselor: "Share with a counselor",
     },
     // English stage text comes from the journey engine, so there is one source (M2 plan, J2.5).
     stages: Object.fromEntries(

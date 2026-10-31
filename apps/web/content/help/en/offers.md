@@ -1,0 +1,1 @@
+Compare your offers by the full cost of finishing each course, minus only the funding written in your offer. Record each decision on its application, then mark the offer you're taking to plan your departure.

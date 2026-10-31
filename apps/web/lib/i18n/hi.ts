@@ -276,6 +276,11 @@ export const hi: Dict = {
       helpNoStage: "आपका चरण आपके होम पेज पर दिखता है।",
       guide: "विदेश में आवेदन कैसे होता है",
       glossary: "आवेदन में इस्तेमाल होने वाले शब्द",
+      helpTitle: "मदद",
+      onThisPage: "इस पेज पर",
+      askCourse: "इस कोर्स के बारे में पूछें",
+      inviteParent: "माता-पिता को साथ जुड़ने के लिए कहें",
+      shareCounselor: "किसी काउंसलर के साथ साझा करें",
     },
     stages: {
       "1": { name: "शुरुआत", forText: "UniGuide को बताना कि आप कौन हैं और क्या चाहते हैं।", doneWhen: "मैचिंग के लिए ज़रूरी जानकारी पूरी है।", usuallyTakes: "15 मिनट" },

@@ -5,7 +5,7 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   transpilePackages: ["@uniguide/matching", "@uniguide/journey", "@uniguide/db-types"],
   // The blog reads its Markdown at request time for the sitemap.
-  outputFileTracingIncludes: { "/sitemap.xml": ["./content/blog/**"], "/blog/**": ["./content/blog/**"] },
+  outputFileTracingIncludes: { "/sitemap.xml": ["./content/blog/**"], "/blog/**": ["./content/blog/**"], "/app/**": ["./content/help/**"] },
   turbopack: {
     rules: {
       "*.css": {

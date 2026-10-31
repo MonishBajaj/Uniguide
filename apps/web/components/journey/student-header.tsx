@@ -3,6 +3,7 @@ import type { Dict } from "@/lib/i18n/en";
 import { type HeaderJourney, reachedSections, type NavSection } from "@/lib/journey-nav";
 import { AccountMenu } from "./account-menu";
 import { BottomBar } from "./bottom-bar";
+import { HelpButton, HelpDialog } from "./help-dialog";
 import { HelpContent, type HelpCopy } from "./help-panel";
 import type { NavItem } from "./nav-items";
 import { StudentNav } from "./student-nav";
@@ -18,18 +19,24 @@ const HREFS: Record<Exclude<NavSection, "account">, string> = {
 
 /**
  * The header for signed-in students (journey M2, J2.2): the journey's sections on desktop, a bottom
- * bar on phones, a small "Get help" panel and the account menu. Staff, parents and guests keep the
- * site header.
+ * bar on phones, the "Get help" panel (M4, J4.1) and the account menu. Staff, parents and guests keep
+ * the site header.
  */
 export function StudentHeader({
   journey,
   t,
   unread,
   accountEnd,
+  pageHelp,
+  courseSlug,
 }: {
   journey: HeaderJourney;
   t: Dict;
   unread: number;
+  /** This page's help, as HTML from content/help. */
+  pageHelp: string | null;
+  /** The catalogue course of the application this page shows, for "Ask about this course". */
+  courseSlug: string | null;
   /** Sign out, or the demo mode switcher. */
   accountEnd: React.ReactNode;
 }) {
@@ -50,6 +57,10 @@ export function StudentHeader({
     noStage: nav.helpNoStage,
     guide: nav.guide,
     glossary: nav.glossary,
+    onThisPage: nav.onThisPage,
+    askCourse: nav.askCourse,
+    inviteParent: nav.inviteParent,
+    shareCounselor: nav.shareCounselor,
   };
 
   const account = (
@@ -75,20 +86,17 @@ export function StudentHeader({
           <div className="hidden min-w-0 overflow-x-auto [scrollbar-width:none] md:block [&::-webkit-scrollbar]:hidden">
             <StudentNav items={items} label={nav.label} notReached={nav.notReached} />
           </div>
-          <details className="relative hidden md:block">
-            <summary className="btn btn-secondary btn-sm cursor-pointer list-none whitespace-nowrap [&::-webkit-details-marker]:hidden">{nav.help}</summary>
-            <div className="absolute right-0 z-50 mt-2 w-72 rounded-xl border border-border bg-surface p-4 shadow-lg">
-              <HelpContent copy={help} />
-            </div>
-          </details>
+          {/* Phones open help from the bottom bar. */}
+          <div className="hidden md:block">
+            <HelpButton className="btn btn-secondary btn-sm whitespace-nowrap">{nav.help}</HelpButton>
+          </div>
           {account}
         </nav>
       </header>
-      <BottomBar
-        items={items}
-        help={<HelpContent copy={help} />}
-        labels={{ nav: nav.label, help: nav.help, more: nav.more, close: nav.close, notReached: nav.notReached }}
-      />
+      <BottomBar items={items} labels={{ nav: nav.label, help: nav.help, more: nav.more, close: nav.close, notReached: nav.notReached }} />
+      <HelpDialog title={nav.helpTitle} close={nav.close}>
+        <HelpContent copy={help} pageHelp={pageHelp} courseSlug={courseSlug} />
+      </HelpDialog>
     </>
   );
 }

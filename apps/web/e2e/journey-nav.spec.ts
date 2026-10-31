@@ -54,8 +54,9 @@ test("on a phone the bottom bar carries the sections, and More opens and closes 
   await page.keyboard.press("Escape");
   await expect(more).toHaveAttribute("aria-expanded", "false");
 
+  // Help opens the help panel (J4.1), not a sheet in the bar.
   await bar.getByRole("button", { name: "Get help" }).click();
-  await expect(bar.getByText("Stage 4 of 7: Prepare")).toBeVisible();
+  await expect(page.getByRole("dialog", { name: "Help" }).getByText("Stage 4 of 7: Prepare")).toBeVisible();
 });
 
 // J2.7: every student page in the spec's navigation table (6.1) has the journey navigation, with
