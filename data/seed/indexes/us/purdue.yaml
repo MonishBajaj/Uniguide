@@ -1,4 +1,4 @@
-# Checked by Claude on 2026-10-30 with the crawler's own fetcher and a dry run. UNFINISHED: the old URL was a 404; program-search is Purdue's program list (377 links), but the local model timed out after 5 minutes on it.
+# Checked by Claude on 2026-10-30 with the crawler's own fetcher and a dry run. UNFINISHED: the right page, but the local model still timed out after 15 minutes on its 377 links; it needs to be split into smaller pages.
 # Still needs a person to open the URL and add verified_by and verified_at before it is crawled.
 institution: "Purdue University"
 country: US

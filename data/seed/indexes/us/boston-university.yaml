@@ -1,4 +1,4 @@
-# Checked by Claude on 2026-10-30 with the crawler's own fetcher and a dry run. UNFINISHED: the new URL is BU's degree-programs list (882 links), but the local model timed out after 5 minutes on it; a longer timeout or a split page may work.
+# Checked by Claude on 2026-10-30 with the crawler's own fetcher and a dry run. WORKS (partly): dry run accepted 62 of 121 programs; the others link to pages the crawler does not see on the list.
 # Still needs a person to open the URL and add verified_by and verified_at before it is crawled.
 institution: "Boston University"
 country: US

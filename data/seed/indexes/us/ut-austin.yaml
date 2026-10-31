@@ -1,4 +1,4 @@
-# Checked by Claude on 2026-10-30 with the crawler's own fetcher and a dry run. DOES NOT WORK YET: the page lists degrees, but the model expands the titles ('Master of Science in X'), so every course is rejected.
+# Checked by Claude on 2026-10-30 with the crawler's own fetcher and a dry run. WORKS (partly): dry run accepted 42 of 176 degrees (many are rejected because the model's quote is not on the page).
 # Still needs a person to open the URL and add verified_by and verified_at before it is crawled.
 institution: "The University of Texas at Austin"
 country: US

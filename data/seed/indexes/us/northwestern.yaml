@@ -1,4 +1,4 @@
-# Checked by Claude on 2026-10-30 with the crawler's own fetcher and a dry run. WEAK: the explore-programs list is the right page (90 programs found), but the model expands titles ('Master of Science in X'), so only 2 were accepted.
+# Checked by Claude on 2026-10-30 with the crawler's own fetcher and a dry run. WORKS (partly): dry run accepted 35 of 91 programs (the rest have quotes the page does not contain).
 # Still needs a person to open the URL and add verified_by and verified_at before it is crawled.
 institution: "Northwestern University"
 country: US
