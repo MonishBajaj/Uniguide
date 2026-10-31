@@ -199,7 +199,7 @@ Checked on 31 October 2026, against `Updated-developer-b` at `0706418`.
 **Interfaces:** `guard.allowClick(control, context)` and `guard.allowKey(...)`.
 - Deny by default.
 - Allow only an adapter-declared next-page or "add another" control that passes the adapter-independent checks (spec 7.2).
-- Never: form submit, Enter in text fields, declaration ticks, payment or third-party frames, or controls whose words appear on the never-click list (English and Hindi).
+- Never: the final submission, Enter in text fields, declaration ticks, payment or third-party frames, or controls whose words appear on the never-click list (English and Hindi). A submit control is the final submission unless its form has something to fill and no password, declaration, payment, signature or security field (spec 7.2 rule 4, refined in A1.4).
 
 - [ ] **Failing tests first, independent of any adapter.** Each of these must be blocked:
   - a submit button labelled next-page by a deliberately wrong adapter

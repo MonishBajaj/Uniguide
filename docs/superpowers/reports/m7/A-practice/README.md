@@ -36,7 +36,7 @@ The raw REA output (about 0.5 MB) stayed in the session scratchpad. The summarie
    - Radio options have accessible names with a leading space (`" Yes"`). The adapter trims names before comparing.
    - The review page shows stored codes (`cbse_12`, `IN`) rather than option text.
    - Required selects report `invalid` before anything is chosen.
-4. **For A1.4 (guard): "Save and continue" is a form submit button.** Spec 7.2 rule 4 says an allowed click "isn't a form submit control", which would block every page. The guard rule needs to read "isn't the final submission or a never-click control". The map lists allowed clicks and never-click controls separately for this reason. To be settled when A1.4 is built.
+4. **Settled in A1.4: "Save and continue" is a form submit button.** Spec 7.2 rule 4 said an allowed click "isn't a form submit control", which would block every page. The rule now reads "isn't the final submission": a submit control is allowed only when its form has something to fill and holds no password, declaration, payment, signature or security field. The map lists allowed clicks and never-click controls separately.
 5. **Differences from the plan's wording for A1.2:** the portal has five sections over eight pages (the plan said four over six), because the security check, fee and declaration became separate pages. The smoke tests use `node:test` with `fetch` rather than Playwright. Playwright drives the mapping walk.
 
 ## What the map holds

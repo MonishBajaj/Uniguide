@@ -181,14 +181,14 @@ function byLabel(label: string, context: string): { role: Role; confidence: numb
 
 const SKIP = new Set(["hidden", "submit", "button", "reset", "image", "file"]);
 
-function controlType(el: Element): string | null {
+export function controlType(el: Element): string | null {
   const tag = el.tagName.toLowerCase();
   if (tag === "select" || tag === "textarea") return tag;
   const type = (el.getAttribute("type") ?? "text").toLowerCase();
   return SKIP.has(type) ? null : type;
 }
 
-function isShown(el: Element): boolean {
+export function isShown(el: Element): boolean {
   const view = el.ownerDocument.defaultView;
   for (let n: Element | null = el; n; n = n.parentElement) {
     if (n.hasAttribute("hidden") || n.getAttribute("aria-hidden") === "true") return false;
@@ -212,7 +212,7 @@ function sameGroup(el: Element): Element[] {
   return name ? Array.from(scope.querySelectorAll(`input[type="radio"][name="${CSS_escape(name)}"]`)) : [el];
 }
 
-function labelOf(el: Element, type: string): string {
+export function labelOf(el: Element, type: string): string {
   const doc = el.ownerDocument;
   if (type === "radio") {
     const fs = el.closest("fieldset");
@@ -248,7 +248,7 @@ function ariaName(el: Element): string | null {
 }
 
 /** An element's text without the text of any controls inside it (a select's options, say). */
-function text(el: Element): string {
+export function text(el: Element): string {
   const copy = el.cloneNode(true) as Element;
   copy.querySelectorAll("input, select, textarea, script, style, [hidden]").forEach((c) => c.remove());
   return (copy.textContent ?? "").replace(/\s+/g, " ").trim();
