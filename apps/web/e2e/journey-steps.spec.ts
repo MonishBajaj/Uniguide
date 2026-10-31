@@ -20,7 +20,7 @@ test("a dismissed step leaves the home and the steps page, and Undo brings it ba
   await expect(fee(page)).toHaveCount(0);
 
   await page.goto("/app/steps");
-  await page.getByText(/^Snoozed and dismissed/).click();
+  await page.locator("summary").filter({ hasText: /^Snoozed and dismissed/ }).click();
   await page.getByRole("listitem").filter({ hasText: "Record the application fee" }).getByRole("button", { name: /^Bring back/ }).click();
   await expect(page.getByRole("status").filter({ hasText: "Step brought back." })).toBeVisible();
   await expect(fee(page)).toHaveCount(1);
@@ -40,7 +40,7 @@ test("a snoozed step comes back after 7 days, and can be brought back sooner", a
     `select (until::date - current_date) from journey_step_state where user_id = '${APPLICANT}' and state = 'snoozed'`,
     "7",
   );
-  await page.getByText(/^Snoozed and dismissed/).click();
+  await page.locator("summary").filter({ hasText: /^Snoozed and dismissed/ }).click();
   await expect(page.getByText(/Back on/)).toBeVisible();
   await page.getByRole("button", { name: /^Bring back/ }).click();
   await expect(fee(page)).toHaveCount(1);

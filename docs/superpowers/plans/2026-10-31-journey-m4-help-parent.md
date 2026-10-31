@@ -253,6 +253,27 @@ As built, there are some differences from the table below:
 - **CI on #4** is green apart from the four accepted e2e failures.
 - **Screenshots** of every new or changed screen at both widths, sent at the end of J4.1, J4.2, J4.3 (Mailpit) and J4.4.
 
+## Finishing M4: exit gate (31 October 2026)
+
+- **Spec "done when": met.**
+  - A linked parent sees the stage path and parent note (`journey-parent.spec.ts`).
+  - A stalled student receives the nudge in the local Mailpit. The seed student was made stalled by the engine itself: a step done 20 days ago and a checklist item due in 10. Running the worker as of the next Monday delivered "You haven't checked in for a while" to Mailpit.
+- **Local results:**
+
+  | Suite | Result |
+  |---|---|
+  | pgTAP | 652 pass |
+  | Unit tests | journey 129, matching 124, web 287 pass |
+  | Typecheck, lint | Clean |
+  | Worker | pytest 395 pass; ruff and mypy clean |
+  | e2e (app) | 104 pass; only the four failures accepted at the M2 gate |
+  | e2e demo | 3 pass |
+  | e2e community | 6 pass |
+  | Axe audit | No serious or critical issues on the open help panel, the parent view, the counselor view and the updates page, at 1280 and 390 px |
+  | `diff-fixtures` | No engine change |
+
+- **One regression from J4.1, fixed in its own commit.** The closed help panel stays in the page, and the help for `/app/steps` names **Snoozed and dismissed**. Two M2 specs found that text twice. They now use the list's toggle.
+
 ## Handing over to M5
 
 M5 (enrollment and edge paths) builds on:
