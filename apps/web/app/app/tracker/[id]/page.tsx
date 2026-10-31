@@ -32,6 +32,9 @@ import {
   setApplicationTrack,
   addSupervisorContact,
   removeSupervisorContact,
+  addInterview,
+  resolveMissing,
+  setExpectedDecision,
   shareOutcome,
   startApplying,
   toggleItem,
@@ -57,7 +60,7 @@ export default async function ApplicationPage({ params, searchParams }: PageProp
     supabase.from("consents").select("id").eq("kind", "outcomes_research").is("withdrawn_at", null).limit(1).maybeSingle(),
     supabase
       .from("application_events")
-      .select("id, kind, from_value, to_value, note, created_at")
+      .select("id, kind, from_value, to_value, note, created_at, occurs_at, missing, resolved_at")
       .eq("application_id", id)
       .order("created_at", { ascending: false })
       .limit(50),
@@ -81,6 +84,12 @@ export default async function ApplicationPage({ params, searchParams }: PageProp
     ? await supabase.from("supervisor_contacts").select("id, name, institution, contacted_on, reply, note").eq("application_id", app.id).order("contacted_on")
     : { data: [] };
   const ts = all.journey.supervisors;
+  const tw = all.journey.waiting;
+  // Interview times are kept as the student typed them, in UTC (J5.6).
+  const interviewTime = (iso: string) =>
+    new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit", timeZone: "UTC" }).format(new Date(iso));
+  const interviews = (events ?? []).filter((e) => e.kind === "interview" && e.occurs_at).sort((a, b) => a.occurs_at!.localeCompare(b.occurs_at!));
+  const waiting = app.status === "submitted" || interviews.length > 0 || app.expected_decision_on != null;
   const items = [...app.checklist_items].sort((a, b) => a.sort - b.sort);
   const letter = (linkedDocs ?? []).find((d) => d.kind === "continued_interest");
   const letters = letterProgress(app.recommendation_requests, lettersNeeded(app.program_cycles?.requirements ?? []));
@@ -380,6 +389,49 @@ export default async function ApplicationPage({ params, searchParams }: PageProp
         </form>
       </section>
 
+      {waiting ? (
+        <section id="interviews" aria-labelledby="interviews-title" className="grid scroll-mt-24 gap-4 rounded-2xl border border-border bg-surface p-6">
+          <div>
+            <h2 id="interviews-title" className="text-lg font-semibold">{tw.title}</h2>
+            <p className="text-sm text-muted">{tw.intro}</p>
+          </div>
+          <div className="grid gap-2">
+            <h3 className="font-semibold">{tw.interviews}</h3>
+            {interviews.length ? (
+              <ul className="grid gap-2 text-sm">
+                {interviews.map((e) => (
+                  <li key={e.id} className="rounded-lg bg-background p-3">
+                    {tw.interviewOn(interviewTime(e.occurs_at!))} <span className="text-muted">· {all.journey.own.yourDate}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-sm text-muted">{tw.noInterviews}</p>
+            )}
+            <form action={addInterview.bind(null, app.id)} className="flex flex-wrap items-end gap-2">
+              <label className="grid gap-1 text-sm font-semibold">
+                {tw.interviewAt}
+                <input name="occurs_at" type="datetime-local" required className="field font-normal" />
+              </label>
+              <button className="btn btn-secondary">{tw.addInterview}</button>
+            </form>
+          </div>
+          {!app.decision ? (
+            <form action={setExpectedDecision.bind(null, app.id)} className="grid gap-2 border-t border-border pt-4">
+              <label htmlFor="expected-decision" className="font-semibold">{tw.expected}</label>
+              <p id="expected-hint" className="text-sm text-muted">{tw.expectedHint}</p>
+              {app.expected_decision_on ? (
+                <p className="text-sm">{tw.expectedBy(ownDate(app.expected_decision_on))} <span className="text-muted">· {all.journey.own.yourDate}</span></p>
+              ) : null}
+              <div className="flex flex-wrap gap-2">
+                <input id="expected-decision" name="expected_decision_on" type="date" aria-describedby="expected-hint" defaultValue={app.expected_decision_on ?? ""} className="field max-w-xs" />
+                <button className="btn btn-secondary">{tw.saveExpected}</button>
+              </div>
+            </form>
+          ) : null}
+        </section>
+      ) : null}
+
       <section aria-labelledby="decision" className="grid gap-4 rounded-2xl border border-border bg-surface p-6">
         <h2 id="decision" className="text-lg font-semibold">Decision</h2>
         <form action={recordDecision.bind(null, app.id)} className="grid gap-3 sm:grid-cols-2">
@@ -513,6 +565,10 @@ export default async function ApplicationPage({ params, searchParams }: PageProp
         <form action={logPortal.bind(null, app.id, "portal_check")} className="flex flex-wrap gap-2">
           <label className="sr-only" htmlFor="portal-note">What the portal says (optional)</label>
           <input id="portal-note" name="note" maxLength={1000} placeholder="What the portal says (optional)" className="field max-w-md" />
+          <label className="flex items-center gap-2 text-sm">
+            <input type="checkbox" name="missing" className="size-4" />
+            {tw.missing}
+          </label>
           <button className="btn btn-primary">I checked the portal today</button>
         </form>
         <form action={logPortal.bind(null, app.id, "note")} className="flex flex-wrap gap-2">
@@ -524,7 +580,16 @@ export default async function ApplicationPage({ params, searchParams }: PageProp
           {(events ?? []).map((e) => (
             <li key={e.id} className="grid grid-cols-[110px_1fr] gap-3 border-t border-border pt-2">
               <time dateTime={e.created_at} className="text-muted">{shortDate(e.created_at)}</time>
-              <span>{describeEvent(e)}</span>
+              <span className="flex flex-wrap items-center gap-2">
+                {e.missing ? <span className="rounded-full border border-conflicting px-2 text-xs font-semibold text-conflicting">{tw.missingBadge}</span> : null}
+                <span>{e.kind === "interview" && e.occurs_at ? tw.interviewOn(interviewTime(e.occurs_at)) : describeEvent(e)}</span>
+                {e.missing && e.resolved_at ? <span className="text-muted">· {tw.sortedOn(shortDate(e.resolved_at))}</span> : null}
+                {e.missing && !e.resolved_at ? (
+                  <form action={resolveMissing.bind(null, e.id)}>
+                    <button className="btn btn-secondary btn-sm">{tw.sorted}<span className="sr-only">: {e.note ?? tw.missing}</span></button>
+                  </form>
+                ) : null}
+              </span>
             </li>
           ))}
         </ol>

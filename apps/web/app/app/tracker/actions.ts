@@ -183,9 +183,38 @@ export async function deleteApplication(applicationId: string) {
 export async function logPortal(applicationId: string, kind: "portal_check" | "note", form: FormData) {
   const note = String(form.get("note") ?? "").trim().slice(0, 1000);
   if (kind === "note" && !note) return;
+  // A portal check can note that something is missing, until the student marks it sorted (J5.6).
+  const missing = kind === "portal_check" && form.get("missing") === "on";
   const { supabase, user } = await getUser();
   if (!user) return;
-  await supabase.from("application_events").insert({ application_id: applicationId, user_id: user.id, kind, note: note || null });
+  await supabase.from("application_events").insert({ application_id: applicationId, user_id: user.id, kind, note: note || null, missing });
+  revalidatePath("/app/tracker", "layout");
+}
+
+/** Marks a "something is missing" portal note sorted. */
+export async function resolveMissing(eventId: string) {
+  const { supabase } = await getUser();
+  await supabase.from("application_events").update({ resolved_at: new Date().toISOString() }).eq("id", eventId).eq("missing", true);
+  revalidatePath("/app/tracker", "layout");
+}
+
+/** An interview the student was invited to. The time is as they typed it, kept and shown in UTC so it reads back unchanged. */
+export async function addInterview(applicationId: string, form: FormData) {
+  const at = z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/).safeParse(form.get("occurs_at"));
+  if (!at.success) return;
+  const { supabase, user } = await getUser();
+  if (!user) return;
+  await supabase.from("application_events").insert({ application_id: applicationId, user_id: user.id, kind: "interview", occurs_at: `${at.data}:00Z` });
+  revalidatePath("/app/tracker", "layout");
+}
+
+/** The student's own expected decision date; empty clears it. */
+export async function setExpectedDecision(applicationId: string, form: FormData) {
+  const raw = String(form.get("expected_decision_on") ?? "");
+  const date = raw === "" ? null : z.iso.date().safeParse(raw).data;
+  if (date === undefined) return;
+  const { supabase } = await getUser();
+  await supabase.from("applications").update({ expected_decision_on: date }).eq("id", applicationId);
   revalidatePath("/app/tracker", "layout");
 }
 

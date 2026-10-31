@@ -10,7 +10,6 @@ const ids = (input: JourneyInput) => evaluateCatalogue(input).open.map((s) => s.
 /** M1 plan "Deviations". S1.03 turned on in M2 with the profile's intake field. Changing this list is a deliberate act. */
 const UNAVAILABLE = [
   "S2.07", "S3.04", "S3.06",
-  "S5.02", "S5.03", "S5.04",
 ];
 
 const LONG = "A".repeat(120);
@@ -62,7 +61,12 @@ function everything(): JourneyInput {
       application("short", { ...long, id: "p3" }, {
         deadlines: [{ id: "d-short", dueAt: "2027-09-10T23:59:00Z", timezone: "Europe/Berlin", precision: "date", status: "verified" }],
       }),
-      application("sent", { ...long, id: "p4" }, { status: "submitted" }),
+      application("sent", { ...long, id: "p4" }, {
+        status: "submitted",
+        interviews: ["2027-09-02T10:00:00Z"],
+        missingNotes: 1,
+        expectedDecisionOn: "2027-08-01",
+      }),
       application("wait", { ...long, id: "p5" }, { status: "decided", decision: "waitlisted" }),
       application("offer1", { ...long, id: "p6" }, { status: "decided", decision: "admitted", depositDueAt: "2027-09-01T00:00:00Z" }),
       application("offer2", { ...long, id: "p7" }, { status: "decided", decision: "admitted" }),
@@ -624,3 +628,31 @@ describe("housing, health insurance and registration (J5.5)", () => {
   });
 });
 
+
+describe("interviews, expected decisions and missing documents (J5.6)", () => {
+  const sent = (extra: Record<string, unknown>) =>
+    base({ today: "2027-02-15", profile: readyProfile, applications: [application("a1", programs.tum!, { status: "submitted", ...extra })] });
+
+  it("asks for the missing document until the note is sorted", () => {
+    const step = evaluateCatalogue(sent({ missingNotes: 1 })).open.find((s) => s.catalogueId === "S5.02")!;
+    expect(step.href).toBe("/app/tracker/a1#portal");
+    expect(ids(sent({ missingNotes: 0 }))).not.toContain("S5.02");
+  });
+
+  it("asks to prepare for an interview until its date passes, and never dates the step from it", () => {
+    const step = evaluateCatalogue(sent({ interviews: ["2027-02-20T09:00:00Z"] })).open.find((s) => s.catalogueId === "S5.03")!;
+    expect(step.href).toBe("/app/tracker/a1#interviews");
+    expect(step.dueAt).toBeNull();
+    expect(ids(sent({ interviews: ["2027-02-15T09:00:00Z"] }))).toContain("S5.03");
+    expect(ids(sent({ interviews: ["2027-02-10T09:00:00Z"] }))).not.toContain("S5.03");
+    expect(ids(sent({ interviews: ["2027-02-20T09:00:00Z"], decision: "admitted", status: "decided" }))).not.toContain("S5.03");
+  });
+
+  it("asks to record the decision once the student's expected date has passed", () => {
+    expect(ids(sent({ expectedDecisionOn: "2027-02-20" }))).not.toContain("S5.04");
+    expect(ids(sent({ expectedDecisionOn: "2027-02-15" }))).not.toContain("S5.04");
+    const step = evaluateCatalogue(sent({ expectedDecisionOn: "2027-02-14" })).open.find((s) => s.catalogueId === "S5.04")!;
+    expect(step.href).toBe("/app/tracker/a1#decision");
+    expect(step.dueAt).toBeNull();
+  });
+});

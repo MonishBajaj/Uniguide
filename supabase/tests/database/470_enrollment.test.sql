@@ -43,6 +43,21 @@ select throws_ok($$ update public.application_events set note = 'changed' where 
 select throws_ok($$ insert into public.application_events (application_id, user_id, kind) values ('00000000-0000-0000-0000-0000000e0a01', (select auth.uid()), 'decision') $$,
   '42501', null, 'decision events still come only from the trigger');
 
+-- Only the owner logs an interview, marks a note sorted, or sets the expected decision date (J5.6).
+select tests.authenticate_as(:'b');
+select throws_ok($$ insert into public.application_events (application_id, user_id, kind, occurs_at)
+  values ('00000000-0000-0000-0000-0000000e0a01', (select auth.uid()), 'interview', '2027-02-11 10:00+00') $$, '42501', null,
+  'no interview on someone else''s application');
+update public.application_events set resolved_at = null where id = '00000000-0000-0000-0000-0000000e0e01';
+update public.applications set expected_decision_on = '2030-01-01' where id = '00000000-0000-0000-0000-0000000e0a01';
+select tests.authenticate_as(:'mum');
+update public.application_events set resolved_at = null where id = '00000000-0000-0000-0000-0000000e0e01';
+select tests.authenticate_as(:'a');
+select ok((select resolved_at is not null from public.application_events where id = '00000000-0000-0000-0000-0000000e0e01'),
+  'another student or a parent cannot reopen a sorted note');
+select ok((select expected_decision_on is distinct from '2030-01-01' from public.applications where id = '00000000-0000-0000-0000-0000000e0a01'),
+  'nor change the expected decision date');
+
 -- The snapshot carries it all.
 update public.applications set deposit_paid_at = now(), expected_decision_on = '2027-03-01' where id = '00000000-0000-0000-0000-0000000e0a01';
 select public.journey_snapshot() -> 'applications' -> 0 as app \gset
