@@ -189,6 +189,11 @@ Built on `Updated-developer-b`, milestone by milestone. Gap IDs (G…) are the s
 | M3 | G1 | Own applications | Built | "Add a course that isn't listed" on the tracker: the student's university, title, country and optional date, labelled "Added by you, not checked" everywhere it shows. It counts for the journey but never for matching, outcomes, research or verification, and its outcome can't be shared. |
 | M3 | G11 | Test plans | Built | "Planned tests" on the profile: not taken yet, or booked for a date. S1.05 completes on "not taken yet"; S4.11 ("Book your test") is on. |
 | M3 | G19 | Empty states while the catalogue is small | Built | Matches, shortlist and tracker each say what to do next when empty: find universities, what-if, browse, search, or add an unlisted course. |
+| M4 | G4 | Stage-aware help panel | Built | "Get help" on every `/app` page opens a panel (a sheet on phones): the stage explainer, help for the page from `content/help` in English and Hindi, "Ask about this course" on a catalogue application, the guide and glossary, and invite and share links. |
+| M4 | G16 | Parent view on the journey | Built | `/parent` shows the stage path, summary line, "How you can help right now" and "What {name} is working on", through `parent_journey()`, which returns parent-safe titles only. |
+| M4 | G17 | Journey emails | Built | Weekly journey digest (led by a nudge when stalled), one email on reaching stages 4, 6 and 7, and a parent digest with the stage, parent note and parent-safe titles. Locally, `MAILPIT_URL` sends them to Mailpit. |
+| M4 | G22 | Counselor view of the journey | Built | `/agency/[student]` shows the shared student's stage and next steps, read only. |
+| M4 | G24 | Journey events on the updates page | Built | `/app/notifications` lists stage changes from the last 90 days and the steps due soon. |
 | M1/M2 | G18 | Snooze, dismiss and mark done | Built | `/app/steps` lists every step by band, with snooze (7 days), dismiss, mark done where allowed, Undo, and a "Snoozed and dismissed" list to bring steps back. |
 
 ### Working agreement

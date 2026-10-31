@@ -92,6 +92,11 @@ Checked against `Updated-developer-b` at `1d8a92b` on 31 October 2026.
 
 ## File Structure
 
+As built, there are some differences from the table below:
+- `stages.json` lives at `worker/src/uniguide_worker/journey_stages.json`, because the worker image only ships `worker/src`. It's written and checked by `packages/journey/test/stages-json.test.ts`, with no separate script.
+- The worker gained `journey.py`, and the mailer gained a local Mailpit mode (`MAILPIT_URL`).
+- The help panel is `components/journey/help-dialog.tsx`, using the native `<dialog>` element.
+
 | File | Responsibility |
 |---|---|
 | `apps/web/content/help/{en,hi}/*.md`, `apps/web/lib/help.ts` (+ test) | Per-route help, loaded by route |
@@ -117,12 +122,12 @@ Checked against `Updated-developer-b` at `1d8a92b` on 31 October 2026.
 - **`helpFor(path, locale)`** returns the page's help as trusted Markdown, rendered with `marked` like the blog. It returns the route pattern's file (`/app/tracker/[id]` reads `app-tracker-id.md`) and falls back to English when Hindi is missing.
 - **The panel** is a dialog (`role="dialog"`, labelled "Help"). It's a right-hand panel from 768 px and a bottom sheet below.
 
-- [ ] **Step 1: Write failing tests:**
+- [x] **Step 1: Write failing tests:**
   - **unit:** every navigation route has a help file in both languages; route patterns resolve; Hindi falls back to English
   - **Playwright:** the panel opens on three pages; focus moves in, stays in, and returns on Escape; the tracker application page shows "Ask about this course" for a catalogue course and not for an own application
-- [ ] **Step 2: Write the help files.** Short: what the page is for, what to do first, and where facts come from. No new facts.
-- [ ] **Step 3: Implement**, then take screenshots at both widths, in English and Hindi.
-- [ ] **Step 4: Commit** `J4.1 Help panel with per-page help`.
+- [x] **Step 2: Write the help files.** Short: what the page is for, what to do first, and where facts come from. No new facts.
+- [x] **Step 3: Implement**, then take screenshots at both widths, in English and Hindi.
+- [x] **Step 4: Commit** `J4.1 Help panel with per-page help`.
 
 ---
 
@@ -143,16 +148,16 @@ Checked against `Updated-developer-b` at `1d8a92b` on 31 October 2026.
   It never returns `title`, `reason`, `href`, `factRefs`, `source` or `dueAt`.
 - **The parent page**, per student, adds the stage path (shared `StagePath`), the summary line, "How you can help right now" (`STAGES[stage].parentNote` with the student's name) and "What {name} is working on". It keeps everything that's there today.
 
-- [ ] **Step 1: pgTAP first:**
+- [x] **Step 1: pgTAP first:**
   - a parent receives only steps that have `parentTitle`, and only those keys
   - a revoked link and an unlinked parent get an error
   - a student can't call it for someone else
   - no state yet gives `null`
-- [ ] **Step 2: Playwright:**
+- [x] **Step 2: Playwright:**
   - the seed parent sees the stage path, the note and parent-safe titles
   - no step titled with "essay", "statement", "score" or "grade" appears
   - a revoked link shows nothing
-- [ ] **Step 3: Implement, take screenshots, commit** `J4.2 Parent view on the journey`.
+- [x] **Step 3: Implement, take screenshots, commit** `J4.2 Parent view on the journey`.
 
 ---
 
@@ -176,7 +181,7 @@ Checked against `Updated-developer-b` at `1d8a92b` on 31 October 2026.
 - **Parent digest:** adds the stage, the summary line, the parent note and up to 5 parent-safe titles above today's application list. Still no grades or scores.
 - **Preferences:** every email obeys the existing `email_preferences` (`digest` for digests, `tips` for stage changes) and ends with the unsubscribe link.
 
-- [ ] **Step 1: Failing tests first:**
+- [x] **Step 1: Failing tests first:**
   - **pytest:**
     - a stalled student's digest leads with the nudge
     - a stale journey falls back to the old digest
@@ -185,8 +190,8 @@ Checked against `Updated-developer-b` at `1d8a92b` on 31 October 2026.
     - unsubscribed students get nothing
   - **pgTAP:** the new kinds; `notifier` can read `journey_events` but can't write
   - **vitest:** `stages.json` matches `STAGES`
-- [ ] **Step 2: Implement**, then run the worker against the local stack with Mailpit. Take a screenshot of the stalled digest in Mailpit: this is the spec's "done when".
-- [ ] **Step 3: Commit** `J4.3 Journey emails`.
+- [x] **Step 2: Implement**, then run the worker against the local stack with Mailpit. Take a screenshot of the stalled digest in Mailpit: this is the spec's "done when".
+- [x] **Step 3: Commit** `J4.3 Journey emails`.
 
 ---
 
@@ -201,29 +206,29 @@ Checked against `Updated-developer-b` at `1d8a92b` on 31 October 2026.
 - **`/agency/[student]`** gains "Stage" (the stage path and summary line) and "Next steps" (titles and reasons of the top 5, read-only, no buttons). The data is the stored journey with its computed date.
 - **`/app/notifications`** gains "Your journey": stage changes from the last 90 days ("You reached stage 4: Prepare", with the date) and the current urgent steps, linking to `/app/steps`.
 
-- [ ] **Step 1: Failing tests first:**
+- [x] **Step 1: Failing tests first:**
   - **pgTAP:** a counselor with an active share reads `journey_state`, and one without can't
   - **Playwright:**
     - the seed counselor sees the shared student's stage and steps
     - the updates page lists a stage change and an urgent step
-- [ ] **Step 2: Implement, take screenshots, commit** `J4.4 Journey for counselors and on the updates page`.
+- [x] **Step 2: Implement, take screenshots, commit** `J4.4 Journey for counselors and on the updates page`.
 
 ---
 
 ### Task J4.5: Audit, end-to-end flows and docs
 
-- [ ] **Spec "done when":**
+- [x] **Spec "done when":**
   - a linked parent sees the stage path and parent note (J4.2)
   - a stalled student receives a nudge in the local Mailpit (J4.3)
-- [ ] **Axe audit:** the help panel open, on three pages; the parent view; `/agency/[student]`; `/app/notifications`. At both widths, in English and Hindi where the page is translated.
-- [ ] **Run every suite** (Verification). Check that `diff-fixtures` shows no engine change.
-- [ ] **Docs:**
+- [x] **Axe audit:** the help panel open, on three pages; the parent view; `/agency/[student]`; `/app/notifications`. At both widths, in English and Hindi where the page is translated.
+- [x] **Run every suite** (Verification). Check that `diff-fixtures` shows no engine change.
+- [x] **Docs:**
   - FEATURES.md: G4, G16, G17, G22 and G24 built
   - BACKLOG.md: English-only emails; help files awaiting native review
   - README.md
   - SETUP.md: Mailpit
   - this plan's checkboxes and exit gate
-- [ ] **Update the pull request description and commit** `J4.5 Help, parent and emails audit and docs`.
+- [x] **Update the pull request description and commit** `J4.5 Help, parent and emails audit and docs`.
 
 ## Decisions (defaults used unless the owner says otherwise)
 
