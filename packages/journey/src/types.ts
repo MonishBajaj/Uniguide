@@ -207,6 +207,10 @@ export interface JourneyInput {
   tracks: TrackSnapshot[];
   testScores: TestScore[];
   testPlans: TestPlan[];
+  /** Document readiness (M5, J5.3): yes/no and a passport expiry; no uploads. */
+  readiness?: { kind: "passport" | "transcript" | "translation" | "other"; ready: boolean; expiresOn: string | null }[];
+  /** Supervisor contacts the student logged, without names (M5, J5.3). */
+  supervisorContacts?: { applicationId: string | null; reply: "none" | "positive" | "negative" }[];
   shortlist: ShortlistRow[];
   applications: ApplicationSnapshot[];
   recommenders: { id: string; name: string }[];

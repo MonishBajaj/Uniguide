@@ -45,6 +45,10 @@ const snapshotSchema = z.object({
   testScores: list(
     z.object({ id: z.string(), exam: z.string(), examVersion: z.string().nullable(), total: z.number().nullable(), takenOn: z.string().nullable() }),
   ),
+  readiness: list(
+    z.object({ kind: z.enum(["passport", "transcript", "translation", "other"]), ready: z.boolean(), expiresOn: z.string().nullable() }),
+  ),
+  supervisorContacts: list(z.object({ applicationId: z.string().nullable(), reply: z.enum(["none", "positive", "negative"]) })),
   testPlans: list(
     z.object({ exam: z.string(), examVersion: z.string().nullable(), status: z.enum(["not_taken", "booked"]), bookedFor: z.string().nullable() }),
   ),

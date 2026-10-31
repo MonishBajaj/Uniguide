@@ -6,7 +6,7 @@ import Link from "next/link";
 import { FindUniversitiesButton } from "../matching/find-button";
 import { getLocale } from "@/lib/i18n/server";
 import { EXAMS } from "@/lib/fields";
-import { deleteTestPlan, deleteTestScore, removeTrack, saveTestPlan, setAiConsent } from "./actions";
+import { deleteTestPlan, deleteTestScore, removeTrack, saveReadiness, saveTestPlan, setAiConsent } from "./actions";
 import { CvReader, ProfileForm, TestScoreForm, TrackForm } from "./forms";
 
 export const metadata: Metadata = { title: "Profile" };
@@ -16,13 +16,16 @@ export default async function ProfilePage({ searchParams }: PageProps<"/app/prof
   const planInvalid = (await searchParams).plan === "invalid";
   const { t: all } = await getLocale();
   const tp = all.journey.plans;
-  const [{ data: profile }, { data: scores }, { data: consent }, { data: tracks }, { data: plans }] = await Promise.all([
+  const [{ data: profile }, { data: scores }, { data: consent }, { data: tracks }, { data: plans }, { data: readiness }] = await Promise.all([
     supabase.from("profiles").select("*").eq("user_id", user!.id).single(),
     supabase.from("test_scores").select("*").order("taken_on", { ascending: false }),
     supabase.from("consents").select("id").eq("kind", "ai_processing").is("withdrawn_at", null).limit(1).maybeSingle(),
     supabase.from("tracks").select("*").order("created_at"),
     supabase.from("test_plans").select("id, exam, status, booked_for").eq("user_id", user!.id).order("created_at"),
+    supabase.from("readiness_items").select("kind, ready, expires_on").eq("user_id", user!.id),
   ]);
+  const ready = (kind: string) => (readiness ?? []).find((r) => r.kind === kind);
+  const tr = all.journey.readiness;
   if (!profile) return <p>Profile not found.</p>;
   const checklist = profileChecklist(profile, (scores ?? []).length);
   const done = checklist.filter((i) => i.done).length;
@@ -157,6 +160,26 @@ export default async function ProfilePage({ searchParams }: PageProps<"/app/prof
             <button className="btn btn-secondary">{tp.save}</button>
           </form>
         </div>
+      </section>
+
+      <section id="readiness" aria-labelledby="readiness-title" className="grid scroll-mt-24 gap-3 rounded-2xl border border-border bg-surface p-6">
+        <h2 id="readiness-title" className="text-lg font-semibold">{tr.title}</h2>
+        <p className="text-sm text-muted">{tr.intro}</p>
+        <form action={saveReadiness} className="grid gap-3">
+          <label className="grid max-w-xs gap-1 text-sm font-semibold">
+            {tr.passport}
+            <input type="date" name="passport_expires" defaultValue={ready("passport")?.expires_on ?? ""} className="field font-normal" />
+          </label>
+          <label className="flex items-center gap-2 text-sm">
+            <input type="checkbox" name="transcript_ready" defaultChecked={ready("transcript")?.ready ?? false} className="accent-[var(--accent)]" />
+            {tr.transcript}
+          </label>
+          <label className="flex items-center gap-2 text-sm">
+            <input type="checkbox" name="translation_ready" defaultChecked={ready("translation")?.ready ?? false} className="accent-[var(--accent)]" />
+            {tr.translation}
+          </label>
+          <button className="btn btn-secondary justify-self-start">{tr.save}</button>
+        </form>
       </section>
 
       <section id="tracks" aria-labelledby="tracks-title" className="grid scroll-mt-24 gap-4 rounded-2xl border border-border bg-surface p-6">

@@ -30,6 +30,8 @@ import {
   removeScoreReport,
   saveNotes,
   setApplicationTrack,
+  addSupervisorContact,
+  removeSupervisorContact,
   shareOutcome,
   startApplying,
   toggleItem,
@@ -73,6 +75,12 @@ export default async function ApplicationPage({ params, searchParams }: PageProp
   if (!app) notFound();
   const program = app.program_cycles?.programs;
   const course = courseOf(app);
+  // Supervisor contacts for a research degree (J5.3, G9).
+  const doctorate = program?.level === "doctorate";
+  const { data: contacts } = doctorate
+    ? await supabase.from("supervisor_contacts").select("id, name, institution, contacted_on, reply, note").eq("application_id", app.id).order("contacted_on")
+    : { data: [] };
+  const ts = all.journey.supervisors;
   const items = [...app.checklist_items].sort((a, b) => a.sort - b.sort);
   const letter = (linkedDocs ?? []).find((d) => d.kind === "continued_interest");
   const letters = letterProgress(app.recommendation_requests, lettersNeeded(app.program_cycles?.requirements ?? []));
@@ -135,6 +143,43 @@ export default async function ApplicationPage({ params, searchParams }: PageProp
           <p className="text-muted">{all.journey.applying.intro}</p>
           <form action={startApplying.bind(null, app.id)}>
             <button className="btn btn-primary">{all.journey.applying.button}</button>
+          </form>
+        </section>
+      ) : null}
+
+      {doctorate ? (
+        <section id="supervisors" aria-labelledby="supervisors-title" className="grid scroll-mt-24 gap-3 rounded-2xl border border-border bg-surface p-6">
+          <h2 id="supervisors-title" className="text-lg font-semibold">{ts.title}</h2>
+          <p className="text-sm text-muted">{ts.intro}</p>
+          {(contacts ?? []).length ? (
+            <ul className="grid gap-2 text-sm">
+              {contacts!.map((c) => (
+                <li key={c.id} className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-background p-3">
+                  <span>
+                    <span className="font-semibold">{c.name}</span>, {c.institution} · {shortDate(c.contacted_on)} · {ts.replies[c.reply as keyof typeof ts.replies]}
+                    {c.note ? <span className="block text-muted">{c.note}</span> : null}
+                  </span>
+                  <form action={removeSupervisorContact.bind(null, c.id)}>
+                    <button className="btn btn-secondary btn-sm">{ts.remove}<span className="sr-only">: {c.name}</span></button>
+                  </form>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-sm text-muted">{ts.none}</p>
+          )}
+          <form action={addSupervisorContact.bind(null, app.id)} className="grid gap-3 sm:grid-cols-2">
+            <label className="grid gap-1 text-sm font-semibold">{ts.name}<input name="name" required maxLength={200} className="field font-normal" /></label>
+            <label className="grid gap-1 text-sm font-semibold">{ts.institution}<input name="institution" required maxLength={200} defaultValue={course.institution} className="field font-normal" /></label>
+            <label className="grid gap-1 text-sm font-semibold">{ts.contactedOn}<input name="contacted_on" type="date" required className="field font-normal" /></label>
+            <label className="grid gap-1 text-sm font-semibold">
+              {ts.reply}
+              <select name="reply" className="field font-normal">
+                {(["none", "positive", "negative"] as const).map((r) => <option key={r} value={r}>{ts.replies[r]}</option>)}
+              </select>
+            </label>
+            <label className="grid gap-1 text-sm font-semibold sm:col-span-2">{ts.note}<input name="note" maxLength={1000} className="field font-normal" /></label>
+            <button className="btn btn-secondary justify-self-start">{ts.add}</button>
           </form>
         </section>
       ) : null}

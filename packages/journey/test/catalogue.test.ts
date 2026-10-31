@@ -9,7 +9,7 @@ const ids = (input: JourneyInput) => evaluateCatalogue(input).open.map((s) => s.
 
 /** M1 plan "Deviations". S1.03 turned on in M2 with the profile's intake field. Changing this list is a deliberate act. */
 const UNAVAILABLE = [
-  "S2.07", "S3.04", "S3.06", "S4.09", "S4.13",
+  "S2.07", "S3.04", "S3.06",
   "S5.02", "S5.03", "S5.04", "S7.03", "S7.04", "S7.08",
 ];
 
@@ -539,6 +539,31 @@ describe("declining other offers (J5.2)", () => {
     const input = offers();
     const before = { ...input, applications: input.applications.map((a) => ({ ...a, offerAcceptedAt: null })) };
     expect(ids(before)).not.toContain("S6.07");
+  });
+});
+
+describe("document readiness and supervisor contacts (J5.3)", () => {
+  const prep = (over: Partial<JourneyInput> = {}, level: "master" | "doctorate" = "master") =>
+    base({
+      profile: { ...readyProfile, intakeYear: 2027 },
+      applications: [application("a1", { ...programs.tum!, level }, { status: "preparing", cycle: { id: "c", label: "2027-winter", startsOn: "2027-10-01" } })],
+      ...over,
+    });
+  const passport = (expiresOn: string | null) => ({ readiness: [{ kind: "passport" as const, ready: true, expiresOn }] });
+
+  it("asks for the passport until it's valid 18 months past the course start", () => {
+    expect(ids(prep())).toContain("S4.13");
+    expect(evaluateCatalogue(prep()).open.find((s) => s.catalogueId === "S4.13")!.href).toBe("/app/profile#readiness");
+    expect(ids(prep(passport("2028-12-01")))).toContain("S4.13");
+    expect(ids(prep(passport("2029-04-01")))).not.toContain("S4.13");
+  });
+
+  it("asks a doctorate applicant to contact a supervisor until one is logged for that application", () => {
+    const doctorate = prep({ profile: { ...readyProfile, targetLevels: ["doctorate"], researchInterests: "x" } }, "doctorate");
+    const s = evaluateCatalogue(doctorate).open.find((x) => x.catalogueId === "S4.09")!;
+    expect(s.href).toBe("/app/tracker/a1#supervisors");
+    expect(ids({ ...doctorate, supervisorContacts: [{ applicationId: "a1", reply: "none" }] })).not.toContain("S4.09");
+    expect(ids(prep())).not.toContain("S4.09");
   });
 });
 

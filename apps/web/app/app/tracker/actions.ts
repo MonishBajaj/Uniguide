@@ -239,3 +239,27 @@ export async function removeCost(costId: string) {
   await supabase.from("application_costs").delete().eq("id", costId);
   revalidatePath("/app/tracker", "layout");
 }
+
+// Supervisor contacts for research applications (journey M5, J5.3, G9). The student writes their own emails.
+const Contact = z.object({
+  name: z.string().trim().min(1).max(200),
+  institution: z.string().trim().min(1).max(200),
+  contacted_on: z.iso.date(),
+  reply: z.enum(["none", "positive", "negative"]),
+  note: z.preprocess((v) => (typeof v === "string" && v.trim() ? v.trim() : null), z.string().max(1000).nullable()),
+});
+
+export async function addSupervisorContact(applicationId: string, form: FormData) {
+  const { supabase, user } = await getUser();
+  if (!user) redirect("/login");
+  const parsed = Contact.safeParse(Object.fromEntries(form));
+  if (parsed.success) await supabase.from("supervisor_contacts").insert({ user_id: user.id, application_id: applicationId, ...parsed.data });
+  revalidatePath("/app", "layout");
+}
+
+export async function removeSupervisorContact(contactId: string) {
+  const { supabase } = await getUser();
+  await supabase.from("supervisor_contacts").delete().eq("id", contactId);
+  revalidatePath("/app", "layout");
+}
+

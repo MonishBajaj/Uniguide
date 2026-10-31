@@ -325,3 +325,28 @@ export async function removeTrack(id: string) {
   await supabase.from("tracks").delete().eq("id", id);
   revalidatePath("/app", "layout");
 }
+
+// Document readiness (journey M5, J5.3) ----------------------------------------------
+
+const Readiness = z.object({
+  passport_expires: z.preprocess((v) => v || null, z.iso.date().nullable()),
+  transcript_ready: z.preprocess((v) => v === "on", z.boolean()),
+  translation_ready: z.preprocess((v) => v === "on", z.boolean()),
+});
+
+/** Saves the passport expiry and whether transcripts and translations are ready. Yes/no and a date; no uploads. */
+export async function saveReadiness(form: FormData): Promise<void> {
+  const { supabase, user } = await getUser();
+  if (!user) redirect("/login");
+  const parsed = Readiness.safeParse(Object.fromEntries(form));
+  if (!parsed.success) return;
+  const { passport_expires, transcript_ready, translation_ready } = parsed.data;
+  await supabase.from("readiness_items").delete().eq("user_id", user.id).in("kind", ["passport", "transcript", "translation"]);
+  await supabase.from("readiness_items").insert([
+    ...(passport_expires ? [{ user_id: user.id, kind: "passport", ready: true, expires_on: passport_expires }] : []),
+    { user_id: user.id, kind: "transcript", ready: transcript_ready },
+    { user_id: user.id, kind: "translation", ready: translation_ready },
+  ]);
+  revalidatePath("/app", "layout");
+}
+

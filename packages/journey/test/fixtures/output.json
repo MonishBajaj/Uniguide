@@ -502,6 +502,24 @@
         "rank": "stage"
       },
       {
+        "id": "S4.13",
+        "catalogueId": "S4.13",
+        "stage": 4,
+        "title": "Check your passport is valid",
+        "reason": "Your passport usually needs to be valid for your whole stay.",
+        "copy": {
+          "key": "S4.13",
+          "params": {}
+        },
+        "href": "/app/profile#readiness",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [],
+        "parentTitle": "Checking the passport is valid",
+        "rank": "stage"
+      },
+      {
         "id": "S1.07",
         "catalogueId": "S1.07",
         "stage": 1,
@@ -596,6 +614,24 @@
         "dismissable": true,
         "markable": false,
         "factRefs": [],
+        "rank": "carry_over"
+      },
+      {
+        "id": "S4.13",
+        "catalogueId": "S4.13",
+        "stage": 4,
+        "title": "Check your passport is valid",
+        "reason": "Your passport usually needs to be valid for your whole stay.",
+        "copy": {
+          "key": "S4.13",
+          "params": {}
+        },
+        "href": "/app/profile#readiness",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [],
+        "parentTitle": "Checking the passport is valid",
         "rank": "carry_over"
       },
       {
@@ -696,6 +732,24 @@
         "rank": "stage"
       },
       {
+        "id": "S4.13",
+        "catalogueId": "S4.13",
+        "stage": 4,
+        "title": "Check your passport is valid",
+        "reason": "Your passport usually needs to be valid for your whole stay.",
+        "copy": {
+          "key": "S4.13",
+          "params": {}
+        },
+        "href": "/app/profile#readiness",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [],
+        "parentTitle": "Checking the passport is valid",
+        "rank": "stage"
+      },
+      {
         "id": "S1.07",
         "catalogueId": "S1.07",
         "stage": 1,
@@ -791,6 +845,24 @@
         "markable": false,
         "factRefs": [],
         "rank": "carry_over"
+      },
+      {
+        "id": "S4.13",
+        "catalogueId": "S4.13",
+        "stage": 4,
+        "title": "Check your passport is valid",
+        "reason": "Your passport usually needs to be valid for your whole stay.",
+        "copy": {
+          "key": "S4.13",
+          "params": {}
+        },
+        "href": "/app/profile#readiness",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [],
+        "parentTitle": "Checking the passport is valid",
+        "rank": "carry_over"
       }
     ],
     "completed": [
@@ -879,6 +951,24 @@
         "markable": false,
         "factRefs": [],
         "rank": "carry_over"
+      },
+      {
+        "id": "S4.13",
+        "catalogueId": "S4.13",
+        "stage": 4,
+        "title": "Check your passport is valid",
+        "reason": "Your passport usually needs to be valid for your whole stay.",
+        "copy": {
+          "key": "S4.13",
+          "params": {}
+        },
+        "href": "/app/profile#readiness",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [],
+        "parentTitle": "Checking the passport is valid",
+        "rank": "carry_over"
       }
     ],
     "completed": [
@@ -943,6 +1033,24 @@
         "dismissable": true,
         "markable": false,
         "factRefs": [],
+        "rank": "carry_over"
+      },
+      {
+        "id": "S4.13",
+        "catalogueId": "S4.13",
+        "stage": 4,
+        "title": "Check your passport is valid",
+        "reason": "Your passport usually needs to be valid for your whole stay.",
+        "copy": {
+          "key": "S4.13",
+          "params": {}
+        },
+        "href": "/app/profile#readiness",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [],
+        "parentTitle": "Checking the passport is valid",
         "rank": "carry_over"
       },
       {
@@ -1232,6 +1340,24 @@
         "rank": "stage"
       },
       {
+        "id": "S4.13",
+        "catalogueId": "S4.13",
+        "stage": 4,
+        "title": "Check your passport is valid",
+        "reason": "Your passport usually needs to be valid for your whole stay.",
+        "copy": {
+          "key": "S4.13",
+          "params": {}
+        },
+        "href": "/app/profile#readiness",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [],
+        "parentTitle": "Checking the passport is valid",
+        "rank": "stage"
+      },
+      {
         "id": "S1.07",
         "catalogueId": "S1.07",
         "stage": 1,
@@ -1350,6 +1476,24 @@
         "markable": false,
         "factRefs": [],
         "rank": "carry_over"
+      },
+      {
+        "id": "S4.13",
+        "catalogueId": "S4.13",
+        "stage": 4,
+        "title": "Check your passport is valid",
+        "reason": "Your passport usually needs to be valid for your whole stay.",
+        "copy": {
+          "key": "S4.13",
+          "params": {}
+        },
+        "href": "/app/profile#readiness",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [],
+        "parentTitle": "Checking the passport is valid",
+        "rank": "carry_over"
       }
     ],
     "completed": [
@@ -1422,6 +1566,24 @@
         "dismissable": true,
         "markable": false,
         "factRefs": [],
+        "rank": "stage"
+      },
+      {
+        "id": "S4.13",
+        "catalogueId": "S4.13",
+        "stage": 4,
+        "title": "Check your passport is valid",
+        "reason": "Your passport usually needs to be valid for your whole stay.",
+        "copy": {
+          "key": "S4.13",
+          "params": {}
+        },
+        "href": "/app/profile#readiness",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [],
+        "parentTitle": "Checking the passport is valid",
         "rank": "stage"
       },
       {
@@ -1544,6 +1706,24 @@
         "dismissable": true,
         "markable": false,
         "factRefs": [],
+        "rank": "carry_over"
+      },
+      {
+        "id": "S4.13",
+        "catalogueId": "S4.13",
+        "stage": 4,
+        "title": "Check your passport is valid",
+        "reason": "Your passport usually needs to be valid for your whole stay.",
+        "copy": {
+          "key": "S4.13",
+          "params": {}
+        },
+        "href": "/app/profile#readiness",
+        "dueAt": null,
+        "dismissable": true,
+        "markable": false,
+        "factRefs": [],
+        "parentTitle": "Checking the passport is valid",
         "rank": "carry_over"
       },
       {

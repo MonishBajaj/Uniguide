@@ -6,7 +6,7 @@
 export const ROUTES: Record<string, string[]> = {
   "/app/onboarding": [],
   "/consent": [],
-  "/app/profile": ["qualification", "budget", "targets", "intake", "scores-section", "test-plans", "cv", "tracks", "research"],
+  "/app/profile": ["qualification", "budget", "targets", "intake", "scores-section", "test-plans", "readiness", "cv", "tracks", "research"],
   "/app/sharing": ["family", "shares"],
   "/app/match": ["score-goals"],
   "/app/match/what-if": [],
@@ -18,7 +18,7 @@ export const ROUTES: Record<string, string[]> = {
   "/deadlines": [],
   "/app/shortlist": ["advice", "comparison", "costs"],
   "/app/tracker": [],
-  "/app/tracker/[id]": ["applying", "checklist", "scores", "letters", "supplemental", "costs", "notes", "decision", "portal"],
+  "/app/tracker/[id]": ["applying", "supervisors", "checklist", "scores", "letters", "supplemental", "costs", "notes", "decision", "portal"],
   "/app/tracker/costs": [],
   "/app/writing": [],
   "/app/writing/new": [],

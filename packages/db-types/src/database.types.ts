@@ -1275,6 +1275,20 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
+                },"readiness_items": {
+                  Row: {
+                    "created_at": string,"expires_on": string | null,"id": string,"kind": string,"note": string | null,"ready": boolean,"updated_at": string,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"expires_on"?: string | null,"id"?: string,"kind": string,"note"?: string | null,"ready"?: boolean,"updated_at"?: string,"user_id": string
+                  }
+                  Update: {
+                    "created_at"?: string,"expires_on"?: string | null,"id"?: string,"kind"?: string,"note"?: string | null,"ready"?: boolean,"updated_at"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
                 },"recommendation_reminder_log": {
                   Row: {
                     "days_before": number,"request_id": string,"sent_at": string
@@ -1518,6 +1532,32 @@ isOneToOne: false
                   }
                   Relationships: [
                     
+                  ]
+                },"supervisor_contacts": {
+                  Row: {
+                    "application_id": string | null,"contacted_on": string,"created_at": string,"faculty_profile_id": string | null,"id": string,"institution": string,"name": string,"note": string | null,"reply": string,"updated_at": string,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "application_id"?: string | null,"contacted_on": string,"created_at"?: string,"faculty_profile_id"?: string | null,"id"?: string,"institution": string,"name": string,"note"?: string | null,"reply"?: string,"updated_at"?: string,"user_id": string
+                  }
+                  Update: {
+                    "application_id"?: string | null,"contacted_on"?: string,"created_at"?: string,"faculty_profile_id"?: string | null,"id"?: string,"institution"?: string,"name"?: string,"note"?: string | null,"reply"?: string,"updated_at"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "supervisor_contacts_application_id_fkey"
+      columns: ["application_id"]
+isOneToOne: false
+      referencedRelation: "applications"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "supervisor_contacts_faculty_profile_id_fkey"
+      columns: ["faculty_profile_id"]
+isOneToOne: false
+      referencedRelation: "faculty_profiles"
+      referencedColumns: ["id"]
+    }
                   ]
                 },"test_plans": {
                   Row: {
