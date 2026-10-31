@@ -134,11 +134,11 @@ Checked against `Updated-developer-b` at `164575c` on 31 October 2026.
   - **S6.08:** accepted, document not received
   - **S7.01:** waits for the document
 
-- [ ] **Step 1: Failing tests:**
+- [x] **Step 1: Failing tests:**
   - **engine:** each step appears and completes; S7.01 waits for S6.08
   - **pgTAP:** columns, and that RLS and consent are unchanged
   - **Playwright:** accept an offer, mark each item, and watch the steps go
-- [ ] **Step 2: Implement, run `diff-fixtures`, take screenshots, commit** `J5.1 After you accept`.
+- [x] **Step 2: Implement, run `diff-fixtures`, take screenshots, commit** `J5.1 After you accept`.
 
 ---
 
@@ -154,7 +154,7 @@ Checked against `Updated-developer-b` at `164575c` on 31 October 2026.
   - keeps its outcome sharing
 - **S6.07** is one step per other open offer or waitlist after an acceptance, linking to `/app/offers#others`.
 
-- [ ] **Steps:**
+- [x] **Steps:**
   - failing tests:
     - **engine:** S6.07 per other offer; a declined offer drops out
     - **Playwright:** decline from the offers page; the tracker shows it
@@ -181,7 +181,7 @@ Checked against `Updated-developer-b` at `164575c` on 31 October 2026.
 - **S4.13:** a destination is chosen, and the passport expiry is missing or before the intake start plus 18 months. The intake start is the earliest tracked course start, or 1 September of the intake year, as an approximation.
 - **S4.09:** a doctorate application being prepared with no contact logged.
 
-- [ ] **Steps:**
+- [x] **Steps:**
   - failing tests:
     - **pgTAP:** RLS; parents can't see either table
     - **engine:** both steps appear and complete
@@ -207,7 +207,7 @@ Checked against `Updated-developer-b` at `164575c` on 31 October 2026.
   The rejected applications stay listed, with no outcome blame.
 - **Engine:** a rejected application created before `intake_rolled_at` doesn't count. S5.06 links to `/app/next-intake` and completes on rollover.
 
-- [ ] **Steps:**
+- [x] **Steps:**
   - failing tests:
     - **engine fixture** `edge-rolled-over-after-rejections`, which lands in stage 3 with its shortlist
     - **Playwright:** rejected everywhere, then the page, then "Plan for {year}", then the home shows stage 3
@@ -232,7 +232,7 @@ Checked against `Updated-developer-b` at `164575c` on 31 October 2026.
   - **S7.04 and S7.08:** from their rules, built like the existing rule steps
   - **S7.03:** a housing rule, or published housing facts (7.3); done with the "Arrange somewhere to live" task
 
-- [ ] **Steps:**
+- [x] **Steps:**
   - failing tests:
     - **pgTAP:** kinds; lead time with its quote
     - **unit:** the departure timeline uses only a verified lead time
@@ -259,7 +259,7 @@ Checked against `Updated-developer-b` at `164575c` on 31 October 2026.
   - **S5.03:** an interview not yet passed
   - **S5.04:** the expected date passed with no decision
 
-- [ ] **Steps:**
+- [x] **Steps:**
   - failing tests:
     - **engine:** each step
     - **pgTAP:** the kinds, and that only the owner writes
@@ -280,7 +280,7 @@ Checked against `Updated-developer-b` at `164575c` on 31 October 2026.
   - leaves an application already being prepared where it is
 - **S3.04** shows until an intake is chosen.
 
-- [ ] **Steps:**
+- [x] **Steps:**
   - failing tests:
     - **unit:** which cycles count as open
     - **engine:** S3.04
@@ -302,7 +302,7 @@ Checked against `Updated-developer-b` at `164575c` on 31 October 2026.
 - **The home** then shows "You made it" with the course's arrival guide and student-life links, and no step list.
 - **The worker** sends no journey digest or stage email to an arrived student.
 
-- [ ] **Steps:**
+- [x] **Steps:**
   - failing tests:
     - **engine:** `arrived`
     - **pytest:** no emails once arrived
@@ -313,19 +313,19 @@ Checked against `Updated-developer-b` at `164575c` on 31 October 2026.
 
 ### Task J5.9: Step links, audit, end-to-end flows and docs
 
-- [ ] **Spec "done when":**
+- [x] **Spec "done when":**
   - `journey-enrollment.spec.ts` walks one student from admitted to arrived. It checks that a step exists for every task and that each completes.
   - `journey-no-offers.spec.ts` takes a rejected-everywhere student to the next intake.
-- [ ] **Step links:** extend `journey-step-links.spec.ts` to stages 5, 6 and 7.
-- [ ] **Axe:** the offers page with "After you accept", `/app/next-intake`, the profile's readiness, the application page's new parts, the departure page and "You made it". At both widths, in English and Hindi.
-- [ ] **Run every suite** (Verification).
-- [ ] **Docs:**
+- [x] **Step links:** extend `journey-step-links.spec.ts` to stages 5, 6 and 7.
+- [x] **Axe:** the offers page with "After you accept", `/app/next-intake`, the profile's readiness, the application page's new parts, the departure page and "You made it". At both widths, in English and Hindi.
+- [x] **Run every suite** (Verification).
+- [x] **Docs:**
   - FEATURES.md: G9, G12, G13, G14, G20, G21, G23 and G26 built
   - BACKLOG.md: the switched-off table should be down to S2.07 and S3.06
   - README.md
   - this plan's exit gate
   - the pull request description
-- [ ] **Commit** `J5.9 Enrollment and edge paths audit and docs`.
+- [x] **Commit** `J5.9 Enrollment and edge paths audit and docs`.
 
 ## Decisions (defaults used unless the owner says otherwise)
 

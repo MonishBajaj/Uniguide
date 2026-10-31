@@ -64,6 +64,8 @@ for (const [width, height] of [[1280, 900], [390, 844]]) {
     const page = await signIn(browser, "student@uniguide.local");
     await page.setViewportSize({ width, height });
     const found = await audit(page, "/app/profile");
+    await page.context().addCookies([{ name: "ug_locale", value: "hi", url: page.url() }]);
+    found.push(...(await audit(page, "/app/profile")));
     expect(found, found.join("\n")).toEqual([]);
   });
 }

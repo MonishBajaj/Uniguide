@@ -2,7 +2,7 @@ import { expect, test, type Page } from "@playwright/test";
 import { STUDENT, resetStudent, signIn, sql } from "./helpers";
 
 // Journey M3 (J3.6), the milestone's "done when": every step a student in stages 1 to 4 can see links to a page
-// that opens, and to the control it names when the link has an anchor.
+// that opens, and to the control it names when the link has an anchor. M5 (J5.9) adds stages 5 to 7.
 const cycle = (slug: string) =>
   `(select c.id from program_cycles c join programs p on p.id = c.program_id where p.slug = '${slug}' and c.is_current limit 1)`;
 
@@ -24,6 +24,27 @@ const SETUPS: Record<string, string> = {
                 values ('${STUDENT}', 'preparing', 'Universiteit Voorbeeld', 'MSc Urban Planning', 'NL', now() + interval '40 days');
               insert into checklist_items (application_id, user_id, title, kind, due_at)
                 select id, user_id, 'Transcript', 'requirement', now() + interval '20 days' from applications where user_id = '${STUDENT}' and status = 'preparing'`,
+  // Stage 5 (M5): a submitted application with an interview ahead, a missing document and an expected decision date passed.
+  "stage 5": `with a as (insert into applications (user_id, cycle_id, status, expected_decision_on)
+                values ('${STUDENT}', ${cycle("exampleton-msc-data-science")}, 'submitted', current_date - 3) returning id)
+              insert into application_events (application_id, user_id, kind, occurs_at, note, missing)
+                select a.id, '${STUDENT}'::uuid, v.kind, v.occurs_at, v.note, v.missing from a,
+                  (values ('interview', now() + interval '5 days', null, false), ('portal_check', null, 'Transcript missing', true))
+                  v (kind, occurs_at, note, missing)`,
+  // Stage 6: an offer and a waitlist place, nothing accepted yet.
+  "stage 6": `insert into applications (user_id, cycle_id, status, decision, deposit_due_at) values
+                ('${STUDENT}', ${cycle("exampleton-msc-data-science")}, 'decided', 'admitted', now() + interval '20 days'),
+                ('${STUDENT}', ${cycle("tum-msc-informatics")}, 'decided', 'waitlisted', null)`,
+  // Stage 7: an accepted offer with conditions and the admission document in, another offer to decline, and verified
+  // housing, insurance and registration rules for the destination.
+  "stage 7": `insert into applications (user_id, cycle_id, status, decision, deposit_due_at, offer_accepted_at, admission_document_received_at) values
+                ('${STUDENT}', ${cycle("exampleton-msc-data-science")}, 'decided', 'admitted', now() + interval '20 days', now(), now()),
+                ('${STUDENT}', ${cycle("tum-msc-informatics")}, 'decided', 'admitted', null, null, null);
+              insert into offer_conditions (application_id, user_id, conditions)
+                select id, user_id, 'Final grade of at least 8.0' from applications where user_id = '${STUDENT}' and offer_accepted_at is not null;
+              insert into country_rules (destination, kind, title, status) values
+                ('GB', 'housing', 'E2E GB housing', 'verified'), ('GB', 'health_insurance', 'E2E GB health cover', 'verified'),
+                ('GB', 'residence_registration', 'E2E GB registration', 'verified')`,
 };
 
 async function stepLinks(page: Page): Promise<{ title: string; href: string }[]> {
@@ -57,7 +78,7 @@ for (const [stage, setup] of Object.entries(SETUPS)) {
         if (anchor) await expect(page.locator(`[id="${anchor}"]`), `${title} → ${href}`).toHaveCount(1);
       }
     } finally {
-      sql(`delete from test_scores where user_id = '${STUDENT}'`);
+      sql(`delete from test_scores where user_id = '${STUDENT}'; delete from country_rules where title like 'E2E GB %'`);
     }
   });
 }
