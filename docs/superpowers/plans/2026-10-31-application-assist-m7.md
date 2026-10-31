@@ -74,6 +74,8 @@ Checked on 31 October 2026, against `Updated-developer-b` at `0706418`.
 | R13 | A clean-room source about the competitor | The agent writing this plan also did the analysis behind `behavioural-spec.md`, using only public material the owner approved. | Disclosed in spec section 2. **An independent review before store submission** (G3) checks that the product's wording, interface and names don't echo the competitor's. |
 | R14 | Chrome Manifest V3 sign-in through our Supabase auth | The web app uses Supabase sessions in cookies; an extension can't share them. | A sign-in page on our site hands a session to the extension through `externally_connectable`. The extension keeps it in `chrome.storage.session`, never on the page and never in `localStorage` (A1.5). |
 
+| R15 | Fill contact details | Profiles hold a display name (which may be a nickname), a birth month, a residence country and the sign-in email. They hold no legal name, full date of birth, address or phone number. | `fill_profile` returns the email and residence country only. Fields asking for a legal name, date of birth, address or phone are left for the student (logged as `left`). We don't start collecting more personal data for this; that's a later owner decision (A1.1). |
+
 ## Deviations from the instructions (decisions M7 takes)
 
 - **The practice portal comes first** (R1, R3). All of phases 1 and 2 are built and verified against it. Real portals are phase 3, each behind its gate.
@@ -133,7 +135,7 @@ Checked on 31 October 2026, against `Updated-developer-b` at `0706418`.
 
 **Interfaces:**
 - **`fill_profile(p_application_id)`:**
-  - Returns identity and contact details, education with grades as entered, test scores, activities, the course's AI policy and final-draft ids.
+  - Returns the email and residence country (R15), education with grades as entered, test scores, activities from the CV, the course's portal and AI policy, and final-draft ids.
   - Only for the caller's own application, and nothing while consent is pending or revoked.
 - **`log_assist_event(...)`, `start_assist_run(...)`, `end_assist_run(...)`:** events record the field role, kind and source, never a value.
 - **`mark_application_submitted(p_application_id, p_how)`:** for the caller's own application only.
