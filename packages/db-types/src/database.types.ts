@@ -551,19 +551,57 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
-                },"enrichment_items": {
+                },"enrichment_candidates": {
                   Row: {
-                    "detail": string | null,"finished_at": string | null,"id": string,"job_id": string,"program_id": string,"started_at": string | null,"status": string
+                    "courses": number,"finished_at": string | null,"id": string,"institution_id": string,"job_id": string,"position": number,"reason": string | null,"started_at": string | null,"status": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "detail"?: string | null,"finished_at"?: string | null,"id"?: string,"job_id": string,"program_id": string,"started_at"?: string | null,"status"?: string
+                    "courses"?: number,"finished_at"?: string | null,"id"?: string,"institution_id": string,"job_id": string,"position": number,"reason"?: string | null,"started_at"?: string | null,"status"?: string
                   }
                   Update: {
-                    "detail"?: string | null,"finished_at"?: string | null,"id"?: string,"job_id"?: string,"program_id"?: string,"started_at"?: string | null,"status"?: string
+                    "courses"?: number,"finished_at"?: string | null,"id"?: string,"institution_id"?: string,"job_id"?: string,"position"?: number,"reason"?: string | null,"started_at"?: string | null,"status"?: string
                   }
                   Relationships: [
                     {
+      foreignKeyName: "enrichment_candidates_institution_id_fkey"
+      columns: ["institution_id"]
+isOneToOne: false
+      referencedRelation: "institutions"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "enrichment_candidates_institution_id_fkey"
+      columns: ["institution_id"]
+isOneToOne: false
+      referencedRelation: "program_cards"
+      referencedColumns: ["institution_id"]
+    },{
+      foreignKeyName: "enrichment_candidates_job_id_fkey"
+      columns: ["job_id"]
+isOneToOne: false
+      referencedRelation: "enrichment_jobs"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"enrichment_items": {
+                  Row: {
+                    "candidate_id": string | null,"detail": string | null,"finished_at": string | null,"id": string,"job_id": string,"program_id": string,"started_at": string | null,"status": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "candidate_id"?: string | null,"detail"?: string | null,"finished_at"?: string | null,"id"?: string,"job_id": string,"program_id": string,"started_at"?: string | null,"status"?: string
+                  }
+                  Update: {
+                    "candidate_id"?: string | null,"detail"?: string | null,"finished_at"?: string | null,"id"?: string,"job_id"?: string,"program_id"?: string,"started_at"?: string | null,"status"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "enrichment_items_candidate_id_fkey"
+      columns: ["candidate_id"]
+isOneToOne: false
+      referencedRelation: "enrichment_candidates"
+      referencedColumns: ["id"]
+    },{
       foreignKeyName: "enrichment_items_job_id_fkey"
       columns: ["job_id"]
 isOneToOne: false
@@ -585,14 +623,14 @@ isOneToOne: false
                   ]
                 },"enrichment_jobs": {
                   Row: {
-                    "allow_fallback": boolean,"created_at": string,"error": string | null,"finished_at": string | null,"heartbeat_at": string | null,"id": string,"profile_snapshot": NonNullable<Json>,"stage": string,"started_at": string | null,"status": Database["public"]['Enums']["enrichment_status"],"user_id": string
+                    "allow_fallback": boolean,"created_at": string,"error": string | null,"finished_at": string | null,"heartbeat_at": string | null,"id": string,"kept": number,"max_tries": number,"profile_snapshot": NonNullable<Json>,"stage": string,"started_at": string | null,"status": Database["public"]['Enums']["enrichment_status"],"target_complete": number,"tried": number,"user_id": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "allow_fallback"?: boolean,"created_at"?: string,"error"?: string | null,"finished_at"?: string | null,"heartbeat_at"?: string | null,"id"?: string,"profile_snapshot"?: NonNullable<Json>,"stage"?: string,"started_at"?: string | null,"status"?: Database["public"]['Enums']["enrichment_status"],"user_id": string
+                    "allow_fallback"?: boolean,"created_at"?: string,"error"?: string | null,"finished_at"?: string | null,"heartbeat_at"?: string | null,"id"?: string,"kept"?: number,"max_tries"?: number,"profile_snapshot"?: NonNullable<Json>,"stage"?: string,"started_at"?: string | null,"status"?: Database["public"]['Enums']["enrichment_status"],"target_complete"?: number,"tried"?: number,"user_id": string
                   }
                   Update: {
-                    "allow_fallback"?: boolean,"created_at"?: string,"error"?: string | null,"finished_at"?: string | null,"heartbeat_at"?: string | null,"id"?: string,"profile_snapshot"?: NonNullable<Json>,"stage"?: string,"started_at"?: string | null,"status"?: Database["public"]['Enums']["enrichment_status"],"user_id"?: string
+                    "allow_fallback"?: boolean,"created_at"?: string,"error"?: string | null,"finished_at"?: string | null,"heartbeat_at"?: string | null,"id"?: string,"kept"?: number,"max_tries"?: number,"profile_snapshot"?: NonNullable<Json>,"stage"?: string,"started_at"?: string | null,"status"?: Database["public"]['Enums']["enrichment_status"],"target_complete"?: number,"tried"?: number,"user_id"?: string
                   }
                   Relationships: [
                     
@@ -780,6 +818,32 @@ isOneToOne: false
                   }
                   Relationships: [
                     
+                  ]
+                },"institution_discovery": {
+                  Row: {
+                    "checked_at": string,"index_url": string | null,"institution_id": string,"reason": string | null,"status": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "checked_at"?: string,"index_url"?: string | null,"institution_id": string,"reason"?: string | null,"status": string
+                  }
+                  Update: {
+                    "checked_at"?: string,"index_url"?: string | null,"institution_id"?: string,"reason"?: string | null,"status"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "institution_discovery_institution_id_fkey"
+      columns: ["institution_id"]
+isOneToOne: true
+      referencedRelation: "institutions"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "institution_discovery_institution_id_fkey"
+      columns: ["institution_id"]
+isOneToOne: true
+      referencedRelation: "program_cards"
+      referencedColumns: ["institution_id"]
+    }
                   ]
                 },"institution_facts": {
                   Row: {
@@ -1902,6 +1966,9 @@ isOneToOne: false
               "amount": number,"conditions": string,"currency": string,"kind": string,"source_url": string,"status": Database["public"]['Enums']["fact_status"],"verified_at": string
             }[]
                            },
+"course_is_complete":
+{ Args: { "p_program_id": string }; Returns: boolean
+                           },
 "create_parent_invite":
 { Args: { "p_student_name": string }; Returns: string
                            },
@@ -2180,7 +2247,7 @@ isOneToOne: false
 { Args: { "p_adapter_version": string,"p_application_id": string,"p_feature": string,"p_portal": string }; Returns: string
                            },
 "start_enrichment":
-{ Args: { "p_program_ids": (string)[] }; Returns: string
+{ Args: { "p_institution_ids": (string)[] }; Returns: string
                            },
 "take_role_suggestion":
 { Args: Record<PropertyKey, never>; Returns: string
