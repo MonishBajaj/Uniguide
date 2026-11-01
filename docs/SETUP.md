@@ -163,6 +163,7 @@ Weekly digests (the journey digest, or the deadline digest for a student whose j
 | `research`: outcome report and admission model gate | Mondays 04:23 | `ANALYST_DATABASE_URL` | |
 | `index`: crawl verified course-index pages | daily 05:41 | `WORKER_DATABASE_URL`, `GEMINI_API_KEY` | `CRAWLER_CONTACT`, `GEMINI_MODEL` |
 | `journeys`: recompute each active student's journey (stage and next steps) | daily 02:29 | `JOURNEY_CRON_TOKEN` | `SITE_URL` |
+| `fx`: exchange rates from the ECB (needed to compare a budget with fees in another currency) | weekdays 16:30 UTC | `WORKER_DATABASE_URL` | none |
 
 Any job can also be started by hand from the Actions tab (Run workflow).
 

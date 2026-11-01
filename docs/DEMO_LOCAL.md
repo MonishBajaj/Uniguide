@@ -195,6 +195,8 @@ Supabase restarts with Docker; if it does not, run `pnpm db:start` at boot (a `@
 17 3 * * * cd /home/youruser/uniguide/worker && /home/youruser/.local/bin/uv run uniguide-worker monitor --limit 50
 # index: daily, crawl verified course-index pages
 41 5 * * * cd /home/youruser/uniguide/worker && /home/youruser/.local/bin/uv run uniguide-worker index crawl --limit 30
+# fx: weekdays, exchange rates from the ECB (budgets in another currency need them)
+30 12 * * 1-5 cd /home/youruser/uniguide/worker && /home/youruser/.local/bin/uv run uniguide-worker import fx-rates
 # notify: hourly, deadline reminders (prints what it would send unless RESEND_API_KEY is set)
 7 * * * * cd /home/youruser/uniguide/worker && /home/youruser/.local/bin/uv run uniguide-worker notify
 ```

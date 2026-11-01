@@ -9,12 +9,13 @@ on:
     - cron: "23 4 * * 1"    # research: weekly, outcome report and admission model gate
     - cron: "41 5 * * *"    # index: daily, crawl verified course-index pages
     - cron: "29 2 * * *"    # journeys: daily, recompute each active student's journey (stage, next steps)
+    - cron: "30 16 * * 1-5" # fx: weekdays, ECB reference rates (published about 15:00 UTC)
   workflow_dispatch:
     inputs:
       job:
         description: Job to run
         type: choice
-        options: [notify, monitor, research, index, journeys]
+        options: [notify, monitor, research, index, journeys, fx]
 
 concurrency:
   group: scheduled-${{ github.event.schedule || inputs.job }}
@@ -119,3 +120,20 @@ jobs:
             [ -z "$after" ] && exit 0
           done
           echo "Stopped after 500 pages" && exit 1
+
+  fx:
+    if: (github.event.schedule == '30 16 * * 1-5' || inputs.job == 'fx')
+    runs-on: ubuntu-latest
+    env:
+      WORKER_DATABASE_URL: ${{ secrets.WORKER_DATABASE_URL }}
+      CRAWLER_CONTACT: ${{ vars.CRAWLER_CONTACT }}
+    defaults:
+      run:
+        working-directory: worker
+    steps:
+      - uses: actions/checkout@v4
+        if: env.WORKER_DATABASE_URL != ''
+      - uses: astral-sh/setup-uv@v5
+        if: env.WORKER_DATABASE_URL != ''
+      - run: uv sync --frozen && uv run uniguide-worker import fx-rates
+        if: env.WORKER_DATABASE_URL != ''
