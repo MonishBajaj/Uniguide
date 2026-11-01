@@ -185,7 +185,7 @@ Locally the seed stores the hash of `local-journey-token`, which `.env.example` 
 
 ## 7. Enrichment worker (on-demand course facts)
 
-When a student presses "Find universities for me", the web app queues a job and the progress page follows it. A long-running process has to pick the job up, because Vercel functions are too short for fetching and reading ten sets of official pages. It is the same worker image as everything else:
+When a student presses "Find universities for me", the web app queues up to 30 universities, best-ranked first, and the progress page follows the job. The worker tries them in order: it takes the university's real courses in the student's subject and level (from a verified or earlier-discovered course index), or finds the university's course-list page itself and lets the model list it. It reads each course's official pages, and **keeps a university only when a course has a deadline, a cost and a requirement**. Otherwise the university is skipped with its reason and the next one is tried. A job stops at 10 complete courses, 30 universities tried, or 45 minutes. The matches page lists complete courses only. A cold search on a local model can take 20 to 45 minutes; results are reused by the next student. Universities that need JavaScript or refuse our fetcher are skipped. A long-running process has to pick the job up, because Vercel functions are too short for fetching and reading official pages. A long-running process has to pick the job up, because Vercel functions are too short for fetching and reading ten sets of official pages. It is the same worker image as everything else:
 
 ```bash
 docker build -t uniguide-worker worker
@@ -201,7 +201,7 @@ Deploy that image on Fly.io, Railway, Render or any host that keeps a process ru
 | `CRAWLER_CONTACT` | an address that officials of the sites we read can write to |
 | `ENRICH_FRESH_DAYS` | optional, default `7`: courses read within this many days are not fetched again |
 
-Locally, run it with `cd worker && uv run uniguide-worker serve` after `pnpm db:start`. One worker is enough; it handles one course at a time so the free Gemini limits hold. A job whose worker stops is picked up again after 15 minutes without a heartbeat.
+Locally, run it with `cd worker && uv run uniguide-worker serve` after `pnpm db:start`. One worker is enough; it handles one course at a time so the free Gemini limits hold. For finding course lists it uses the same model as `EXTRACTOR` (Gemini or a local Ollama model). A job whose worker stops is picked up again after 15 minutes without a heartbeat.
 
 ### Turning on the course-index crawl
 

@@ -26,12 +26,17 @@ FIRST_HOP = 4
 SECOND_HOP = 2
 LISTER_TRIES = 2
 
-_GOOD = re.compile(r"program|degree|a-z|a to z|courses|majors|masters?|study", re.IGNORECASE)
+_GOOD = re.compile(
+    r"program|degree|a-z|a to z|courses|majors|masters?|study|academics?|education|schools?", re.IGNORECASE
+)
 _GRADUATE = re.compile(r"graduate|postgrad|masters?|phd|doctor", re.IGNORECASE)
 _UNDERGRADUATE = re.compile(r"undergrad|bachelor", re.IGNORECASE)
+# News stories and the like often mention "programs" without listing any, so they count against a link.
 _AVOID = re.compile(
-    r"apply|admission|fees?|funding|news|events?|login|visit|open-?day|accommodation|alumni", re.IGNORECASE
+    r"apply|fees?|funding|events?|login|visit|open-?day|accommodation|alumni|news|stor(?:y|ies)|press|blog|\b20\d\d\b",
+    re.IGNORECASE,
 )
+_NOT_COURSE_HOSTS = ("news.", "events.", "blog.", "press.")
 _GRADUATE_LEVELS = {"master", "doctorate"}
 
 Page = tuple[str, str, set[str], list[ListedCourse]]
@@ -79,7 +84,10 @@ def _best_links(page: FetchResult, domain: str, levels: list[str], count: int, s
     scored: dict[str, int] = {}
     for text, href in page.links:
         url = href.split("#")[0]
+        host = (urlsplit(url).hostname or "").lower()
         if url in seen or url == page.final_url or not host_matches_domain(url, domain):
+            continue
+        if host.startswith(_NOT_COURSE_HOSTS):
             continue
         score = _score(text, url, levels)
         if score > 0 and score > scored.get(url, 0):

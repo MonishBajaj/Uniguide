@@ -158,6 +158,33 @@ def test_graduate_pages_are_tried_before_undergraduate_ones_for_a_masters_studen
     assert lister.asked[0] == f"https://www.{d}/graduate/programs"
 
 
+def test_news_stories_are_not_followed_even_when_they_mention_programs(worker: Connection, site: dict[str, Any]) -> None:
+    d = site["domain"]
+    news = f"https://news.{d}/stories/2026/10/new-graduate-programs-launch"
+    pages = {
+        f"https://www.{d}/": home(
+            d, ("New graduate programs launch this fall", news), ("Graduate programs", f"https://www.{d}/graduate/programs")
+        ),
+        news: ("story " * 10, tuple((f"s{n}", f"https://www.{d}/s/{n}") for n in range(20))),
+        f"https://www.{d}/graduate/programs": ("grad", ()),
+    }
+    fetcher = SiteFetcher(pages)
+    find_index_page(fetcher, MapLister(), d, ["master"])
+    assert news not in fetcher.calls
+
+
+def test_a_graduate_admissions_page_can_lead_to_the_program_list(worker: Connection, site: dict[str, Any]) -> None:
+    d = site["domain"]
+    text, links, listed = course_pages(d, [f"Program {n}" for n in range(MIN_ACCEPTED)])
+    pages = {
+        f"https://www.{d}/": home(d, ("Education", f"https://www.{d}/education")),
+        f"https://www.{d}/education": ("Education", (("Graduate admissions", f"https://www.{d}/graduate-admissions/programs"),)),
+        f"https://www.{d}/graduate-admissions/programs": (text, links),
+    }
+    found = find_index_page(SiteFetcher(pages), MapLister({f"https://www.{d}/graduate-admissions/programs": listed}), d, ["master"])
+    assert found is not None and found[0].endswith("/graduate-admissions/programs")
+
+
 def test_the_bare_domain_is_tried_when_www_is_missing(worker: Connection, site: dict[str, Any]) -> None:
     d = site["domain"]
     text, links, listed = course_pages(d, [f"Program {n}" for n in range(MIN_ACCEPTED)])

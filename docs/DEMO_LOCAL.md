@@ -110,7 +110,7 @@ In a second terminal:
 cd worker && uv run uniguide-worker serve
 ```
 
-Leave it running. It picks up each student's search, reads the official pages and updates the progress screen.
+Leave it running. It picks up each student's search and tries the queued universities in order (up to 30), finding their course lists and reading the official pages. It keeps a university only when a course has a deadline, a cost and a requirement, and updates the progress screen as it goes. A cold search on a local model takes 20 to 45 minutes; the matches page shows complete courses only, so it stays empty until a search has run. Universities whose sites need JavaScript or refuse automated readers are skipped. Loading verified course-index pages (step 4, `index load`) gives a university's courses straight away, which makes a search much faster.
 
 ## 7. Let other people open it
 
