@@ -11,7 +11,7 @@ from pydantic import ValidationError
 
 from ..extract.ollama import DEFAULT_HOST, NUM_CTX
 from ..validate.quotes import normalise
-from .lister import SYSTEM, CourseList, CourseListRun, ListedCourse, _message
+from .lister import SYSTEM, CourseList, CourseListRun, _message
 
 # A small local model has a window of NUM_CTX tokens for the page, the link list and the answer, so the
 # page and its links are cut well below what Gemini takes. A longer index lists only its first courses.
@@ -118,7 +118,5 @@ class OllamaCourseLister:
         except ValidationError as exc:
             msg = f"unparseable output: {exc.error_count()} errors"
             return CourseListRun(None, self.model, tin, tout, 0.0, msg, ms())
-        courses = [
-            ListedCourse(title=repair_title(c.title, c.quote), level=c.level, url=c.url, quote=c.quote) for c in courses
-        ]
+        courses = [c.model_copy(update={"title": repair_title(c.title, c.quote)}) for c in courses]
         return CourseListRun(courses, self.model, tin, tout, 0.0, None, ms())

@@ -12,7 +12,7 @@ import pytest
 
 from uniguide_worker.db import Connection
 from uniguide_worker.fetch.fetcher import FetchRefused, FetchResult, content_hash
-from uniguide_worker.index.crawl import crawl_all, crawl_index
+from uniguide_worker.index.crawl import crawl_all, crawl_index, ingest_listed
 from uniguide_worker.index.lister import CourseListRun, GeminiCourseLister, ListedCourse
 
 from .conftest import FakeGenai, FakeGenaiResponse
@@ -23,8 +23,10 @@ PAGE = (
 )
 
 
-def listed(title: str, url: str, level: str = "master", quote: str | None = None) -> ListedCourse:
-    return ListedCourse(title=title, level=level, url=url, quote=quote or title)
+def listed(
+    title: str, url: str, level: str = "master", quote: str | None = None, field: str | None = None
+) -> ListedCourse:
+    return ListedCourse(title=title, level=level, url=url, quote=quote or title, field=field)
 
 
 class Lister:
@@ -116,6 +118,45 @@ def test_quoted_on_site_courses_are_created_published(
         ("Master of Science in Robotics", "master", True, "extracted"),
     ]
     assert rows[1]["official_url"] == f"https://www.{d}/robotics" and rows[1]["suggestion_status"] is None
+
+
+def _fields(operator: Connection, ix: dict[str, Any]) -> dict[str, str | None]:
+    rows = operator.execute("select title, isced_f from programs where institution_id = %s", (ix["institution"],)).fetchall()
+    return {r["title"]: r["isced_f"] for r in rows}
+
+
+def test_the_listed_field_becomes_the_courses_field_of_study(
+    worker: Connection, operator: Connection, index: dict[str, Any]
+) -> None:
+    d = index["domain"]
+    lister = Lister([listed("Master of Science in Robotics", f"https://www.{d}/robotics", field="07")])
+    crawl_index(worker, IndexFetcher(d), lister, index_row(worker, index))  # type: ignore[arg-type]
+    assert _fields(operator, index) == {"Master of Science in Robotics": "07"}
+
+
+def test_a_field_that_is_not_one_of_the_ten_is_not_stored(
+    worker: Connection, operator: Connection, index: dict[str, Any]
+) -> None:
+    d = index["domain"]
+    lister = Lister(
+        [
+            listed("Master of Science in Robotics", f"https://www.{d}/robotics", field="99"),
+            listed("Doctor of Philosophy in Physics", f"https://www.{d}/physics", level="doctorate"),
+        ]
+    )
+    crawl_index(worker, IndexFetcher(d), lister, index_row(worker, index))  # type: ignore[arg-type]
+    assert _fields(operator, index) == {"Master of Science in Robotics": None, "Doctor of Philosophy in Physics": None}
+
+
+def test_ingest_listed_stores_courses_for_a_page_someone_else_fetched(
+    worker: Connection, operator: Connection, index: dict[str, Any]
+) -> None:
+    d = index["domain"]
+    course = listed("Master of Science in Robotics", f"https://www.{d}/robotics", field="07")
+    report = ingest_listed(worker, index_row(worker, index), PAGE, {f"https://www.{d}/robotics"}, [course])
+    worker.commit()  # ingest_listed leaves the commit to its caller
+    assert report.status == "crawled" and report.created == 1 and report.rejected == []
+    assert _fields(operator, index) == {"Master of Science in Robotics": "07"}
 
 
 def test_a_course_whose_quote_is_not_on_the_page_is_dropped(

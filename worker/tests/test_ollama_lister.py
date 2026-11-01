@@ -166,6 +166,23 @@ def test_a_repaired_title_reaches_the_caller_with_its_quote_unchanged() -> None:
     assert [(c.title, c.quote) for c in run.courses] == [("Robotics", "Robotics")]
 
 
+def test_a_listed_field_survives_the_title_repair() -> None:
+    reply = CourseList(
+        courses=[
+            ListedCourse(title="Master of Science in Robotics", level="master", url="https://u.example/r", quote="Robotics", field="07")
+        ]
+    )
+    handler = httpx.MockTransport(lambda request: httpx.Response(200, json=_reply(reply.model_dump_json())))
+    run = _lister(handler).list_courses("https://u.example", "t", LINKS)
+    assert run.courses is not None and [(c.title, c.field) for c in run.courses] == [("Robotics", "07")]
+
+
+def test_the_prompt_asks_for_a_field_code() -> None:
+    from uniguide_worker.index.lister import SYSTEM
+
+    assert "field:" in SYSTEM and "06 ICT" in SYSTEM
+
+
 def test_the_lister_waits_longer_for_the_model_than_the_extractor_does() -> None:
     assert LISTER_TIMEOUT_S >= 900
     assert OllamaCourseLister(model="m").client.timeout.read == LISTER_TIMEOUT_S

@@ -22,6 +22,7 @@ from .lister import MAX_LINKS, PROMPT_VERSION, CourseLister, ListedCourse
 log = logging.getLogger(__name__)
 
 MAX_COURSES = 300
+FIELDS = {f"{n:02d}" for n in range(1, 11)}
 LEVELS = {level.value for level in ProgramLevel}
 
 
@@ -86,7 +87,7 @@ def _record_run(conn: Connection, run: Any, page_text: str) -> None:
 
 
 def crawl_index(conn: Connection, fetcher: Fetcher, lister: CourseLister, index: dict[str, Any]) -> IndexReport:
-    url, domain = index["url"], index["official_domain"]
+    url = index["url"]
     try:
         result = fetcher.fetch(url)
     except FetchRefused as exc:
@@ -105,13 +106,24 @@ def crawl_index(conn: Connection, fetcher: Fetcher, lister: CourseLister, index:
         _touch(conn, index["id"])  # the hash is not stored, so the next crawl reads this page again
         return IndexReport(url, "failed", detail=run.error or "no list")
 
-    report = IndexReport(url, "crawled")
+    report = ingest_listed(conn, index, result.text, {href.split("#")[0] for _, href in result.links}, run.courses)
     if len(result.text) > MAX_PAGE_CHARS or len(result.links) > MAX_LINKS or len(run.courses) > MAX_COURSES:
         report.detail = "Only part of this page was read; list its sections as separate index URLs."
-    link_urls = {href.split("#")[0] for _, href in result.links}
+    # Remember the page only when it produced courses: an empty answer may be a weak one, so try again next time.
+    accepted = report.created + report.existing + report.promoted
+    _touch(conn, index["id"], digest=result.content_hash if accepted else None)
+    return report
+
+
+def ingest_listed(
+    conn: Connection, index: dict[str, Any], page_text: str, link_urls: set[str], courses: list[ListedCourse]
+) -> IndexReport:
+    """Store the listed courses that pass the checks (quote on the page, link on the page and on the site's domain)."""
+    domain = index["official_domain"]
+    report = IndexReport(index["url"], "crawled")
     seen: set[tuple[str, str]] = set()
-    for course in run.courses[:MAX_COURSES]:
-        reason = _reject_reason(course, result.text, link_urls, domain)
+    for course in courses[:MAX_COURSES]:
+        reason = _reject_reason(course, page_text, link_urls, domain)
         if reason:
             report.rejected.append(reason)
             continue
@@ -126,7 +138,12 @@ def crawl_index(conn: Connection, fetcher: Fetcher, lister: CourseLister, index:
             """,
             (index["institution_id"], course.title, course.level),
         ).fetchone()
+        field_code = course.field if course.field in FIELDS else None
         if found:
+            if field_code:
+                conn.execute(
+                    "update programs set isced_f = coalesce(isced_f, %s) where id = %s", (field_code, found["id"])
+                )
             if found["suggestion_status"] == "pending":
                 # The university's own list confirms what the model only suggested.
                 conn.execute(
@@ -140,9 +157,9 @@ def crawl_index(conn: Connection, fetcher: Fetcher, lister: CourseLister, index:
             continue
         conn.execute(
             """
-            insert into programs (institution_id, slug, title, level, official_url, coverage_tier, published,
+            insert into programs (institution_id, slug, title, level, official_url, isced_f, coverage_tier, published,
                                   verification_method)
-            values (%s, %s, %s, %s, %s, 'extracted', true, 'automated_extraction')
+            values (%s, %s, %s, %s, %s, %s, 'extracted', true, 'automated_extraction')
             """,
             (
                 index["institution_id"],
@@ -150,12 +167,10 @@ def crawl_index(conn: Connection, fetcher: Fetcher, lister: CourseLister, index:
                 course.title,
                 course.level,
                 course.url.split("#")[0],
+                field_code,
             ),
         )
         report.created += 1
-    # Remember the page only when it produced courses: an empty answer may be a weak one, so try again next time.
-    accepted = report.created + report.existing + report.promoted
-    _touch(conn, index["id"], digest=result.content_hash if accepted else None)
     return report
 
 
