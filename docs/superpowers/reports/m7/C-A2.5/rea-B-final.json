@@ -1,0 +1,162 @@
+{
+  "tool": "rea analyze-javascript-application --artifact-format directory",
+  "builds": {
+    "test": {
+      "root_artifact_sha256": "76447a7042c54582e5c9782f1d2eaae3cc456925f3a682100edfe8a7b0494605",
+      "statistics": {
+        "relevant_files": 5,
+        "nested_asar_containers": 0,
+        "text_bytes_read": 192969,
+        "invalid_utf8_files": 0,
+        "parsed_javascript_files": 3,
+        "skipped_javascript_files": 0,
+        "visited_ast_nodes": 22476,
+        "findings": 55,
+        "modules": 0,
+        "parse_failures": 0
+      },
+      "network_destinations": [
+        {
+          "file": "background.js",
+          "line": 817,
+          "destination": "`${SUPABASE_URL}/auth/v1/user`"
+        },
+        {
+          "file": "background.js",
+          "line": 828,
+          "destination": "`${SUPABASE_URL}/auth/v1/token?grant_type=refresh_token`"
+        },
+        {
+          "file": "background.js",
+          "line": 845,
+          "destination": "`${SUPABASE_URL}/rest/v1/${path}`"
+        },
+        {
+          "file": "background.js",
+          "line": 860,
+          "destination": "`${SUPABASE_URL}/functions/v1/${fn}`"
+        },
+        {
+          "file": "background.js",
+          "line": 877,
+          "destination": "`${SUPABASE_URL}/auth/v1/logout`"
+        }
+      ],
+      "navigation_unknowns": [
+        {
+          "file": "content.js",
+          "line": 1297,
+          "reason": "The navigation destination may be dynamic, mutated, projected or cyclic."
+        },
+        {
+          "file": "panel.js",
+          "line": 1677,
+          "reason": "The recognized navigation destination is not a supported literal."
+        }
+      ],
+      "portal_path_literals": {
+        "panel.js": [
+          "/",
+          "/apply/about-you",
+          "/apply/activities",
+          "/apply/declaration",
+          "/apply/fee",
+          "/apply/schooling",
+          "/apply/security-check",
+          "/apply/statement",
+          "/apply/tests",
+          "/confirmation",
+          "/review",
+          "/sign-in"
+        ],
+        "background.js": [
+          "/",
+          "/apply/about-you",
+          "/apply/activities",
+          "/apply/declaration",
+          "/apply/fee",
+          "/apply/schooling",
+          "/apply/security-check",
+          "/apply/statement",
+          "/apply/tests",
+          "/confirmation",
+          "/review",
+          "/sign-in"
+        ],
+        "content.js": [
+          "/",
+          "/apply/about-you",
+          "/apply/activities",
+          "/apply/declaration",
+          "/apply/fee",
+          "/apply/schooling",
+          "/apply/security-check",
+          "/apply/statement",
+          "/apply/tests",
+          "/confirmation",
+          "/review",
+          "/sign-in"
+        ]
+      },
+      "third_party_modules": 0,
+      "sender_validation_observations": 2
+    },
+    "store": {
+      "root_artifact_sha256": "be602b199d59721279912482ac6af42014e250b2b1bda2d093033778b8fd09c8",
+      "statistics": {
+        "relevant_files": 5,
+        "nested_asar_containers": 0,
+        "text_bytes_read": 134249,
+        "invalid_utf8_files": 0,
+        "parsed_javascript_files": 3,
+        "skipped_javascript_files": 0,
+        "visited_ast_nodes": 17533,
+        "findings": 19,
+        "modules": 0,
+        "parse_failures": 0
+      },
+      "network_destinations": [
+        {
+          "file": "background.js",
+          "line": 93,
+          "destination": "`${SUPABASE_URL}/auth/v1/user`"
+        },
+        {
+          "file": "background.js",
+          "line": 104,
+          "destination": "`${SUPABASE_URL}/auth/v1/token?grant_type=refresh_token`"
+        },
+        {
+          "file": "background.js",
+          "line": 121,
+          "destination": "`${SUPABASE_URL}/rest/v1/${path}`"
+        },
+        {
+          "file": "background.js",
+          "line": 136,
+          "destination": "`${SUPABASE_URL}/functions/v1/${fn}`"
+        },
+        {
+          "file": "background.js",
+          "line": 153,
+          "destination": "`${SUPABASE_URL}/auth/v1/logout`"
+        }
+      ],
+      "navigation_unknowns": [
+        {
+          "file": "content.js",
+          "line": 573,
+          "reason": "The navigation destination may be dynamic, mutated, projected or cyclic."
+        },
+        {
+          "file": "panel.js",
+          "line": 953,
+          "reason": "The recognized navigation destination is not a supported literal."
+        }
+      ],
+      "portal_path_literals": {},
+      "third_party_modules": 0,
+      "sender_validation_observations": 2
+    }
+  }
+}

@@ -208,6 +208,28 @@ Built on `Updated-developer-b`, milestone by milestone. Gap IDs (G…) are the s
 | M6 | — | Journey accessibility, data saver and docs | Built | One axe audit in CI covers every journey page with a course in every state, at 1280 and 390 px, in English and Hindi. The journey home and help panel are checked with data saver on. `docs/JOURNEY.md` explains the system for developers. |
 | M1/M2 | G18 | Snooze, dismiss and mark done | Built | `/app/steps` lists every step by band, with snooze (7 days), dismiss, mark done where allowed, Undo, and a "Snoozed and dismissed" list to bring steps back. |
 
+### Application assist (spec `docs/superpowers/specs/2026-10-31-application-assist-design.md`)
+
+The UniGuide Assist browser extension (`apps/extension`) helps a student fill in their own application on a portal, from their own confirmed profile, in their own browser. It never submits, pays, signs, certifies or declares, and never writes essay text. Built on `Updated-developer-b` against our own practice portal only; real portals wait for their gates (plan gates G1 to G7). How it works: `docs/APPLICATION_ASSIST.md`. REA evidence: `docs/superpowers/reports/m7/`.
+
+| Phase | Task | Feature | Status | Scope |
+|---|---|---|---|---|
+| 1 | A1.1 | Fill profile, audit log, final drafts and AI policy | Built | `fill_profile` returns only the student's own fillable facts, and nothing while consent is pending or revoked. `assist_runs` and `assist_events` log actions, roles and sources, never values. "Use as final draft" in the writing editor. `program_ai_policies` as a reviewed, sourced fact; unknown counts as a ban. |
+| 1 | A1.2 | Practice portal and its map | Built | `apps/practice-portal`: our own portal: a sign-in, a dashboard, eight application pages (among them a security-check stand-in, a fee and a declaration), a review page and a confirmation page. Its map came from REA step A on our own portal. |
+| 1 | A1.3 | Adapter format, roles and matcher | Built | `packages/portal-adapters`: canonical roles with actions, the adapter format and its validator, the map-first rule matcher, and the resolver that never converts a value. |
+| 1 | A1.4 | The guard | Built | Deny by default: a press only on a control the adapter declares as next-page and the guard judges safe; never-words in English and Hindi. The only click and navigation in the extension, with its own tests. |
+| 1 | A1.5 | Extension and assisted fill | Built | Manifest V3 with `storage` and `sidePanel` only; network only to the Supabase project. Connect on `/extension/connect`. The side panel's rows: Fill, Copy or "Leave for me", one field at a time, with the value and its source. |
+| 1 | A1.6 | Suggested roles for unmatched fields | Built | Opt-in per field: only the label goes to our Edge Function, and the student confirms the suggestion. Rate-limited. Needs the function deployed with its key. |
+| 1 | A1.7 | Final drafts, AI policy and the assist log | Built | Paste of the student's own final draft only where the verified policy allows, otherwise copy. The assist log on the application page, and read-only for a counselor with a share. |
+| 1 | A1.8 | Assisted fill exit gate | Built | REA steps B and C, the store listing and privacy-practice drafts (`apps/extension/store/`). |
+| 2 | A2.1 | Guided-apply run states | Built | A pure state machine: one action at a time, pause reasons that match the log, at most 40 pages. |
+| 2 | A2.2 | Guided apply through the guard | Built | Fills what it's sure of, presses Continue through the guard, and pauses on a missing value, a changed page, a security check, a fee, a declaration or portal errors. Stops at the review page. Pause, Stop, Skip, "I'll take it from here" and "Restart from this page". |
+| 2 | A2.3 | Essays and AI-policy mode | Built | The run never fills an essay. It pauses to offer the student's own final draft: paste only on a verified "allows" and only when told to, otherwise copy. |
+| 2 | A2.4 | Apply from the tracker and submitted | Built | "Apply with UniGuide Assist" on the tracker for portals with guided apply opens the portal with the application chosen. At review: a summary of what was filled, left, skipped and paused, with links. "I've submitted it" or the confirmation page marks the application submitted, and how. |
+| 2 | A2.5 | Guided apply exit gate | Built | REA steps B and C on the practice portal, every suite, these docs and the milestone report (`docs/superpowers/reports/m7/README.md`). |
+| 2 | A2.6 | Store submission | Waiting | After the clean-room review (G3). |
+| 3+ | A3.x and later | Real portals (UCAS, Common App assisted fill, then Slate, OUAC, uni-assist, Studielink) | Waiting | Each after its gate: written permission or a positive lawyer's review. Common App guided apply only if the permission covers navigation. |
+
 ### Working agreement
 
 - **Branches.** Developer B pushes all work to `developer-b`, one commit per feature row, each starting with its ID (for example `4.5 Track which scores went to which school`). A draft pull request from that branch runs CI on every push. Developer A uses one branch per feature row, named by ID (for example `feat/x1-real-seed`). Plain commit messages, no Claude co-author line.

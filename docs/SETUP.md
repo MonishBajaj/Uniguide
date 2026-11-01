@@ -237,6 +237,8 @@ The UniGuide Assist extension lives in `apps/extension`. It talks only to the Su
   - The function takes only a field's label and our role list, and uses `claude-haiku-5-5`.
   - Each student may ask 30 times an hour and 200 times a day (`take_role_suggestion`). The limit table keeps who asked and when, never the label.
   - Locally the Edge runtime is off (`supabase/config.toml`), so the panel says suggestions aren't available. The end-to-end test stands in for the function.
+- **Apply from the tracker (A2.4):** the tracker shows "Apply with UniGuide Assist" for applications whose portal system is in `NEXT_PUBLIC_GUIDED_SYSTEMS` (comma-separated deadline `owning_system` values). Outside production it defaults to `direct`, which the practice portal stands in for; in production it's empty until a portal's gate clears.
+- **How it works:** `docs/APPLICATION_ASSIST.md`. REA evidence and the milestone report: `docs/superpowers/reports/m7/`.
 - **Portals:** store builds include no portal until its gate clears (plan gates G1 to G7). Each cleared portal adds its adapter in `apps/extension/src/adapters.ts` and its host in `scripts/build.mjs`.
 
 ## Payments (season pass)

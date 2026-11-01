@@ -65,6 +65,29 @@ Catalogue steps written but switched off until the piece they need exists:
   - `enrichment.spec.ts` "the first complete profile save starts the search by itself" (never reaches `/app/matching`)
   - `suggested-courses.spec.ts`, two specs: the test reads booleans as `t`/`f`, but the query returns `true`/`false`
 
+## Application assist (after M7 phase 2)
+
+Phase 1 (assisted fill, A1.1 to A1.8) and phase 2 (guided apply, A2.1 to A2.5) are built and tested against our own practice portal only. How it works is in `docs/APPLICATION_ASSIST.md`; the plan is `docs/superpowers/plans/2026-10-31-application-assist-m7.md`, and the REA evidence and milestone report are in `docs/superpowers/reports/m7/`.
+
+**Waiting on the owner (gates, not code):**
+
+| Gate | What clears it | Then |
+|---|---|---|
+| G3 Clean-room review | Someone who hasn't read the competitor material compares our wording, interface and names with `docs/research/behavioural-spec.md` and the competitor's public store listing, and signs off | A2.6: store submission (listing and privacy drafts in `apps/extension/store/`) |
+| G2 UCAS, G1 Common App | Written permission, or a positive lawyer's review (both being pursued) | A3.1 UCAS (both features), A3.2 Common App assisted fill. Common App guided apply only if the permission covers navigation |
+| G4 to G7 | The same, per portal: Slate (UW–Madison, Georgia, Missouri first), OUAC (its terms need a full read first), uni-assist, Studielink | Phases 4 to 7 |
+
+**Before going live:** set `NEXT_PUBLIC_EXTENSION_ID` to the store id, and add each cleared portal's `owning_system` to `NEXT_PUBLIC_GUIDED_SYSTEMS` (empty in production until then, so the tracker shows no Apply button). Deploy `suggest-field-role` with its key for suggested roles.
+
+**Accepted limits (defaults in the M7 plan):**
+- The extension's session lives in `chrome.storage.session`, so the student connects again in each browser session (decision 10).
+- Chrome may not let "Apply with UniGuide Assist" open the side panel, because the press happened on a web page. The tracker then says to open UniGuide Assist from the toolbar.
+- The panel takes the pending Apply on the first page it's opened on. If that isn't the portal tab, the student chooses the application on the portal tab themselves.
+- Choosing an application in the panel opens an assisted-fill run straight away; starting guided apply ends it as `stopped`. Such runs have no events but show in the assist log.
+- A page that no longer matches its map pauses the run, and the student does that page themselves; the map needs updating before the run can fill it again.
+- The extension's Hindi strings (`apps/extension/src/panel/i18n.ts`) need a native speaker's review, with the rest of the Hindi interface.
+- Locally the Edge runtime is off, so suggested roles aren't available outside the end-to-end test's stand-in.
+
 ## Follow-ups
 
 - Extract fee waivers from official pages with the model. Today fee waivers arrive only through hand-verified seed files and admin review.
@@ -96,5 +119,6 @@ Catalogue steps written but switched off until the piece they need exists:
 - [ ] **Research ethics.** Outcomes research consent text, retention period and suppression threshold (currently 10).
 - [ ] Terms of service with liability limits; privacy policy stating real API retention (up to 30 days by default).
 - [ ] F-1/OPT: confirm with the DSO that operating the business is allowed.
+- [ ] **Legal: application portals.** Each portal's permission or lawyer's review (gates G1, G2, G4 to G7) before its adapter ships, and a review of the extension's privacy disclosure and store listing before submission (with G3).
 - [ ] New product and assistant name (UniGuide and Sage are taken); trademark and domain check.
 - [ ] Vercel Hobby is non-commercial: move to Pro before charging.
