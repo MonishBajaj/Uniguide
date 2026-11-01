@@ -68,10 +68,11 @@ export function planPage(fields: PlanField[], profile: FillProfile, adapter: Ada
       leave(f, "no_match");
       continue;
     }
-    // An essay is the student's own writing: listed as an essay, with or without a final draft (A2.3 offers it).
+    // An essay is the student's own writing, never filled by the run. It pauses for one that's empty when the
+    // portal needs it, or when there's a final draft to offer (pasted only if the student says so, A2.3).
     if ((ROLES[f.role!] as RoleSpec).draftKinds) {
       list(f, "essay");
-      if (f.required && !f.hasValue) pausing.push({ key: f.key, reason: "student" });
+      if (!f.hasValue && (f.required || r.status === "draft")) pausing.push({ key: f.key, reason: "student" });
       continue;
     }
     switch (r.status) {

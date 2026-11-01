@@ -154,6 +154,24 @@ describe("pauses", () => {
   });
 });
 
+describe("essays (A2.3)", () => {
+  it("pauses at an essay with a final draft and a verified 'allows', and pastes nothing by itself", async () => {
+    const statement = {
+      page: { kind: "form" as const, pageId: "statement", matchesMap: true },
+      fields: [field("field-statement", { role: "essay.personal_statement", control: "textarea", action: "confirm", wordLimit: 650 })],
+    };
+    const draft = { documentId: "d", kind: "personal_statement", title: null, question: null, versionId: "v", wordCount: 100 };
+    const p = fakePortal(["statement", "review"], {
+      scan: async () => (p.at() === "statement" ? { ...statement, errors: false } : { ...PAGES.review!, errors: false }),
+      plan: (fields, skipped) => planPage(fields, profile({ aiPolicy: "allows", finalDrafts: [draft] }), practice, skipped),
+    });
+    const r = new GuidedRunner(p.deps);
+    await r.start();
+    expect(r.run).toMatchObject({ status: "paused", pause: { reason: "student", fields: ["field-statement"] } });
+    expect(p.done).toEqual([]);
+  });
+});
+
 describe("Stop and Pause land before the next action", () => {
   it("Stop pressed during a fill: that fill finishes, nothing after it happens", async () => {
     const pages = structuredClone(PAGES);

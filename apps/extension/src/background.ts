@@ -2,6 +2,7 @@
 import { WEB_ORIGIN } from "./config";
 import type { AccountState, Application, BackgroundReply, ConsentState, SuggestOutcome, ToBackground } from "./messages";
 import { ROLES } from "@uniguide/portal-adapters";
+import { suggestionFrom } from "./suggest";
 import { acceptSession, getSession, invoke, rest, rpc, SignedOut, signOut } from "./supabase";
 
 chrome.runtime.onInstalled.addListener(() => {
@@ -134,10 +135,6 @@ async function handle(msg: ToBackground): Promise<unknown> {
  * the function refuses anything else. The answer is a suggestion; the student confirms it in the panel.
  */
 async function suggest(label: string): Promise<SuggestOutcome> {
-  const roles = Object.keys(ROLES);
-  const { status, data } = await invoke<{ role?: string | null }>("suggest-field-role", { label, roles });
-  if (status === 429) return { outcome: "limit" };
-  if (status !== 200 || !data) return { outcome: "unavailable" };
-  const role = data.role;
-  return typeof role === "string" && roles.includes(role) ? { outcome: "role", role: role as keyof typeof ROLES } : { outcome: "none" };
+  const { status, data } = await invoke<unknown>("suggest-field-role", { label, roles: Object.keys(ROLES) });
+  return suggestionFrom(status, data);
 }

@@ -21,6 +21,7 @@ test.beforeAll(async () => {
 
 test.afterAll(async () => {
   await rig?.close();
+  sql(`delete from program_ai_policies where program_id = (select id from programs where slug = 'exampleton-msc-data-science')`);
   resetApplicantForAssist();
   sql(`delete from test_scores where user_id = '${APPLICANT}'; delete from cv_entries where user_id = '${APPLICANT}'`);
 });
@@ -174,4 +175,52 @@ test("Stop takes effect before the next action: nothing happens after it", async
   expect(
     sql(`select count(*) from assist_events e join assist_runs r on r.id = e.run_id where r.user_id = '${APPLICANT}' and e.at > r.ended_at`),
   ).toBe("0");
+});
+
+test("essays: the run offers the student's own final draft, pastes it only when told to, and only where AI help is allowed", async () => {
+  const draft = "Why I want to study data science, in my own words.";
+  sql(`delete from assist_runs where user_id = '${APPLICANT}'; delete from documents where user_id = '${APPLICANT}'`);
+  const docId = sql(`insert into documents (user_id, kind, title) values ('${APPLICANT}', 'personal_statement', 'Personal statement') returning id`).split("\n")[0]!;
+  const versionId = sql(`insert into document_versions (document_id, user_id, body, word_count) values ('${docId}', '${APPLICANT}', '${draft}', 10) returning id`).split("\n")[0]!;
+  sql(`update documents set final_version_id = '${versionId}' where id = '${docId}';
+       insert into program_ai_policies (program_id, policy, status, evidence_quote, verified_at, published)
+         select id, 'allows', 'verified', 'Applicants may use AI tools to check their statements.', now(), true
+         from programs where slug = 'exampleton-msc-data-science'`);
+
+  // A verified "allows": the run pauses at the statement and offers the draft; nothing is pasted until the student says so.
+  portal = await freshPortal(ctx, portal);
+  await portal.goto(`${PORTAL}/apply/statement`);
+  await panel.reload();
+  await panel.getByRole("button", { name: "Use this application" }).click();
+  await expect(panel.locator("#guided-start")).toContainText("pastes it only after you say so");
+  await panel.getByRole("button", { name: "Start guided apply" }).click();
+  await pausedFor("student");
+  await expect(portal.locator("#field-statement")).toHaveValue("");
+  await panel.waitForTimeout(1000);
+  await expect(portal.locator("#field-statement")).toHaveValue("");
+  await panel.getByRole("button", { name: "Paste final draft: Why do you want to study this course?" }).click();
+  await expect(portal.locator("#field-statement")).toHaveValue(draft);
+  await expect(panel.locator("#guided-essay-field-statement")).toContainText("Pasted");
+  expect(await axe(panel)).toEqual([]);
+  await panel.getByRole("button", { name: "Resume" }).click();
+  await pausedFor("captcha");
+  await panel.getByRole("button", { name: "Stop" }).click();
+  expect(eventLines()).toContain("pasted_draft:essay.personal_statement:-");
+
+  // The policy unknown again: never pasted, but the student can copy their own draft and paste it themselves.
+  sql(`delete from program_ai_policies where program_id = (select id from programs where slug = 'exampleton-msc-data-science')`);
+  portal = await freshPortal(ctx, portal);
+  await portal.goto(`${PORTAL}/apply/statement`);
+  await panel.reload();
+  await panel.getByRole("button", { name: "Use this application" }).click();
+  await panel.getByRole("button", { name: "Start guided apply" }).click();
+  await pausedFor("student");
+  const essay = panel.locator("#guided-essay-field-statement");
+  await expect(essay).toContainText("copy your own draft and paste it yourself");
+  await expect(panel.getByRole("button", { name: /Paste final draft/ })).toHaveCount(0);
+  await panel.getByRole("button", { name: "Copy final draft: Why do you want to study this course?" }).click();
+  await expect.poll(() => panel.evaluate(() => navigator.clipboard.readText())).toBe(draft);
+  await expect(portal.locator("#field-statement")).toHaveValue("");
+  await panel.getByRole("button", { name: "Stop" }).click();
+  expect(eventLines()).toContain("copied_draft:essay.personal_statement:-");
 });

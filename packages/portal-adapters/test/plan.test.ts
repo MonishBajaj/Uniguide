@@ -57,6 +57,27 @@ describe("essays", () => {
   });
 });
 
+describe("essays are never filled by the run (A2.3)", () => {
+  const draft = { documentId: "d", kind: "personal_statement", title: null, question: null, versionId: "v", wordCount: 100 };
+
+  it("never puts an essay in the fill list, even with a final draft and a verified 'allows'", () => {
+    const plan = planPage(fields(fixture("statement")), profile({ aiPolicy: "allows", finalDrafts: [draft] }), practice, []);
+    expect(plan.toFill).toEqual([]);
+    expect(plan.pause).toEqual({ reason: "student", fields: ["field-statement"] });
+  });
+
+  it("pauses for an optional essay when there's a final draft to offer, and not when there isn't", () => {
+    const optional = fields(fixture("statement")).map((f) => ({ ...f, required: false }));
+    expect(planPage(optional, profile({ finalDrafts: [draft] }), practice, []).pause).toEqual({ reason: "student", fields: ["field-statement"] });
+    expect(planPage(optional, profile(), practice, []).pause).toBeNull();
+  });
+
+  it("doesn't pause once the essay field has the student's words in it", () => {
+    const filled = fields(fixture("statement")).map((f) => ({ ...f, hasValue: true }));
+    expect(planPage(filled, profile({ finalDrafts: [draft] }), practice, []).pause).toBeNull();
+  });
+});
+
 describe("pausing for the student", () => {
   it("pauses for required fields only the student fills, after filling the rest", () => {
     const plan = planPage(fields(fixture("about-you")), profile(), practice, []);

@@ -308,9 +308,13 @@ function render() {
       if (runner && runner.run.status !== "ready") parts.push(...guidedView());
       parts.push(h("p", { id: "unsupported" }, t.unsupported), button(t.checkAgain, rescan));
       break;
-    case "ready":
-      parts.push(...guidedView(), ...rowsView());
+    case "ready": {
+      // While a guided run has the page, its card is the one place to act; the rows return when the student
+      // takes over or the run ends.
+      const running = runner && ["filling", "moving", "paused", "at_review"].includes(runner.run.status);
+      parts.push(...guidedView(), ...(running ? [] : rowsView()));
       break;
+    }
   }
   if (s.notice && !s.notice.key) parts.push(h("p", { role: "status" }, t[s.notice.text]));
   app.replaceChildren(...parts.filter((p): p is Node | string => !!p));
@@ -367,17 +371,26 @@ function guidedView(): Child[] {
           h(
             "ul",
             { class: "needs" },
-            ...needing.map((f) =>
-              h(
+            ...needing.map((f) => {
+              const row = state.rows.find((x) => x.key === f.key && x.index === f.index);
+              const skip = r.skipped.includes(f.key)
+                ? h("span", { class: "status" }, t.guidedSkipped)
+                : button(t.skip, () => (g.skip(f.key), render()), { "aria-label": `${t.skip}: ${f.label}`, class: "secondary" });
+              if (row?.group !== "essay") return h("li", {}, f.label, " ", skip);
+              // An essay: the student's own final draft, offered as the course's AI policy allows (A2.3).
+              const body: Child[] = [];
+              const actions: Child[] = [];
+              essayOffer(row, f.label, body, actions);
+              const done = row.status === "filled" ? t.statusPasted : row.status === "copied" ? t.statusCopied : null;
+              return h(
                 "li",
-                {},
-                f.label,
-                " ",
-                r.skipped.includes(f.key)
-                  ? h("span", { class: "status" }, t.guidedSkipped)
-                  : button(t.skip, () => (g.skip(f.key), render()), { "aria-label": `${t.skip}: ${f.label}`, class: "secondary" }),
-              ),
-            ),
+                { class: "essay", id: `guided-essay-${f.key}` },
+                h("span", { class: "label" }, f.label),
+                h("div", { class: "body" }, ...body),
+                done ? h("span", { class: "status", role: "status" }, done) : null,
+                h("div", { class: "actions" }, ...actions, skip),
+              );
+            }),
           ),
         );
       }
@@ -482,24 +495,7 @@ function rowView(row: Row): Node {
       button(t.skip, () => doSkip(row), { "aria-label": `${t.skip}: ${name}`, class: "secondary" }),
     );
   } else if (row.group === "essay") {
-    const choice = row.draft?.choices[0];
-    if (!row.draft || !choice) body.push(h("span", { class: "reason" }, t.essayNoDraft));
-    else {
-      if (!choice.fits && row.draft && choice.wordCount) {
-        const limit = state.scan?.fields.find((f) => f.key === row.key)?.wordLimit ?? 0;
-        body.push(h("span", { class: "reason" }, t.essayTooLong(choice.wordCount, limit)));
-      }
-      if (row.draft.paste && choice.fits) {
-        actions.push(button(t.paste, async () => {
-          const text = await draftText(row);
-          if (text) await doFill(row, false, text);
-        }, { "aria-label": `${t.paste}: ${name}` }));
-      } else if (!row.draft.paste) body.push(h("span", { class: "reason" }, t.essayCopyOnly));
-      actions.push(button(t.copyDraft, async () => {
-        const text = await draftText(row);
-        if (text) await doCopy(row, text, "copied_draft");
-      }, { "aria-label": `${t.copyDraft}: ${name}`, class: "secondary" }));
-    }
+    essayOffer(row, name, body, actions);
   } else {
     const key = `reason_${row.reason ?? "no_match"}` as MsgKey;
     body.push(h("span", { class: "reason" }, key in t ? (t[key] as string) : t.reason_no_match));
@@ -524,6 +520,45 @@ function rowView(row: Row): Node {
     status ? h("span", { class: "status", role: "status" }, t[status]) : null,
     notice && notice !== (status ? t[status] : null) ? h("span", { class: "notice", role: "status" }, notice) : null,
     actions.length ? h("div", { class: "actions" }, ...actions) : null,
+  );
+}
+
+/**
+ * The student's own final draft for an essay field, in assisted fill and in a paused guided run (A2.3). Paste
+ * only where the course's verified policy allows it, and only when the student presses Paste; otherwise copy,
+ * for the student to paste themselves. Nothing here ever writes words of its own.
+ */
+function essayOffer(row: Row, name: string, body: Child[], actions: Child[]) {
+  const choice = row.draft?.choices[0];
+  if (!row.draft || !choice) {
+    body.push(h("span", { class: "reason" }, t.essayNoDraft));
+    return;
+  }
+  if (!choice.fits && choice.wordCount) {
+    const limit = state.scan?.fields.find((f) => f.key === row.key)?.wordLimit ?? 0;
+    body.push(h("span", { class: "reason" }, t.essayTooLong(choice.wordCount, limit)));
+  }
+  if (row.draft.paste && choice.fits) {
+    actions.push(
+      button(
+        t.paste,
+        async () => {
+          const text = await draftText(row);
+          if (text) await doFill(row, false, text);
+        },
+        { "aria-label": `${t.paste}: ${name}` },
+      ),
+    );
+  } else if (!row.draft.paste) body.push(h("span", { class: "reason" }, t.essayCopyOnly));
+  actions.push(
+    button(
+      t.copyDraft,
+      async () => {
+        const text = await draftText(row);
+        if (text) await doCopy(row, text, "copied_draft");
+      },
+      { "aria-label": `${t.copyDraft}: ${name}`, class: "secondary" },
+    ),
   );
 }
 

@@ -202,6 +202,16 @@ describe("suggested roles for unmatched fields (A1.6)", () => {
     expect(row(s).suggestion).toEqual({ status: "limit" });
   });
 
+  it("never takes essay text from a suggestion: a field confirmed as an essay offers only the student's own final draft", () => {
+    const draft = { documentId: "d-1", kind: "personal_statement", title: "PS", question: null, versionId: "v-1", wordCount: 400 };
+    let s = withUnknown();
+    s = { ...s, profile: profile({ aiPolicy: "allows", finalDrafts: [draft] }) };
+    s = gotSuggestion(s, "field-contact_email", undefined, { outcome: "role", role: "essay.personal_statement" });
+    s = confirmSuggestion(s, "field-contact_email");
+    expect(row(s)).toMatchObject({ group: "essay", draft: { paste: true, choices: [{ documentId: "d-1" }] } });
+    expect(row(s).value).toBeUndefined();
+  });
+
   it("logs a fill of a confirmed suggestion by its role, like any other", () => {
     let s = gotSuggestion(withUnknown(), "field-contact_email", undefined, { outcome: "role", role: "contact.email" });
     s = confirmSuggestion(s, "field-contact_email");
