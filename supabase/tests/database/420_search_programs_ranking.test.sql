@@ -80,5 +80,39 @@ select tests.authenticate_as(:'student');
 select results_eq($$ select slug from public.search_programs(p_query => 'ZZ Tied course') $$,
   $$ values ('zrank-tie-early'), ('zrank-tie-late') $$, 'tied courses are ordered by id');
 
+-- p_complete_only keeps only courses with a deadline, a cost and a requirement, and the per-university cap then counts
+-- only those.
+reset role;
+insert into public.institutions (id, name, country) values
+  ('00000000-0000-4000-c000-0000000000e5', 'Zrank E Complete U', 'US'),
+  ('00000000-0000-4000-c000-0000000000e6', 'Zrank F Capped U', 'US');
+insert into public.programs (id, institution_id, slug, title, level, isced_f, published) values
+  ('00000000-0000-4000-c000-0000000000f1', '00000000-0000-4000-c000-0000000000e5', 'zrank-e-full', 'Zcomplete Full', 'master', '0613', true),
+  ('00000000-0000-4000-c000-0000000000f2', '00000000-0000-4000-c000-0000000000e5', 'zrank-e-partial', 'Zcomplete Partial', 'master', '0613', true),
+  ('00000000-0000-4000-c000-0000000000f3', '00000000-0000-4000-c000-0000000000e6', 'zrank-f-1', 'Zcapped AA', 'master', '0613', true),
+  ('00000000-0000-4000-c000-0000000000f4', '00000000-0000-4000-c000-0000000000e6', 'zrank-f-2', 'Zcapped AB', 'master', '0613', true),
+  ('00000000-0000-4000-c000-0000000000f5', '00000000-0000-4000-c000-0000000000e6', 'zrank-f-3', 'Zcapped ZZ', 'master', '0613', true);
+insert into public.program_cycles (id, program_id, label, intake_year, intake_term)
+  select ('00000000-0000-4000-c000-0000000001' || right(id::text, 2))::uuid, id, '2027-autumn', 2027, 'autumn'
+  from public.programs where slug like 'zrank-e-%' or slug like 'zrank-f-%';
+insert into public.deadlines (cycle_id, due_at, precision, kind, published, status)
+  select pc.id, now() + interval '30 days', 'date', 'application', true, 'unverified'
+  from public.program_cycles pc join public.programs p on p.id = pc.program_id where p.slug in ('zrank-e-full', 'zrank-e-partial', 'zrank-f-1', 'zrank-f-2', 'zrank-f-3');
+insert into public.cost_items (cycle_id, kind, basis, low, base, high, currency, published, status)
+  select pc.id, 'tuition', 'per_year', 9000, 9000, 9000, 'USD', true, 'unverified'
+  from public.program_cycles pc join public.programs p on p.id = pc.program_id where p.slug in ('zrank-e-full', 'zrank-f-3');
+insert into public.requirements (cycle_id, kind, qualification, published, status)
+  select pc.id, 'entry_qualification', 'bachelor_4yr', true, 'unverified'
+  from public.program_cycles pc join public.programs p on p.id = pc.program_id where p.slug in ('zrank-e-full', 'zrank-f-3');
+select tests.authenticate_as(:'student');
+select results_eq($$ select slug from public.search_programs(p_query => 'zrank', p_complete_only => true) order by slug $$,
+  $$ values ('zrank-e-full'), ('zrank-f-3') $$, 'only courses with a deadline, a cost and a requirement');
+select results_eq($$ select slug from public.search_programs(p_query => 'zcomplete', p_complete_only => false) order by slug $$,
+  $$ values ('zrank-e-full'), ('zrank-e-partial') $$, 'by default incomplete courses are returned too');
+select results_eq($$ select slug from public.search_programs(p_query => 'zcapped', p_complete_only => true, p_per_institution => 1) $$,
+  $$ values ('zrank-f-3') $$, 'the cap counts only complete courses: the complete one is not pushed out by incomplete ones');
+select results_eq($$ select slug from public.search_programs(p_query => 'zcapped', p_per_institution => 1) $$,
+  $$ values ('zrank-f-1') $$, 'without complete-only the cap keeps the first course by title');
+
 select * from finish();
 rollback;
