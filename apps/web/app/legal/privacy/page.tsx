@@ -13,6 +13,9 @@ export default function Privacy() {
       <p>Accounts are not available under 13. Where the law of your country requires it, a parent or guardian confirms by email before we store grades, scores or a shortlist.</p>
       <h2 className="mt-4 text-xl font-semibold text-foreground">AI processing</h2>
       <p>If you use the optional CV reader, the text you paste is sent to Anthropic&apos;s Claude API to suggest profile fields. Anthropic may retain it for up to 30 days. We store only a fingerprint (hash) of the text and the fields you confirm.</p>
+      <h2 className="mt-4 text-xl font-semibold text-foreground">The UniGuide Assist extension</h2>
+      <p>If you use the browser extension, it reads the questions on supported application pages in your browser, to match them to your profile. It sends nothing from the page to us, except one field&apos;s label when you ask what that field means: we send that label, and nothing else, to Anthropic&apos;s Claude API, which may retain it for up to 30 days. The extension never sees your portal passwords.</p>
+      <p>It fetches your fill profile and, only when you ask, your final draft. It records an assist log for each application: which question and what happened, never what was filled. A counselor you share with can read that log. Its sign-in is kept in your browser until you sign out or close it.</p>
       <h2 className="mt-4 text-xl font-semibold text-foreground">Who sees your data</h2>
       <p>Only you. We do not sell data and do not share it with universities or agents. Our hosting and email providers process it on our behalf.</p>
       <h2 className="mt-4 text-xl font-semibold text-foreground">Your choices</h2>

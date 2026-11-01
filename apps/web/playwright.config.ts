@@ -17,9 +17,11 @@ export default defineConfig({
   // "demo" runs only with sign-in switched off (AUTH_DISABLED=true, `pnpm e2e:demo`); "community" only with
   // COMMUNITY_ENABLED=true (`pnpm e2e:community`); "app" covers everything else.
   projects: [
-    { name: "app", testIgnore: /(demo-mode|community-[\w-]+)\.spec\.ts/ },
+    { name: "app", testIgnore: /(demo-mode|community-[\w-]+|extension-[\w-]+)\.spec\.ts/ },
     { name: "demo", testMatch: /demo-mode\.spec\.ts/ },
     { name: "community", testMatch: /community-[\w-]+\.spec\.ts/ },
+    // "extension" loads the built UniGuide Assist extension against the practice portal (`pnpm e2e:extension`, M7).
+    { name: "extension", testMatch: /extension-[\w-]+\.spec\.ts/ },
   ],
   webServer: {
     // The dev server: without an email provider it shows the parental consent link instead of

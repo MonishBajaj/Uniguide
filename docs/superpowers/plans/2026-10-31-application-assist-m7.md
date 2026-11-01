@@ -47,7 +47,7 @@ Both work only in the student's own browser, never submit, and never write anyth
 - **Host permissions:** cleared portals only.
 - **Real-portal fixtures** contain no portal page copy, scripts or assets.
 - **The usual project rules:**
-  - migrations start at `20270107`, with pgTAP and RLS on every table, then `pnpm db:types`
+  - migrations: A1.1 is `20270107000001`. From 31 October 2026, new migrations use the real current timestamp (owner's decision), with pgTAP and RLS on every table, then `pnpm db:types`. A real-timestamp migration sorts before every 2027-dated one, so it can't change the assist or journey objects; how to handle such a change is an open owner decision (`docs/SETUP.md`, "Migrations dated 2027")
   - interface copy through `lib/i18n` in English and Hindi
   - WCAG 2.1 AA, with axe on new pages at 1280 and 390 px
   - every spec sets up and removes its own data, and waits for each save before reading the result
@@ -73,6 +73,8 @@ Checked on 31 October 2026, against `Updated-developer-b` at `0706418`.
 | R12 | "Apply" from a course in the tracker | The tracker has no way to talk to an extension. | `externally_connectable` limited to our web app's origin. The Apply button checks that the extension is installed and signed in (otherwise it links to install), then opens the portal and hands the run to the extension (A2.4). |
 | R13 | A clean-room source about the competitor | The agent writing this plan also did the analysis behind `behavioural-spec.md`, using only public material the owner approved. | Disclosed in spec section 2. **An independent review before store submission** (G3) checks that the product's wording, interface and names don't echo the competitor's. |
 | R14 | Chrome Manifest V3 sign-in through our Supabase auth | The web app uses Supabase sessions in cookies; an extension can't share them. | A sign-in page on our site hands a session to the extension through `externally_connectable`. The extension keeps it in `chrome.storage.session`, never on the page and never in `localStorage` (A1.5). |
+
+| R15 | Fill contact details | Profiles hold a display name (which may be a nickname), a birth month, a residence country and the sign-in email. They hold no legal name, full date of birth, address or phone number. | `fill_profile` returns the email and residence country only. Fields asking for a legal name, date of birth, address or phone are left for the student (logged as `left`). We don't start collecting more personal data for this; that's a later owner decision (A1.1). |
 
 ## Deviations from the instructions (decisions M7 takes)
 
@@ -133,21 +135,21 @@ Checked on 31 October 2026, against `Updated-developer-b` at `0706418`.
 
 **Interfaces:**
 - **`fill_profile(p_application_id)`:**
-  - Returns identity and contact details, education with grades as entered, test scores, activities, the course's AI policy and final-draft ids.
+  - Returns the email and residence country (R15), education with grades as entered, test scores, activities from the CV, the course's portal and AI policy, and final-draft ids.
   - Only for the caller's own application, and nothing while consent is pending or revoked.
 - **`log_assist_event(...)`, `start_assist_run(...)`, `end_assist_run(...)`:** events record the field role, kind and source, never a value.
 - **`mark_application_submitted(p_application_id, p_how)`:** for the caller's own application only.
 - **`documents.final_version_id`:** set through the existing update policy, and only to one of the document's own versions.
 - **`program_ai_policies`:** public read of published rows; changes go through the review RPCs.
 
-- [ ] **Failing pgTAP first:**
+- [x] **Failing pgTAP first:**
   - isolation
   - consent pending or revoked returns nothing
   - parents get nothing; counselors with a share can read runs
   - an event can't carry a value
   - a final version must belong to its document
   - an unknown AI policy reads as "bans"
-- [ ] Implement, run `pnpm db:types`, and commit `A1.1 Fill profile, audit log, final drafts and AI policy`.
+- [x] Implement, run `pnpm db:types`, and commit `A1.1 Fill profile, audit log, final drafts and AI policy`.
 
 ### Task A1.2: Practice portal and its map (REA step A on our own portal)
 
@@ -159,8 +161,8 @@ Checked on 31 October 2026, against `Updated-developer-b` at `0706418`.
 - a review page and a confirmation page
 
 **Steps:**
-- [ ] Build the portal, with Playwright smoke tests.
-- [ ] **REA step A (practice portal):**
+- [x] Build the portal, with Playwright smoke tests.
+- [x] **REA step A (practice portal):**
   - Start Chromium with a debugging port and a dedicated profile.
   - Sign in with the synthetic test student.
   - With REA observing (`observe_web_session`, `inspect_web_page`), click through every page. Record:
@@ -169,9 +171,9 @@ Checked on 31 October 2026, against `Updated-developer-b` at `0706418`.
     - required and conditional fields
     - the review and confirmation pages
     - every submit, pay, sign and certify control
-- [ ] Save the map as `packages/portal-adapters/practice/map.json` and the captures as fixtures, plus the evidence in `docs/superpowers/reports/m7/A-practice/`.
-- [ ] **Show the map to the owner before writing the adapter.**
-- [ ] Commit `A1.2 Practice portal and its map`.
+- [x] Save the map as `packages/portal-adapters/practice/map.json` and the captures as fixtures, plus the evidence in `docs/superpowers/reports/m7/A-practice/`.
+- [x] **Show the map to the owner before writing the adapter.**
+- [x] Commit `A1.2 Practice portal and its map`.
 
 ### Task A1.3: Adapter format, canonical roles and the rule matcher
 
@@ -184,38 +186,38 @@ Checked on 31 October 2026, against `Updated-developer-b` at `0706418`.
   - returns a role and a confidence, or "unmatched"
 - **Value resolver:** turns the `fill_profile` output into a value and its source for each role. It returns "needs the student" when a format doesn't match. It never converts.
 
-- [ ] **Failing tests first, against the A1.2 fixtures:**
+- [x] **Failing tests first, against the A1.2 fixtures:**
   - every mapped field gets its role
   - conditional fields count only when visible
   - repeated groups match in order
   - a grade whose scale isn't among the portal's options returns "needs the student"
   - an unknown field is unmatched
-- [ ] Implement the practice adapter from its map, and commit `A1.3 Adapter format, roles and rule matcher`.
+- [x] Implement the practice adapter from its map, and commit `A1.3 Adapter format, roles and rule matcher`.
 
 ### Task A1.4: The guard
 
 **Interfaces:** `guard.allowClick(control, context)` and `guard.allowKey(...)`.
 - Deny by default.
 - Allow only an adapter-declared next-page or "add another" control that passes the adapter-independent checks (spec 7.2).
-- Never: form submit, Enter in text fields, declaration ticks, payment or third-party frames, or controls whose words appear on the never-click list (English and Hindi).
+- Never: the final submission, Enter in text fields, declaration ticks, payment or third-party frames, or controls whose words appear on the never-click list (English and Hindi). A submit control is the final submission unless its form has something to fill and no password, declaration, payment, signature or security field (spec 7.2 rule 4, refined in A1.4).
 
-- [ ] **Failing tests first, independent of any adapter.** Each of these must be blocked:
+- [x] **Failing tests first, independent of any adapter.** Each of these must be blocked:
   - a submit button labelled next-page by a deliberately wrong adapter
   - a pay link
   - a "certify" checkbox
   - a confirm button inside a frame
   - Enter in a text field
   - a never-click control whose text is changed at runtime
-- [ ] Implement, and commit `A1.4 The guard, deny by default`.
+- [x] Implement, and commit `A1.4 The guard, deny by default`.
 
 ### Task A1.5: Extension shell, sign-in and assisted fill
 
 **Interfaces:**
 - **Manifest V3:**
-  - permissions: `storage`, `sidePanel`, `scripting`, `activeTab`
+  - permissions: `storage`, `sidePanel` (the plan's `scripting` and `activeTab` were dropped in A1.5: nothing uses them, and the Web Store rejects unused permissions)
   - host permissions: the Supabase project, plus the practice portal in test builds only
   - content security policy: `connect-src` the Supabase project only
-- **Sign-in:** through `/extension/connect` on our site. The session is kept in `chrome.storage.session`; sign-out clears everything.
+- **Sign-in:** through `/extension/connect` on our site. The student enters their UniGuide password there, which makes a separate session for the extension (sharing the web app's session would break, because Supabase rotates refresh tokens). The page hands it only to our extension id. The session is kept in `chrome.storage.session`; sign-out clears everything.
 - **Consent:** pending or revoked shows only the reason.
 - **Side panel:** fields with suggested value, source, confidence and fill, copy and skip (spec 5.3). Every fill goes through the content script's single writer, which uses the guard for anything other than typing into a field.
 - **Logging:** every action is logged through the RPCs.
@@ -223,7 +225,7 @@ Checked on 31 October 2026, against `Updated-developer-b` at `0706418`.
   - a network allowlist test over the built bundle
   - a check that no file outside the guard uses `click(`, `submit(`, `requestSubmit(`, `dispatchEvent` with click or submit, `location` assignment, or Enter key events
 
-- [ ] **Failing tests first:**
+- [x] **Failing tests first:**
   - unit tests for the panel state
   - Playwright, with the extension loaded, against the practice portal:
     - sign in, then fill one field, copy one, skip one
@@ -231,14 +233,14 @@ Checked on 31 October 2026, against `Updated-developer-b` at `0706418`.
     - a choice field with no exact option does nothing
     - consent pending shows nothing to fill
   - the build checks fail on a planted `fetch` to another host, and on a planted `.click()` outside the guard
-- [ ] **REA step B:** run `analyze_javascript_application` on the built `apps/extension/dist`. Report:
+- [x] **REA step B:** run `analyze_javascript_application` on the built `apps/extension/dist`. Report:
   - declared permissions
   - every network destination candidate
   - any path that can click, submit or navigate
   - third-party code
 
   Fail if a destination isn't our Supabase project, or a click path reaches a never-click control. Save the report in `docs/superpowers/reports/m7/B-A1.5/`.
-- [ ] Commit `A1.5 Extension shell, sign-in and assisted fill`.
+- [x] Commit `A1.5 Extension shell, sign-in and assisted fill`.
 
 ### Task A1.6: Model help for unmatched fields
 
@@ -250,11 +252,11 @@ Checked on 31 October 2026, against `Updated-developer-b` at `0706418`.
   - rate-limited per user
 - **In the panel:** "Suggest what this asks" on an unmatched field. The answer shows with a "suggested" badge, and the student must confirm before a fill.
 
-- [ ] **Failing tests first:**
+- [x] **Failing tests first:**
   - the function rejects a request carrying anything but a label and the role list
   - the panel never fills on a suggestion without confirmation
   - REA step B still shows only the Supabase project
-- [ ] Implement, and commit `A1.6 Suggested roles for unmatched fields`.
+- [x] Implement, and commit `A1.6 Suggested roles for unmatched fields`.
 
 ### Task A1.7: Web app (final draft, AI policy, extension page, assist log)
 
@@ -266,19 +268,19 @@ Checked on 31 October 2026, against `Updated-developer-b` at `0706418`.
 
 All copy goes through `lib/i18n` in English and Hindi.
 
-- [ ] **Failing tests first:**
+- [x] **Failing tests first:**
   - pgTAP covered by A1.1
   - Playwright: mark a final draft; see the policy fact; read a run's log
   - axe at both widths
-- [ ] Implement, and commit `A1.7 Final drafts, AI policy and the assist log`.
+- [x] Implement, and commit `A1.7 Final drafts, AI policy and the assist log`.
 
 ### Task A1.8: Assisted fill exit gate (REA steps B and C on the practice portal)
 
-- [ ] **Full e2e:** a practice-portal session in which the student fills, copies and skips across all pages, with the run logged.
-- [ ] **REA step C (practice portal):** observe a full assisted-fill session. Record fields touched, navigations (the student's own only) and network requests. The page session, the extension's request log and the content security policy together must show only our Supabase project. Save the evidence in `docs/superpowers/reports/m7/C-A1.8/`.
-- [ ] REA step B on the final build.
-- [ ] Draft the Chrome Web Store listing and privacy disclosure (spec 7.8).
-- [ ] Every suite, then commit `A1.8 Assisted fill audit and docs`.
+- [x] **Full e2e:** a practice-portal session in which the student fills, copies and skips across all pages, with the run logged.
+- [x] **REA step C (practice portal):** observe a full assisted-fill session. Record fields touched, navigations (the student's own only) and network requests. The page session, the extension's request log and the content security policy together must show only our Supabase project. Save the evidence in `docs/superpowers/reports/m7/C-A1.8/`.
+- [x] REA step B on the final build.
+- [x] Draft the Chrome Web Store listing and privacy disclosure (spec 7.8).
+- [x] Every suite, then commit `A1.8 Assisted fill audit and docs`.
 
 ## Phase 2: Guided apply
 
@@ -288,8 +290,8 @@ All copy goes through `lib/i18n` in English and Hindi.
 - pause reasons: no confident match; required field without a confirmed value; page doesn't match; CAPTCHA or security check; sign-in screen; payment, fee waiver or declaration; unexpected
 - Pause, Stop and resume, hand-back, and stop at review
 
-- [ ] **Failing tests first:** each pause reason pauses; Stop takes effect before the next action; at review the run stops and can't move on.
-- [ ] Commit `A2.1 Guided-apply run states`.
+- [x] **Failing tests first:** each pause reason pauses; Stop takes effect before the next action; at review the run stops and can't move on.
+- [x] Commit `A2.1 Guided-apply run states`.
 
 ### Task A2.2: Moving through pages (guard, page checks, pauses)
 
@@ -297,7 +299,7 @@ All copy goes through `lib/i18n` in English and Hindi.
 - On each page: check the page against the map, fill confident fields, list the rest, decide whether to pause.
 - Move only through the guard, using the adapter's next-page control, then wait for the next page.
 
-- [ ] **Failing Playwright tests first** (practice portal, extension loaded):
+- [x] **Failing Playwright tests first** (practice portal, extension loaded):
   - a full run reaches the review page and stops
   - a changed page pauses
   - the CAPTCHA stand-in pauses
@@ -305,7 +307,7 @@ All copy goes through `lib/i18n` in English and Hindi.
   - a missing required value pauses
   - Stop in mid-page stops before the next action
   - a deliberately wrong practice adapter cannot get past the guard to submit
-- [ ] Commit `A2.2 Guided apply through the guard`.
+- [x] Commit `A2.2 Guided apply through the guard`.
 
 ### Task A2.3: Essays and AI-policy mode
 
@@ -316,12 +318,12 @@ All copy goes through `lib/i18n` in English and Hindi.
   - offer "Copy my final draft" to the clipboard, so the student can paste it themselves
   - list the field for the student
 
-- [ ] **Failing tests first:**
+- [x] **Failing tests first:**
   - no paste without confirmation
   - no paste without a final draft
   - a banning or unknown-policy course is never pasted into, but its final draft can be copied to the clipboard
   - nothing is ever generated: there's no code path from the Edge Function to an essay field
-- [ ] Commit `A2.3 Essays and AI-policy mode`.
+- [x] Commit `A2.3 Essays and AI-policy mode`.
 
 ### Task A2.4: Apply from the tracker, review summary and submitted
 
@@ -330,22 +332,22 @@ All copy goes through `lib/i18n` in English and Hindi.
 - **At review:** the summary (filled, left, skipped, pauses, each linked).
 - **Submitted:** on detecting the confirmation page, or when the student presses "I've submitted", call `mark_application_submitted`.
 
-- [ ] **Failing tests first:**
+- [x] **Failing tests first:**
   - Playwright: Apply → run → review summary → the student submits on the practice portal → the tracker shows submitted, and the log says how
   - the Apply button is absent for unsupported portals
-- [ ] Commit `A2.4 Apply from the tracker and submitted status`.
+- [x] Commit `A2.4 Apply from the tracker and submitted status`.
 
 ### Task A2.5: Guided apply exit gate (REA steps B and C on the practice portal)
 
-- [ ] **REA step C:** run guided apply end to end on the practice portal with REA observing. Record every field touched, every navigation, every network request, and where it stopped. Required results:
+- [x] **REA step C:** run guided apply end to end on the practice portal with REA observing. Record every field touched, every navigation, every network request, and where it stopped. Required results:
   - it stops at the review page
   - it pauses on the changed page, the CAPTCHA stand-in and the fee and declaration pages
   - it never clicks submit, pay, sign or certify
 
   Save the evidence in `docs/superpowers/reports/m7/C-A2.5/`.
-- [ ] REA step B on the final build.
-- [ ] Every suite, axe, docs (FEATURES, BACKLOG, README, `docs/APPLICATION_ASSIST.md`), and the milestone report with the A to C evidence.
-- [ ] Commit `A2.5 Guided apply audit and docs`.
+- [x] REA step B on the final build.
+- [x] Every suite, axe, docs (FEATURES, BACKLOG, README, `docs/APPLICATION_ASSIST.md`), and the milestone report with the A to C evidence.
+- [x] Commit `A2.5 Guided apply audit and docs`.
 
 ### Task A2.6: Store submission (after G3)
 

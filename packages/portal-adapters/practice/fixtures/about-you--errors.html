@@ -1,0 +1,38 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Your details · Practice Portal</title>
+<style>
+body{font:16px/1.5 system-ui,sans-serif;margin:0;color:#1c1c1c;background:#fafaf7}
+header{display:flex;justify-content:space-between;align-items:center;padding:12px 24px;background:#2d3a4a;color:#fff}
+header a,header button{color:#fff;background:transparent;border:1px solid #fff}
+.banner{background:#fff4cc;padding:8px 24px;font-size:14px}
+main{max-width:720px;margin:0 auto;padding:24px}
+.sections{display:flex;gap:16px;list-style:none;padding:0;font-size:14px;flex-wrap:wrap}
+.sections [aria-current]{font-weight:700;text-decoration:underline}
+label{display:block;font-weight:600;margin-top:16px}
+input[type=text],input[type=email],input[type=tel],input[type=date],input[type=month],select,textarea{display:block;width:100%;max-width:480px;padding:8px;margin-top:4px;font:inherit}
+textarea{min-height:120px}
+fieldset{border:1px solid #ccc;margin-top:16px;padding:12px}
+.hint{color:#555;font-size:14px}
+.errors{border:2px solid #b00020;padding:12px;margin:16px 0}
+.actions{margin-top:24px;display:flex;gap:12px;flex-wrap:wrap}
+button{font:inherit;padding:8px 16px}
+.danger{background:#b00020;color:#fff;border:0}
+[hidden]{display:none}
+</style></head>
+<body>
+<header><span>Practice Portal</span><form method="post" action="/sign-out"><button id="sign-out">Sign out</button></form></header>
+<p class="banner" role="note">A practice portal for testing only. Never enter real personal details here.</p>
+<main><nav aria-label="Application sections"><ol class="sections"><li aria-current="step">About you</li><li>Your education</li><li>Tests and activities</li><li>Personal statement</li><li>Fee and declaration</li></ol></nav><h1>Your details</h1><div class="errors" role="alert" id="error-summary"><h2>There is a problem</h2><ul><li>Given names: please answer this.</li><li>Family name: please answer this.</li><li>Email address: please answer this.</li><li>Date of birth: please answer this.</li><li>Country you live in: please answer this.</li></ul></div><form method="post" action="/apply/about-you" novalidate="" data-page="about-you"><div class="question"><label for="field-given_names">Given names</label><input type="text" id="field-given_names" name="given_names" value="" required="" autocomplete="given-name"></div><div class="question"><label for="field-family_name">Family name</label><input type="text" id="field-family_name" name="family_name" value="" required="" autocomplete="family-name"></div><div class="question"><label for="field-email">Email address</label><input type="email" id="field-email" name="email" value="" required="" autocomplete="email"></div><div class="question"><label for="field-date_of_birth">Date of birth</label><input type="date" id="field-date_of_birth" name="date_of_birth" value="" required=""></div><div class="question"><label for="field-country_of_residence">Country you live in</label><select id="field-country_of_residence" name="country_of_residence" required=""><option value="" selected="">Choose a country</option><option value="IN">India</option><option value="GB">United Kingdom</option><option value="US">United States</option><option value="DE">Germany</option><option value="NG">Nigeria</option><option value="OTHER">Somewhere else</option></select></div><div class="question"><label for="field-phone">Phone number (optional)</label><input type="tel" id="field-phone" name="phone" value=""></div>
+      <div class="actions"><button id="save-continue" name="action" value="continue">Save and continue</button>
+       <button id="save-only" name="action" value="save">Save</button>
+       <a id="back" href="/">Back</a></div></form></main>
+<script>
+// Conditional questions: show a question only when the answer it depends on matches.
+function refresh(){document.querySelectorAll("[data-show-field]").forEach(function(el){
+  var f=el.getAttribute("data-show-field"),want=el.getAttribute("data-show-equals");
+  var inputs=document.querySelectorAll('[name="'+f+'"]'),val="";
+  inputs.forEach(function(i){if((i.type==="radio"||i.type==="checkbox")){if(i.checked)val=i.type==="checkbox"?"on":i.value}else{val=i.value}});
+  el.hidden=val!==want;});}
+document.addEventListener("change",refresh);document.addEventListener("input",refresh);refresh();
+</script>
+</body></html>

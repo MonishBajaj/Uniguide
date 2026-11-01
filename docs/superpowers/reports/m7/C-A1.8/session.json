@@ -1,0 +1,397 @@
+{
+  "when": "2026-11-01T03:04:18.774Z",
+  "extension": {
+    "id": "jifoddiefcppdaiohhilpiglhbldfnbf",
+    "build": "test (EXT_TEST=1)",
+    "permissions": [
+      "storage",
+      "sidePanel"
+    ],
+    "host_permissions": [
+      "http://127.0.0.1/*"
+    ],
+    "csp": "script-src 'self'; object-src 'self'; connect-src http://127.0.0.1:54321; base-uri 'none'; form-action 'none'"
+  },
+  "checks": {
+    "serviceWorkerOnlySupabase": true,
+    "nothingUnattributed": true,
+    "serviceWorkerRequests": 22,
+    "portalTabOnlyPortal": true,
+    "panelNoNetwork": true,
+    "cspConnectSrc": "http://127.0.0.1:54321",
+    "reaNavigationsAllInScope": true,
+    "reaFormSubmissions": 8,
+    "reaRecordedFromStart": true,
+    "studentContinueClicks": 8,
+    "stoppedAt": "/review",
+    "applicationSubmitted": false
+  },
+  "fieldsTouchedByExtension": [
+    {
+      "page": "about-you",
+      "byExtension": [
+        "field-email",
+        "field-country_of_residence"
+      ]
+    },
+    {
+      "page": "schooling",
+      "byExtension": [
+        "field-qualification",
+        "field-grade_scale",
+        "field-grade_value"
+      ]
+    },
+    {
+      "page": "tests",
+      "byExtension": [
+        "english_test_taken=yes",
+        "field-english_test",
+        "field-english_overall",
+        "field-english_date"
+      ]
+    },
+    {
+      "page": "activities",
+      "byExtension": [
+        "field-activity_1_role"
+      ]
+    },
+    {
+      "page": "statement",
+      "byExtension": []
+    },
+    {
+      "page": "security-check",
+      "byExtension": []
+    },
+    {
+      "page": "fee",
+      "byExtension": []
+    },
+    {
+      "page": "declaration",
+      "byExtension": []
+    }
+  ],
+  "auditLog": {
+    "run": "practice fill practice-1 abandoned",
+    "events": [
+      "filled:contact.email:about-you",
+      "filled:contact.residence_country:about-you",
+      "skipped:contact.phone:about-you",
+      "filled:education.qualification:schooling",
+      "filled:education.grade.scale:schooling",
+      "filled:education.grade.value:schooling",
+      "filled:tests.english.taken:tests",
+      "filled:tests.english.exam:tests",
+      "filled:tests.english.total:tests",
+      "filled:tests.english.taken_on:tests",
+      "filled:activities[].role:activities",
+      "copied:activities[].organisation:activities",
+      "skipped:activities[].description:activities",
+      "copied_draft:essay.personal_statement:statement"
+    ]
+  },
+  "requestsDuringSession": {
+    "about:": {
+      "chrome-extension://jifoddiefcppdaiohhilpiglhbldfnbf": 1
+    },
+    "extension panel": {
+      "chrome-extension://jifoddiefcppdaiohhilpiglhbldfnbf": 5
+    },
+    "extension service worker": {
+      "http://127.0.0.1:54321": 22
+    },
+    "http://127.0.0.1:4318": {
+      "http://127.0.0.1:4318": 16
+    }
+  },
+  "serviceWorkerRequests": [
+    {
+      "method": "GET",
+      "url": "<supabase>/rest/v1/profiles?…"
+    },
+    {
+      "method": "GET",
+      "url": "<supabase>/rest/v1/profiles?…"
+    },
+    {
+      "method": "GET",
+      "url": "<supabase>/rest/v1/applications?…"
+    },
+    {
+      "method": "GET",
+      "url": "<supabase>/rest/v1/applications?…"
+    },
+    {
+      "method": "POST",
+      "url": "<supabase>/rest/v1/rpc/fill_profile"
+    },
+    {
+      "method": "POST",
+      "url": "<supabase>/rest/v1/rpc/start_assist_run"
+    },
+    {
+      "method": "POST",
+      "url": "<supabase>/rest/v1/rpc/log_assist_event"
+    },
+    {
+      "method": "POST",
+      "url": "<supabase>/rest/v1/rpc/log_assist_event"
+    },
+    {
+      "method": "POST",
+      "url": "<supabase>/rest/v1/rpc/log_assist_event"
+    },
+    {
+      "method": "POST",
+      "url": "<supabase>/rest/v1/rpc/log_assist_event"
+    },
+    {
+      "method": "POST",
+      "url": "<supabase>/rest/v1/rpc/log_assist_event"
+    },
+    {
+      "method": "POST",
+      "url": "<supabase>/rest/v1/rpc/log_assist_event"
+    },
+    {
+      "method": "POST",
+      "url": "<supabase>/rest/v1/rpc/log_assist_event"
+    },
+    {
+      "method": "POST",
+      "url": "<supabase>/rest/v1/rpc/log_assist_event"
+    },
+    {
+      "method": "POST",
+      "url": "<supabase>/rest/v1/rpc/log_assist_event"
+    },
+    {
+      "method": "POST",
+      "url": "<supabase>/rest/v1/rpc/log_assist_event"
+    },
+    {
+      "method": "POST",
+      "url": "<supabase>/rest/v1/rpc/log_assist_event"
+    },
+    {
+      "method": "POST",
+      "url": "<supabase>/rest/v1/rpc/log_assist_event"
+    },
+    {
+      "method": "POST",
+      "url": "<supabase>/rest/v1/rpc/log_assist_event"
+    },
+    {
+      "method": "POST",
+      "url": "<supabase>/rest/v1/rpc/final_draft_text"
+    },
+    {
+      "method": "POST",
+      "url": "<supabase>/rest/v1/rpc/log_assist_event"
+    },
+    {
+      "method": "POST",
+      "url": "<supabase>/rest/v1/rpc/end_assist_run"
+    }
+  ],
+  "rea": {
+    "observe": {
+      "window": {
+        "armed_at": "2026-11-01T03:01:48.474Z",
+        "ended_at": "2026-11-01T03:04:18.489Z",
+        "requested_ms": 150000,
+        "end_reason": "window_elapsed"
+      },
+      "completeness": "attach_limited",
+      "navigation": [
+        {
+          "seq": 2,
+          "type": "navigation_committed",
+          "url": "/apply/about-you",
+          "scope": "approved"
+        },
+        {
+          "seq": 12,
+          "type": "navigation_requested",
+          "url": "/apply/about-you",
+          "scope": "approved",
+          "detail": "formsubmissionpost"
+        },
+        {
+          "seq": 13,
+          "type": "redirect",
+          "url": "/apply/schooling",
+          "scope": "approved"
+        },
+        {
+          "seq": 15,
+          "type": "navigation_committed",
+          "url": "/apply/schooling",
+          "scope": "approved"
+        },
+        {
+          "seq": 24,
+          "type": "navigation_requested",
+          "url": "/apply/schooling",
+          "scope": "approved",
+          "detail": "formsubmissionpost"
+        },
+        {
+          "seq": 25,
+          "type": "redirect",
+          "url": "/apply/tests",
+          "scope": "approved"
+        },
+        {
+          "seq": 27,
+          "type": "navigation_committed",
+          "url": "/apply/tests",
+          "scope": "approved"
+        },
+        {
+          "seq": 37,
+          "type": "navigation_requested",
+          "url": "/apply/tests",
+          "scope": "approved",
+          "detail": "formsubmissionpost"
+        },
+        {
+          "seq": 38,
+          "type": "redirect",
+          "url": "/apply/activities",
+          "scope": "approved"
+        },
+        {
+          "seq": 40,
+          "type": "navigation_committed",
+          "url": "/apply/activities",
+          "scope": "approved"
+        },
+        {
+          "seq": 49,
+          "type": "navigation_requested",
+          "url": "/apply/activities",
+          "scope": "approved",
+          "detail": "formsubmissionpost"
+        },
+        {
+          "seq": 50,
+          "type": "redirect",
+          "url": "/apply/statement",
+          "scope": "approved"
+        },
+        {
+          "seq": 52,
+          "type": "navigation_committed",
+          "url": "/apply/statement",
+          "scope": "approved"
+        },
+        {
+          "seq": 61,
+          "type": "navigation_requested",
+          "url": "/apply/statement",
+          "scope": "approved",
+          "detail": "formsubmissionpost"
+        },
+        {
+          "seq": 62,
+          "type": "redirect",
+          "url": "/apply/security-check",
+          "scope": "approved"
+        },
+        {
+          "seq": 64,
+          "type": "navigation_committed",
+          "url": "/apply/security-check",
+          "scope": "approved"
+        },
+        {
+          "seq": 73,
+          "type": "navigation_requested",
+          "url": "/apply/security-check",
+          "scope": "approved",
+          "detail": "formsubmissionpost"
+        },
+        {
+          "seq": 74,
+          "type": "redirect",
+          "url": "/apply/fee",
+          "scope": "approved"
+        },
+        {
+          "seq": 76,
+          "type": "navigation_committed",
+          "url": "/apply/fee",
+          "scope": "approved"
+        },
+        {
+          "seq": 85,
+          "type": "navigation_requested",
+          "url": "/apply/fee",
+          "scope": "approved",
+          "detail": "formsubmissionpost"
+        },
+        {
+          "seq": 86,
+          "type": "redirect",
+          "url": "/apply/declaration",
+          "scope": "approved"
+        },
+        {
+          "seq": 88,
+          "type": "navigation_committed",
+          "url": "/apply/declaration",
+          "scope": "approved"
+        },
+        {
+          "seq": 97,
+          "type": "navigation_requested",
+          "url": "/apply/declaration",
+          "scope": "approved",
+          "detail": "formsubmissionpost"
+        },
+        {
+          "seq": 98,
+          "type": "redirect",
+          "url": "/review",
+          "scope": "approved"
+        },
+        {
+          "seq": 100,
+          "type": "navigation_committed",
+          "url": "/review",
+          "scope": "approved"
+        }
+      ],
+      "limitations": [
+        "The timeline begins after REA attaches; earlier navigation and network activity is unavailable.",
+        "Only navigation metadata is retained; headers, bodies, cookies, console values, and payloads are not captured by this tool.",
+        "An out-of-policy destination ends collection immediately and is recorded without its URL.",
+        "Timeline rows without a comparable producer timestamp have a null timestamp. Buffered events with unknown timing are retained as context only; they do not establish activity inside the selected observation window."
+      ]
+    },
+    "inspectAtReview": {
+      "url": "http://127.0.0.1:4318/review",
+      "networkRequestsInWindow": 0,
+      "storage": {
+        "origin": "http://127.0.0.1:4318",
+        "usage_bytes": 0,
+        "quota_bytes": 162331904409,
+        "local_storage_keys": [],
+        "session_storage_keys": [],
+        "indexed_db_names": [],
+        "cache_names": [],
+        "content_fingerprints": [],
+        "fingerprint_algorithm": "sha256",
+        "fingerprints_complete": false,
+        "values_redacted": true
+      },
+      "linkDestinations": [
+        "approved"
+      ]
+    }
+  }
+}

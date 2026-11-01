@@ -1,0 +1,773 @@
+{
+  "when": "2026-11-01T13:50:40.654Z",
+  "extension": {
+    "id": "jifoddiefcppdaiohhilpiglhbldfnbf",
+    "build": "test (EXT_TEST=1)",
+    "permissions": [
+      "storage",
+      "sidePanel"
+    ],
+    "host_permissions": [
+      "http://127.0.0.1/*"
+    ],
+    "csp": "script-src 'self'; object-src 'self'; connect-src http://127.0.0.1:54321; base-uri 'none'; form-action 'none'"
+  },
+  "checks": {
+    "openedFromTracker": true,
+    "stoppedAt": "/review",
+    "applicationSubmitted": false,
+    "pausesInOrder": [
+      "student@/apply/about-you",
+      "page_differs@/apply/schooling",
+      "student@/apply/schooling",
+      "student@/apply/statement",
+      "captcha@/apply/security-check",
+      "payment@/apply/fee",
+      "declaration@/apply/declaration"
+    ],
+    "changedPageNothingFilled": true,
+    "extensionClicks": [
+      "/ continue-application",
+      "/apply/about-you save-continue",
+      "/apply/schooling save-continue",
+      "/apply/tests save-continue",
+      "/apply/activities save-continue",
+      "/apply/statement save-continue"
+    ],
+    "extensionNeverPressedSubmitPaySignOrCertify": true,
+    "extensionClicksOnlyContinue": true,
+    "extensionTouchedNothingOnPausePages": true,
+    "statementNeverWrittenByExtension": true,
+    "serviceWorkerOnlySupabase": true,
+    "serviceWorkerRequests": 36,
+    "nothingUnattributed": true,
+    "portalTabOnlyPortal": true,
+    "panelNoNetwork": true,
+    "cspConnectSrc": "http://127.0.0.1:54321",
+    "reaNavigationsAllInScope": true,
+    "reaRecordedFromStart": true,
+    "reaFormSubmissions": 8,
+    "auditEventsHaveNoValueColumn": true
+  },
+  "pauses": [
+    {
+      "page": "/apply/about-you",
+      "reason": "student",
+      "at": 1,
+      "fieldsWithAValue": [
+        "field-email",
+        "field-country_of_residence"
+      ]
+    },
+    {
+      "page": "/apply/schooling",
+      "reason": "page_differs",
+      "at": 1,
+      "fieldsWithAValue": []
+    },
+    {
+      "page": "/apply/schooling",
+      "reason": "student",
+      "at": 2,
+      "fieldsWithAValue": [
+        "field-qualification",
+        "field-grade_scale",
+        "field-grade_value"
+      ]
+    },
+    {
+      "page": "/apply/statement",
+      "reason": "student",
+      "at": 4,
+      "fieldsWithAValue": []
+    },
+    {
+      "page": "/apply/security-check",
+      "reason": "captcha",
+      "at": 4,
+      "fieldsWithAValue": []
+    },
+    {
+      "page": "/apply/fee",
+      "reason": "payment",
+      "at": 6,
+      "fieldsWithAValue": []
+    },
+    {
+      "page": "/apply/declaration",
+      "reason": "declaration",
+      "at": 9,
+      "fieldsWithAValue": []
+    }
+  ],
+  "reviewSummaryInPanel": {
+    "filled": [
+      "Your details: Email address",
+      "Your details: Country you live in",
+      "Your most recent school or college: Qualification",
+      "Your most recent school or college: Grading scale",
+      "Your most recent school or college: Overall grade",
+      "English language tests: Whether you've taken an English test",
+      "English language tests: Which English test",
+      "English language tests: English test overall score",
+      "English language tests: English test date",
+      "Activities: Activity: what you did",
+      "Activities: Activity: organisation"
+    ],
+    "left": [
+      "Your details: Phone number (optional)",
+      "Activities: Tell us about it"
+    ],
+    "skipped": [],
+    "paused": [
+      "Your details: We don't fill this one for you.",
+      "Your most recent school or college:",
+      "Your most recent school or college: We don't fill this one for you.",
+      "Personal statement: We don't fill this one for you.",
+      "Quick security check: A security check. Only you can answer it.",
+      "Application fee: A payment step. Only you can take it.",
+      "Declaration: A declaration or signature. Only you can make it."
+    ]
+  },
+  "fieldsChangedByExtension": {
+    "/apply/about-you": [
+      "field-email",
+      "field-country_of_residence"
+    ],
+    "/apply/schooling": [
+      "field-qualification",
+      "field-grade_scale",
+      "field-grade_value"
+    ],
+    "/apply/tests": [
+      "field-english_test_taken-yes",
+      "field-english_test",
+      "field-english_overall",
+      "field-english_date"
+    ],
+    "/apply/activities": [
+      "field-activity_1_role",
+      "field-activity_1_organisation"
+    ]
+  },
+  "scriptedEventsOnPortal": [
+    {
+      "actor": "extension",
+      "page": "/",
+      "type": "click",
+      "target": "continue-application",
+      "text": "Continue your application"
+    },
+    {
+      "actor": "extension",
+      "page": "/apply/about-you",
+      "type": "input",
+      "target": "field-email",
+      "text": ""
+    },
+    {
+      "actor": "extension",
+      "page": "/apply/about-you",
+      "type": "change",
+      "target": "field-email",
+      "text": ""
+    },
+    {
+      "actor": "extension",
+      "page": "/apply/about-you",
+      "type": "input",
+      "target": "field-country_of_residence",
+      "text": "Choose a countryIndiaUnited KingdomUnite"
+    },
+    {
+      "actor": "extension",
+      "page": "/apply/about-you",
+      "type": "change",
+      "target": "field-country_of_residence",
+      "text": "Choose a countryIndiaUnited KingdomUnite"
+    },
+    {
+      "actor": "student",
+      "page": "/apply/about-you",
+      "type": "input",
+      "target": "field-date_of_birth",
+      "text": ""
+    },
+    {
+      "actor": "student",
+      "page": "/apply/about-you",
+      "type": "change",
+      "target": "field-date_of_birth",
+      "text": ""
+    },
+    {
+      "actor": "extension",
+      "page": "/apply/about-you",
+      "type": "click",
+      "target": "save-continue",
+      "text": "Save and continue"
+    },
+    {
+      "actor": "extension",
+      "page": "/apply/schooling",
+      "type": "input",
+      "target": "field-qualification",
+      "text": "Choose a qualificationCBSE Class XIIISC "
+    },
+    {
+      "actor": "extension",
+      "page": "/apply/schooling",
+      "type": "change",
+      "target": "field-qualification",
+      "text": "Choose a qualificationCBSE Class XIIISC "
+    },
+    {
+      "actor": "extension",
+      "page": "/apply/schooling",
+      "type": "input",
+      "target": "field-grade_scale",
+      "text": "Choose a grading scalePercentageGPA out "
+    },
+    {
+      "actor": "extension",
+      "page": "/apply/schooling",
+      "type": "change",
+      "target": "field-grade_scale",
+      "text": "Choose a grading scalePercentageGPA out "
+    },
+    {
+      "actor": "extension",
+      "page": "/apply/schooling",
+      "type": "input",
+      "target": "field-grade_value",
+      "text": ""
+    },
+    {
+      "actor": "extension",
+      "page": "/apply/schooling",
+      "type": "change",
+      "target": "field-grade_value",
+      "text": ""
+    },
+    {
+      "actor": "extension",
+      "page": "/apply/schooling",
+      "type": "click",
+      "target": "save-continue",
+      "text": "Save and continue"
+    },
+    {
+      "actor": "extension",
+      "page": "/apply/tests",
+      "type": "input",
+      "target": "field-english_test_taken-yes",
+      "text": ""
+    },
+    {
+      "actor": "extension",
+      "page": "/apply/tests",
+      "type": "change",
+      "target": "field-english_test_taken-yes",
+      "text": ""
+    },
+    {
+      "actor": "extension",
+      "page": "/apply/tests",
+      "type": "input",
+      "target": "field-english_test",
+      "text": "Choose a testIELTS AcademicTOEFL iBTPTE "
+    },
+    {
+      "actor": "extension",
+      "page": "/apply/tests",
+      "type": "change",
+      "target": "field-english_test",
+      "text": "Choose a testIELTS AcademicTOEFL iBTPTE "
+    },
+    {
+      "actor": "extension",
+      "page": "/apply/tests",
+      "type": "input",
+      "target": "field-english_overall",
+      "text": ""
+    },
+    {
+      "actor": "extension",
+      "page": "/apply/tests",
+      "type": "change",
+      "target": "field-english_overall",
+      "text": ""
+    },
+    {
+      "actor": "extension",
+      "page": "/apply/tests",
+      "type": "input",
+      "target": "field-english_date",
+      "text": ""
+    },
+    {
+      "actor": "extension",
+      "page": "/apply/tests",
+      "type": "change",
+      "target": "field-english_date",
+      "text": ""
+    },
+    {
+      "actor": "extension",
+      "page": "/apply/tests",
+      "type": "click",
+      "target": "save-continue",
+      "text": "Save and continue"
+    },
+    {
+      "actor": "extension",
+      "page": "/apply/activities",
+      "type": "input",
+      "target": "field-activity_1_role",
+      "text": ""
+    },
+    {
+      "actor": "extension",
+      "page": "/apply/activities",
+      "type": "change",
+      "target": "field-activity_1_role",
+      "text": ""
+    },
+    {
+      "actor": "extension",
+      "page": "/apply/activities",
+      "type": "input",
+      "target": "field-activity_1_organisation",
+      "text": ""
+    },
+    {
+      "actor": "extension",
+      "page": "/apply/activities",
+      "type": "change",
+      "target": "field-activity_1_organisation",
+      "text": ""
+    },
+    {
+      "actor": "extension",
+      "page": "/apply/activities",
+      "type": "click",
+      "target": "save-continue",
+      "text": "Save and continue"
+    },
+    {
+      "actor": "extension",
+      "page": "/apply/statement",
+      "type": "click",
+      "target": "save-continue",
+      "text": "Save and continue"
+    }
+  ],
+  "auditLog": {
+    "run": "practice fill practice-1 stopped\npractice guided practice-1 review",
+    "columns": "id,run_id,user_id,at,kind,field_role,page,source,reason",
+    "events": [
+      "navigated:-:-:-",
+      "filled:contact.email:about-you:-",
+      "filled:contact.residence_country:about-you:-",
+      "paused:person.given_names:about-you:student",
+      "resumed:-:about-you:-",
+      "navigated:-:about-you:-",
+      "paused:-:schooling:page_differs",
+      "resumed:-:schooling:-",
+      "filled:education.qualification:schooling:-",
+      "filled:education.grade.scale:schooling:-",
+      "filled:education.grade.value:schooling:-",
+      "paused:education.school_name:schooling:student",
+      "resumed:-:schooling:-",
+      "navigated:-:schooling:-",
+      "filled:tests.english.taken:tests:-",
+      "filled:tests.english.exam:tests:-",
+      "filled:tests.english.total:tests:-",
+      "filled:tests.english.taken_on:tests:-",
+      "navigated:-:tests:-",
+      "filled:activities[].role:activities:-",
+      "filled:activities[].organisation:activities:-",
+      "navigated:-:activities:-",
+      "paused:essay.personal_statement:statement:student",
+      "copied_draft:essay.personal_statement:statement:-",
+      "resumed:-:statement:-",
+      "navigated:-:statement:-",
+      "paused:-:security-check:captcha",
+      "resumed:-:security-check:-",
+      "paused:-:fee:payment",
+      "resumed:-:fee:-",
+      "paused:-:declaration:declaration",
+      "resumed:-:declaration:-"
+    ]
+  },
+  "requestsDuringRun": {
+    "extension service worker": {
+      "http://127.0.0.1:54321": 36
+    },
+    "http://127.0.0.1:4318": {
+      "http://127.0.0.1:4318": 18
+    }
+  },
+  "serviceWorkerRequests": [
+    {
+      "method": "POST",
+      "url": "<supabase>/rest/v1/rpc/end_assist_run"
+    },
+    {
+      "method": "POST",
+      "url": "<supabase>/rest/v1/rpc/start_assist_run"
+    },
+    {
+      "method": "POST",
+      "url": "<supabase>/rest/v1/rpc/log_assist_event"
+    },
+    {
+      "method": "POST",
+      "url": "<supabase>/rest/v1/rpc/log_assist_event"
+    },
+    {
+      "method": "POST",
+      "url": "<supabase>/rest/v1/rpc/log_assist_event"
+    },
+    {
+      "method": "POST",
+      "url": "<supabase>/rest/v1/rpc/log_assist_event"
+    },
+    {
+      "method": "POST",
+      "url": "<supabase>/rest/v1/rpc/log_assist_event"
+    },
+    {
+      "method": "POST",
+      "url": "<supabase>/rest/v1/rpc/log_assist_event"
+    },
+    {
+      "method": "POST",
+      "url": "<supabase>/rest/v1/rpc/log_assist_event"
+    },
+    {
+      "method": "POST",
+      "url": "<supabase>/rest/v1/rpc/log_assist_event"
+    },
+    {
+      "method": "POST",
+      "url": "<supabase>/rest/v1/rpc/log_assist_event"
+    },
+    {
+      "method": "POST",
+      "url": "<supabase>/rest/v1/rpc/log_assist_event"
+    },
+    {
+      "method": "POST",
+      "url": "<supabase>/rest/v1/rpc/log_assist_event"
+    },
+    {
+      "method": "POST",
+      "url": "<supabase>/rest/v1/rpc/log_assist_event"
+    },
+    {
+      "method": "POST",
+      "url": "<supabase>/rest/v1/rpc/log_assist_event"
+    },
+    {
+      "method": "POST",
+      "url": "<supabase>/rest/v1/rpc/log_assist_event"
+    },
+    {
+      "method": "POST",
+      "url": "<supabase>/rest/v1/rpc/log_assist_event"
+    },
+    {
+      "method": "POST",
+      "url": "<supabase>/rest/v1/rpc/log_assist_event"
+    },
+    {
+      "method": "POST",
+      "url": "<supabase>/rest/v1/rpc/log_assist_event"
+    },
+    {
+      "method": "POST",
+      "url": "<supabase>/rest/v1/rpc/log_assist_event"
+    },
+    {
+      "method": "POST",
+      "url": "<supabase>/rest/v1/rpc/log_assist_event"
+    },
+    {
+      "method": "POST",
+      "url": "<supabase>/rest/v1/rpc/log_assist_event"
+    },
+    {
+      "method": "POST",
+      "url": "<supabase>/rest/v1/rpc/log_assist_event"
+    },
+    {
+      "method": "POST",
+      "url": "<supabase>/rest/v1/rpc/log_assist_event"
+    },
+    {
+      "method": "POST",
+      "url": "<supabase>/rest/v1/rpc/log_assist_event"
+    },
+    {
+      "method": "POST",
+      "url": "<supabase>/rest/v1/rpc/final_draft_text"
+    },
+    {
+      "method": "POST",
+      "url": "<supabase>/rest/v1/rpc/log_assist_event"
+    },
+    {
+      "method": "POST",
+      "url": "<supabase>/rest/v1/rpc/log_assist_event"
+    },
+    {
+      "method": "POST",
+      "url": "<supabase>/rest/v1/rpc/log_assist_event"
+    },
+    {
+      "method": "POST",
+      "url": "<supabase>/rest/v1/rpc/log_assist_event"
+    },
+    {
+      "method": "POST",
+      "url": "<supabase>/rest/v1/rpc/log_assist_event"
+    },
+    {
+      "method": "POST",
+      "url": "<supabase>/rest/v1/rpc/log_assist_event"
+    },
+    {
+      "method": "POST",
+      "url": "<supabase>/rest/v1/rpc/log_assist_event"
+    },
+    {
+      "method": "POST",
+      "url": "<supabase>/rest/v1/rpc/log_assist_event"
+    },
+    {
+      "method": "POST",
+      "url": "<supabase>/rest/v1/rpc/log_assist_event"
+    },
+    {
+      "method": "POST",
+      "url": "<supabase>/rest/v1/rpc/end_assist_run"
+    }
+  ],
+  "rea": {
+    "observe": {
+      "window": {
+        "armed_at": "2026-11-01T13:47:40.106Z",
+        "ended_at": "2026-11-01T13:50:40.118Z",
+        "requested_ms": 180000,
+        "end_reason": "window_elapsed"
+      },
+      "completeness": "attach_limited",
+      "navigation": [
+        {
+          "seq": 2,
+          "type": "navigation_committed",
+          "url": "/",
+          "scope": "approved"
+        },
+        {
+          "seq": 11,
+          "type": "navigation_requested",
+          "url": "/apply/about-you",
+          "scope": "approved",
+          "detail": "anchorclick"
+        },
+        {
+          "seq": 13,
+          "type": "navigation_committed",
+          "url": "/apply/about-you",
+          "scope": "approved"
+        },
+        {
+          "seq": 20,
+          "type": "navigation_requested",
+          "url": "/apply/about-you",
+          "scope": "approved",
+          "detail": "formsubmissionpost"
+        },
+        {
+          "seq": 21,
+          "type": "redirect",
+          "url": "/apply/schooling",
+          "scope": "approved"
+        },
+        {
+          "seq": 23,
+          "type": "navigation_committed",
+          "url": "/apply/schooling",
+          "scope": "approved"
+        },
+        {
+          "seq": 30,
+          "type": "navigation_committed",
+          "url": "/apply/schooling",
+          "scope": "approved"
+        },
+        {
+          "seq": 39,
+          "type": "navigation_requested",
+          "url": "/apply/schooling",
+          "scope": "approved",
+          "detail": "formsubmissionpost"
+        },
+        {
+          "seq": 40,
+          "type": "redirect",
+          "url": "/apply/tests",
+          "scope": "approved"
+        },
+        {
+          "seq": 42,
+          "type": "navigation_committed",
+          "url": "/apply/tests",
+          "scope": "approved"
+        },
+        {
+          "seq": 48,
+          "type": "navigation_requested",
+          "url": "/apply/tests",
+          "scope": "approved",
+          "detail": "formsubmissionpost"
+        },
+        {
+          "seq": 49,
+          "type": "redirect",
+          "url": "/apply/activities",
+          "scope": "approved"
+        },
+        {
+          "seq": 52,
+          "type": "navigation_committed",
+          "url": "/apply/activities",
+          "scope": "approved"
+        },
+        {
+          "seq": 55,
+          "type": "navigation_requested",
+          "url": "/apply/activities",
+          "scope": "approved",
+          "detail": "formsubmissionpost"
+        },
+        {
+          "seq": 56,
+          "type": "redirect",
+          "url": "/apply/statement",
+          "scope": "approved"
+        },
+        {
+          "seq": 61,
+          "type": "navigation_committed",
+          "url": "/apply/statement",
+          "scope": "approved"
+        },
+        {
+          "seq": 67,
+          "type": "navigation_requested",
+          "url": "/apply/statement",
+          "scope": "approved",
+          "detail": "formsubmissionpost"
+        },
+        {
+          "seq": 68,
+          "type": "redirect",
+          "url": "/apply/security-check",
+          "scope": "approved"
+        },
+        {
+          "seq": 70,
+          "type": "navigation_committed",
+          "url": "/apply/security-check",
+          "scope": "approved"
+        },
+        {
+          "seq": 79,
+          "type": "navigation_requested",
+          "url": "/apply/security-check",
+          "scope": "approved",
+          "detail": "formsubmissionpost"
+        },
+        {
+          "seq": 80,
+          "type": "redirect",
+          "url": "/apply/fee",
+          "scope": "approved"
+        },
+        {
+          "seq": 82,
+          "type": "navigation_committed",
+          "url": "/apply/fee",
+          "scope": "approved"
+        },
+        {
+          "seq": 91,
+          "type": "navigation_requested",
+          "url": "/apply/fee",
+          "scope": "approved",
+          "detail": "formsubmissionpost"
+        },
+        {
+          "seq": 92,
+          "type": "redirect",
+          "url": "/apply/declaration",
+          "scope": "approved"
+        },
+        {
+          "seq": 94,
+          "type": "navigation_committed",
+          "url": "/apply/declaration",
+          "scope": "approved"
+        },
+        {
+          "seq": 103,
+          "type": "navigation_requested",
+          "url": "/apply/declaration",
+          "scope": "approved",
+          "detail": "formsubmissionpost"
+        },
+        {
+          "seq": 104,
+          "type": "redirect",
+          "url": "/review",
+          "scope": "approved"
+        },
+        {
+          "seq": 106,
+          "type": "navigation_committed",
+          "url": "/review",
+          "scope": "approved"
+        }
+      ],
+      "limitations": [
+        "The timeline begins after REA attaches; earlier navigation and network activity is unavailable.",
+        "Only navigation metadata is retained; headers, bodies, cookies, console values, and payloads are not captured by this tool.",
+        "An out-of-policy destination ends collection immediately and is recorded without its URL.",
+        "Timeline rows without a comparable producer timestamp have a null timestamp. Buffered events with unknown timing are retained as context only; they do not establish activity inside the selected observation window."
+      ]
+    },
+    "inspectAtReview": {
+      "url": "http://127.0.0.1:4318/review",
+      "networkRequestsInWindow": 0,
+      "storage": {
+        "origin": "http://127.0.0.1:4318",
+        "usage_bytes": 0,
+        "quota_bytes": 162331904409,
+        "local_storage_keys": [],
+        "session_storage_keys": [],
+        "indexed_db_names": [],
+        "cache_names": [],
+        "content_fingerprints": [],
+        "fingerprint_algorithm": "sha256",
+        "fingerprints_complete": false,
+        "values_redacted": true
+      },
+      "linkDestinations": [
+        "approved"
+      ]
+    }
+  }
+}

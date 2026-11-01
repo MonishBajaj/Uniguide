@@ -300,17 +300,29 @@ Every click and every navigation the content script makes goes through the guard
 2. The adapter declares the control as next-page, or as a non-submitting control such as "add another activity".
 3. The control is not in the adapter's never-click list.
 4. Independently of the adapter, the control:
-   - isn't a form submit control
-   - isn't inside a payment or third-party frame
-   - doesn't carry any of these words (English and Hindi lists, case-insensitive) on itself, its label or its accessible name: submit, pay, payment, fee, waiver, sign, signature, certify, certification, declaration, declare, confirm, agree, I agree, final, send application, purchase
-5. The current page matches the adapter's map.
+   - isn't a checkbox, radio button or field (the guard never ticks or chooses)
+   - isn't inside a payment or third-party frame, or any other frame
+   - doesn't go to another site (a link's address, or the form's action)
+   - doesn't carry any of these words (English and Hindi lists, case-insensitive, whole words) on itself, its value, its label, its title or its accessible name: submit, pay, payment, fee, waiver, sign, signature, certify, certification, declaration, declare, confirm, agree, I agree, final, send application, purchase. The guard adds withdraw, delete, cancel, accept, finish and checkout.
+   - doesn't go to an address with any of those words in its path or query
+   - **isn't the final submission (refined 31 October, A1.4).** Real portals' "Save and continue" is itself a form submit button, so "isn't a form submit control" would block every page. A submit control is allowed only when its form:
+     - has at least one visible field to fill (a form with nothing to fill is a final step: a review, a confirmation, a sign-off)
+     - has no password field
+     - has no checkbox or radio button labelled with a listed word (a declaration or agreement)
+     - has no field labelled as a payment, signature, declaration or security check
+     - carries no hidden "submit" or "final" marker
+5. The current page matches the adapter's map, and it's an ordinary form page or the dashboard: never the fee, security check, declaration, review, confirmation or sign-in page.
 
 Anything else is blocked, logged, and pauses the run. The guard never sends keystrokes that could submit a form (Enter in a text field), and never ticks a declaration checkbox.
 
 **The guard's tests** run independently of any adapter:
 
-- a deliberately wrong adapter that labels a submit button as next-page must be blocked
+- a deliberately wrong adapter that labels a submit button as next-page must be blocked, also after its words are made harmless
 - the same for a pay link, a declaration checkbox, and a confirm button inside a frame
+- the same when a wrong adapter calls the fee, security and declaration pages ordinary forms
+- a never-click control whose text changes at runtime stays blocked
+
+The guard also vets every fill (never a password, a declaration tick, a signature, a fee waiver, a security word or a hidden field) and every key (never Enter, never Space on a button or checkbox, never into a password field).
 
 ### 7.3 How real-portal maps are made
 
@@ -370,7 +382,7 @@ It is not a copy of any real portal.
 ### 7.7 Network and permissions
 
 - **Host permissions:** the Supabase project, and the portal hosts that are cleared. Nothing else, so the practice portal is reached only in test builds.
-- **Permissions:** `storage`, `sidePanel`, `scripting`, `activeTab`. No `tabs` beyond what the side panel needs; no history, downloads or cookies.
+- **Permissions:** `storage` and `sidePanel` only (A1.5). No `tabs`, `scripting`, `activeTab`, history, downloads or cookies. The content script is declared for supported portal hosts.
 - **Content Security Policy:** `connect-src` allows only the Supabase project.
 - **Model calls** go to the Supabase Edge Function. The function holds the provider key and never receives student values.
 

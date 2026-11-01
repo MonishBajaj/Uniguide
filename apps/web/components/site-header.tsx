@@ -67,7 +67,7 @@ export async function SiteHeader() {
         ]
       : []),
     ...(roles.admin || roles.verifier ? [{ href: "/admin/review", label: "Review queue" }, { href: "/admin/institution-facts", label: "Facts" }] : []),
-    ...(roles.admin ? [{ href: "/admin/rules", label: "Rules" }, { href: "/admin/team", label: "Team" }, { href: "/admin/media", label: "Media" }, { href: "/admin/suggested", label: "Suggested" }] : []),
+    ...(roles.admin ? [{ href: "/admin/rules", label: "Rules" }, { href: "/admin/ai-policies", label: "AI policies" }, { href: "/admin/team", label: "Team" }, { href: "/admin/media", label: "Media" }, { href: "/admin/suggested", label: "Suggested" }] : []),
     ...(roles.admin && COMMUNITY_ENABLED ? [{ href: "/admin/community", label: "Community" }] : []),
     ...(roles.orgs.length ? [{ href: "/agency", label: "Students" }] : []),
   ];

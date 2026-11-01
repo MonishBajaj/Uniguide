@@ -25,6 +25,49 @@ Everything runs locally without accounts (see the README). This guide puts it on
 4. **Auth email** (Authentication → Emails → SMTP): the built-in sender is rate limited and for testing only. Add an SMTP provider (Resend works) before real users sign up.
 5. **Keys** (Project Settings → API Keys): copy the project URL and the **publishable** key (`sb_publishable_…`). The web app never needs the secret or service-role key.
 
+### Migrations dated 2027
+
+**Which migrations.** Some migration files are named with dates in January 2027, ahead of the real date:
+
+- the journey system: `20270101000001` to `20270106000002`
+- `develop`'s institution rankings: `20270101000002` to `20270101000006`
+- application assist: `20270107000001`
+
+They are **not renamed**: a hosted database records migrations by filename, so a rename would look like a new migration.
+
+**What this means for deploys:**
+
+- Supabase applies migrations in filename order, and `db push` refuses a local migration that sorts before the last one already applied to the hosted database.
+- Until the 2027 dates are in the past, a deploy that adds a migration sorting earlier than the latest applied one needs `--include-all`:
+
+  ```bash
+  pnpm exec supabase db push --include-all
+  ```
+
+  Locally, the same applies after pulling such a migration:
+
+  ```bash
+  pnpm exec supabase migration up --local --include-all
+  ```
+
+- Check what `--include-all` will apply before running it on the hosted project:
+
+  ```bash
+  pnpm exec supabase migration list
+  ```
+
+**New migrations from 31 October 2026** use the real current timestamp (normal Supabase convention), with one limit while the 2027 files are ahead of real time:
+
+- A real-timestamp migration sorts **before** every 2027-dated one.
+- So it must not change anything those files create, such as the journey or assist tables and functions. A fresh database (local reset, CI, a new hosted project) would apply it before those objects exist.
+- A change to those objects needs a decision first; see the M7 plan.
+
+**Dependencies, checked on 31 October 2026:**
+
+- `develop`'s 2027-dated migrations (institution rankings and `search_programs`) touch only tables from 2026-dated migrations.
+- None of the journey or assist migrations touch rankings or `search_programs`.
+- Neither group depends on the other, so filename order between them doesn't matter.
+
 ## 2. Worker database roles
 
 The worker uses three Postgres roles, none of which can read what it does not need:
@@ -169,6 +212,34 @@ Locally, run it with `cd worker && uv run uniguide-worker serve` after `pnpm db:
 ## 8. Before charging money
 
 Payments are built (see the Payments section below); you still need provider accounts and keys. Work through the "Needs a decision or review before launch" list in BACKLOG.md: counsel review of the parental consent flow and consent ages, terms and privacy policy (both pages are drafts), F-1/OPT confirmation with your DSO, and a final product name.
+
+## 9. Application assist extension (M7)
+
+The UniGuide Assist extension lives in `apps/extension`. It talks only to the Supabase project, and the student connects it on `/extension/connect`.
+
+- **Build:** `pnpm --filter extension build` writes `apps/extension/dist`. Settings come from `SUPABASE_URL`, `SUPABASE_KEY` and `WEB_ORIGIN`, or else from `apps/web/.env.local`.
+  - `EXT_TEST=1` adds the practice portal (`apps/practice-portal`, port 4318) for tests.
+  - `EXT_STORE=1` leaves out the development key, so the Web Store assigns the id.
+- **Try it locally:**
+  1. Start the practice portal: `PRACTICE_TEST=1 node apps/practice-portal/server.mjs`.
+  2. Build with `EXT_TEST=1`.
+  3. Load `apps/extension/dist` as an unpacked extension in Chrome.
+  4. Connect it at `http://localhost:3000/extension/connect`.
+  5. Sign in to the practice portal as `tester@practice.test` / `practice-only`.
+- **Extension id:**
+  - Development and test builds have the fixed id `jifoddiefcppdaiohhilpiglhbldfnbf`, from the public key in `apps/extension/scripts/dev-key.txt`. No private key is kept.
+  - In production, set `NEXT_PUBLIC_EXTENSION_ID` to the store id. Without it, the connect page says connecting isn't available.
+- **Checks:**
+  - `pnpm --filter extension check` runs the network and action checks on `dist`.
+  - `pnpm --filter extension test` runs the unit tests and the checks against planted problems.
+  - `pnpm --filter web e2e:extension` loads the built extension in Chromium against the practice portal. It needs the local stack and the dev server.
+- **Suggested roles (A1.6):** deploy the Edge Function with `supabase functions deploy suggest-field-role` and give it the model key with `supabase secrets set ANTHROPIC_API_KEY=...`. The key stays with the function; the extension never has it.
+  - The function takes only a field's label and our role list, and uses `claude-haiku-5-5`.
+  - Each student may ask 30 times an hour and 200 times a day (`take_role_suggestion`). The limit table keeps who asked and when, never the label.
+  - Locally the Edge runtime is off (`supabase/config.toml`), so the panel says suggestions aren't available. The end-to-end test stands in for the function.
+- **Apply from the tracker (A2.4):** the tracker shows "Apply with UniGuide Assist" for applications whose portal system is in `NEXT_PUBLIC_GUIDED_SYSTEMS` (comma-separated deadline `owning_system` values). Outside production it defaults to `direct`, which the practice portal stands in for; in production it's empty until a portal's gate clears.
+- **How it works:** `docs/APPLICATION_ASSIST.md`. REA evidence and the milestone report: `docs/superpowers/reports/m7/`.
+- **Portals:** store builds include no portal until its gate clears (plan gates G1 to G7). Each cleared portal adds its adapter in `apps/extension/src/adapters.ts` and its host in `scripts/build.mjs`.
 
 ## Payments (season pass)
 

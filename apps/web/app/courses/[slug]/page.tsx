@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { CourseView } from "@/components/course-view";
+import { CourseAiPolicy } from "@/components/course-ai-policy";
 import { CourseCommunity } from "@/components/course-community";
 import { FacultyDossier } from "@/components/faculty-dossier";
 import { loadCurrentCycles, loadFx } from "@/lib/catalog";
@@ -24,6 +25,7 @@ export default async function CoursePage({ params }: PageProps<"/courses/[slug]"
   const cycle = (await loadCurrentCycles(supabase, [card.id!])).get(card.id!);
   return (
     <CourseView card={card} cycle={cycle} cycles={cycles} fx={await loadFx(supabase)} signedIn={Boolean(user)} admin={admin} similar={similar} facts={facts} workRules={workRules} watching={watching}>
+      <CourseAiPolicy supabase={supabase} programId={card.id!} />
       <FacultyDossier supabase={supabase} card={card} interests={interests} />
       <CourseCommunity supabase={supabase} programId={card.id!} userId={user?.id ?? null} />
     </CourseView>

@@ -1,0 +1,104 @@
+{
+  "test": {
+    "tool": "rea analyze-javascript-application --artifact-format directory",
+    "root_artifact_sha256": "8727805be6984d6d60f9211c5b0c91d843f56875b9650d8a4b3908beac79c855",
+    "statistics": {
+      "relevant_files": 5,
+      "nested_asar_containers": 0,
+      "text_bytes_read": 130797,
+      "invalid_utf8_files": 0,
+      "parsed_javascript_files": 3,
+      "skipped_javascript_files": 0,
+      "visited_ast_nodes": 15108,
+      "findings": 41,
+      "modules": 0,
+      "parse_failures": 0
+    },
+    "network_destinations": [
+      {
+        "file": "background.js",
+        "line": 73,
+        "destination": "`${SUPABASE_URL}/auth/v1/user`"
+      },
+      {
+        "file": "background.js",
+        "line": 84,
+        "destination": "`${SUPABASE_URL}/auth/v1/token?grant_type=refresh_token`"
+      },
+      {
+        "file": "background.js",
+        "line": 101,
+        "destination": "`${SUPABASE_URL}/rest/v1/${path}`"
+      },
+      {
+        "file": "background.js",
+        "line": 116,
+        "destination": "`${SUPABASE_URL}/functions/v1/${fn}`"
+      },
+      {
+        "file": "background.js",
+        "line": 133,
+        "destination": "`${SUPABASE_URL}/auth/v1/logout`"
+      }
+    ],
+    "navigation_unknowns": [
+      {
+        "file": "panel.js",
+        "line": 1265,
+        "reason": "The recognized navigation destination is not a supported literal."
+      }
+    ],
+    "sender_validation_observations": 2
+  },
+  "store": {
+    "tool": "rea analyze-javascript-application --artifact-format directory",
+    "root_artifact_sha256": "390b2a9ce2381d86c7a5630fae7fd82dfda0a3207e1950ed49d77ec8c2953721",
+    "statistics": {
+      "relevant_files": 5,
+      "nested_asar_containers": 0,
+      "text_bytes_read": 91193,
+      "invalid_utf8_files": 0,
+      "parsed_javascript_files": 3,
+      "skipped_javascript_files": 0,
+      "visited_ast_nodes": 11826,
+      "findings": 17,
+      "modules": 0,
+      "parse_failures": 0
+    },
+    "network_destinations": [
+      {
+        "file": "background.js",
+        "line": 73,
+        "destination": "`${SUPABASE_URL}/auth/v1/user`"
+      },
+      {
+        "file": "background.js",
+        "line": 84,
+        "destination": "`${SUPABASE_URL}/auth/v1/token?grant_type=refresh_token`"
+      },
+      {
+        "file": "background.js",
+        "line": 101,
+        "destination": "`${SUPABASE_URL}/rest/v1/${path}`"
+      },
+      {
+        "file": "background.js",
+        "line": 116,
+        "destination": "`${SUPABASE_URL}/functions/v1/${fn}`"
+      },
+      {
+        "file": "background.js",
+        "line": 133,
+        "destination": "`${SUPABASE_URL}/auth/v1/logout`"
+      }
+    ],
+    "navigation_unknowns": [
+      {
+        "file": "panel.js",
+        "line": 544,
+        "reason": "The recognized navigation destination is not a supported literal."
+      }
+    ],
+    "sender_validation_observations": 2
+  }
+}

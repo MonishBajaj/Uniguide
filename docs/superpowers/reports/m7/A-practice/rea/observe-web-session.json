@@ -1,0 +1,259 @@
+{
+  "tool": "rea observe-web-session",
+  "window": {
+    "armed_at": "2026-10-31T19:43:48.663Z",
+    "ended_at": "2026-10-31T19:45:48.682Z",
+    "requested_ms": 120000,
+    "end_reason": "window_elapsed"
+  },
+  "completeness": "attach_limited",
+  "limitations": [
+    "The timeline begins after REA attaches; earlier navigation and network activity is unavailable.",
+    "Only navigation metadata is retained; headers, bodies, cookies, console values, and payloads are not captured by this tool.",
+    "An out-of-policy destination ends collection immediately and is recorded without its URL.",
+    "Timeline rows without a comparable producer timestamp have a null timestamp. Buffered events with unknown timing are retained as context only; they do not establish activity inside the selected observation window."
+  ],
+  "navigation": [
+    {
+      "seq": 1,
+      "type": "navigation_requested",
+      "url": "/sign-in",
+      "scope": "approved",
+      "detail": "formsubmissionpost"
+    },
+    {
+      "seq": 2,
+      "type": "redirect",
+      "url": "/",
+      "scope": "approved"
+    },
+    {
+      "seq": 4,
+      "type": "navigation_committed",
+      "url": "/",
+      "scope": "approved"
+    },
+    {
+      "seq": 13,
+      "type": "navigation_requested",
+      "url": "/apply/about-you",
+      "scope": "approved",
+      "detail": "anchorclick"
+    },
+    {
+      "seq": 15,
+      "type": "navigation_committed",
+      "url": "/apply/about-you",
+      "scope": "approved"
+    },
+    {
+      "seq": 25,
+      "type": "navigation_requested",
+      "url": "/apply/about-you",
+      "scope": "approved",
+      "detail": "formsubmissionpost"
+    },
+    {
+      "seq": 27,
+      "type": "navigation_committed",
+      "url": "/apply/about-you",
+      "scope": "approved"
+    },
+    {
+      "seq": 37,
+      "type": "navigation_requested",
+      "url": "/apply/about-you",
+      "scope": "approved",
+      "detail": "formsubmissionpost"
+    },
+    {
+      "seq": 38,
+      "type": "redirect",
+      "url": "/apply/schooling",
+      "scope": "approved"
+    },
+    {
+      "seq": 40,
+      "type": "navigation_committed",
+      "url": "/apply/schooling",
+      "scope": "approved"
+    },
+    {
+      "seq": 51,
+      "type": "navigation_requested",
+      "url": "/apply/schooling",
+      "scope": "approved",
+      "detail": "formsubmissionpost"
+    },
+    {
+      "seq": 52,
+      "type": "redirect",
+      "url": "/apply/tests",
+      "scope": "approved"
+    },
+    {
+      "seq": 54,
+      "type": "navigation_committed",
+      "url": "/apply/tests",
+      "scope": "approved"
+    },
+    {
+      "seq": 65,
+      "type": "navigation_requested",
+      "url": "/apply/tests",
+      "scope": "approved",
+      "detail": "formsubmissionpost"
+    },
+    {
+      "seq": 66,
+      "type": "redirect",
+      "url": "/apply/activities",
+      "scope": "approved"
+    },
+    {
+      "seq": 68,
+      "type": "navigation_committed",
+      "url": "/apply/activities",
+      "scope": "approved"
+    },
+    {
+      "seq": 77,
+      "type": "navigation_requested",
+      "url": "/apply/activities",
+      "scope": "approved",
+      "detail": "formsubmissionpost"
+    },
+    {
+      "seq": 78,
+      "type": "redirect",
+      "url": "/apply/activities",
+      "scope": "approved"
+    },
+    {
+      "seq": 80,
+      "type": "navigation_committed",
+      "url": "/apply/activities",
+      "scope": "approved"
+    },
+    {
+      "seq": 89,
+      "type": "navigation_requested",
+      "url": "/apply/activities",
+      "scope": "approved",
+      "detail": "formsubmissionpost"
+    },
+    {
+      "seq": 90,
+      "type": "redirect",
+      "url": "/apply/statement",
+      "scope": "approved"
+    },
+    {
+      "seq": 92,
+      "type": "navigation_committed",
+      "url": "/apply/statement",
+      "scope": "approved"
+    },
+    {
+      "seq": 101,
+      "type": "navigation_requested",
+      "url": "/apply/statement",
+      "scope": "approved",
+      "detail": "formsubmissionpost"
+    },
+    {
+      "seq": 102,
+      "type": "redirect",
+      "url": "/apply/security-check",
+      "scope": "approved"
+    },
+    {
+      "seq": 104,
+      "type": "navigation_committed",
+      "url": "/apply/security-check",
+      "scope": "approved"
+    },
+    {
+      "seq": 113,
+      "type": "navigation_requested",
+      "url": "/apply/security-check",
+      "scope": "approved",
+      "detail": "formsubmissionpost"
+    },
+    {
+      "seq": 114,
+      "type": "redirect",
+      "url": "/apply/fee",
+      "scope": "approved"
+    },
+    {
+      "seq": 116,
+      "type": "navigation_committed",
+      "url": "/apply/fee",
+      "scope": "approved"
+    },
+    {
+      "seq": 126,
+      "type": "navigation_requested",
+      "url": "/apply/fee",
+      "scope": "approved",
+      "detail": "formsubmissionpost"
+    },
+    {
+      "seq": 127,
+      "type": "redirect",
+      "url": "/apply/declaration",
+      "scope": "approved"
+    },
+    {
+      "seq": 129,
+      "type": "navigation_committed",
+      "url": "/apply/declaration",
+      "scope": "approved"
+    },
+    {
+      "seq": 138,
+      "type": "navigation_requested",
+      "url": "/apply/declaration",
+      "scope": "approved",
+      "detail": "formsubmissionpost"
+    },
+    {
+      "seq": 139,
+      "type": "redirect",
+      "url": "/review",
+      "scope": "approved"
+    },
+    {
+      "seq": 141,
+      "type": "navigation_committed",
+      "url": "/review",
+      "scope": "approved"
+    },
+    {
+      "seq": 150,
+      "type": "navigation_requested",
+      "url": "/review",
+      "scope": "approved",
+      "detail": "formsubmissionpost"
+    },
+    {
+      "seq": 151,
+      "type": "redirect",
+      "url": "/confirmation",
+      "scope": "approved"
+    },
+    {
+      "seq": 153,
+      "type": "navigation_committed",
+      "url": "/confirmation",
+      "scope": "approved"
+    },
+    {
+      "seq": 163,
+      "type": "navigation_committed",
+      "url": "/",
+      "scope": "approved"
+    }
+  ]
+}

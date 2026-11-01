@@ -1,4 +1,7 @@
 import type { Metadata } from "next";
+import { AssistLog } from "@/components/assist-log";
+import { EXTENSION_ID, GUIDED_SYSTEMS } from "@/lib/extension";
+import { ApplyWithAssist } from "./apply-with-assist";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { COST_KINDS, totalsByCurrency, type CostKind } from "@/lib/application-costs";
@@ -46,7 +49,7 @@ export const metadata: Metadata = { title: "Application" };
 export default async function ApplicationPage({ params, searchParams }: PageProps<"/app/tracker/[id]">) {
   const { id } = await params;
   const justStarted = (await searchParams).applying === "1";
-  const { t: all } = await getLocale();
+  const { t: all, locale } = await getLocale();
   const { supabase, user } = await getUser();
   const [{ data: app }, { data: outcome }, { data: consent }, { data: events }, { data: scores }, { data: costs }, { data: profile }, { data: tracks }, { data: linkedDocs }] = await Promise.all([
     supabase
@@ -103,6 +106,10 @@ export default async function ApplicationPage({ params, searchParams }: PageProp
   const scoreName = (t: { exam: string; exam_version: string | null; total: number | null }) =>
     `${label(t.exam)}${t.exam_version ? ` (${t.exam_version})` : ""}${t.total != null ? ` ${t.total}` : ""}`;
 
+  // M7 A2.4: Apply with UniGuide Assist, only where guided apply supports the application's portal.
+  const { data: system } = app.cycle_id ? await supabase.rpc("application_portal", { p_cycle_id: app.cycle_id }) : { data: null };
+  const canApply = !!system && GUIDED_SYSTEMS.includes(system) && !!EXTENSION_ID && ["shortlisted", "preparing"].includes(app.status);
+
   return (
     <div className="grid gap-8">
       <header>
@@ -142,6 +149,8 @@ export default async function ApplicationPage({ params, searchParams }: PageProp
           ) : null}
         </div>
       </header>
+
+      {canApply ? <ApplyWithAssist applicationId={app.id} system={system!} extensionId={EXTENSION_ID!} words={all.assist.apply} /> : null}
 
       {justStarted && app.status === "preparing" ? (
         <p role="status" className="rounded-2xl border border-verified/40 bg-surface p-4 font-semibold text-verified">{all.journey.applying.started}</p>
@@ -594,6 +603,8 @@ export default async function ApplicationPage({ params, searchParams }: PageProp
           ))}
         </ol>
       </section>
+
+      <AssistLog supabase={supabase} applicationId={app.id} locale={locale} t={all.assist} />
 
       <form action={deleteApplication.bind(null, app.id)}>
         <button className="btn btn-secondary btn-sm">Delete this application</button>
