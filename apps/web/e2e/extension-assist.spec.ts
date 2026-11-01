@@ -35,7 +35,10 @@ async function waitFor(url: string) {
 }
 
 function resetAssist() {
-  sql(`delete from assist_runs where user_id = '${APPLICANT}'`);
+  sql(`delete from assist_runs where user_id = '${APPLICANT}';
+       delete from test_scores where user_id = '${APPLICANT}';
+       delete from cv_entries where user_id = '${APPLICANT}';
+       delete from documents where user_id = '${APPLICANT}'`);
   resetApplicant();
   sql(`update profiles set residence_country = 'IN', home_qualification = 'bachelor_4yr', grade_value = 8.4, grade_text = null,
          grade_scale = 'gpa_10', consent_state = 'not_required' where user_id = '${APPLICANT}'`);
@@ -221,6 +224,123 @@ test("a field the rules don't know can get a suggested role, filled only once th
   await expect(portal.locator("#reach")).toHaveValue("applicant@uniguide.local");
   await expect(row).toContainText("Filled");
   await ctx.unroute("**/functions/v1/suggest-field-role");
+});
+
+test("a whole application: the student fills, copies and leaves fields on every page, and stops at the review", async () => {
+  // A full profile: an English test, one CV entry and a final draft; the course's AI policy is unknown.
+  sql(`update profiles set home_qualification = 'bachelor_4yr', grade_value = 8.4, grade_text = null, grade_scale = 'gpa_10'
+       where user_id = '${APPLICANT}';
+       insert into test_scores (user_id, exam, total, taken_on) values ('${APPLICANT}', 'ielts_academic', 7.5, '2026-06-12');
+       insert into cv_entries (user_id, section, title, organisation) values ('${APPLICANT}', 'projects', 'Robotics club lead', 'City School')`);
+  const docId = sql(`insert into documents (user_id, kind, title) values ('${APPLICANT}', 'personal_statement', 'Personal statement') returning id`).split("\n")[0]!;
+  const draft = "Why I want to study data science, in my own words.";
+  const versionId = sql(`insert into document_versions (document_id, user_id, body, word_count) values ('${docId}', '${APPLICANT}', '${draft}', 10) returning id`).split("\n")[0]!;
+  sql(`update documents set final_version_id = '${versionId}' where id = '${docId}'; delete from assist_runs where user_id = '${APPLICANT}'`);
+
+  // A fresh application on the portal: the student signs in themselves.
+  await fetch(`${PORTAL}/__reset`, { method: "POST" });
+  await portal.goto(`${PORTAL}/sign-in`);
+  await portal.fill("#email", "tester@practice.test");
+  await portal.fill("#password", "practice-only");
+  await portal.click("#sign-in");
+  await portal.click("#continue-application");
+  await panel.reload();
+  await panel.getByRole("button", { name: "Use this application" }).click();
+
+  const fill = async (label: string) => {
+    await panel.getByRole("button", { name: `Fill: ${label}`, exact: true }).click();
+    await expect(panel.getByRole("button", { name: `Fill: ${label}`, exact: true }).locator("xpath=ancestor::li[1]")).toContainText("Filled");
+  };
+  // The student moves on themselves; the extension never presses Continue.
+  const next = async (path: string) => {
+    await portal.click("#save-continue");
+    await portal.waitForURL(`**${path}`);
+    await expect(panel.locator(".row").first()).toBeVisible();
+  };
+
+  // Your details: facts from the profile; names and date of birth are the student's.
+  await fill("Email address");
+  await fill("Country you live in");
+  await panel.getByRole("button", { name: "Leave for me: Phone number (optional)" }).click();
+  await portal.fill("#field-given_names", "Test");
+  await portal.fill("#field-family_name", "Student");
+  await portal.fill("#field-date_of_birth", "2007-05-01");
+  await next("/apply/schooling");
+
+  // School: the qualification and scale as the portal names them, the grade exactly as entered.
+  await fill("Qualification");
+  await fill("How your grade is given");
+  await fill("Your overall grade");
+  await expect(portal.locator("#field-grade_scale")).toHaveValue("gpa_10");
+  await expect(portal.locator("#field-grade_value")).toHaveValue("8.4");
+  await portal.fill("#field-school_name", "City School");
+  await portal.check("#field-still_studying-no");
+  await next("/apply/tests");
+
+  // Tests: answering "yes" shows the test details; check the page again to see them.
+  await fill("Have you taken an English language test?");
+  await panel.getByRole("button", { name: "Check this page again" }).click();
+  await fill("Which test?");
+  await fill("Overall score");
+  await fill("Date you took it");
+  await next("/apply/activities");
+
+  await fill("What you did");
+  await panel.getByRole("button", { name: "Copy: Organisation" }).click();
+  await panel.getByRole("button", { name: "Leave for me: Tell us about it" }).click();
+  await portal.fill("#field-activity_1_organisation", "City School");
+  await next("/apply/statement");
+
+  // The statement: the policy is unknown, so no paste; the student copies their own final draft.
+  await expect(panel.getByRole("button", { name: /Paste final draft/ })).toHaveCount(0);
+  await panel.getByRole("button", { name: "Copy final draft: Why do you want to study this course?" }).click();
+  expect(await panel.evaluate(() => navigator.clipboard.readText())).toBe(draft);
+  await portal.fill("#field-statement", draft);
+  await next("/apply/security-check");
+
+  // The security check, the fee and the declaration are the student's own steps, with no actions offered.
+  await expect(panel.getByRole("heading", { name: "Steps only you can take" })).toBeVisible();
+  await expect(panel.locator(".row button")).toHaveCount(0);
+  await portal.fill("#field-check_word", "PRACTICE");
+  await next("/apply/fee");
+  await expect(panel.locator(".row button")).toHaveCount(0);
+  await portal.check("#field-fee_waiver");
+  await portal.fill("#field-fee_waiver_reason", "Synthetic test reason");
+  await next("/apply/declaration");
+  await expect(panel.locator(".row button")).toHaveCount(0);
+  await portal.check("#field-declare");
+  await portal.fill("#field-signed_name", "Test Student");
+  await portal.click("#sign-continue");
+  await portal.waitForURL("**/review");
+
+  // The review: everything the extension filled is there; submitting is the student's, and nothing submitted it.
+  await expect(portal.locator("#review-table")).toContainText("applicant@uniguide.local");
+  await expect(portal.locator("#review-table")).toContainText("ielts_academic");
+  await expect(portal.locator("#submit-application")).toBeVisible();
+  expect(new URL(portal.url()).pathname).toBe("/review");
+
+  await expect
+    .poll(events)
+    .toBe(
+      [
+        "filled:contact.email",
+        "filled:contact.residence_country",
+        "skipped:contact.phone",
+        "filled:education.qualification",
+        "filled:education.grade.scale",
+        "filled:education.grade.value",
+        "filled:tests.english.taken",
+        "filled:tests.english.exam",
+        "filled:tests.english.total",
+        "filled:tests.english.taken_on",
+        "filled:activities[].role",
+        "copied:activities[].organisation",
+        "skipped:activities[].description",
+        "copied_draft:essay.personal_statement",
+      ].join(","),
+    );
+  expect(sql(`select count(*) from assist_runs where user_id = '${APPLICANT}'`)).toBe("1");
+  expect(sql(`select count(*) from applications where user_id = '${APPLICANT}' and status = 'submitted'`)).toBe("0");
 });
 
 test("while consent is pending the panel shows only the reason", async () => {
