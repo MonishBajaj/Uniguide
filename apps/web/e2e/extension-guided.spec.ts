@@ -3,7 +3,7 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type BrowserContext, type Page } from "@playwright/test";
 import { APPLICANT, sql } from "./helpers";
-import { PORTAL, connect, eventLines, freshPortal, launch, openPanel, resetApplicantForAssist, type Rig } from "./extension-helpers";
+import { EXTENSION_ID, PORTAL, WEB, connect, eventLines, freshPortal, launch, openPanel, resetApplicantForAssist, type Rig } from "./extension-helpers";
 
 test.describe.configure({ mode: "serial" });
 
@@ -115,7 +115,8 @@ test("a full run fills and moves on by itself, pauses where only the student can
   await expect(portal.locator("#review-table")).toContainText("ielts_academic");
   await expect(portal.locator("#review-table")).toContainText("Robotics club lead");
 
-  expect(sql(`select feature || ':' || coalesce(outcome, 'open') from assist_runs where user_id = '${APPLICANT}' and feature = 'guided'`)).toBe("guided:review");
+  // The run stays open at review, so the student's submission can be logged on it (A2.4)...
+  expect(sql(`select feature || ':' || coalesce(outcome, 'open') from assist_runs where user_id = '${APPLICANT}' and feature = 'guided'`)).toBe("guided:open");
   const events = eventLines();
   expect(events.filter((e) => e.startsWith("paused:")).map((e) => e.split(":")[2])).toEqual(["student", "student", "student", "captcha", "payment", "declaration"]);
   // It pressed the dashboard's way in, then Continue on your details, school, tests, activities and the statement.
@@ -126,6 +127,13 @@ test("a full run fills and moves on by itself, pauses where only the student can
   );
   expect(events.some((e) => e.startsWith("blocked:"))).toBe(false);
   expect(sql(`select count(*) from applications where user_id = '${APPLICANT}' and status = 'submitted'`)).toBe("0");
+
+  // ...and closing the panel there ends it as having reached review, not as abandoned.
+  await panel.close();
+  await expect
+    .poll(() => sql(`select coalesce(outcome, 'open') from assist_runs where user_id = '${APPLICANT}' and feature = 'guided'`))
+    .toBe("review");
+  panel = await openPanel(ctx);
 });
 
 test("a required value missing from the profile pauses the run, and says which field", async () => {
@@ -223,4 +231,131 @@ test("essays: the run offers the student's own final draft, pastes it only when 
   await expect(portal.locator("#field-statement")).toHaveValue("");
   await panel.getByRole("button", { name: "Stop" }).click();
   expect(eventLines()).toContain("copied_draft:essay.personal_statement:-");
+});
+
+/** The student signs in to UniGuide in the same browser as the extension. */
+async function signInToUniguide(): Promise<Page> {
+  const page = await ctx.newPage();
+  await page.goto(`${WEB}/login`);
+  await page.fill("input[name=email]", "applicant@uniguide.local");
+  await page.fill("input[name=password]", "password123");
+  await page.click('button:has-text("Sign in")');
+  await page.waitForURL(/\/(app|parent)(\/|\?|$)/);
+  // Chrome stops passing clicks to the tab that just sent a password form; carry on in a fresh tab.
+  const web = await ctx.newPage();
+  await page.close();
+  return web;
+}
+
+test("Apply from the tracker: the portal opens, the run reaches review, and once the student submits the tracker shows it, and how", async () => {
+  // The whole journey, from the tracker through every page to the confirmation: longer than one page's test.
+  test.setTimeout(90_000);
+  // The earlier tests' tabs: the panel below must find the portal tab Apply opens, not an older one.
+  await panel?.close();
+  await portal?.close();
+  resetApplicantForAssist();
+  await fetch(`${PORTAL}/__reset`, { method: "POST" });
+  const appId = sql(`select id from applications where user_id = '${APPLICANT}' limit 1`);
+  const web = await signInToUniguide();
+  await web.goto(`${WEB}/app/tracker/${appId}`);
+  const apply = web.locator("#apply-with-assist");
+  await expect(apply).toContainText("You submit it yourself.");
+  expect(await axe(web)).toEqual([]);
+
+  const opened = ctx.waitForEvent("page");
+  await apply.getByRole("button", { name: "Apply with UniGuide Assist" }).click();
+  portal = await opened;
+  await expect(apply).toContainText("The portal is open in a new tab.");
+
+  // The student signs in to the portal themselves. Most pages were already answered in an earlier session.
+  await portal.waitForURL(`${PORTAL}/sign-in`);
+  await portal.fill("#email", "tester@practice.test");
+  await portal.fill("#password", "practice-only");
+  await portal.click("#sign-in");
+  await portal.waitForURL(`${PORTAL}/`);
+  await portal.evaluate(async () => {
+    const post = (id: string, a: Record<string, string>, action = "continue") =>
+      fetch(`/apply/${id}`, { method: "POST", body: new URLSearchParams({ action, ...a }), redirect: "manual" });
+    await post("about-you", { given_names: "Test", family_name: "Student", date_of_birth: "2007-05-01" }, "save");
+    await post("schooling", { school_name: "City School", qualification: "bachelor_4yr", grade_scale: "gpa_10", grade_value: "8.4", still_studying: "no" });
+    await post("tests", { english_test_taken: "no" });
+    await post("activities", { activity_1_role: "Robotics club lead" });
+    await post("statement", { statement: "My own words." });
+    await post("security-check", { check_word: "PRACTICE" });
+    await post("fee", { fee_waiver: "on", fee_waiver_reason: "Synthetic test reason" });
+    await post("declaration", { declare: "on", signed_name: "Test Student" });
+  });
+  await portal.reload();
+
+  // The panel picks up the Apply: the application is chosen, and the start screen waits for Start.
+  // The tab id comes from the background worker: loading the panel without it would already take the Apply.
+  const tabId = await ctx.serviceWorkers()[0].evaluate(async (origin) => {
+    const tabs = (globalThis as unknown as { chrome: { tabs: { query(q: object): Promise<{ id?: number }[]> } } }).chrome.tabs;
+    return (await tabs.query({ url: `${origin}/*` }))[0]?.id;
+  }, PORTAL);
+  panel = await ctx.newPage();
+  await panel.goto(`chrome-extension://${EXTENSION_ID}/panel.html?tab=${tabId}`);
+  await expect(panel.locator("#from-tracker")).toBeVisible();
+  await expect(panel.locator("select#application")).toHaveCount(0);
+  await panel.getByRole("button", { name: "Start guided apply" }).click();
+
+  // It fills the email and country, moves through the answered pages, and pauses for the student's own steps.
+  await pausedFor("captcha");
+  await portal.click("#save-continue");
+  await portal.waitForURL(`${PORTAL}/apply/fee`);
+  await panel.getByRole("button", { name: "Resume" }).click();
+  await pausedFor("payment");
+  await portal.click("#save-continue");
+  await portal.waitForURL(`${PORTAL}/apply/declaration`);
+  await panel.getByRole("button", { name: "Resume" }).click();
+  await pausedFor("declaration");
+  await portal.click("#sign-continue");
+  await portal.waitForURL(`${PORTAL}/review`);
+  await panel.getByRole("button", { name: "Resume" }).click();
+
+  // The review summary: what it filled and where it paused, each linked to its page.
+  await expect(runCard()).toHaveAttribute("data-status", "at_review");
+  await expect(panel.locator("#summary-filled li")).toHaveText([
+    /Your details: Email address/,
+    /Your details: Country you live in/,
+    /Activities: Activity: organisation/,
+  ]);
+  await expect(panel.locator("#summary-paused li")).toHaveCount(3);
+  expect(await axe(panel)).toEqual([]);
+  await panel.getByRole("button", { name: "Go to Your details" }).first().click();
+  await portal.waitForURL(`${PORTAL}/apply/about-you`);
+  await expect(runCard()).toHaveAttribute("data-status", "at_review");
+
+  // The student goes back and submits. The confirmation page marks the application submitted.
+  await portal.goto(`${PORTAL}/review`);
+  await portal.click("#submit-application");
+  await portal.waitForURL(`${PORTAL}/confirmation`);
+  await expect(runCard()).toHaveAttribute("data-status", "finished", { timeout: 15_000 });
+  await expect.poll(() => sql(`select status from applications where id = '${appId}'`)).toBe("submitted");
+  expect(eventLines().at(-1)).toBe("submitted:-:confirmation_page");
+  expect(sql(`select outcome from assist_runs where user_id = '${APPLICANT}' and feature = 'guided'`)).toBe("submitted");
+
+  await web.reload();
+  await expect(web.locator("#apply-with-assist")).toHaveCount(0);
+  const log = web.getByRole("region", { name: "Assist log" });
+  await log.locator("summary").first().click();
+  await expect(log).toContainText("Marked as submitted");
+  await expect(log).toContainText("confirmation page seen");
+  await web.close();
+});
+
+test("the Apply button is absent for a portal guided apply doesn't support", async () => {
+  resetApplicantForAssist();
+  const appId = sql(`select id from applications where user_id = '${APPLICANT}' limit 1`);
+  const cycle = sql(`select cycle_id from applications where id = '${appId}'`);
+  sql(`update deadlines set owning_system = 'common_app' where cycle_id = '${cycle}'`);
+  try {
+    const web = await signInToUniguide();
+    await web.goto(`${WEB}/app/tracker/${appId}`);
+    await expect(web.getByRole("heading", { level: 1 })).toBeVisible();
+    await expect(web.locator("#apply-with-assist")).toHaveCount(0);
+    await web.close();
+  } finally {
+    sql(`update deadlines set owning_system = 'direct' where cycle_id = '${cycle}'`);
+  }
 });

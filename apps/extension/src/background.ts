@@ -1,6 +1,7 @@
 // The background worker: the UniGuide session, the current run and the audit log (spec 7.1).
 import { WEB_ORIGIN } from "./config";
-import type { AccountState, Application, BackgroundReply, ConsentState, SuggestOutcome, ToBackground } from "./messages";
+import { adapterServing, guidedSystems } from "./adapters";
+import type { AccountState, Application, BackgroundReply, ConsentState, PendingApply, SuggestOutcome, ToBackground } from "./messages";
 import { ROLES } from "@uniguide/portal-adapters";
 import { suggestionFrom } from "./suggest";
 import { acceptSession, getSession, invoke, rest, rpc, SignedOut, signOut } from "./supabase";
@@ -9,19 +10,46 @@ chrome.runtime.onInstalled.addListener(() => {
   void chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true });
 });
 
-// Our sign-in page hands over a session made for the extension alone. Only that page, on our own origin.
+// Our own web app only (externally_connectable): it hands over a session made for the extension alone, asks
+// whether the extension is ready for guided apply, and starts an Apply from the tracker (A2.4).
 chrome.runtime.onMessageExternal.addListener((msg: unknown, sender, respond) => {
-  const m = msg as { type?: unknown; access_token?: unknown; refresh_token?: unknown } | null;
-  if (sender.origin !== WEB_ORIGIN || m?.type !== "uniguide.session" || typeof m.access_token !== "string" || typeof m.refresh_token !== "string") {
+  const m = msg as { type?: unknown; access_token?: unknown; refresh_token?: unknown; applicationId?: unknown; system?: unknown } | null;
+  if (sender.origin !== WEB_ORIGIN || !m) {
     respond({ ok: false });
     return;
   }
-  acceptSession({ access_token: m.access_token, refresh_token: m.refresh_token }).then(
-    () => respond({ ok: true }),
-    () => respond({ ok: false }),
-  );
-  return true;
+  if (m.type === "uniguide.session" && typeof m.access_token === "string" && typeof m.refresh_token === "string") {
+    acceptSession({ access_token: m.access_token, refresh_token: m.refresh_token }).then(
+      () => respond({ ok: true }),
+      () => respond({ ok: false }),
+    );
+    return true;
+  }
+  if (m.type === "uniguide.status") {
+    getSession().then((s) => respond({ ok: true, installed: true, signedIn: !!s, guided: guidedSystems() }));
+    return true;
+  }
+  if (m.type === "uniguide.apply" && typeof m.applicationId === "string" && typeof m.system === "string") {
+    applyFromTracker(m.applicationId, m.system).then(respond, () => respond({ ok: false }));
+    return true;
+  }
+  respond({ ok: false });
 });
+
+const APPLY_KEY = "uniguide.apply";
+const REVIEW_KEY = "uniguide.runAtReview";
+
+/** Open the portal for this application and leave the run for the panel to start. The student presses Start. */
+async function applyFromTracker(applicationId: string, system: string) {
+  const adapter = adapterServing(system);
+  if (!adapter) return { ok: false, reason: "unsupported" };
+  if (!(await getSession())) return { ok: false, reason: "signed_out" };
+  await chrome.storage.session.set({ [APPLY_KEY]: { applicationId, portal: adapter.portal } satisfies PendingApply });
+  const tab = await chrome.tabs.create({ url: new URL(adapter.map.dashboard?.path ?? adapter.map.signIn.path, adapter.map.origin).href });
+  // Opening the panel needs a gesture Chrome may not pass on from a web page; if not, the student opens it.
+  if (tab.id !== undefined) await chrome.sidePanel.open({ tabId: tab.id }).catch(() => {});
+  return { ok: true };
+}
 
 /** One of the extension's own pages (the panel), not a content script running on a portal page. */
 const fromOwnPage = (sender: chrome.runtime.MessageSender | undefined) =>
@@ -56,8 +84,11 @@ chrome.runtime.onConnect.addListener((port) => {
 async function endRun(outcome: "review" | "stopped" | "paused" | "abandoned") {
   const id = await getRun();
   if (!id) return;
+  // A guided run that reached the review page and then the panel closed ended at review, not abandoned.
+  const atReview = ((await chrome.storage.session.get(REVIEW_KEY))[REVIEW_KEY] as boolean | undefined) ?? false;
   await setRun(null);
-  await rpc("end_assist_run", { p_run_id: id, p_outcome: outcome }).catch(() => {});
+  await chrome.storage.session.remove(REVIEW_KEY);
+  await rpc("end_assist_run", { p_run_id: id, p_outcome: outcome === "abandoned" && atReview ? "review" : outcome }).catch(() => {});
 }
 
 interface AppRow {
@@ -122,6 +153,21 @@ async function handle(msg: ToBackground): Promise<unknown> {
       return endRun(msg.outcome);
     case "suggest":
       return suggest(msg.label);
+    case "takeApply": {
+      const pending = ((await chrome.storage.session.get(APPLY_KEY))[APPLY_KEY] as PendingApply | undefined) ?? null;
+      await chrome.storage.session.remove(APPLY_KEY);
+      return pending;
+    }
+    case "reachedReview":
+      return chrome.storage.session.set({ [REVIEW_KEY]: true });
+    case "submitted": {
+      // The run stays open at review so the submission can be logged on it; mark_application_submitted ends it.
+      const id = await getRun();
+      await rpc("mark_application_submitted", { p_application_id: msg.applicationId, p_how: msg.how, p_run_id: id });
+      await setRun(null);
+      await chrome.storage.session.remove(REVIEW_KEY);
+      return null;
+    }
     case "signOut":
       await endRun("stopped");
       return signOut();

@@ -231,3 +231,35 @@ describe("handing back", () => {
     expect(r.run.status).toBe("at_review");
   });
 });
+
+describe("the summary at the review page (A2.4)", () => {
+  it("lists what was filled, what was left, what was skipped and where it paused, by page", async () => {
+    const pages = structuredClone(PAGES);
+    pages["about-you"]!.fields.push(
+      field("field-given_names", { role: "person.given_names", action: "student", label: "Given names" }),
+      field("field-phone", { role: "contact.phone", action: "student", required: false, label: "Phone" }),
+    );
+    const p = fakePortal(undefined, {}, pages);
+    const r = new GuidedRunner(p.deps);
+    await r.start();
+    r.skip("field-given_names");
+    await r.resume();
+    expect(r.run.status).toBe("at_review");
+    const s = r.summary();
+    expect(s.filled).toEqual([
+      { pageId: "about-you", key: "field-email", role: "contact.email" },
+      { pageId: "schooling", key: "field-grade_value", role: "education.grade.value" },
+    ]);
+    expect(s.left).toEqual([{ pageId: "about-you", key: "field-phone", label: "Phone", reason: "student" }]);
+    expect(s.skipped).toEqual([{ pageId: "about-you", key: "field-given_names", label: "Given names" }]);
+    expect(s.pauses).toEqual([{ page: 1, pageId: "about-you", reason: "student" }]);
+  });
+
+  it("finishes when the student says they've submitted, once at review", async () => {
+    const p = fakePortal();
+    const r = new GuidedRunner(p.deps);
+    await r.start();
+    r.submitted("student_said_submitted");
+    expect(r.run).toMatchObject({ status: "finished", submitted: "student_said_submitted" });
+  });
+});

@@ -24,6 +24,14 @@ export interface GuidedDeps {
   changed(runner: GuidedRunner): void;
 }
 
+/** What the review page shows (spec 6.3): filled, left for the student, skipped, and where it paused. */
+export interface RunSummary {
+  filled: { pageId: string | null; key: string; role: string }[];
+  left: { pageId: string | null; key: string; label: string; reason: string }[];
+  skipped: { pageId: string | null; key: string; label: string }[];
+  pauses: Run["history"];
+}
+
 const UNKNOWN: PageId = { kind: "unknown", matchesMap: false };
 /** Re-plans after filling, in case filling showed more fields; a few rounds at most. */
 const MAX_ROUNDS = 3;
@@ -33,8 +41,27 @@ export class GuidedRunner {
   scan: GuidedScan | null = null;
   plan: PagePlan | null = null;
   private busy = false;
+  private filled: RunSummary["filled"] = [];
+  private left = new Map<string, RunSummary["left"]>();
+  private skippedList: RunSummary["skipped"] = [];
 
   constructor(private readonly deps: GuidedDeps) {}
+
+  summary(): RunSummary {
+    return { filled: [...this.filled], left: [...this.left.values()].flat(), skipped: [...this.skippedList], pauses: [...this.run.history] };
+  }
+
+  /** What's still empty and the student's on this page, as the latest plan saw it. */
+  private noteLeft() {
+    if (!this.plan) return;
+    const empty = (key: string) => !this.scan?.fields.find((f) => f.key === key)?.hasValue;
+    this.left.set(
+      this.run.pageId ?? "",
+      this.plan.listed
+        .filter((l) => l.reason !== "already_filled" && l.reason !== "skipped" && empty(l.key))
+        .map((l) => ({ pageId: this.run.pageId, key: l.key, label: l.label, reason: l.reason })),
+    );
+  }
 
   // ------------------------------------------------------------------------------------------- the student's controls
 
@@ -62,6 +89,7 @@ export class GuidedRunner {
     if (this.run.status !== "paused" || this.run.skipped.includes(key)) return;
     const f = this.scan?.fields.find((x) => x.key === key);
     this.deps.log("skipped", f?.role ?? null, this.run.pageId, null, "student");
+    this.skippedList.push({ pageId: this.run.pageId, key, label: f?.label ?? key });
     this.dispatch({ type: "skip", key });
   }
 
@@ -106,6 +134,7 @@ export class GuidedRunner {
           }
           case "plan_page": {
             this.plan = this.deps.plan(this.scan?.fields ?? [], this.run.skipped);
+            this.noteLeft();
             this.dispatch({ type: "planned", toFill: this.plan.toFill.map((f) => f.key), pause: this.plan.pause });
             break;
           }
@@ -147,7 +176,10 @@ export class GuidedRunner {
       for (const f of this.plan?.toFill ?? []) {
         if (this.run.status !== "filling") return; // Pause or Stop: before the next field
         const res = await this.deps.fill(f);
-        if (res.status === "filled") this.deps.log("filled", f.role, this.run.pageId, f.source, null);
+        if (res.status === "filled") {
+          this.deps.log("filled", f.role, this.run.pageId, f.source, null);
+          this.filled.push({ pageId: this.run.pageId, key: f.key, role: f.role });
+        }
         else if (res.status === "blocked") this.deps.log("blocked", f.role, this.run.pageId, null, res.logReason);
       }
       if (this.run.status !== "filling") return;
@@ -155,6 +187,7 @@ export class GuidedRunner {
       this.scan = await this.deps.scan();
       if (this.run.status !== "filling") return;
       this.plan = this.deps.plan(this.scan?.fields ?? [], this.run.skipped);
+      this.noteLeft();
       this.dispatch({ type: "planned", toFill: this.plan.toFill.map((f) => f.key), pause: this.plan.pause });
       if (this.plan.toFill.length === 0) break;
     }

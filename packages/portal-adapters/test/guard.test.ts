@@ -7,6 +7,7 @@ import { practice } from "../src/practice/index";
 import { fixture } from "./helpers";
 
 const RUN = { active: true, startedByStudent: true };
+const PORTAL = "http://127.0.0.1:4318";
 const ctx = (doc: Document, adapter: Adapter = practice, run = RUN): GuardContext => ({ doc, adapter, run });
 const el = (doc: Document, id: string) => {
   const e = doc.getElementById(id);
@@ -297,5 +298,19 @@ describe("pressing: the only click anywhere", () => {
     });
     expect(guard.press(el(doc, "submit-application"), ctx(doc, reviewAsForm(["submit-application"])))).toMatchObject({ allow: false });
     expect(clicks).toBe(0);
+  });
+});
+
+describe("navigating: only through the guard", () => {
+  it("goes to a page of the portal the student picked from the summary", () => {
+    const doc = fixture("review");
+    expect(guard.navigate(`${PORTAL}/apply/schooling`, ctx(doc))).toEqual({ allow: true });
+  });
+
+  it("never goes to another site, or to a paying, signing or declaring address", () => {
+    const doc = fixture("review");
+    expect(guard.navigate("https://elsewhere.example/", ctx(doc))).toMatchObject({ allow: false, why: "off_origin" });
+    expect(guard.navigate(`${PORTAL}/apply/declaration`, ctx(doc))).toMatchObject({ allow: false, why: "words" });
+    expect(guard.navigate(`${PORTAL}/fee/pay`, ctx(doc))).toMatchObject({ allow: false, why: "words" });
   });
 });

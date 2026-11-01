@@ -6,6 +6,8 @@ export const practice: Adapter = {
   portal: "practice",
   version: "practice-1",
   guided: true,
+  // In test builds the practice portal stands in for a university's own application system.
+  serves: ["direct"],
   map: map as PortalMap,
   optionEquivalents: {
     // Our codes (apps/web/lib/fields.ts) → the practice portal's option values. "Another qualification" is never chosen for the student.

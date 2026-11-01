@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { AssistLog } from "@/components/assist-log";
+import { EXTENSION_ID, GUIDED_SYSTEMS } from "@/lib/extension";
+import { ApplyWithAssist } from "./apply-with-assist";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { COST_KINDS, totalsByCurrency, type CostKind } from "@/lib/application-costs";
@@ -104,6 +106,10 @@ export default async function ApplicationPage({ params, searchParams }: PageProp
   const scoreName = (t: { exam: string; exam_version: string | null; total: number | null }) =>
     `${label(t.exam)}${t.exam_version ? ` (${t.exam_version})` : ""}${t.total != null ? ` ${t.total}` : ""}`;
 
+  // M7 A2.4: Apply with UniGuide Assist, only where guided apply supports the application's portal.
+  const { data: system } = app.cycle_id ? await supabase.rpc("application_portal", { p_cycle_id: app.cycle_id }) : { data: null };
+  const canApply = !!system && GUIDED_SYSTEMS.includes(system) && !!EXTENSION_ID && ["shortlisted", "preparing"].includes(app.status);
+
   return (
     <div className="grid gap-8">
       <header>
@@ -143,6 +149,8 @@ export default async function ApplicationPage({ params, searchParams }: PageProp
           ) : null}
         </div>
       </header>
+
+      {canApply ? <ApplyWithAssist applicationId={app.id} system={system!} extensionId={EXTENSION_ID!} words={all.assist.apply} /> : null}
 
       {justStarted && app.status === "preparing" ? (
         <p role="status" className="rounded-2xl border border-verified/40 bg-surface p-4 font-semibold text-verified">{all.journey.applying.started}</p>

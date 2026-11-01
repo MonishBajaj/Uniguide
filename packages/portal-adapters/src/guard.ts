@@ -268,4 +268,14 @@ function press(control: Element, ctx: GuardContext): GuardDecision {
   return decision;
 }
 
-export const guard = { allowClick, allowKey, allowFill, allowNavigate, press };
+/**
+ * The only navigation in the extension: go to an address on the portal, when the student picks a page from the
+ * review summary, and only if allowNavigate allows it (A2.4).
+ */
+function navigate(url: string, ctx: GuardContext): GuardDecision {
+  const decision = allowNavigate(url, ctx);
+  if (decision.allow) ctx.doc.defaultView?.location.assign(new URL(url, ctx.doc.URL).href);
+  return decision;
+}
+
+export const guard = { allowClick, allowKey, allowFill, allowNavigate, press, navigate };

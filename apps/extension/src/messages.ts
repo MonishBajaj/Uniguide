@@ -40,6 +40,9 @@ export type ToBackground =
   | { to: "background"; type: "log"; kind: EventKind; role: Role | null; page: string | null; source: string | null; reason: string | null }
   | { to: "background"; type: "end"; outcome: "review" | "stopped" | "paused" | "abandoned" }
   | { to: "background"; type: "suggest"; label: string }
+  | { to: "background"; type: "takeApply" }
+  | { to: "background"; type: "reachedReview" }
+  | { to: "background"; type: "submitted"; applicationId: string; how: "confirmation_page" | "student_said_submitted" }
   | { to: "background"; type: "signOut" }
   | { to: "background"; type: "connect" };
 
@@ -85,11 +88,20 @@ export type FillResult =
   | { status: "not_found" }
   | { status: "blocked"; why: string; logReason: "guard" | "page_differs" };
 
+export type GoResult = { status: "going" } | { status: "blocked"; why: string } | { status: "not_found" };
+
 /** Panel → content script. */
 export type ToContent =
   | { to: "content"; type: "scan" }
   | { to: "content"; type: "fill"; key: string; index?: number; value: string; overwrite: boolean; confirmedRole?: Role }
-  | { to: "content"; type: "press"; control: "continue" | "start" };
+  | { to: "content"; type: "press"; control: "continue" | "start" }
+  | { to: "content"; type: "go"; path: string };
+
+/** An Apply from the tracker, waiting for the panel to pick it up (A2.4). */
+export interface PendingApply {
+  applicationId: string;
+  portal: string;
+}
 
 export type PressResult = { status: "pressed" } | { status: "blocked"; why: string } | { status: "not_found" };
 

@@ -3,7 +3,7 @@
 // read the UniGuide session.
 import { guard, identifyPage, matchPage, type FieldMatch } from "@uniguide/portal-adapters";
 import { adapterFor } from "./adapters";
-import type { FieldView, PressResult, ScanResult, ToContent } from "./messages";
+import type { FieldView, GoResult, PressResult, ScanResult, ToContent } from "./messages";
 import { fill } from "./writer";
 
 function scan(): ScanResult | null {
@@ -49,11 +49,27 @@ function press(control: "continue" | "start"): PressResult {
   return { status: "pressed" };
 }
 
+/** A page the student picked from the review summary (A2.4): only through the guard, and only on the portal. */
+function go(path: string): GoResult {
+  const adapter = adapterFor(location.href);
+  if (!adapter) return { status: "not_found" };
+  const url = new URL(path, adapter.map.origin).href;
+  const ctx = { doc: document, adapter, run: { active: true, startedByStudent: true } };
+  const decision = guard.allowNavigate(url, ctx);
+  if (!decision.allow) return { status: "blocked", why: decision.why };
+  setTimeout(() => guard.navigate(url, ctx), 0);
+  return { status: "going" };
+}
+
 // Only our own extension pages can message a content script.
 chrome.runtime.onMessage.addListener((msg: ToContent, sender, respond) => {
   if (sender.id !== chrome.runtime.id || msg?.to !== "content") return;
   if (msg.type === "scan") {
     respond(scan());
+    return;
+  }
+  if (msg.type === "go") {
+    respond(go(msg.path));
     return;
   }
   if (msg.type === "press") {

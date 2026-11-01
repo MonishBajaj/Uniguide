@@ -9,3 +9,14 @@ const configured = process.env.NEXT_PUBLIC_EXTENSION_ID;
 
 /** The store id when set; the development id outside production; otherwise none, and the page says so. */
 export const EXTENSION_ID: string | null = configured || (process.env.NODE_ENV !== "production" ? DEV_EXTENSION_ID : null);
+
+/**
+ * Application systems (a deadline's owning_system) that guided apply supports, so the tracker can offer Apply
+ * (M7 A2.4). A portal is added only once its gate clears (plan gates G1 to G7). Outside production the practice
+ * portal stands in for a university's own system ("direct"), as test builds of the extension do.
+ */
+const configuredSystems = process.env.NEXT_PUBLIC_GUIDED_SYSTEMS;
+export const GUIDED_SYSTEMS: string[] = (configuredSystems ?? (process.env.NODE_ENV !== "production" ? "direct" : ""))
+  .split(",")
+  .map((s) => s.trim())
+  .filter(Boolean);

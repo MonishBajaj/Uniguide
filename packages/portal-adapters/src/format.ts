@@ -67,6 +67,8 @@ export interface Adapter {
   optionEquivalents: Partial<Record<string, Record<string, string>>>;
   /** Guided apply is supported on this portal (its terms allow it; plan section 3.4). */
   guided?: boolean;
+  /** The application systems this portal handles (deadlines' owning_system), so the tracker knows where to apply. */
+  serves?: string[];
 }
 
 /** Problems with an adapter, as plain sentences. Empty means it's usable. */

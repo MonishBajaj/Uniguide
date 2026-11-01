@@ -3,7 +3,7 @@
 import { CONFIDENT, planPage, type Role } from "@uniguide/portal-adapters";
 import { adapterByPortal } from "../adapters";
 import { TEST_BUILD, WEB_ORIGIN } from "../config";
-import type { AccountState, BackgroundReply, FillResult, PressResult, ScanResult, SuggestOutcome, ToBackground, ToContent } from "../messages";
+import type { AccountState, BackgroundReply, FillResult, GoResult, PendingApply, PressResult, ScanResult, SuggestOutcome, ToBackground, ToContent } from "../messages";
 import { GuidedRunner } from "./guided";
 import { DICTS, pickLocale, type MsgKey } from "./i18n";
 import {
@@ -75,11 +75,19 @@ const log = (row: Row, kind: Parameters<typeof logFor>[2], reason: string | null
 
 // ---------------------------------------------------------------------------------------------- flow
 
+let fromTracker = false;
+
 async function load() {
   failed = false;
   tabId = await findTab();
   state = { ...initial(), account: await bg<AccountState>({ to: "background", type: "state" }) };
   render();
+  // An Apply from the tracker (A2.4): the application is already chosen; the start screen waits for Start.
+  const pending = await bg<PendingApply | null>({ to: "background", type: "takeApply" }).catch(() => null);
+  if (pending && state.account?.applications.some((a) => a.id === pending.applicationId)) {
+    fromTracker = true;
+    await choose(pending.applicationId);
+  }
 }
 
 async function choose(applicationId: string) {
@@ -99,6 +107,7 @@ async function rescan() {
   });
   const { prompt: _p, notice: _n, ...rest } = state;
   state = { ...rest, scan, rows };
+  if (runner?.run.status === "at_review" && scan?.page.kind === "confirmation") await markSubmitted("confirmation_page");
   // A suggestion the student confirmed on this page stays confirmed.
   for (const old of samePage ? before : []) {
     if (old.confirmedRole) state = confirmSuggestion(state, old.key, old.index);
@@ -180,6 +189,7 @@ chrome.tabs.onUpdated.addListener((id, info) => {
 let runner: GuidedRunner | null = null;
 let pendingLoad: Promise<boolean> | null = null;
 let runEnded = false;
+let reviewNoted = false;
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 /** Resolves true when the tab next finishes loading a new page, false after the timeout. Set up before pressing. */
@@ -241,19 +251,39 @@ function newRunner(): GuidedRunner {
       void bg({ to: "background", type: "log", kind, role: role as Role | null, page, source, reason }).catch(() => {}),
     changed: (r) => {
       const st = r.run.status;
-      if (!runEnded && (st === "at_review" || st === "stopped")) {
+      // At review the run stays open, so the submission can be logged on it.
+      if (st === "at_review" && !reviewNoted) {
+        reviewNoted = true;
+        void bg({ to: "background", type: "reachedReview" }).catch(() => {});
+      }
+      if (st === "stopped" && !runEnded) {
         runEnded = true;
-        void bg({ to: "background", type: "end", outcome: st === "at_review" ? "review" : "stopped" }).catch(() => {});
+        void bg({ to: "background", type: "end", outcome: "stopped" }).catch(() => {});
       }
       render();
     },
   });
 }
 
+/** The application is submitted: seen on the portal's confirmation page, or the student says so (spec 6.3). */
+async function markSubmitted(how: "confirmation_page" | "student_said_submitted") {
+  if (!runner || runner.run.status !== "at_review" || !state.applicationId) return;
+  runner.submitted(how);
+  runEnded = true;
+  await bg({ to: "background", type: "submitted", applicationId: state.applicationId, how }).catch(() => {});
+  render();
+}
+
+/** A page the student picked from the summary, through the guard. */
+async function goTo(path: string) {
+  await toPage<GoResult>({ to: "content", type: "go", path });
+}
+
 async function startGuided() {
   if (!state.applicationId || !state.scan) return;
   runner = newRunner();
   runEnded = false;
+  reviewNoted = false;
   runStarted = true;
   await bg({ to: "background", type: "start", applicationId: state.applicationId, portal: state.scan.portal, adapterVersion: state.scan.adapterVersion, feature: "guided" }).catch(() => {});
   render();
@@ -331,6 +361,7 @@ function guidedView(): Child[] {
         "section",
         { id: "guided-start", class: "guided", "aria-labelledby": "guided-title" },
         h("h2", { id: "guided-title" }, t.guidedTitle),
+        fromTracker ? h("p", { id: "from-tracker" }, t.fromTracker) : null,
         h("p", {}, t.guidedIntro),
         h("p", {}, h("strong", {}, t.guidedNever)),
         adapter ? h("p", {}, t.guidedSections) : null,
@@ -402,7 +433,8 @@ function guidedView(): Child[] {
       controls.push(button(t.restartRun, () => g.restart()), button(t.stopRun, () => g.stop(), { class: "secondary" }));
       break;
     case "at_review":
-      body.push(h("p", { id: "guided-status", role: "status" }, t.guidedAtReview));
+      body.push(h("p", { id: "guided-status", role: "status" }, t.guidedAtReview), ...summaryView(g));
+      controls.push(button(t.iSubmitted, () => markSubmitted("student_said_submitted")));
       break;
     case "stopped":
       body.push(h("p", { id: "guided-status", role: "status" }, t.guidedStopped));
@@ -420,6 +452,38 @@ function guidedView(): Child[] {
       ...body,
       controls.length ? h("div", { class: "actions" }, ...controls) : null,
     ),
+  ];
+}
+
+/** The review page's summary (spec 6.3): filled, left, skipped, paused, each with a link to its page. */
+function summaryView(g: GuidedRunner): Child[] {
+  const s = g.summary();
+  const adapter = state.scan ? adapterByPortal(state.scan.portal) : null;
+  const page = (pageId: string | null) => adapter?.map.pages.find((p) => p.id === pageId);
+  const pageLink = (pageId: string | null): Child => {
+    const p = page(pageId);
+    if (!p) return t.pageUnknown;
+    // Pages that pay, sign or declare can't be reached through the guard; they're named, not linked.
+    const blocked = p.kind === "fee" || p.kind === "declaration";
+    return blocked ? p.title : button(p.title, () => goTo(p.path), { class: "link", "aria-label": t.goTo(p.title) });
+  };
+  const roleName = (role: string) => (t.roleNames as Record<string, string>)[role] ?? role;
+  const section = (id: string, title: string, items: Child[][]) =>
+    h(
+      "section",
+      { class: "summary", "aria-labelledby": `sum-${id}` },
+      h("h3", { id: `sum-${id}` }, title),
+      items.length ? h("ul", { id: `summary-${id}` }, ...items.map((parts) => h("li", {}, ...parts))) : h("p", {}, t.summaryNone),
+    );
+  const reason = (r: string) => {
+    const key = `reason_${r}` as MsgKey;
+    return key in t ? (t[key] as string) : "";
+  };
+  return [
+    section("filled", t.summaryFilled(s.filled.length), s.filled.map((f) => [pageLink(f.pageId), ": ", roleName(f.role)])),
+    section("left", t.summaryLeft(s.left.length), s.left.map((f) => [pageLink(f.pageId), ": ", f.label])),
+    section("skipped", t.summarySkipped(s.skipped.length), s.skipped.map((f) => [pageLink(f.pageId), ": ", f.label])),
+    section("paused", t.summaryPaused(s.pauses.length), s.pauses.map((p) => [pageLink(p.pageId), ": ", reason(p.reason)])),
   ];
 }
 

@@ -24,3 +24,13 @@ export function adapterFor(url: string): Adapter | null {
 export function adapterByPortal(portal: string): Adapter | null {
   return ADAPTERS.find((a) => a.portal === portal) ?? null;
 }
+
+/** The portal that runs guided apply for an application system (a deadline's owning_system), if any. */
+export function adapterServing(system: string): Adapter | null {
+  return ADAPTERS.find((a) => a.guided && a.serves?.includes(system)) ?? null;
+}
+
+/** Every application system this build can run guided apply for. */
+export function guidedSystems(): { system: string; portal: string }[] {
+  return ADAPTERS.filter((a) => a.guided).flatMap((a) => (a.serves ?? []).map((system) => ({ system, portal: a.portal })));
+}

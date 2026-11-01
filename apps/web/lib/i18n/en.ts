@@ -121,6 +121,17 @@ export const en = {
     small: "One email when it opens. No marketing lists, no selling your data.",
   },
   assist: {
+    apply: {
+      title: "Apply with UniGuide Assist",
+      intro: "Opens this application's portal in a new tab. The extension fills what it's sure of from your profile, page by page, and stops at the portal's review page. You submit it yourself.",
+      button: "Apply with UniGuide Assist",
+      opened: "The portal is open in a new tab. Open UniGuide Assist from your browser's toolbar if it isn't showing, check the application, and press Start.",
+      noExtension: "To apply with help, install the UniGuide Assist extension in this browser.",
+      setUp: "How to set it up",
+      signedOut: "The UniGuide Assist extension isn't connected to your account yet.",
+      connect: "Connect it",
+      failed: "The extension couldn't open the portal. Check that it's turned on, then try again.",
+    },
     logTitle: "Assist log",
     logIntro: "What the UniGuide Assist extension did on the application portal for this application. It records which field and what happened, never what was filled.",
     logEmpty: "No assist runs yet. When you use the extension on this application's portal, each fill, copy and skip is listed here.",

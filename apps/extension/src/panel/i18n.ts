@@ -124,6 +124,15 @@ const en = {
   guidedAtReview: "You've reached the review page. Check every answer, then submit it yourself. UniGuide never submits for you.",
   guidedStopped: "Stopped. Nothing more will happen unless you start again.",
   guidedFinished: "Submitted. Your tracker shows it.",
+  fromTracker: "Started from your UniGuide tracker. Check the application below, then press Start.",
+  iSubmitted: "I've submitted it",
+  summaryFilled: (n: number) => `Filled for you (${n})`,
+  summaryLeft: (n: number) => `Left for you (${n})`,
+  summarySkipped: (n: number) => `You skipped (${n})`,
+  summaryPaused: (n: number) => `Where it paused (${n})`,
+  summaryNone: "None.",
+  goTo: (page: string) => `Go to ${page}`,
+  pageUnknown: "A page",
   roleNames: ROLE_NAMES.en,
 };
 
@@ -251,6 +260,15 @@ const hi: Dict = {
   guidedAtReview: "आप समीक्षा पेज पर पहुँच गए हैं। हर जवाब जाँचें, फिर खुद जमा करें। UniGuide आपकी ओर से कभी जमा नहीं करता।",
   guidedStopped: "बंद किया गया। जब तक आप फिर शुरू न करें, आगे कुछ नहीं होगा।",
   guidedFinished: "जमा हो गया। आपका ट्रैकर यह दिखाता है।",
+  fromTracker: "आपके UniGuide ट्रैकर से शुरू हुआ। नीचे आवेदन जाँचें, फिर शुरू करें दबाएँ।",
+  iSubmitted: "मैंने जमा कर दिया है",
+  summaryFilled: (n) => `आपके लिए भरा (${n})`,
+  summaryLeft: (n) => `आपके लिए छोड़ा (${n})`,
+  summarySkipped: (n) => `आपने छोड़ा (${n})`,
+  summaryPaused: (n) => `कहाँ रुका (${n})`,
+  summaryNone: "कोई नहीं।",
+  goTo: (page) => `${page} पर जाएँ`,
+  pageUnknown: "एक पेज",
   roleNames: ROLE_NAMES.hi,
 };
 
