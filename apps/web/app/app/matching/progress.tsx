@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { itemLabel, STAGES, stageIndex, waitNotice } from "@/lib/enrichment";
+import { itemLabel, progressSummary, STAGES, stageIndex, waitNotice } from "@/lib/enrichment";
 import { jobProgress, type Progress } from "./actions";
 
 const TONE = { pending: "text-muted", working: "text-accent", ok: "text-verified", warn: "text-unverified" } as const;
@@ -46,8 +46,11 @@ export function ProgressView({ jobId, initial }: { jobId: string; initial: Progr
       {progress.status === "failed" ? (
         <p role="alert" className="text-conflicting">The search stopped before it finished. Try again from your profile page.</p>
       ) : null}
-      {finished && progress.items.length === 0 && progress.status === "done" ? (
+      {finished && progress.candidates.length === 0 && progress.items.length === 0 && progress.status === "done" ? (
         <p className="text-muted">We could not find matching courses yet. Widen your countries or subjects on your profile and try again.</p>
+      ) : null}
+      {progress.candidates.length > 0 ? (
+        <p role="status" className="font-semibold">{progressSummary(progress)}</p>
       ) : null}
 
       <ul className="grid gap-3">
@@ -63,6 +66,22 @@ export function ProgressView({ jobId, initial }: { jobId: string; initial: Progr
           );
         })}
       </ul>
+
+      {progress.candidates.some((c) => c.status === "skipped") ? (
+        <details className="rounded-2xl border border-border bg-surface p-4">
+          <summary className="cursor-pointer font-semibold">Universities we skipped</summary>
+          <ul className="mt-3 grid gap-2 text-sm">
+            {progress.candidates
+              .filter((c) => c.status === "skipped")
+              .map((c) => (
+                <li key={c.institution}>
+                  <span className="font-semibold">{c.institution}</span>
+                  <span className="text-muted">: {c.reason ?? "no complete course found"}</span>
+                </li>
+              ))}
+          </ul>
+        </details>
+      ) : null}
 
       {progress.status === "done" ? (
         <Link href="/app/match" className="btn btn-primary justify-self-start">See my matches</Link>

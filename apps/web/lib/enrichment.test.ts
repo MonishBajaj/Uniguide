@@ -1,5 +1,16 @@
 import { describe, expect, it } from "vitest";
-import { itemLabel, pickCourses, readyForFirstSearch, STAGES, describeItem, stageIndex, waitNotice } from "./enrichment";
+import {
+  describeItem,
+  itemLabel,
+  pickCourses,
+  pickInstitutions,
+  progressSummary,
+  QUEUE,
+  readyForFirstSearch,
+  stageIndex,
+  STAGES,
+  waitNotice,
+} from "./enrichment";
 
 describe("stageIndex", () => {
   it("numbers the stages in the order the worker runs them", () => {
@@ -24,6 +35,48 @@ describe("itemLabel", () => {
     expect(itemLabel("pending").tone).toBe("pending");
     expect(itemLabel("waiting").tone).toBe("pending");
     expect(itemLabel("running").tone).toBe("working");
+  });
+});
+
+describe("itemLabel for a course that was read but is not complete", () => {
+  it("says what is missing and warns", () => {
+    expect(itemLabel("incomplete")).toEqual({ text: "Read, but a deadline, cost or requirement is missing", tone: "warn" });
+  });
+});
+
+describe("pickInstitutions", () => {
+  const ranked = (ids: string[]) => ids.map((institutionId, i) => ({ programId: `p${i}`, institutionId }));
+  it("keeps each university once, in the order first seen", () => {
+    expect(pickInstitutions(ranked(["a", "b", "a", "c", "b"]), 10)).toEqual(["a", "b", "c"]);
+  });
+  it("stops at the limit", () => {
+    expect(pickInstitutions(ranked(["a", "b", "c", "d"]), 2)).toEqual(["a", "b"]);
+  });
+  it("queues at most thirty universities", () => {
+    const many = ranked(Array.from({ length: 50 }, (_, i) => `u${i}`));
+    expect(QUEUE).toBe(30);
+    expect(pickInstitutions(many, QUEUE)).toHaveLength(30);
+  });
+  it("is empty for an empty pool", () => {
+    expect(pickInstitutions([], QUEUE)).toEqual([]);
+  });
+});
+
+describe("progressSummary", () => {
+  it("counts while the search runs", () => {
+    expect(progressSummary({ tried: 22, kept: 7, status: "running" })).toBe("Checked 22 universities, kept 7 courses.");
+  });
+  it("reports a finished search that reached its target", () => {
+    expect(progressSummary({ tried: 22, kept: 10, status: "done" })).toBe("Checked 22 universities, kept 10 courses.");
+  });
+  it("says how many were found when a finished search falls short", () => {
+    expect(progressSummary({ tried: 30, kept: 4, status: "done" })).toBe("We found 4 complete courses after checking 30 universities.");
+  });
+  it("says so plainly when nothing qualified", () => {
+    expect(progressSummary({ tried: 30, kept: 0, status: "done" })).toBe("We could not find a university with complete information yet.");
+  });
+  it("uses the singular for one", () => {
+    expect(progressSummary({ tried: 1, kept: 1, status: "running" })).toBe("Checked 1 university, kept 1 course.");
   });
 });
 

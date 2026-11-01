@@ -18,9 +18,30 @@ export function itemLabel(status: string): { text: string; tone: ItemTone } {
     case "extracted": return { text: "Facts found, shown as unverified", tone: "ok" };
     case "skipped_fresh": return { text: "Already up to date", tone: "ok" };
     case "failed": return { text: "Couldn't read the official page", tone: "warn" };
+    case "incomplete": return { text: "Read, but a deadline, cost or requirement is missing", tone: "warn" };
     case "waiting": return { text: "Waiting for another search to finish", tone: "pending" };
     default: return { text: "In the queue", tone: "pending" };
   }
+}
+
+/** How many universities a search queues (the worker tries them in order), and how many complete courses it wants. */
+export const QUEUE = 30;
+export const TARGET_COMPLETE = 10;
+
+/** The universities of a ranked pool, each once and in the order first seen, at most `limit`. */
+export function pickInstitutions(ranked: { programId: string; institutionId: string }[], limit: number): string[] {
+  return Array.from(new Set(ranked.map((r) => r.institutionId))).slice(0, limit);
+}
+
+const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
+
+/** One line for the progress page: what was checked, what was kept, and an honest note when a finished search fell short. */
+export function progressSummary(p: { tried: number; kept: number; status: string }): string {
+  if (p.status === "done" && p.kept === 0) return "We could not find a university with complete information yet.";
+  if (p.status === "done" && p.kept < TARGET_COMPLETE) {
+    return `We found ${plural(p.kept, "complete course", "complete courses")} after checking ${plural(p.tried, "university", "universities")}.`;
+  }
+  return `Checked ${plural(p.tried, "university", "universities")}, kept ${plural(p.kept, "course", "courses")}.`;
 }
 
 const PER_UNIVERSITY = 3;

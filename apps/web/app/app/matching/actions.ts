@@ -12,6 +12,9 @@ export type Progress = {
   error: string | null;
   createdAt: string;
   heartbeatAt: string | null;
+  tried: number;
+  kept: number;
+  candidates: { institution: string; status: string; reason: string | null; courses: number }[];
   items: { programId: string; title: string; institution: string; status: string; detail: string | null }[];
 };
 
@@ -28,19 +31,32 @@ export async function findUniversities(): Promise<FindState> {
 export async function jobProgress(jobId: string): Promise<Progress | null> {
   const { supabase, user } = await getUser();
   if (!user) return null;
-  const { data: job } = await supabase.from("enrichment_jobs").select("id, status, stage, error, created_at, heartbeat_at").eq("id", jobId).maybeSingle();
+  const { data: job } = await supabase.from("enrichment_jobs").select("id, status, stage, error, created_at, heartbeat_at, tried, kept").eq("id", jobId).maybeSingle();
   if (!job) return null;
   const { data: items } = await supabase
     .from("enrichment_items")
     .select("program_id, status, detail, programs(title, institutions(name))")
     .eq("job_id", jobId)
     .order("program_id");
+  const { data: candidates } = await supabase
+    .from("enrichment_candidates")
+    .select("status, reason, courses, position, institutions(name)")
+    .eq("job_id", jobId)
+    .order("position");
   return {
     stage: job.stage,
     status: job.status,
     error: job.error,
     createdAt: job.created_at,
     heartbeatAt: job.heartbeat_at,
+    tried: job.tried,
+    kept: job.kept,
+    candidates: (candidates ?? []).map((c) => ({
+      institution: c.institutions?.name ?? "A university",
+      status: c.status,
+      reason: c.reason,
+      courses: c.courses,
+    })),
     items: (items ?? []).map((i) => {
       const named = describeItem(i.programs);
       return { programId: i.program_id, title: named.title, institution: named.subtitle, status: i.status, detail: i.detail };

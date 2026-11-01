@@ -9,16 +9,26 @@ type Supabase = Awaited<ReturnType<typeof createClient>>;
 
 /**
  * Everything the matcher needs for one student: profile, candidate courses with facts, FX, weights.
- * A track (1.4) swaps in its own targets and budget.
+ * A track (1.4) swaps in its own targets and budget. `completeOnly` keeps only courses with a deadline, a cost and a
+ * requirement (the matches page); starting a search needs the whole pool.
  */
-export async function loadMatchInputs(supabase: Supabase, userId: string, track: TrackTargets | null = null) {
+export async function loadMatchInputs(
+  supabase: Supabase,
+  userId: string,
+  track: TrackTargets | null = null,
+  options: { completeOnly?: boolean } = {},
+) {
   const [{ data: stored }, { data: scores }] = await Promise.all([
     supabase.from("profiles").select("*").eq("user_id", userId).single(),
     supabase.from("test_scores").select("*"),
   ]);
   const profile = stored ? applyTrack(stored, track) : null;
   if (!profile || profile.target_levels.length === 0) return null;
-  const { data: cards } = await supabase.rpc("search_programs", { ...candidateFilters(profile), p_limit: 200 });
+  const { data: cards } = await supabase.rpc("search_programs", {
+    ...candidateFilters(profile),
+    p_limit: 200,
+    ...(options.completeOnly ? { p_complete_only: true } : {}),
+  });
   const candidates = cards ?? [];
   const cycles = await loadCurrentCycles(supabase, candidates.map((c) => c.id!));
   const weights: Weights = { ...DEFAULT_WEIGHTS, ...((profile.preferences as { weights?: Partial<Weights> })?.weights ?? {}) };

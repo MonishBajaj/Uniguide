@@ -42,7 +42,7 @@ export default async function MatchPage({ searchParams }: PageProps<"/app/match"
   const params = await searchParams;
   const track = selectedTrack(params.track, tracks ?? []);
   const { t: all } = await getLocale();
-  const inputs = await loadMatchInputs(supabase, user!.id, track);
+  const inputs = await loadMatchInputs(supabase, user!.id, track, { completeOnly: true });
   const { lite } = await readDisplay();
   if (!inputs) {
     return (

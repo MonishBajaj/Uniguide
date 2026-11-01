@@ -1,13 +1,12 @@
 import "server-only";
 import { matchPrograms } from "@uniguide/matching";
-import { pickCourses, readyForFirstSearch } from "@/lib/enrichment";
+import { pickInstitutions, QUEUE, readyForFirstSearch } from "@/lib/enrichment";
 import { loadMatchInputs } from "@/lib/match-data";
 import type { createClient } from "@/lib/supabase/server";
 
 type Supabase = Awaited<ReturnType<typeof createClient>>;
-const COURSES = 10;
 
-/** Picks the best-fitting courses already in the catalog and queues a job so the worker reads their official pages. */
+/** Queues the best-ranked universities of the pool; the worker tries them in order and keeps the ones with complete courses. */
 export async function startSearch(supabase: Supabase, userId: string): Promise<{ ok: boolean; message: string }> {
   const inputs = await loadMatchInputs(supabase, userId);
   if (!inputs) return { ok: false, message: "Choose at least the level you want on your profile first." };
@@ -17,9 +16,9 @@ export async function startSearch(supabase: Supabase, userId: string): Promise<{
   const ranked = results
     .filter((r) => !r.excluded)
     .map((r) => ({ programId: r.programId, institutionId: institutionOf.get(r.programId) ?? r.programId }));
-  const programIds = pickCourses(ranked, COURSES);
+  const institutionIds = pickInstitutions(ranked, QUEUE);
 
-  if (programIds.length === 0) {
+  if (institutionIds.length === 0) {
     const { data: consent } = await supabase.from("consents").select("id").eq("kind", "ai_processing").is("withdrawn_at", null).limit(1).maybeSingle();
     if (!consent) {
       return { ok: false, message: "We have no matching courses in the catalog yet. Turn on AI features on your profile page and we can look further." };
@@ -27,7 +26,7 @@ export async function startSearch(supabase: Supabase, userId: string): Promise<{
   }
 
   // The database reads the targets from the stored profile, so nothing the browser sends can change them.
-  const { error } = await supabase.rpc("start_enrichment", { p_program_ids: programIds });
+  const { error } = await supabase.rpc("start_enrichment", { p_institution_ids: institutionIds });
   if (error) {
     return {
       ok: false,

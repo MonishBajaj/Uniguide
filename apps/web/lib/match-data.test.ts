@@ -38,6 +38,15 @@ describe("loadMatchInputs", () => {
     expect(search?.args.p_rank_subjects).toEqual(["Engineering & Technology"]);
   });
 
+  it("asks for complete courses only when told to", async () => {
+    const { client, calls } = fakeSupabase(profile);
+    await loadMatchInputs(client as never, "u1", null, { completeOnly: true });
+    expect(calls.find((c) => c.name === "search_programs")?.args.p_complete_only).toBe(true);
+    const plain = fakeSupabase(profile);
+    await loadMatchInputs(plain.client as never, "u1");
+    expect(plain.calls.find((c) => c.name === "search_programs")?.args.p_complete_only).toBeUndefined();
+  });
+
   it("does not filter or reorder by subject when the student chose none", async () => {
     const { client, calls } = fakeSupabase({ ...profile, target_fields: [] });
     await loadMatchInputs(client as never, "u1");
