@@ -65,12 +65,12 @@ Run locally on the final code, 1 November 2026:
 | `pnpm --filter web lint` | pass |
 | Extension build checks (`check.mjs`) on the dev, test and store builds | pass: Supabase only, nothing outside the guard |
 | `pnpm --filter web e2e:extension` | 16 pass, with axe at 1280 and 390 px on the panel and the tracker card |
-| `pnpm --filter web e2e` | still running when this was committed; the result follows in the next commit |
-| `pnpm --filter web e2e:demo` | still running when this was committed; the result follows in the next commit |
-| `pnpm --filter web e2e:community` | still running when this was committed; the result follows in the next commit |
+| `pnpm --filter web e2e` | 130 pass; 4 fail, all four the accepted known failures below |
+| `pnpm --filter web e2e:demo` | 3 pass |
+| `pnpm --filter web e2e:community` | 6 pass |
 | Worker: ruff check, mypy, pytest | pass; 463 tests. `ruff format --check` flags 7 files from `develop`, fixed separately in MonishBajaj/Uniguide#6 |
 
-**CI on #5 for A2.4** (the last code change): the extension suite passed (16); the app suite failed only the four accepted specs below; the worker job failed only on the `ruff format` issue above.
+**CI on #5** for A2.4 (the last code change) and for A2.5: the extension suite passed (16); the app suite failed only the four accepted specs below (on A2.5, `research-statement.spec.ts` also failed once and passed on retry); the worker job failed only on the `ruff format` issue above.
 
 **Accepted known failures** (owner, 30 October 2026; they fail on `develop` without this work):
 - `course-filters.spec.ts` "3.4 filter by open deadline and by published yearly tuition"
