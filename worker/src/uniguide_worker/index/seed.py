@@ -96,15 +96,26 @@ def read_index_seeds(root: Path = INDEX_ROOT) -> list[tuple[Path, IndexSeed]]:
     return out
 
 
+def _seeds_for(domain: str, root: Path) -> list[IndexSeed]:
+    plain = _plain(domain)
+    return [
+        seed
+        for _, seed in read_index_seeds(root)
+        if plain == (known := _plain(seed.official_domain))
+        or plain.endswith("." + known)
+        or known.endswith("." + plain)
+    ]
+
+
 def seed_urls(domain: str, root: Path = INDEX_ROOT) -> list[str]:
     """Curated index URLs for a university, whether or not a person has verified them yet."""
-    plain = _plain(domain)
-    urls: list[str] = []
-    for _, seed in read_index_seeds(root):
-        known = _plain(seed.official_domain)
-        if plain == known or plain.endswith("." + known) or known.endswith("." + plain):
-            urls.extend(e.url for e in seed.indexes)
-    return urls
+    return [e.url for seed in _seeds_for(domain, root) for e in seed.indexes]
+
+
+def seed_domain(domain: str, root: Path = INDEX_ROOT) -> str | None:
+    """The curated file's domain for a university; a register often records just one host of it (www.x.edu)."""
+    found = [_plain(seed.official_domain) for seed in _seeds_for(domain, root)]
+    return min(found, key=len) if found else None
 
 
 @dataclass

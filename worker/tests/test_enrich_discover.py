@@ -373,3 +373,33 @@ def test_discovery_reads_a_known_index_url_before_guessing(worker: Connection, s
     )
     assert result.status == "found" and len(result.program_ids) == MIN_ACCEPTED
     assert fetcher.calls == [seed]
+
+
+def test_a_known_index_on_a_sibling_host_is_accepted_and_the_broader_domain_is_recorded(
+    worker: Connection, site: dict[str, Any], tmp_path: Any
+) -> None:
+    d = site["domain"]
+    op: Connection = site["operator"]
+    op.execute("update institutions set official_domain = %s where id = %s", (f"www.{d}", site["institution"]))
+    op.commit()
+    (tmp_path / "us").mkdir()
+    seed = f"https://grad.{d}/programs"
+    (tmp_path / "us" / "u.yaml").write_text(
+        f"institution: Disc U\ncountry: US\nofficial_domain: {d}\nindexes:\n  - url: {seed}\n"
+    )
+    links = tuple((f"Program {n}", f"https://grad.{d}/programs/{n}") for n in range(MIN_ACCEPTED))
+    listed = [ListedCourse(title=t, level="master", url=u, quote=t, field="06") for t, u in links]
+    fetcher = SiteFetcher({seed: (" ".join(t for t, _ in links), links)})
+    result = discover(
+        worker,
+        fetcher,
+        MapLister({seed: listed}),
+        site["institution"],
+        f"www.{d}",
+        ["06"],
+        ["master"],
+        seed_root=tmp_path,
+    )
+    assert result.status == "found" and len(result.program_ids) == MIN_ACCEPTED
+    row = op.execute("select official_domain from institutions where id = %s", (site["institution"],)).fetchone()
+    assert row == {"official_domain": d}

@@ -11,6 +11,7 @@ import re
 import time
 from collections.abc import Callable
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Literal, Protocol
 from urllib.parse import urlsplit
 from uuid import UUID
@@ -19,7 +20,7 @@ from ..db import Connection
 from ..fetch.fetcher import Fetcher, FetchRefused, FetchResult
 from ..index.crawl import _reject_reason, ingest_listed
 from ..index.lister import CourseLister, CourseListRun, ListedCourse
-from ..index.seed import seed_urls
+from ..index.seed import INDEX_ROOT, seed_domain, seed_urls
 from .candidates import host_matches_domain
 
 MIN_ACCEPTED = 5
@@ -246,6 +247,7 @@ def discover(
     deadline: float | None = None,
     seeds: list[str] | None = None,
     heartbeat: Callable[[], None] | None = None,
+    seed_root: Path = INDEX_ROOT,
 ) -> Discovery:
     """Find and store a course list for a university with none. A dead end is remembered for RETRY_AFTER_DAYS."""
     earlier = conn.execute(
@@ -258,6 +260,12 @@ def discover(
     ).fetchone()
     if earlier:
         return Discovery(earlier["status"], earlier["reason"] or "", [])
+    broader = seed_domain(domain, seed_root)
+    if broader and domain.lower().endswith("." + broader):
+        # The register records one host (www.x.edu); the curated file's domain covers the whole site.
+        conn.execute("update institutions set official_domain = %s where id = %s", (broader, institution_id))
+        conn.commit()
+        domain = broader
     try:
         found = find_index_page(
             fetcher,
@@ -265,7 +273,7 @@ def discover(
             domain,
             levels,
             deadline=deadline,
-            seeds=seed_urls(domain) if seeds is None else seeds,
+            seeds=seed_urls(domain, seed_root) if seeds is None else seeds,
             heartbeat=heartbeat,
         )
     except FetchRefused as exc:
