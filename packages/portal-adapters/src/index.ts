@@ -5,3 +5,4 @@ export { resolveValue, type DraftChoice, type Resolution } from "./resolve";
 export type { AiPolicy, FillProfile } from "./profile";
 export { guard, guardLogReason, GUARD_WORDS_EN, GUARD_WORDS_HI, type GuardBlock, type GuardContext, type GuardDecision } from "./guard";
 export { ROLE_NAMES } from "./names";
+export { isFinal, MAX_PAGES, nextAction, PAUSE_REASONS, runStep, startRun, type PauseReason, type Run, type RunAction, type RunEvent, type RunStatus } from "./run";
