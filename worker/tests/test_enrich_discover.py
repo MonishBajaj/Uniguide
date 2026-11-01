@@ -18,7 +18,9 @@ from uniguide_worker.index.seed import seed_urls
 class SiteFetcher:
     """A fake website: url -> (page text, links). Unknown urls are 404; urls in `refused` raise FetchRefused."""
 
-    def __init__(self, pages: dict[str, tuple[str, tuple[tuple[str, str], ...]]], refused: set[str] | None = None) -> None:
+    def __init__(
+        self, pages: dict[str, tuple[str, tuple[tuple[str, str], ...]]], refused: set[str] | None = None
+    ) -> None:
         self.pages, self.refused, self.calls = pages, refused or set(), []
 
     def fetch(self, url: str, etag: str | None = None, last_modified: str | None = None) -> FetchResult:
@@ -60,19 +62,23 @@ def site(operator: Connection) -> Iterator[dict[str, Any]]:
 
 
 def add_program(site: dict[str, Any], title: str, **kw: Any) -> uuid.UUID:
-    row = site["operator"].execute(
-        "insert into programs (institution_id, slug, title, level, isced_f, published, official_url) "
-        "values (%s, %s, %s, %s, %s, %s, %s) returning id",
-        (
-            site["institution"],
-            f"disc-{uuid.uuid4().hex[:10]}",
-            title,
-            kw.get("level", "master"),
-            kw.get("field", "0613"),
-            kw.get("published", True),
-            kw.get("url", f"https://www.{site['domain']}/{uuid.uuid4().hex[:6]}"),
-        ),
-    ).fetchone()
+    row = (
+        site["operator"]
+        .execute(
+            "insert into programs (institution_id, slug, title, level, isced_f, published, official_url) "
+            "values (%s, %s, %s, %s, %s, %s, %s) returning id",
+            (
+                site["institution"],
+                f"disc-{uuid.uuid4().hex[:10]}",
+                title,
+                kw.get("level", "master"),
+                kw.get("field", "0613"),
+                kw.get("published", True),
+                kw.get("url", f"https://www.{site['domain']}/{uuid.uuid4().hex[:6]}"),
+            ),
+        )
+        .fetchone()
+    )
     site["operator"].commit()
     return row["id"]  # type: ignore[index]
 
@@ -99,7 +105,9 @@ def test_real_courses_match_level_and_field_and_need_a_page(worker: Connection, 
     assert real_courses(worker, site["institution"], ["06"], ["master"]) == [ok]
 
 
-def test_real_courses_are_limited_and_ignore_field_when_none_is_chosen(worker: Connection, site: dict[str, Any]) -> None:
+def test_real_courses_are_limited_and_ignore_field_when_none_is_chosen(
+    worker: Connection, site: dict[str, Any]
+) -> None:
     ids = [add_program(site, f"MS {n}", field="04" if n % 2 else "0613") for n in range(5)]
     assert len(real_courses(worker, site["institution"], [], ["master"], limit=3)) == 3
     assert set(real_courses(worker, site["institution"], [], ["master"], limit=10)) == set(ids)
@@ -115,7 +123,9 @@ def test_a_page_with_enough_accepted_courses_is_found(worker: Connection, site: 
         f"https://www.{d}/": home(d, ("Graduate programs", f"https://www.{d}/graduate/programs")),
         f"https://www.{d}/graduate/programs": (text, links),
     }
-    found = find_index_page(SiteFetcher(pages), MapLister({f"https://www.{d}/graduate/programs": listed}), d, ["master"])
+    found = find_index_page(
+        SiteFetcher(pages), MapLister({f"https://www.{d}/graduate/programs": listed}), d, ["master"]
+    )
     assert found is not None
     url, page_text, link_urls, accepted = found
     assert url == f"https://www.{d}/graduate/programs" and len(accepted) == MIN_ACCEPTED
@@ -129,7 +139,10 @@ def test_a_page_of_navigation_links_is_not_an_index(worker: Connection, site: di
         f"https://www.{d}/": home(d, ("Graduate programs", f"https://www.{d}/graduate/programs")),
         f"https://www.{d}/graduate/programs": (text, links),
     }
-    assert find_index_page(SiteFetcher(pages), MapLister({f"https://www.{d}/graduate/programs": listed}), d, ["master"]) is None
+    assert (
+        find_index_page(SiteFetcher(pages), MapLister({f"https://www.{d}/graduate/programs": listed}), d, ["master"])
+        is None
+    )
 
 
 def test_a_page_the_model_lists_nothing_on_is_not_an_index(worker: Connection, site: dict[str, Any]) -> None:
@@ -151,20 +164,30 @@ def test_graduate_pages_are_tried_before_undergraduate_ones_for_a_masters_studen
             ("Undergraduate programs", f"https://www.{d}/undergraduate/programs"),
             ("Graduate programs", f"https://www.{d}/graduate/programs"),
         ),
-        f"https://www.{d}/undergraduate/programs": ("ug " * 5, tuple((f"ug {n}", f"https://www.{d}/ug/{n}") for n in range(9))),
-        f"https://www.{d}/graduate/programs": ("grad " * 5, tuple((f"gr {n}", f"https://www.{d}/gr/{n}") for n in range(3))),
+        f"https://www.{d}/undergraduate/programs": (
+            "ug " * 5,
+            tuple((f"ug {n}", f"https://www.{d}/ug/{n}") for n in range(9)),
+        ),
+        f"https://www.{d}/graduate/programs": (
+            "grad " * 5,
+            tuple((f"gr {n}", f"https://www.{d}/gr/{n}") for n in range(3)),
+        ),
     }
     lister = MapLister()
     find_index_page(SiteFetcher(pages), lister, d, ["master"])
     assert lister.asked[0] == f"https://www.{d}/graduate/programs"
 
 
-def test_news_stories_are_not_followed_even_when_they_mention_programs(worker: Connection, site: dict[str, Any]) -> None:
+def test_news_stories_are_not_followed_even_when_they_mention_programs(
+    worker: Connection, site: dict[str, Any]
+) -> None:
     d = site["domain"]
     news = f"https://news.{d}/stories/2026/10/new-graduate-programs-launch"
     pages = {
         f"https://www.{d}/": home(
-            d, ("New graduate programs launch this fall", news), ("Graduate programs", f"https://www.{d}/graduate/programs")
+            d,
+            ("New graduate programs launch this fall", news),
+            ("Graduate programs", f"https://www.{d}/graduate/programs"),
         ),
         news: ("story " * 10, tuple((f"s{n}", f"https://www.{d}/s/{n}") for n in range(20))),
         f"https://www.{d}/graduate/programs": ("grad", ()),
@@ -179,10 +202,15 @@ def test_a_graduate_admissions_page_can_lead_to_the_program_list(worker: Connect
     text, links, listed = course_pages(d, [f"Program {n}" for n in range(MIN_ACCEPTED)])
     pages = {
         f"https://www.{d}/": home(d, ("Education", f"https://www.{d}/education")),
-        f"https://www.{d}/education": ("Education", (("Graduate admissions", f"https://www.{d}/graduate-admissions/programs"),)),
+        f"https://www.{d}/education": (
+            "Education",
+            (("Graduate admissions", f"https://www.{d}/graduate-admissions/programs"),),
+        ),
         f"https://www.{d}/graduate-admissions/programs": (text, links),
     }
-    found = find_index_page(SiteFetcher(pages), MapLister({f"https://www.{d}/graduate-admissions/programs": listed}), d, ["master"])
+    found = find_index_page(
+        SiteFetcher(pages), MapLister({f"https://www.{d}/graduate-admissions/programs": listed}), d, ["master"]
+    )
     assert found is not None and found[0].endswith("/graduate-admissions/programs")
 
 
@@ -193,11 +221,15 @@ def test_the_bare_domain_is_tried_when_www_is_missing(worker: Connection, site: 
         f"https://{d}/": home(d, ("Graduate programs", f"https://www.{d}/graduate/programs")),
         f"https://www.{d}/graduate/programs": (text, links),
     }
-    found = find_index_page(SiteFetcher(pages), MapLister({f"https://www.{d}/graduate/programs": listed}), d, ["master"])
+    found = find_index_page(
+        SiteFetcher(pages), MapLister({f"https://www.{d}/graduate/programs": listed}), d, ["master"]
+    )
     assert found is not None
 
 
-def test_a_known_index_url_is_read_first_and_the_home_page_is_not_visited(worker: Connection, site: dict[str, Any]) -> None:
+def test_a_known_index_url_is_read_first_and_the_home_page_is_not_visited(
+    worker: Connection, site: dict[str, Any]
+) -> None:
     d = site["domain"]
     text, links, listed = course_pages(d, [f"Program {n}" for n in range(MIN_ACCEPTED)])
     seed = f"https://www.{d}/known/list"
@@ -207,7 +239,9 @@ def test_a_known_index_url_is_read_first_and_the_home_page_is_not_visited(worker
     assert fetcher.calls == [seed]
 
 
-def test_the_home_page_is_used_when_a_known_index_url_gives_too_few_courses(worker: Connection, site: dict[str, Any]) -> None:
+def test_the_home_page_is_used_when_a_known_index_url_gives_too_few_courses(
+    worker: Connection, site: dict[str, Any]
+) -> None:
     d = site["domain"]
     text, links, listed = course_pages(d, [f"Program {n}" for n in range(MIN_ACCEPTED)])
     seed = f"https://www.{d}/known/list"
@@ -216,7 +250,9 @@ def test_the_home_page_is_used_when_a_known_index_url_gives_too_few_courses(work
         f"https://www.{d}/": home(d, ("Graduate programs", f"https://www.{d}/graduate/programs")),
         f"https://www.{d}/graduate/programs": (text, links),
     }
-    found = find_index_page(SiteFetcher(pages), MapLister({f"https://www.{d}/graduate/programs": listed}), d, ["master"], seeds=[seed])
+    found = find_index_page(
+        SiteFetcher(pages), MapLister({f"https://www.{d}/graduate/programs": listed}), d, ["master"], seeds=[seed]
+    )
     assert found is not None and found[0].endswith("/graduate/programs")
 
 
@@ -226,8 +262,26 @@ def test_seed_urls_come_from_the_curated_files_for_the_domain(tmp_path: Any) -> 
         "institution: X U\ncountry: US\nofficial_domain: x.example.edu\nindexes:\n"
         "  - url: https://grad.x.example.edu/programs\n  - url: https://x.example.edu/catalog\n"
     )
-    assert seed_urls("www.x.example.edu", root=tmp_path) == ["https://grad.x.example.edu/programs", "https://x.example.edu/catalog"]
+    assert seed_urls("www.x.example.edu", root=tmp_path) == [
+        "https://grad.x.example.edu/programs",
+        "https://x.example.edu/catalog",
+    ]
     assert seed_urls("other.example.edu", root=tmp_path) == []
+
+
+def test_the_heartbeat_is_sent_before_every_fetch_and_model_call(worker: Connection, site: dict[str, Any]) -> None:
+    d = site["domain"]
+    text, links, listed = course_pages(d, [f"Program {n}" for n in range(MIN_ACCEPTED)])
+    pages = {
+        f"https://www.{d}/": home(d, ("Graduate programs", f"https://www.{d}/graduate/programs")),
+        f"https://www.{d}/graduate/programs": (text, links),
+    }
+    fetcher, lister = SiteFetcher(pages), MapLister({f"https://www.{d}/graduate/programs": listed})
+    beats: list[int] = []
+    find_index_page(
+        fetcher, lister, d, ["master"], heartbeat=lambda: beats.append(len(fetcher.calls) + len(lister.asked))
+    )
+    assert len(beats) == len(fetcher.calls) + len(lister.asked)
 
 
 # --- discover -------------------------------------------------------------------------------------------------------
@@ -248,11 +302,19 @@ def test_discovery_stores_the_index_and_its_courses(worker: Connection, site: di
     result = discover(worker, fetcher, lister, site["institution"], site["domain"], ["06"], ["master"])
     assert result.status == "found" and len(result.program_ids) == MIN_ACCEPTED
     op: Connection = site["operator"]
-    index = op.execute("select url, active from institution_indexes where institution_id = %s", (site["institution"],)).fetchone()
+    index = op.execute(
+        "select url, active from institution_indexes where institution_id = %s", (site["institution"],)
+    ).fetchone()
     assert index == {"url": f"https://www.{site['domain']}/graduate/programs", "active": True}
-    rows = op.execute("select isced_f, official_url, published from programs where institution_id = %s", (site["institution"],)).fetchall()
-    assert len(rows) == MIN_ACCEPTED and all(r["isced_f"] == "06" and r["published"] and r["official_url"] for r in rows)
-    remembered = op.execute("select status, index_url from institution_discovery where institution_id = %s", (site["institution"],)).fetchone()
+    rows = op.execute(
+        "select isced_f, official_url, published from programs where institution_id = %s", (site["institution"],)
+    ).fetchall()
+    assert len(rows) == MIN_ACCEPTED and all(
+        r["isced_f"] == "06" and r["published"] and r["official_url"] for r in rows
+    )
+    remembered = op.execute(
+        "select status, index_url from institution_discovery where institution_id = %s", (site["institution"],)
+    ).fetchone()
     assert remembered == {"status": "found", "index_url": index["url"]}
 
 
@@ -263,7 +325,9 @@ def test_a_refused_site_is_blocked(worker: Connection, site: dict[str, Any]) -> 
     assert result.status == "blocked" and "robots" in result.reason.lower()
 
 
-def test_a_site_with_no_course_list_is_none_and_not_retried_for_a_week(worker: Connection, site: dict[str, Any]) -> None:
+def test_a_site_with_no_course_list_is_none_and_not_retried_for_a_week(
+    worker: Connection, site: dict[str, Any]
+) -> None:
     d = site["domain"]
     fetcher = SiteFetcher({f"https://www.{d}/": home(d)})
     first = discover(worker, fetcher, MapLister(), site["institution"], d, ["06"], ["master"])
@@ -287,7 +351,15 @@ def test_an_old_failure_is_tried_again(worker: Connection, site: dict[str, Any])
 
 def test_a_model_error_makes_the_university_none_not_a_crash(worker: Connection, site: dict[str, Any]) -> None:
     fetcher, _ = discoverable(site)
-    result = discover(worker, fetcher, MapLister(error=TimeoutError("model timed out")), site["institution"], site["domain"], ["06"], ["master"])
+    result = discover(
+        worker,
+        fetcher,
+        MapLister(error=TimeoutError("model timed out")),
+        site["institution"],
+        site["domain"],
+        ["06"],
+        ["master"],
+    )
     assert result.status == "none" and "model timed out" in result.reason
 
 
@@ -296,6 +368,8 @@ def test_discovery_reads_a_known_index_url_before_guessing(worker: Connection, s
     text, links, listed = course_pages(d, [f"Program {n}" for n in range(MIN_ACCEPTED)])
     seed = f"https://www.{d}/known/list"
     fetcher = SiteFetcher({seed: (text, links)})
-    result = discover(worker, fetcher, MapLister({seed: listed}), site["institution"], d, ["06"], ["master"], seeds=[seed])
+    result = discover(
+        worker, fetcher, MapLister({seed: listed}), site["institution"], d, ["06"], ["master"], seeds=[seed]
+    )
     assert result.status == "found" and len(result.program_ids) == MIN_ACCEPTED
     assert fetcher.calls == [seed]

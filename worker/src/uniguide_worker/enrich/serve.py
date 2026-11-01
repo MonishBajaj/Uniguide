@@ -19,7 +19,7 @@ from .discover import discover, real_courses
 from .jobs import process_item
 
 TARGET_COURSES = 10
-STALE_AFTER = "15 minutes"
+STALE_AFTER = "20 minutes"
 MAX_RETRIES = 4
 COURSES_PER_UNIVERSITY = 3
 TIME_BUDGET_SECONDS = 45 * 60
@@ -277,7 +277,7 @@ def run_candidates(
                 else:
                     found = discover(
                         conn, fetcher, lister, cand["institution_id"], cand["official_domain"], fields, levels,
-                        deadline=time.monotonic() + DISCOVERY_SECONDS,
+                        deadline=time.monotonic() + DISCOVERY_SECONDS, heartbeat=lambda: _heartbeat(conn, job_id),
                     )
                     courses = real_courses(conn, cand["institution_id"], fields, levels, COURSES_PER_UNIVERSITY)
                     if not courses:

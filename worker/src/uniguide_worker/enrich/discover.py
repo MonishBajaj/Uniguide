@@ -9,15 +9,16 @@ from __future__ import annotations
 
 import re
 import time
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Literal
+from typing import Literal, Protocol
 from urllib.parse import urlsplit
 from uuid import UUID
 
 from ..db import Connection
 from ..fetch.fetcher import Fetcher, FetchRefused, FetchResult
 from ..index.crawl import _reject_reason, ingest_listed
-from ..index.lister import CourseLister, ListedCourse
+from ..index.lister import CourseLister, CourseListRun, ListedCourse
 from ..index.seed import seed_urls
 from .candidates import host_matches_domain
 
@@ -96,7 +97,7 @@ def _best_links(page: FetchResult, domain: str, levels: list[str], count: int, s
     return sorted(scored, key=lambda u: -scored[u])[:count]
 
 
-def _home(fetcher: Fetcher, domain: str) -> FetchResult | None:
+def _home(fetcher: _Fetches, domain: str) -> FetchResult | None:
     refused: FetchRefused | None = None
     for url in (f"https://www.{domain}/", f"https://{domain}/"):
         try:
@@ -111,6 +112,25 @@ def _home(fetcher: Fetcher, domain: str) -> FetchResult | None:
     return None
 
 
+class _Fetches(Protocol):
+    def fetch(self, url: str, etag: str | None = None, last_modified: str | None = None) -> FetchResult: ...
+
+
+class _Alive:
+    """Reports that the job is alive before each fetch and model call, which can each take minutes."""
+
+    def __init__(self, fetcher: Fetcher, lister: CourseLister, heartbeat: Callable[[], None]) -> None:
+        self._fetcher, self._lister, self._heartbeat = fetcher, lister, heartbeat
+
+    def fetch(self, url: str, etag: str | None = None, last_modified: str | None = None) -> FetchResult:
+        self._heartbeat()
+        return self._fetcher.fetch(url, etag, last_modified)
+
+    def list_courses(self, url: str, page_text: str, links: tuple[tuple[str, str], ...]) -> CourseListRun:
+        self._heartbeat()
+        return self._lister.list_courses(url, page_text, links)
+
+
 def find_index_page(
     fetcher: Fetcher,
     lister: CourseLister,
@@ -119,11 +139,27 @@ def find_index_page(
     *,
     deadline: float | None = None,
     seeds: list[str] | None = None,
+    heartbeat: Callable[[], None] | None = None,
 ) -> Page | None:
     """The first page of the university's own site that the lister reads into at least MIN_ACCEPTED real courses.
 
     Curated `seeds` are read before the home page is searched.
     """
+
+    if heartbeat is not None:
+        beating = _Alive(fetcher, lister, heartbeat)
+        return _find_index_page(beating, beating, domain, levels, deadline, seeds)
+    return _find_index_page(fetcher, lister, domain, levels, deadline, seeds)
+
+
+def _find_index_page(
+    fetcher: _Fetches,
+    lister: CourseLister,
+    domain: str,
+    levels: list[str],
+    deadline: float | None,
+    seeds: list[str] | None,
+) -> Page | None:
 
     def out_of_time() -> bool:
         return deadline is not None and time.monotonic() > deadline
@@ -209,6 +245,7 @@ def discover(
     *,
     deadline: float | None = None,
     seeds: list[str] | None = None,
+    heartbeat: Callable[[], None] | None = None,
 ) -> Discovery:
     """Find and store a course list for a university with none. A dead end is remembered for RETRY_AFTER_DAYS."""
     earlier = conn.execute(
@@ -223,7 +260,13 @@ def discover(
         return Discovery(earlier["status"], earlier["reason"] or "", [])
     try:
         found = find_index_page(
-            fetcher, lister, domain, levels, deadline=deadline, seeds=seed_urls(domain) if seeds is None else seeds
+            fetcher,
+            lister,
+            domain,
+            levels,
+            deadline=deadline,
+            seeds=seed_urls(domain) if seeds is None else seeds,
+            heartbeat=heartbeat,
         )
     except FetchRefused as exc:
         _remember(conn, institution_id, "blocked", str(exc)[:300])
