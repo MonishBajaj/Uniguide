@@ -153,6 +153,20 @@ def import_qs_rankings(
     _report(_with_run("import:qs_rankings", lambda conn: qs_rankings.run(conn, file=str(file), aliases_file=str(path))))
 
 
+@importer.command("fx-rates")
+def import_fx_rates(
+    currencies: Annotated[
+        str | None, typer.Option(help="Comma-separated currency codes; default is the ones students budget in.")
+    ] = None,
+) -> None:
+    """Exchange rates from the European Central Bank's daily reference rates."""
+    from .importers import fx_rates
+
+    wanted = [c.strip() for c in currencies.split(",") if c.strip()] if currencies else fx_rates.DEFAULT_CURRENCIES
+    agent = get_settings().user_agent
+    _report(_with_run("import:fx_rates", lambda conn: fx_rates.run(conn, currencies=wanted, user_agent=agent)))
+
+
 @importer.command("nl-duo")
 def import_nl_duo(
     file: Annotated[Path | None, typer.Option(help="Local ho_opleidingsoverzicht.csv")] = None,
