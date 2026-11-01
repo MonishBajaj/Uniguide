@@ -294,7 +294,8 @@ test("a whole application: the student fills, copies and leaves fields on every 
   // The statement: the policy is unknown, so no paste; the student copies their own final draft.
   await expect(panel.getByRole("button", { name: /Paste final draft/ })).toHaveCount(0);
   await panel.getByRole("button", { name: "Copy final draft: Why do you want to study this course?" }).click();
-  expect(await panel.evaluate(() => navigator.clipboard.readText())).toBe(draft);
+  // Copying a draft fetches its text first, so wait for the clipboard rather than reading it straight away.
+  await expect.poll(() => panel.evaluate(() => navigator.clipboard.readText())).toBe(draft);
   await portal.fill("#field-statement", draft);
   await next("/apply/security-check");
 
