@@ -5,6 +5,7 @@ import map from "../../practice/map.json" with { type: "json" };
 export const practice: Adapter = {
   portal: "practice",
   version: "practice-1",
+  guided: true,
   map: map as PortalMap,
   optionEquivalents: {
     // Our codes (apps/web/lib/fields.ts) → the practice portal's option values. "Another qualification" is never chosen for the student.

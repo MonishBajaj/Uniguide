@@ -275,3 +275,27 @@ describe("navigation", () => {
     expect(guard.allowNavigate("http://127.0.0.1:4318/fee/pay", ctx(doc))).toMatchObject({ allow: false, why: "words" });
   });
 });
+
+describe("pressing: the only click anywhere", () => {
+  it("presses an allowed control, and nothing else", () => {
+    const doc = fixture("about-you");
+    let clicks = 0;
+    el(doc, "save-continue").addEventListener("click", (e) => {
+      clicks++;
+      e.preventDefault();
+    });
+    expect(guard.press(el(doc, "save-continue"), ctx(doc))).toEqual({ allow: true });
+    expect(clicks).toBe(1);
+  });
+
+  it("never presses what allowClick refuses", () => {
+    const doc = fixture("review");
+    let clicks = 0;
+    el(doc, "submit-application").addEventListener("click", (e) => {
+      clicks++;
+      e.preventDefault();
+    });
+    expect(guard.press(el(doc, "submit-application"), ctx(doc, reviewAsForm(["submit-application"])))).toMatchObject({ allow: false });
+    expect(clicks).toBe(0);
+  });
+});

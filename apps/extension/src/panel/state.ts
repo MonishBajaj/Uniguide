@@ -1,5 +1,5 @@
 // The side panel's state, kept pure so it can be tested without a browser (spec 5.3).
-import { resolveValue, ROLES, type Adapter, type DraftChoice, type FieldMatch, type FillProfile, type Role } from "@uniguide/portal-adapters";
+import { resolveValue, ROLES, type Adapter, type DraftChoice, type FillProfile, type Role } from "@uniguide/portal-adapters";
 import { adapterByPortal } from "../adapters";
 import type { AccountState, EventKind, FieldView, FillResult, ScanResult, SuggestOutcome, ToBackground } from "../messages";
 import type { MsgKey } from "./i18n";
@@ -71,7 +71,7 @@ export function buildRows(scan: ScanResult | null | undefined, profile: FillProf
 
 function rowFor(f: FieldView, profile: FillProfile, adapter: Adapter): Row {
   // The resolver only reads the field's description, never the element.
-  const r = resolveValue(f as FieldMatch, profile, adapter);
+  const r = resolveValue(f, profile, adapter);
   const row: Row = {
     key: f.key,
     ...(f.index ? { index: f.index } : {}),

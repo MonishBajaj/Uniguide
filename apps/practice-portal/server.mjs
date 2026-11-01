@@ -132,7 +132,16 @@ function pageHtml(page, app, errors = []) {
   const a = app.answers;
   const idx = PAGE_IDS.indexOf(page.id);
   const back = idx > 0 ? `/apply/${PAGE_IDS[idx - 1]}` : "/";
-  let fields = (page.fields ?? []).map((f) => wrapConditional(f, fieldHtml(f, a[f.name] ?? ""), a)).join("");
+  // Test builds only: a "changed" page renames its first required question, as a portal update might.
+  const changed = variants.get(page.id) === "changed";
+  let renamed = false;
+  let fields = (page.fields ?? [])
+    .map((f) => {
+      const rename = changed && !renamed && f.required && !f.showWhen;
+      if (rename) renamed = true;
+      return wrapConditional(f, fieldHtml(f, a[f.name] ?? "", "field-", rename ? `${f.name}_v2` : f.name), a);
+    })
+    .join("");
   if (page.group) {
     fields += app.activities
       .map(
@@ -222,6 +231,9 @@ function session(req) {
   return id && sessions.has(id) ? { id, ...sessions.get(id) } : null;
 }
 
+/** Test-only page variants (PRACTICE_TEST=1), by page id. */
+const variants = new Map();
+
 export const server = createServer(async (req, res) => {
   const url = new URL(req.url ?? "/", "http://localhost");
   const path = url.pathname;
@@ -229,7 +241,16 @@ export const server = createServer(async (req, res) => {
 
   if (TEST && req.method === "POST" && path === "/__reset") {
     sessions.clear();
+    variants.clear();
     return send(res, 200, "reset");
+  }
+  // POST /__variant?page=<id>&variant=changed (or nothing, to undo): test builds only.
+  if (TEST && req.method === "POST" && path === "/__variant") {
+    const pageId = url.searchParams.get("page") ?? "";
+    const variant = url.searchParams.get("variant");
+    if (variant) variants.set(pageId, variant);
+    else variants.delete(pageId);
+    return send(res, 200, "variant");
   }
   if (path === "/sign-in") {
     if (req.method === "POST") {

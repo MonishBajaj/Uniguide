@@ -143,6 +143,8 @@ export function runStep(run: Run, e: RunEvent): Run {
       if (e.type === "take_over") return { ...run, status: "handed_back", step: undefined, plan: undefined };
       if (run.step === "check" && e.type === "page_seen") return onPageSeen(run, e.page);
       if (run.step === "plan" && e.type === "planned") return { ...run, step: "fill", plan: { toFill: e.toFill, pause: e.pause } };
+      // Filling can reveal conditional fields; the executor re-plans the page before saying it's done.
+      if (run.step === "fill" && e.type === "planned") return { ...run, plan: { toFill: e.toFill, pause: e.pause } };
       if (run.step === "fill" && e.type === "filled") {
         // The confident fields are filled first; then the run pauses if anything needs the student.
         const pause = run.plan?.pause;

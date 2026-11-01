@@ -6,3 +6,4 @@ export type { AiPolicy, FillProfile } from "./profile";
 export { guard, guardLogReason, GUARD_WORDS_EN, GUARD_WORDS_HI, type GuardBlock, type GuardContext, type GuardDecision } from "./guard";
 export { ROLE_NAMES } from "./names";
 export { isFinal, MAX_PAGES, nextAction, PAUSE_REASONS, runStep, startRun, type PauseReason, type Run, type RunAction, type RunEvent, type RunStatus } from "./run";
+export { planPage, type ListedField, type PagePlan, type PlanField, type PlannedFill } from "./plan";

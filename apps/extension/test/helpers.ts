@@ -21,7 +21,9 @@ export function scanOf(name: string): ScanResult {
     portal: practice.portal,
     adapterVersion: practice.version,
     page: identifyPage(doc, practice),
-    fields: matchPage(doc, practice).map(({ element: _e, ...v }) => v),
+    fields: matchPage(doc, practice).map(({ element, ...v }) => ({ ...v, hasValue: ((element as HTMLInputElement).value ?? "").trim() !== "" })),
+    errors: false,
+    guided: true,
   };
 }
 

@@ -27,7 +27,7 @@ const ENGLISH_EXAMS = new Set(["ielts_academic", "ielts_ukvi", "toefl_ibt", "toe
 const CODED = new Set<Role>(["education.qualification", "education.grade.scale", "tests.english.exam", "contact.residence_country", "tests.english.taken"]);
 
 export function resolveValue(
-  m: FieldMatch,
+  m: Omit<FieldMatch, "element">,
   p: FillProfile,
   adapter: Adapter,
   opts: { activityOrder?: string[] } = {},
@@ -52,7 +52,7 @@ export function resolveValue(
   return { status: "value", value: option, source: raw.source };
 }
 
-function rawValue(role: Role, m: FieldMatch, p: FillProfile, order?: string[]): { value: string; source: string } | null {
+function rawValue(role: Role, m: Omit<FieldMatch, "element">, p: FillProfile, order?: string[]): { value: string; source: string } | null {
   const val = (value: unknown, source: string) => (value === null || value === undefined || value === "" ? null : { value: String(value), source });
   const english = p.testScores.map((t, i) => ({ t, i })).filter(({ t }) => ENGLISH_EXAMS.has(t.exam));
   const latest = english[0];
@@ -91,7 +91,7 @@ function rawValue(role: Role, m: FieldMatch, p: FillProfile, order?: string[]): 
 }
 
 /** The student's own final draft only. Automatic paste only where the verified policy allows it (rule 7). */
-function draft(m: FieldMatch, p: FillProfile, spec: RoleSpec): Resolution {
+function draft(m: Omit<FieldMatch, "element">, p: FillProfile, spec: RoleSpec): Resolution {
   const kinds = new Set(spec.draftKinds);
   const choices = p.finalDrafts
     .filter((d) => kinds.has(d.kind))

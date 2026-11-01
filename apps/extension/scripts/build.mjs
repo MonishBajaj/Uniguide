@@ -43,6 +43,7 @@ export async function settings(env = process.env) {
     supabaseKey,
     webOrigin,
     test: env.EXT_TEST === "1",
+    wrongAdapter: env.EXT_TEST === "1" && env.EXT_WRONG_ADAPTER === "1",
     store: env.EXT_STORE === "1",
   };
 }
@@ -97,6 +98,7 @@ export async function buildExtension(outDir = join(root, "dist"), env = process.
       __SUPABASE_KEY__: JSON.stringify(s.supabaseKey),
       __WEB_ORIGIN__: JSON.stringify(s.webOrigin),
       __TEST_BUILD__: JSON.stringify(s.test),
+      __WRONG_ADAPTER__: JSON.stringify(s.wrongAdapter),
     },
     logLevel: "warning",
   });
@@ -109,7 +111,13 @@ export async function buildExtension(outDir = join(root, "dist"), env = process.
     outfile: join(outDir, "content.js"),
     legalComments: "none",
     minifySyntax: true,
-    define: { __SUPABASE_URL__: '""', __SUPABASE_KEY__: '""', __WEB_ORIGIN__: '""', __TEST_BUILD__: JSON.stringify(s.test) },
+    define: {
+      __SUPABASE_URL__: '""',
+      __SUPABASE_KEY__: '""',
+      __WEB_ORIGIN__: '""',
+      __TEST_BUILD__: JSON.stringify(s.test),
+      __WRONG_ADAPTER__: JSON.stringify(s.wrongAdapter),
+    },
     logLevel: "warning",
   });
   await copyFile(join(root, "static/panel.html"), join(outDir, "panel.html"));

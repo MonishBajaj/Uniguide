@@ -3,9 +3,13 @@
 import type { Adapter } from "@uniguide/portal-adapters";
 import { practice } from "@uniguide/portal-adapters/practice";
 
-// The build-time flag itself, not config's copy of it, so a store build drops the practice adapter entirely.
+import { wrongPractice } from "./test-adapters";
+
+// The build-time flags themselves, not config's copies, so a store build drops the practice adapter entirely.
 declare const __TEST_BUILD__: boolean;
-const ADAPTERS: Adapter[] = __TEST_BUILD__ ? [practice] : [];
+/** A test build that swaps in a deliberately wrong practice adapter, to show the guard holds (plan A2.2). */
+declare const __WRONG_ADAPTER__: boolean;
+const ADAPTERS: Adapter[] = __TEST_BUILD__ ? [__WRONG_ADAPTER__ ? wrongPractice() : practice] : [];
 
 export function adapterFor(url: string): Adapter | null {
   let origin: string;

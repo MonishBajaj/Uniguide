@@ -258,4 +258,14 @@ export function guardLogReason(d: GuardDecision): "page_differs" | "guard" | nul
   return d.why === "page_differs" ? "page_differs" : "guard";
 }
 
-export const guard = { allowClick, allowKey, allowFill, allowNavigate };
+/**
+ * The only click in the extension (plan A1.5 build check): press a control, and only if allowClick allows it at
+ * this very moment. Guided apply uses it for the adapter's next-page control.
+ */
+function press(control: Element, ctx: GuardContext): GuardDecision {
+  const decision = allowClick(control, ctx);
+  if (decision.allow) (control as HTMLElement).click();
+  return decision;
+}
+
+export const guard = { allowClick, allowKey, allowFill, allowNavigate, press };

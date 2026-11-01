@@ -52,7 +52,7 @@ chrome.runtime.onConnect.addListener((port) => {
   port.onDisconnect.addListener(() => void endRun("abandoned"));
 });
 
-async function endRun(outcome: "stopped" | "abandoned") {
+async function endRun(outcome: "review" | "stopped" | "paused" | "abandoned") {
   const id = await getRun();
   if (!id) return;
   await setRun(null);
@@ -99,7 +99,7 @@ async function handle(msg: ToBackground): Promise<unknown> {
         const id = await rpc<string>("start_assist_run", {
           p_application_id: msg.applicationId,
           p_portal: msg.portal,
-          p_feature: "fill",
+          p_feature: msg.feature,
           p_adapter_version: msg.adapterVersion,
         });
         await setRun(id);

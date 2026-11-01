@@ -5,7 +5,7 @@
   "description": "Our own practice application portal for testing the UniGuide extension (M7). Synthetic data only.",
   "scripts": {
     "start": "node server.mjs",
-    "test": "node --test test/portal.test.mjs",
+    "test": "PRACTICE_TEST=1 node --test test/portal.test.mjs",
     "lint": "node --check server.mjs && node --check pages.mjs",
     "typecheck": "node --check server.mjs && node --check pages.mjs"
   }

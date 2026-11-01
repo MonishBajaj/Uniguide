@@ -1,8 +1,10 @@
 // The side panel (spec 5.3): one row per field, with Fill, Copy and Leave for me. No "fill all". Everything it
 // shows is built from text nodes, never HTML, because portal labels come from the page.
-import { CONFIDENT } from "@uniguide/portal-adapters";
+import { CONFIDENT, planPage, type Role } from "@uniguide/portal-adapters";
+import { adapterByPortal } from "../adapters";
 import { TEST_BUILD, WEB_ORIGIN } from "../config";
-import type { AccountState, BackgroundReply, FillResult, ScanResult, SuggestOutcome, ToBackground, ToContent } from "../messages";
+import type { AccountState, BackgroundReply, FillResult, PressResult, ScanResult, SuggestOutcome, ToBackground, ToContent } from "../messages";
+import { GuidedRunner } from "./guided";
 import { DICTS, pickLocale, type MsgKey } from "./i18n";
 import {
   applyFill,
@@ -103,7 +105,7 @@ async function rescan() {
   }
   if (phaseOf(state) === "ready" && !runStarted && state.applicationId && scan) {
     runStarted = true;
-    await bg({ to: "background", type: "start", applicationId: state.applicationId, portal: scan.portal, adapterVersion: scan.adapterVersion }).catch(() => {
+    await bg({ to: "background", type: "start", applicationId: state.applicationId, portal: scan.portal, adapterVersion: scan.adapterVersion, feature: "fill" }).catch(() => {
       runStarted = false;
     });
   }
@@ -168,8 +170,95 @@ async function draftText(row: Row): Promise<string | null> {
 }
 
 chrome.tabs.onUpdated.addListener((id, info) => {
+  // During a guided run the runner does its own looking; otherwise follow the student's own page changes.
+  if (runner && (runner.run.status === "filling" || runner.run.status === "moving")) return;
   if (id === tabId && info.status === "complete" && phaseOf(state) !== "loading" && state.profile) void rescan();
 });
+
+// ---------------------------------------------------------------------------------------------- guided apply (A2.2)
+
+let runner: GuidedRunner | null = null;
+let pendingLoad: Promise<boolean> | null = null;
+let runEnded = false;
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+/** Resolves true when the tab next finishes loading a new page, false after the timeout. Set up before pressing. */
+function nextLoad(timeoutMs = 15_000) {
+  let resolve!: (v: boolean) => void;
+  const promise = new Promise<boolean>((r) => (resolve = r));
+  let sawLoading = false;
+  const listener = (id: number, info: { status?: string }) => {
+    if (id !== tabId) return;
+    if (info.status === "loading") sawLoading = true;
+    if (info.status === "complete" && sawLoading) finish(true);
+  };
+  const timer = setTimeout(() => finish(false), timeoutMs);
+  function finish(v: boolean) {
+    chrome.tabs.onUpdated.removeListener(listener);
+    clearTimeout(timer);
+    resolve(v);
+  }
+  chrome.tabs.onUpdated.addListener(listener);
+  return { promise, cancel: () => finish(false) };
+}
+
+function newRunner(): GuidedRunner {
+  return new GuidedRunner({
+    scan: async () => {
+      // Just after a page change the content script may not be ready yet.
+      for (let i = 0; i < 20; i++) {
+        const scan = await toPage<ScanResult>({ to: "content", type: "scan" });
+        if (scan) {
+          state = { ...state, scan, rows: buildRows(scan, state.profile) };
+          return { page: scan.page, fields: scan.fields, errors: scan.errors };
+        }
+        await sleep(250);
+      }
+      return null;
+    },
+    plan: (fields, skipped) => {
+      const adapter = state.scan ? adapterByPortal(state.scan.portal) : null;
+      if (!adapter || !state.profile) return { toFill: [], listed: [], pause: { reason: "unexpected", fields: [] } };
+      return planPage(fields, state.profile, adapter, skipped);
+    },
+    fill: async (f) =>
+      (await toPage<FillResult>({ to: "content", type: "fill", key: f.key, ...(f.index ? { index: f.index } : {}), value: f.value, overwrite: false })) ?? {
+        status: "not_found",
+      },
+    press: async (control) => {
+      const loaded = nextLoad();
+      const res = (await toPage<PressResult>({ to: "content", type: "press", control })) ?? { status: "not_found" };
+      if (res.status === "pressed") pendingLoad = loaded.promise;
+      else loaded.cancel();
+      return res;
+    },
+    waitForPage: async () => {
+      const p = pendingLoad;
+      pendingLoad = null;
+      return p ? p : false;
+    },
+    log: (kind, role, page, source, reason) =>
+      void bg({ to: "background", type: "log", kind, role: role as Role | null, page, source, reason }).catch(() => {}),
+    changed: (r) => {
+      const st = r.run.status;
+      if (!runEnded && (st === "at_review" || st === "stopped")) {
+        runEnded = true;
+        void bg({ to: "background", type: "end", outcome: st === "at_review" ? "review" : "stopped" }).catch(() => {});
+      }
+      render();
+    },
+  });
+}
+
+async function startGuided() {
+  if (!state.applicationId || !state.scan) return;
+  runner = newRunner();
+  runEnded = false;
+  runStarted = true;
+  await bg({ to: "background", type: "start", applicationId: state.applicationId, portal: state.scan.portal, adapterVersion: state.scan.adapterVersion, feature: "guided" }).catch(() => {});
+  render();
+  await runner.start();
+}
 
 // ---------------------------------------------------------------------------------------------- drawing
 
@@ -215,14 +304,110 @@ function render() {
       parts.push(chooser());
       break;
     case "unsupported":
+      // A guided run can pause on a page the panel can't fill, such as the portal's sign-in screen.
+      if (runner && runner.run.status !== "ready") parts.push(...guidedView());
       parts.push(h("p", { id: "unsupported" }, t.unsupported), button(t.checkAgain, rescan));
       break;
     case "ready":
-      parts.push(...rowsView());
+      parts.push(...guidedView(), ...rowsView());
       break;
   }
   if (s.notice && !s.notice.key) parts.push(h("p", { role: "status" }, t[s.notice.text]));
   app.replaceChildren(...parts.filter((p): p is Node | string => !!p));
+}
+
+function guidedView(): Child[] {
+  const scan = state.scan;
+  if (!scan?.guided) return [];
+  const r = runner?.run;
+  const adapter = adapterByPortal(scan.portal);
+  if (!r || r.status === "ready") {
+    return [
+      h(
+        "section",
+        { id: "guided-start", class: "guided", "aria-labelledby": "guided-title" },
+        h("h2", { id: "guided-title" }, t.guidedTitle),
+        h("p", {}, t.guidedIntro),
+        h("p", {}, h("strong", {}, t.guidedNever)),
+        adapter ? h("p", {}, t.guidedSections) : null,
+        adapter ? h("ul", {}, ...adapter.map.sections.map((sec) => h("li", {}, sec.title))) : null,
+        h("p", {}, state.profile?.aiPolicy === "allows" ? t.guidedEssaysPaste : t.guidedEssaysCopy),
+        button(t.startGuided, startGuided, { id: "start-guided" }),
+      ),
+    ];
+  }
+
+  const pageTitle = adapter?.map.pages.find((p) => p.id === r.pageId)?.title ?? "";
+  const body: Child[] = [];
+  const controls: Child[] = [];
+  const g = runner!;
+  switch (r.status) {
+    case "filling":
+      body.push(h("p", { id: "guided-status", role: "status" }, t.guidedFilling(r.page, pageTitle)));
+      controls.push(button(t.pauseRun, () => g.pause()), button(t.stopRun, () => g.stop(), { class: "secondary" }));
+      break;
+    case "moving":
+      body.push(h("p", { id: "guided-status", role: "status" }, t.guidedMoving));
+      controls.push(button(t.pauseRun, () => g.pause()), button(t.stopRun, () => g.stop(), { class: "secondary" }));
+      break;
+    case "paused": {
+      const p = r.pause!;
+      const detailKey = p.detail ? (`guidedDetail_${p.detail}` as MsgKey) : null;
+      const text =
+        detailKey && detailKey in t
+          ? (t[detailKey] as string)
+          : p.reason === "student" && !p.fields?.length
+            ? t.guidedPausedByYou
+            : (t[`guidedPause_${p.reason}` as MsgKey] as string);
+      body.push(h("p", { id: "guided-status", role: "alert", "data-reason": p.reason }, text));
+      const needing = (p.fields ?? []).map((key) => g.scan?.fields.find((f) => f.key === key)).filter((f) => !!f);
+      if (needing.length) {
+        body.push(
+          h("p", {}, t.guidedNeeds),
+          h(
+            "ul",
+            { class: "needs" },
+            ...needing.map((f) =>
+              h(
+                "li",
+                {},
+                f.label,
+                " ",
+                r.skipped.includes(f.key)
+                  ? h("span", { class: "status" }, t.guidedSkipped)
+                  : button(t.skip, () => (g.skip(f.key), render()), { "aria-label": `${t.skip}: ${f.label}`, class: "secondary" }),
+              ),
+            ),
+          ),
+        );
+      }
+      controls.push(button(t.resumeRun, () => g.resume()), button(t.takeOver, () => g.takeOver(), { class: "secondary" }), button(t.stopRun, () => g.stop(), { class: "secondary" }));
+      break;
+    }
+    case "handed_back":
+      body.push(h("p", { id: "guided-status", role: "status" }, t.guidedHandedBack));
+      controls.push(button(t.restartRun, () => g.restart()), button(t.stopRun, () => g.stop(), { class: "secondary" }));
+      break;
+    case "at_review":
+      body.push(h("p", { id: "guided-status", role: "status" }, t.guidedAtReview));
+      break;
+    case "stopped":
+      body.push(h("p", { id: "guided-status", role: "status" }, t.guidedStopped));
+      controls.push(button(t.startAgain, startGuided));
+      break;
+    case "finished":
+      body.push(h("p", { id: "guided-status", role: "status" }, t.guidedFinished));
+      break;
+  }
+  return [
+    h(
+      "section",
+      { id: "guided-run", class: "guided", "aria-labelledby": "guided-title", "data-status": r.status },
+      h("h2", { id: "guided-title" }, t.guidedTitle),
+      ...body,
+      controls.length ? h("div", { class: "actions" }, ...controls) : null,
+    ),
+  ];
 }
 
 function chooser(): Node {

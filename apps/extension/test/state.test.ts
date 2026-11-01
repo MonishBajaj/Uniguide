@@ -157,7 +157,7 @@ describe("suggested roles for unmatched fields (A1.6)", () => {
   // A field the practice map doesn't know, labelled the way another portal might.
   const withUnknown = (): PanelState => {
     const s = ready("about-you");
-    const field = { key: "field-contact_email", name: "contact_email", control: "email", label: "Where can we reach you?", role: null, confidence: 0, via: "none" as const, action: "student" as const, required: true, visible: true };
+    const field = { key: "field-contact_email", name: "contact_email", control: "email", label: "Where can we reach you?", role: null, confidence: 0, via: "none" as const, action: "student" as const, required: true, visible: true, hasValue: false };
     const scan = { ...s.scan!, fields: [...s.scan!.fields, field] };
     return { ...s, scan, rows: buildRows(scan, s.profile) };
   };

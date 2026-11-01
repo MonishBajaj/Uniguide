@@ -130,6 +130,15 @@ describe("every pause reason pauses, and says why", () => {
   });
 });
 
+describe("re-planning a page", () => {
+  it("takes a fresh plan while filling, when filling has revealed more fields, and pauses by the latest one", () => {
+    let run = steps(startRun(), { type: "start" }, { type: "page_seen", page: form("tests") }, { type: "planned", toFill: ["english_test_taken"], pause: null });
+    run = runStep(run, { type: "planned", toFill: ["field-english_test", "field-english_overall"], pause: { reason: "no_value", fields: ["field-english_date"] } });
+    expect(nextAction(run)).toEqual({ type: "fill", keys: ["field-english_test", "field-english_overall"] });
+    expect(runStep(run, { type: "filled" })).toMatchObject({ status: "paused", pause: { reason: "no_value" } });
+  });
+});
+
 describe("Pause, Stop and resume", () => {
   it("Stop takes effect before the next action, whatever was about to happen", () => {
     const states: Run[] = [

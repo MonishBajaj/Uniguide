@@ -65,6 +65,8 @@ export interface Adapter {
    * the portal doesn't offer it, and the student decides.
    */
   optionEquivalents: Partial<Record<string, Record<string, string>>>;
+  /** Guided apply is supported on this portal (its terms allow it; plan section 3.4). */
+  guided?: boolean;
 }
 
 /** Problems with an adapter, as plain sentences. Empty means it's usable. */

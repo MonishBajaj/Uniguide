@@ -118,3 +118,13 @@ test("the recorded map (A1.2) still matches the portal", async () => {
   for (const n of NEVER_CLICK) assert.ok(never.has(n.id), `${n.id} is never-click in the map`);
   for (const a of map.allowedClicks) assert.ok(!never.has(a.id), `${a.id} can't be both`);
 });
+
+test("test builds can show a changed page, which renames its first required question", async () => {
+  const go = await signIn();
+  await fetch(`${base}/__variant?page=schooling&variant=changed`, { method: "POST" });
+  const html = await (await go("/apply/schooling")).text();
+  assert.match(html, /id="field-school_name_v2"/);
+  assert.doesNotMatch(html, /id="field-school_name"/);
+  await fetch(`${base}/__variant?page=schooling`, { method: "POST" });
+  assert.match(await (await go("/apply/schooling")).text(), /id="field-school_name"/);
+});

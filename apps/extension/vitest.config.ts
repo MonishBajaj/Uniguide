@@ -6,6 +6,7 @@ export default defineConfig({
     __SUPABASE_KEY__: JSON.stringify("test-key"),
     __WEB_ORIGIN__: JSON.stringify("http://localhost:3000"),
     __TEST_BUILD__: "true",
+    __WRONG_ADAPTER__: "false",
   },
   test: { testTimeout: 60_000 },
 });
