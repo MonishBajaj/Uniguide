@@ -96,6 +96,17 @@ def read_index_seeds(root: Path = INDEX_ROOT) -> list[tuple[Path, IndexSeed]]:
     return out
 
 
+def seed_urls(domain: str, root: Path = INDEX_ROOT) -> list[str]:
+    """Curated index URLs for a university, whether or not a person has verified them yet."""
+    plain = _plain(domain)
+    urls: list[str] = []
+    for _, seed in read_index_seeds(root):
+        known = _plain(seed.official_domain)
+        if plain == known or plain.endswith("." + known) or known.endswith("." + plain):
+            urls.extend(e.url for e in seed.indexes)
+    return urls
+
+
 @dataclass
 class IndexLoadReport:
     institutions_new: int = 0

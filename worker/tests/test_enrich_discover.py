@@ -12,6 +12,7 @@ from uniguide_worker.db import Connection
 from uniguide_worker.enrich.discover import MIN_ACCEPTED, discover, find_index_page, real_courses
 from uniguide_worker.fetch.fetcher import FetchRefused, FetchResult, content_hash
 from uniguide_worker.index.lister import CourseListRun, ListedCourse
+from uniguide_worker.index.seed import seed_urls
 
 
 class SiteFetcher:
@@ -196,6 +197,39 @@ def test_the_bare_domain_is_tried_when_www_is_missing(worker: Connection, site: 
     assert found is not None
 
 
+def test_a_known_index_url_is_read_first_and_the_home_page_is_not_visited(worker: Connection, site: dict[str, Any]) -> None:
+    d = site["domain"]
+    text, links, listed = course_pages(d, [f"Program {n}" for n in range(MIN_ACCEPTED)])
+    seed = f"https://www.{d}/known/list"
+    fetcher = SiteFetcher({seed: (text, links)})
+    found = find_index_page(fetcher, MapLister({seed: listed}), d, ["master"], seeds=[seed])
+    assert found is not None and found[0] == seed
+    assert fetcher.calls == [seed]
+
+
+def test_the_home_page_is_used_when_a_known_index_url_gives_too_few_courses(worker: Connection, site: dict[str, Any]) -> None:
+    d = site["domain"]
+    text, links, listed = course_pages(d, [f"Program {n}" for n in range(MIN_ACCEPTED)])
+    seed = f"https://www.{d}/known/list"
+    pages = {
+        seed: ("empty", ()),
+        f"https://www.{d}/": home(d, ("Graduate programs", f"https://www.{d}/graduate/programs")),
+        f"https://www.{d}/graduate/programs": (text, links),
+    }
+    found = find_index_page(SiteFetcher(pages), MapLister({f"https://www.{d}/graduate/programs": listed}), d, ["master"], seeds=[seed])
+    assert found is not None and found[0].endswith("/graduate/programs")
+
+
+def test_seed_urls_come_from_the_curated_files_for_the_domain(tmp_path: Any) -> None:
+    (tmp_path / "us").mkdir()
+    (tmp_path / "us" / "x.yaml").write_text(
+        "institution: X U\ncountry: US\nofficial_domain: x.example.edu\nindexes:\n"
+        "  - url: https://grad.x.example.edu/programs\n  - url: https://x.example.edu/catalog\n"
+    )
+    assert seed_urls("www.x.example.edu", root=tmp_path) == ["https://grad.x.example.edu/programs", "https://x.example.edu/catalog"]
+    assert seed_urls("other.example.edu", root=tmp_path) == []
+
+
 # --- discover -------------------------------------------------------------------------------------------------------
 
 
@@ -255,3 +289,13 @@ def test_a_model_error_makes_the_university_none_not_a_crash(worker: Connection,
     fetcher, _ = discoverable(site)
     result = discover(worker, fetcher, MapLister(error=TimeoutError("model timed out")), site["institution"], site["domain"], ["06"], ["master"])
     assert result.status == "none" and "model timed out" in result.reason
+
+
+def test_discovery_reads_a_known_index_url_before_guessing(worker: Connection, site: dict[str, Any]) -> None:
+    d = site["domain"]
+    text, links, listed = course_pages(d, [f"Program {n}" for n in range(MIN_ACCEPTED)])
+    seed = f"https://www.{d}/known/list"
+    fetcher = SiteFetcher({seed: (text, links)})
+    result = discover(worker, fetcher, MapLister({seed: listed}), site["institution"], d, ["06"], ["master"], seeds=[seed])
+    assert result.status == "found" and len(result.program_ids) == MIN_ACCEPTED
+    assert fetcher.calls == [seed]

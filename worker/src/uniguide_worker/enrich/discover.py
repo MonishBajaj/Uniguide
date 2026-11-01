@@ -18,6 +18,7 @@ from ..db import Connection
 from ..fetch.fetcher import Fetcher, FetchRefused, FetchResult
 from ..index.crawl import _reject_reason, ingest_listed
 from ..index.lister import CourseLister, ListedCourse
+from ..index.seed import seed_urls
 from .candidates import host_matches_domain
 
 MIN_ACCEPTED = 5
@@ -111,12 +112,34 @@ def _home(fetcher: Fetcher, domain: str) -> FetchResult | None:
 
 
 def find_index_page(
-    fetcher: Fetcher, lister: CourseLister, domain: str, levels: list[str], *, deadline: float | None = None
+    fetcher: Fetcher,
+    lister: CourseLister,
+    domain: str,
+    levels: list[str],
+    *,
+    deadline: float | None = None,
+    seeds: list[str] | None = None,
 ) -> Page | None:
-    """The first page of the university's own site that the lister reads into at least MIN_ACCEPTED real courses."""
+    """The first page of the university's own site that the lister reads into at least MIN_ACCEPTED real courses.
+
+    Curated `seeds` are read before the home page is searched.
+    """
 
     def out_of_time() -> bool:
         return deadline is not None and time.monotonic() > deadline
+
+    for seed in seeds or []:
+        if out_of_time():
+            break
+        try:
+            page = fetcher.fetch(seed)
+        except FetchRefused:
+            continue
+        if page.status >= 400 or not page.text:
+            continue
+        found = _accepted(lister, page, domain)
+        if found is not None:
+            return found
 
     home = _home(fetcher, domain)
     if home is None:
@@ -147,11 +170,18 @@ def find_index_page(
     for page in sorted(fetched, key=lambda p: -len(p.links))[:LISTER_TRIES]:
         if out_of_time():
             break
-        run = lister.list_courses(page.final_url, page.text, page.links)
-        link_urls = {href.split("#")[0] for _, href in page.links}
-        accepted = [c for c in run.courses or [] if _reject_reason(c, page.text, link_urls, domain) is None]
-        if len(accepted) >= MIN_ACCEPTED:
-            return page.final_url, page.text, link_urls, accepted
+        found = _accepted(lister, page, domain)
+        if found is not None:
+            return found
+    return None
+
+
+def _accepted(lister: CourseLister, page: FetchResult, domain: str) -> Page | None:
+    run = lister.list_courses(page.final_url, page.text, page.links)
+    link_urls = {href.split("#")[0] for _, href in page.links}
+    accepted = [c for c in run.courses or [] if _reject_reason(c, page.text, link_urls, domain) is None]
+    if len(accepted) >= MIN_ACCEPTED:
+        return page.final_url, page.text, link_urls, accepted
     return None
 
 
@@ -178,6 +208,7 @@ def discover(
     levels: list[str],
     *,
     deadline: float | None = None,
+    seeds: list[str] | None = None,
 ) -> Discovery:
     """Find and store a course list for a university with none. A dead end is remembered for RETRY_AFTER_DAYS."""
     earlier = conn.execute(
@@ -191,7 +222,9 @@ def discover(
     if earlier:
         return Discovery(earlier["status"], earlier["reason"] or "", [])
     try:
-        found = find_index_page(fetcher, lister, domain, levels, deadline=deadline)
+        found = find_index_page(
+            fetcher, lister, domain, levels, deadline=deadline, seeds=seed_urls(domain) if seeds is None else seeds
+        )
     except FetchRefused as exc:
         _remember(conn, institution_id, "blocked", str(exc)[:300])
         return Discovery("blocked", str(exc)[:300], [])
