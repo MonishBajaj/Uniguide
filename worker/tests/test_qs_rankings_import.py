@@ -9,7 +9,9 @@ CS = "Computer Science & Information Systems"
 
 
 def _institution(conn: Connection, name: str, country: str = "US") -> str:
-    row = conn.execute("insert into institutions (name, country) values (%s, %s) returning id", (name, country)).fetchone()
+    row = conn.execute(
+        "insert into institutions (name, country) values (%s, %s) returning id", (name, country)
+    ).fetchone()
     assert row is not None
     return str(row["id"])
 
@@ -34,7 +36,10 @@ def _row(rank: str, name: str, country: str = "United States of America") -> lis
 
 def test_matched_institution_gets_a_row_per_subject(worker: Connection, tmp_path: Path) -> None:
     uid = _institution(worker, "Quillfeather University")
-    path = _book(tmp_path, {CS: [_row("12", "Quillfeather University (QU)")], "Law": [_row("751-850", "Quillfeather University")]})
+    path = _book(
+        tmp_path,
+        {CS: [_row("12", "Quillfeather University (QU)")], "Law": [_row("751-850", "Quillfeather University")]},
+    )
     stats = qs_rankings.run(worker, file=path)
     assert _rows(worker, uid) == {(CS, "2026"): (12, 12), ("Law", "2026"): (751, 850)}
     assert stats.institutions == 1 and stats.programs == 2
