@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-dim": "#d9dadb",
+                    "on-tertiary-fixed": "#002117",
+                    "tertiary-fixed": "#a0f3d4",
+                    "secondary-container": "#fe694a",
+                    "primary-fixed-dim": "#adc6ff",
+                    "inverse-on-surface": "#f0f1f2",
+                    "on-tertiary-fixed-variant": "#00513e",
+                    "on-secondary-fixed": "#3e0500",
+                    "on-primary-container": "#7d96cb",
+                    "secondary-fixed-dim": "#ffb4a4",
+                    "error": "#ba1a1a",
+                    "tertiary-container": "#003628",
+                    "surface-container": "#edeeef",
+                    "surface": "#f8f9fa",
+                    "secondary-fixed": "#ffdad3",
+                    "on-secondary-fixed-variant": "#8d1701",
+                    "on-tertiary": "#ffffff",
+                    "on-primary-fixed-variant": "#2c4676",
+                    "surface-tint": "#455e90",
+                    "background": "#f8f9fa",
+                    "on-error": "#ffffff",
+                    "on-surface-variant": "#44474f",
+                    "primary-container": "#0f2d5c",
+                    "on-background": "#191c1d",
+                    "tertiary": "#001f16",
+                    "outline-variant": "#c4c6d0",
+                    "on-tertiary-container": "#53a58a",
+                    "on-primary-fixed": "#001a41",
+                    "surface-variant": "#e1e3e4",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-container-highest": "#e1e3e4",
+                    "error-container": "#ffdad6",
+                    "surface-container-high": "#e7e8e9",
+                    "surface-bright": "#f8f9fa",
+                    "on-error-container": "#93000a",
+                    "secondary": "#af3017",
+                    "outline": "#747780",
+                    "on-secondary-container": "#650d00",
+                    "surface-container-low": "#f3f4f5",
+                    "on-primary": "#ffffff",
+                    "primary": "#00183d",
+                    "tertiary-fixed-dim": "#84d6b9",
+                    "on-secondary": "#ffffff",
+                    "primary-fixed": "#d8e2ff",
+                    "on-surface": "#191c1d",
+                    "inverse-surface": "#2e3132",
+                    "inverse-primary": "#adc6ff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "section-gap-md": "48px",
+                    "max-width": "1200px",
+                    "section-gap-lg": "80px",
+                    "gutter": "24px",
+                    "stack-gap": "16px",
+                    "margin-mobile": "16px"
+            },
+            "fontFamily": {
+                    "h3-desktop": ["Playfair Display"],
+                    "label-sm": ["Plus Jakarta Sans"],
+                    "button-text": ["Plus Jakarta Sans"],
+                    "h2-desktop": ["Playfair Display"],
+                    "h1-mobile": ["Playfair Display"],
+                    "h1-desktop": ["Playfair Display"],
+                    "body-md": ["Plus Jakarta Sans"],
+                    "body-lg": ["Plus Jakarta Sans"]
+            },
+            "fontSize": {
+                    "h3-desktop": ["24px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                    "label-sm": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                    "button-text": ["16px", {"lineHeight": "1", "fontWeight": "600"}],
+                    "h2-desktop": ["36px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                    "h1-mobile": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                    "h1-desktop": ["48px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .achievement-card:hover .achievement-tooltip {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body-md antialiased min-h-screen">
+<!-- TopAppBar Shell -->
+<header class="bg-surface shadow-sm docked full-width top-0 z-50 fixed">
+<div class="flex justify-between items-center w-full px-6 py-3 max-w-screen-2xl mx-auto">
+<div class="flex items-center gap-8">
+<span class="font-h3-desktop text-h3-desktop font-bold text-primary">UniGuide AI</span>
+<nav class="hidden md:flex gap-6">
+<a class="font-body-md text-on-surface-variant hover:text-secondary-container transition-colors duration-200" href="#">Admissions</a>
+<a class="font-body-md text-on-surface-variant hover:text-secondary-container transition-colors duration-200" href="#">Universities</a>
+<a class="font-body-md text-on-surface-variant hover:text-secondary-container transition-colors duration-200" href="#">Resources</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="hidden md:flex items-center bg-surface-container rounded-full px-4 py-1.5 border border-outline-variant">
+<span class="material-symbols-outlined text-outline text-xl" data-icon="search">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm w-48 font-body-md" placeholder="Search..." type="text"/>
+</div>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-all" data-icon="help">help</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-all" data-icon="notifications">notifications</button>
+<button class="bg-primary text-on-primary font-button-text px-6 py-2.5 rounded-full hover:opacity-90 transition-all">Apply Now</button>
+</div>
+</div>
+</header>
+<!-- Sidebar Shell -->
+<aside class="fixed left-0 top-0 h-full flex flex-col py-8 px-4 z-40 bg-surface-container-low w-64 mt-[64px]">
+<div class="mb-8 px-4">
+<div class="flex items-center gap-3 mb-2">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center overflow-hidden">
+<img alt="Student Profile" class="w-full h-full object-cover" data-alt="A professional close-up portrait of a determined young student with a friendly expression. The lighting is bright and airy, reflecting a modern academic environment. The background is softly blurred with tones of navy and white to match the prestigious corporate aesthetic of the brand." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDLf01NTD7JvsmuvwWsA4VTbigAjbjwBZpLVEKSO0n7HEr0P0O3C2_aZ8QJNa5a3nDY7-wyKOOF3kDCuhl5v0lQ7xcnDjT6-c6pyoneJKi9KjNhWOm1a5ZMeL25a_r0a0JxlTL8y_8ZsBtFB-DsuYKP5Mfjt7UTv-nndMhq60ajgnhu4AG6xHHo4ZoRznGeY9TpRsoTZOZ1a-keeEmY0M4FPxXtACxfdUsvUK5D5y3t0wKxF_jc6D5Wc-Xw7jdSgY_700P9Hg_40Ak3"/>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-primary font-bold">Alex Johnson</p>
+<p class="text-[12px] text-outline">Admissions Portal</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant font-medium hover:bg-surface-container hover:text-primary transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label-sm">Preferences</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant font-medium hover:bg-surface-container hover:text-primary transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="notifications_active">notifications_active</span>
+<span class="font-label-sm">Notifications</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant font-medium hover:bg-surface-container hover:text-primary transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span class="font-label-sm">Subscription</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant font-medium hover:bg-surface-container hover:text-primary transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="accessibility_new">accessibility_new</span>
+<span class="font-label-sm">Accessibility</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-primary font-bold border-r-4 border-secondary-container bg-surface-bright transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="emoji_events">emoji_events</span>
+<span class="font-label-sm">Milestones</span>
+</a>
+</nav>
+<div class="mt-auto px-4 py-6 border-t border-outline-variant">
+<button class="w-full bg-primary-container text-on-primary-container font-button-text py-3 rounded-xl flex items-center justify-center gap-2 hover:opacity-90 transition-all">
+<span class="material-symbols-outlined text-sm" data-icon="bolt">bolt</span>
+                Get AI Support
+            </button>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-64 mt-[64px] p-10 max-w-[1200px] mx-auto min-h-[calc(100vh-64px)]">
+<!-- Header Section -->
+<header class="mb-10">
+<div class="flex items-baseline gap-2 mb-2">
+<span class="material-symbols-outlined text-secondary" data-icon="emoji_events">emoji_events</span>
+<h1 class="text-[20px] font-bold text-primary">Your Achievements</h1>
+</div>
+<p class="text-on-surface-variant max-w-2xl">Track your progress and celebrate key milestones in your international education journey. Complete tasks to unlock prestigious badges.</p>
+</header>
+<!-- Achievements Bento/Grid -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter mb-section-gap-md">
+<!-- Earned: Explorer -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 flex flex-col items-center text-center achievement-card relative transition-all duration-300 hover:shadow-[0_8px_24px_rgba(0,24,61,0.06)] group">
+<div class="w-20 h-20 rounded-full border-4 border-on-tertiary-container bg-tertiary-fixed flex items-center justify-center mb-4 transition-transform group-hover:scale-110">
+<span class="material-symbols-outlined text-on-tertiary-container text-4xl" data-icon="travel_explore" data-weight="fill" style="font-variation-settings: 'FILL' 1;">travel_explore</span>
+</div>
+<h3 class="font-bold text-primary text-body-md mb-1">Explorer</h3>
+<p class="text-label-sm text-on-surface-variant">10+ universities</p>
+<div class="mt-4 px-3 py-1 bg-on-tertiary-container/10 text-on-tertiary-container text-[11px] font-bold uppercase tracking-wider rounded-full">Unlocked</div>
+</div>
+<!-- Earned: Scholar -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 flex flex-col items-center text-center achievement-card relative transition-all duration-300 hover:shadow-[0_8px_24px_rgba(0,24,61,0.06)] group">
+<div class="w-20 h-20 rounded-full border-4 border-on-tertiary-container bg-tertiary-fixed flex items-center justify-center mb-4 transition-transform group-hover:scale-110">
+<span class="material-symbols-outlined text-on-tertiary-container text-4xl" data-icon="school" data-weight="fill" style="font-variation-settings: 'FILL' 1;">school</span>
+</div>
+<h3 class="font-bold text-primary text-body-md mb-1">Scholar</h3>
+<p class="text-label-sm text-on-surface-variant">Profile complete</p>
+<div class="mt-4 px-3 py-1 bg-on-tertiary-container/10 text-on-tertiary-container text-[11px] font-bold uppercase tracking-wider rounded-full">Unlocked</div>
+</div>
+<!-- Earned: Funded -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 flex flex-col items-center text-center achievement-card relative transition-all duration-300 hover:shadow-[0_8px_24px_rgba(0,24,61,0.06)] group">
+<div class="w-20 h-20 rounded-full border-4 border-on-tertiary-container bg-tertiary-fixed flex items-center justify-center mb-4 transition-transform group-hover:scale-110">
+<span class="material-symbols-outlined text-on-tertiary-container text-4xl" data-icon="payments" data-weight="fill" style="font-variation-settings: 'FILL' 1;">payments</span>
+</div>
+<h3 class="font-bold text-primary text-body-md mb-1">Funded</h3>
+<p class="text-label-sm text-on-surface-variant">Found scholarship</p>
+<div class="mt-4 px-3 py-1 bg-on-tertiary-container/10 text-on-tertiary-container text-[11px] font-bold uppercase tracking-wider rounded-full">Unlocked</div>
+</div>
+<!-- Locked: Wordsmith (With Tooltip Logic) -->
+<div class="bg-surface-variant/30 border border-outline-variant rounded-xl p-6 flex flex-col items-center text-center achievement-card relative transition-all duration-300 opacity-70 group cursor-help">
+<div class="absolute top-4 right-4 text-outline">
+<span class="material-symbols-outlined text-sm" data-icon="lock">lock</span>
+</div>
+<div class="w-20 h-20 rounded-full border-4 border-outline-variant bg-surface-container-highest flex items-center justify-center mb-4">
+<span class="material-symbols-outlined text-outline text-4xl" data-icon="description">description</span>
+</div>
+<h3 class="font-bold text-outline text-body-md mb-1">Wordsmith</h3>
+<p class="text-label-sm text-on-surface-variant">Complete 3 SOPs</p>
+<!-- Tooltip -->
+<div class="achievement-tooltip absolute -top-12 left-1/2 -translate-x-1/2 bg-inverse-surface text-inverse-on-surface px-3 py-2 rounded-lg text-[12px] font-medium opacity-0 transform translate-y-2 transition-all duration-200 whitespace-nowrap pointer-events-none shadow-lg z-10">
+                    1 of 3 complete
+                    <div class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-inverse-surface rotate-45"></div>
+</div>
+</div>
+<!-- Locked: Connected -->
+<div class="bg-surface-variant/30 border border-outline-variant rounded-xl p-6 flex flex-col items-center text-center achievement-card relative transition-all duration-300 opacity-70 group cursor-help">
+<div class="absolute top-4 right-4 text-outline">
+<span class="material-symbols-outlined text-sm" data-icon="lock">lock</span>
+</div>
+<div class="w-20 h-20 rounded-full border-4 border-outline-variant bg-surface-container-highest flex items-center justify-center mb-4">
+<span class="material-symbols-outlined text-outline text-4xl" data-icon="group">group</span>
+</div>
+<h3 class="font-bold text-outline text-body-md mb-1">Connected</h3>
+<p class="text-label-sm text-on-surface-variant">2 alumni</p>
+<div class="achievement-tooltip absolute -top-12 left-1/2 -translate-x-1/2 bg-inverse-surface text-inverse-on-surface px-3 py-2 rounded-lg text-[12px] font-medium opacity-0 transform translate-y-2 transition-all duration-200 whitespace-nowrap pointer-events-none shadow-lg z-10">
+                    0 of 2 complete
+                    <div class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-inverse-surface rotate-45"></div>
+</div>
+</div>
+<!-- Locked: Accepted -->
+<div class="bg-surface-variant/30 border border-outline-variant rounded-xl p-6 flex flex-col items-center text-center achievement-card relative transition-all duration-300 opacity-70 group cursor-help">
+<div class="absolute top-4 right-4 text-outline">
+<span class="material-symbols-outlined text-sm" data-icon="lock">lock</span>
+</div>
+<div class="w-20 h-20 rounded-full border-4 border-outline-variant bg-surface-container-highest flex items-center justify-center mb-4">
+<span class="material-symbols-outlined text-outline text-4xl" data-icon="verified">verified</span>
+</div>
+<h3 class="font-bold text-outline text-body-md mb-1">Accepted</h3>
+<p class="text-label-sm text-on-surface-variant">Admission offer</p>
+<div class="achievement-tooltip absolute -top-12 left-1/2 -translate-x-1/2 bg-inverse-surface text-inverse-on-surface px-3 py-2 rounded-lg text-[12px] font-medium opacity-0 transform translate-y-2 transition-all duration-200 whitespace-nowrap pointer-events-none shadow-lg z-10">
+                    0 of 1 complete
+                    <div class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-inverse-surface rotate-45"></div>
+</div>
+</div>
+</div>
+<!-- Progress Tracking Detail Section -->
+<section class="bg-surface-container-lowest border border-outline-variant rounded-2xl p-8 mb-section-gap-lg">
+<h2 class="font-h3-desktop text-h3-desktop text-primary mb-6">Journey Progression</h2>
+<div class="space-y-8">
+<!-- Step 1 -->
+<div class="flex items-center gap-6">
+<div class="flex flex-col items-center">
+<div class="w-10 h-10 rounded-full bg-on-tertiary-container flex items-center justify-center text-white shrink-0">
+<span class="material-symbols-outlined text-sm" data-icon="check">check</span>
+</div>
+<div class="w-0.5 h-12 bg-on-tertiary-container"></div>
+</div>
+<div class="pb-10">
+<h4 class="font-bold text-primary">University Discovery</h4>
+<p class="text-on-surface-variant text-label-sm">You've short-listed 12 institutions. Great start!</p>
+</div>
+</div>
+<!-- Step 2 -->
+<div class="flex items-center gap-6">
+<div class="flex flex-col items-center">
+<div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white shrink-0 font-bold">2</div>
+<div class="w-0.5 h-12 bg-outline-variant"></div>
+</div>
+<div class="pb-10">
+<h4 class="font-bold text-primary">SOP &amp; Documentation</h4>
+<div class="mt-2 w-full max-w-md bg-surface-container-high h-2 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-1/3"></div>
+</div>
+<p class="text-on-surface-variant text-[12px] mt-1">1 of 3 Statement of Purpose drafts complete.</p>
+</div>
+</div>
+<!-- Step 3 -->
+<div class="flex items-center gap-6">
+<div class="flex flex-col items-center">
+<div class="w-10 h-10 rounded-full border-2 border-outline-variant flex items-center justify-center text-outline-variant shrink-0 font-bold">3</div>
+</div>
+<div>
+<h4 class="font-bold text-outline">Application Submission</h4>
+<p class="text-outline text-label-sm">Locked until documents are finalized.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- AI Insight Panel -->
+<div class="rounded-2xl p-[1px] bg-gradient-to-r from-secondary-container/50 to-transparent">
+<div class="bg-surface-container-lowest rounded-2xl p-6 flex flex-col md:flex-row gap-6 items-center">
+<div class="flex-1">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-secondary" data-icon="auto_awesome">auto_awesome</span>
+<h3 class="font-bold text-primary">AI Next-Step Insight</h3>
+</div>
+<p class="text-on-surface-variant font-body-md">Based on your "Scholar" achievement, your profile is 90% complete. Finalizing your English Proficiency scores will unlock the <span class="font-bold text-primary">"Verified Academic"</span> badge and increase your visibility to top-tier recruiters.</p>
+</div>
+<button class="bg-primary text-on-primary font-button-text px-8 py-3 rounded-full hover:opacity-90 transition-all shrink-0">Upload Scores</button>
+</div>
+</div>
+</main>
+<!-- Bottom Nav for Mobile -->
+<nav class="md:hidden fixed bottom-0 left-0 right-0 bg-surface shadow-[0_-4px_12px_rgba(0,0,0,0.05)] px-6 py-3 flex justify-between items-center z-50">
+<button class="flex flex-col items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="text-[10px]">Home</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="explore">explore</span>
+<span class="text-[10px]">Explore</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-primary">
+<span class="material-symbols-outlined" data-icon="emoji_events" data-weight="fill" style="font-variation-settings: 'FILL' 1;">emoji_events</span>
+<span class="text-[10px] font-bold">Milestones</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+<span class="text-[10px]">Profile</span>
+</button>
+</nav>
+</body></html>

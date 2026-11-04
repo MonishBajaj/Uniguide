@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&amp;family=Plus+Jakarta+Sans:wght@400;600;700&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #f8f9fa;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            height: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #adc6ff;
+            border-radius: 10px;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-primary-fixed": "#001a41",
+                      "surface-variant": "#e1e3e4",
+                      "inverse-primary": "#adc6ff",
+                      "surface-container-high": "#e7e8e9",
+                      "secondary-fixed": "#ffdad3",
+                      "on-background": "#191c1d",
+                      "tertiary-container": "#003628",
+                      "primary-fixed": "#d8e2ff",
+                      "surface-dim": "#d9dadb",
+                      "error": "#ba1a1a",
+                      "on-error": "#ffffff",
+                      "on-error-container": "#93000a",
+                      "on-secondary": "#ffffff",
+                      "on-secondary-fixed-variant": "#8d1701",
+                      "on-primary-container": "#7d96cb",
+                      "tertiary": "#001f16",
+                      "on-tertiary-fixed-variant": "#00513e",
+                      "primary": "#00183d",
+                      "on-surface-variant": "#44474f",
+                      "surface-container-low": "#f3f4f5",
+                      "inverse-on-surface": "#f0f1f2",
+                      "background": "#f8f9fa",
+                      "surface-tint": "#455e90",
+                      "secondary": "#af3017",
+                      "surface-container-lowest": "#ffffff",
+                      "surface-bright": "#f8f9fa",
+                      "on-primary-fixed-variant": "#2c4676",
+                      "on-tertiary-container": "#53a58a",
+                      "on-secondary-fixed": "#3e0500",
+                      "tertiary-fixed-dim": "#84d6b9",
+                      "inverse-surface": "#2e3132",
+                      "outline": "#747780",
+                      "tertiary-fixed": "#a0f3d4",
+                      "secondary-container": "#fe694a",
+                      "on-primary": "#ffffff",
+                      "surface-container-highest": "#e1e3e4",
+                      "on-tertiary": "#ffffff",
+                      "error-container": "#ffdad6",
+                      "secondary-fixed-dim": "#ffb4a4",
+                      "on-surface": "#191c1d",
+                      "primary-fixed-dim": "#adc6ff",
+                      "on-secondary-container": "#650d00",
+                      "surface-container": "#edeeef",
+                      "on-tertiary-fixed": "#002117",
+                      "primary-container": "#0f2d5c",
+                      "outline-variant": "#c4c6d0",
+                      "surface": "#f8f9fa"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "margin-mobile": "16px",
+                      "gutter": "24px",
+                      "stack-gap": "16px",
+                      "section-gap-md": "48px",
+                      "max-width": "1200px",
+                      "section-gap-lg": "80px"
+              },
+              "fontFamily": {
+                      "label-sm": ["Plus Jakarta Sans"],
+                      "h2-desktop": ["Playfair Display"],
+                      "h1-mobile": ["Playfair Display"],
+                      "h3-desktop": ["Playfair Display"],
+                      "h1-desktop": ["Playfair Display"],
+                      "body-md": ["Plus Jakarta Sans"],
+                      "button-text": ["Plus Jakarta Sans"],
+                      "body-lg": ["Plus Jakarta Sans"]
+              },
+              "fontSize": {
+                      "label-sm": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                      "h2-desktop": ["36px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                      "h1-mobile": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                      "h3-desktop": ["24px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                      "h1-desktop": ["48px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                      "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                      "button-text": ["16px", {"lineHeight": "1", "fontWeight": "600"}],
+                      "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}]
+              }
+            },
+          },
+        }
+      </script>
+</head>
+<body class="bg-background text-on-surface font-body-md selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- TopNavBar (Shared Component) -->
+<header class="bg-surface dark:bg-surface-dim shadow-sm docked full-width top-0 z-50">
+<nav class="flex justify-between items-center h-20 px-gutter max-w-max-width mx-auto w-full">
+<div class="flex items-center gap-8">
+<span class="font-h2-desktop text-h2-desktop font-bold text-primary dark:text-primary-fixed-dim">UniGuide AI</span>
+<div class="hidden md:flex items-center gap-6">
+<a class="font-label-sm text-label-sm text-primary dark:text-primary-fixed-dim border-b-2 border-secondary-container hover:text-secondary-container transition-colors duration-200" href="#">Scholarships</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant dark:text-on-surface-variant hover:text-secondary-container transition-colors duration-200" href="#">Programs</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant dark:text-on-surface-variant hover:text-secondary-container transition-colors duration-200" href="#">Mentors</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant dark:text-on-surface-variant hover:text-secondary-container transition-colors duration-200" href="#">About</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="font-button-text text-button-text text-primary hover:opacity-80 transition-all">Login</button>
+<button class="font-button-text text-button-text bg-primary text-on-primary px-6 py-2.5 rounded-full hover:scale-95 transition-all">Apply Now</button>
+</div>
+</nav>
+</header>
+<!-- Top Hero Matching Bar -->
+<section class="h-[80px] w-full" style="background-color: #E1F5EE;">
+<div class="max-w-max-width mx-auto px-gutter h-full flex flex-col md:flex-row justify-between items-center py-2">
+<div class="flex flex-col">
+<h2 class="text-[18px] font-bold text-primary leading-tight">18 scholarships matched for your profile</h2>
+<p class="text-[12px] text-on-surface-variant opacity-70">Based on your GPA, nationality, target countries, and degree level</p>
+</div>
+<div class="flex flex-col items-end">
+<span class="text-[22px] font-bold text-on-tertiary-container">Estimated total value: $340,000</span>
+</div>
+</div>
+</section>
+<!-- Filter Bar -->
+<section class="bg-surface-container-lowest border-b border-outline-variant h-14">
+<div class="max-w-max-width mx-auto px-gutter h-full flex items-center gap-4">
+<button class="flex items-center gap-2 px-4 py-1.5 border border-outline rounded-full text-on-surface-variant hover:bg-surface-container transition-colors">
+<span class="text-label-sm font-label-sm">Type</span>
+<span class="material-symbols-outlined text-[18px]">keyboard_arrow_down</span>
+</button>
+<button class="flex items-center gap-2 px-4 py-1.5 border border-outline rounded-full text-on-surface-variant hover:bg-surface-container transition-colors">
+<span class="text-label-sm font-label-sm">Country</span>
+<span class="material-symbols-outlined text-[18px]">keyboard_arrow_down</span>
+</button>
+<button class="flex items-center gap-2 px-4 py-1.5 border border-outline rounded-full text-on-surface-variant hover:bg-surface-container transition-colors">
+<span class="text-label-sm font-label-sm">Amount</span>
+<span class="material-symbols-outlined text-[18px]">keyboard_arrow_down</span>
+</button>
+<button class="flex items-center gap-2 px-4 py-1.5 border border-outline rounded-full text-on-surface-variant hover:bg-surface-container transition-colors">
+<span class="text-label-sm font-label-sm">Deadline</span>
+<span class="material-symbols-outlined text-[18px]">keyboard_arrow_down</span>
+</button>
+<div class="ml-auto flex items-center gap-2 text-on-surface-variant opacity-60">
+<span class="material-symbols-outlined text-[20px]">sort</span>
+<span class="text-label-sm font-label-sm">Sort by: Relevance</span>
+</div>
+</div>
+</section>
+<!-- Government Strip (Horizontal Scroll) -->
+<section class="py-8" style="background-color: #F7F6F2;">
+<div class="max-w-max-width mx-auto px-gutter">
+<h3 class="font-h3-desktop text-h3-desktop text-primary mb-6">Prestigious Government Fellowships</h3>
+<div class="flex gap-6 overflow-x-auto pb-4 custom-scrollbar">
+<!-- Fulbright Card -->
+<div class="min-w-[240px] bg-surface-container-lowest rounded-xl p-5 border border-outline-variant shadow-sm hover:shadow-md transition-shadow">
+<div class="flex items-center gap-3 mb-3">
+<img class="w-8 h-6 rounded-sm object-cover" data-alt="A macro photograph of the United States flag, capturing the intricate fabric texture and vivid red, white, and blue colors under warm afternoon sunlight. The focus is sharp on a single embroidered white star, emphasizing a sense of heritage and national pride within a modern, professional academic context." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC4D-G5LQvbXkaPXbj-U62ghoOudDyj1w9nc3RBaDuFrHkB5mbhQEtElR0BZJwrEAVEYmM5QbC_-GLRcxpkB5_AiZabf9qUSNQBuhlwsh5ruvQ4VwVxSClccRM6ezB33900v5QB5FB_WEabyuUpmLb98CuaXJRZQozteGYHA91bysk0VUVtIdC-FOdMNvmdZ5GmCuFEMRDkLyxUMQp46RK8486pW7buQK6UvolD-XMhXxnPXOT4-N0vZ3o81nqVD7iDtYVqxCW50O0u"/>
+<span class="font-label-sm text-label-sm text-on-surface-variant">USA</span>
+</div>
+<h4 class="font-bold text-primary mb-1">Fulbright Program</h4>
+<p class="text-[12px] text-on-surface-variant mb-4">U.S. Department of State</p>
+<p class="text-on-tertiary-container font-bold text-body-md mb-4">Full Funding + Stipend</p>
+<button class="w-full py-2 bg-on-primary-fixed-variant text-on-primary rounded-lg text-label-sm font-label-sm">View Guide</button>
+</div>
+<!-- Chevening Card -->
+<div class="min-w-[240px] bg-surface-container-lowest rounded-xl p-5 border border-outline-variant shadow-sm hover:shadow-md transition-shadow">
+<div class="flex items-center gap-3 mb-3">
+<img class="w-8 h-6 rounded-sm object-cover" data-alt="A clean, minimalist depiction of the Union Jack flag of the United Kingdom, styled with soft, diffused lighting that enhances the professional and scholarly tone. The composition is centered and sleek, utilizing the navy and crimson tones to suggest a prestigious British academic environment suitable for high-end international education services." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCg5PSi501Q6SlOMTsg34r4SHiMSPKOK60vGAV-CzpTqpyqqGMmPqbxow7uP2ZbxZ6X-OwFSJ0k6UzpPaHDkveUUL7iqoedKSBQRruWDi5XOT2smEb9dALQ9kaUFhXi4U-7LUqXUsuUBeLoXOTlkjt-bghOrdmABpB1ms2dnR18UQb5Jm3neClngNAOA9E3RcuGAt0Ei_VAgE2c805us1Y4jUyaRc7yWp-SROK0zeNLZAyQ42sHch2CUVW72kacs3G2PnZ6W1LCeqFL"/>
+<span class="font-label-sm text-label-sm text-on-surface-variant">UK</span>
+</div>
+<h4 class="font-bold text-primary mb-1">Chevening Awards</h4>
+<p class="text-[12px] text-on-surface-variant mb-4">FCDO United Kingdom</p>
+<p class="text-on-tertiary-container font-bold text-body-md mb-4">£30,000 + Airfare</p>
+<button class="w-full py-2 bg-on-primary-fixed-variant text-on-primary rounded-lg text-label-sm font-label-sm">View Guide</button>
+</div>
+<!-- DAAD Card -->
+<div class="min-w-[240px] bg-surface-container-lowest rounded-xl p-5 border border-outline-variant shadow-sm hover:shadow-md transition-shadow">
+<div class="flex items-center gap-3 mb-3">
+<img class="w-8 h-6 rounded-sm object-cover" data-alt="The German flag displayed with a modern, high-contrast aesthetic, featuring the bold black, red, and gold bands. The lighting is crisp and cool, reflecting off a polished surface to create a sense of precision and technological advancement. The overall style is clean and corporate, aligning with the DAAD scholarship's reputation for excellence in engineering and science." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD8dPouu4iuBF1U8I_KbqxPOgzFlRS8myuiRUeizPxH2B8A3wAIdhUy7hZLLCBQ0BqpPnlsZg-wjkJDWkZNDZzo0c2FmNiV97OrJ7UQ65lX5MjBqvvAR_jEh0pk8kdW2mR8RaR6r7rc6K_2w3tmdl2usNBLX1kycwSMtYHO0XdSz4fcgVo-CCUIbylLUODZHi1u7OhgbavVAUIYRBPF1vzcqkn50KjGsP8ocUvT0uoA_wsTSeO2gUzWkqkHHftlEwpJXosvRS3SkMgt"/>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Germany</span>
+</div>
+<h4 class="font-bold text-primary mb-1">DAAD Scholarship</h4>
+<p class="text-[12px] text-on-surface-variant mb-4">German Govt</p>
+<p class="text-on-tertiary-container font-bold text-body-md mb-4">€1,200 / Month</p>
+<button class="w-full py-2 bg-on-primary-fixed-variant text-on-primary rounded-lg text-label-sm font-label-sm">View Guide</button>
+</div>
+<!-- Mext Card -->
+<div class="min-w-[240px] bg-surface-container-lowest rounded-xl p-5 border border-outline-variant shadow-sm hover:shadow-md transition-shadow">
+<div class="flex items-center gap-3 mb-3">
+<img class="w-8 h-6 rounded-sm object-cover" data-alt="A stylized image of the Japanese flag, the Nisshōki, with a vibrant red circle on a pure white field. The lighting is ethereal and soft, evoking the minimalist beauty of Japanese design. The atmosphere is serene and intellectual, suggesting a prestigious opportunity for international study and cultural exchange in a high-tech academic setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAlZJQEnRdMPNv6T8oRP9SHT7RzuTzKrFrt7eRU6oaobPnQGX7WGy-TJ5YU0ykWvLkyZh_utEINTn3NELVgVPTtp4a94REDY1Jk35ckrgfDFvRSp_teq8GmpNrn1ZE_FLj_bLXNQVs-KfSHQWN8q7KzEOEyNNcWqQ2o9mg37jsGNS2CV1qdfIgbT6MmLpNT3qlSAGQtkoGuHYcc7L-aFEvmo9Q--P_H0lQhRKhugO3MDwzYobKCGQJk6um2Eq4nMIcfkQcq-UzWzX-z"/>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Japan</span>
+</div>
+<h4 class="font-bold text-primary mb-1">MEXT Research</h4>
+<p class="text-[12px] text-on-surface-variant mb-4">MEXT Japan</p>
+<p class="text-on-tertiary-container font-bold text-body-md mb-4">¥145,000 / Month</p>
+<button class="w-full py-2 bg-on-primary-fixed-variant text-on-primary rounded-lg text-label-sm font-label-sm">View Guide</button>
+</div>
+<!-- CSC Card -->
+<div class="min-w-[240px] bg-surface-container-lowest rounded-xl p-5 border border-outline-variant shadow-sm hover:shadow-md transition-shadow">
+<div class="flex items-center gap-3 mb-3">
+<img class="w-8 h-6 rounded-sm object-cover" data-alt="The national flag of China shown in a professional, minimalist close-up. The deep red fabric is softly lit, highlighting the five golden stars with a subtle metallic sheen. The visual style is sophisticated and global, representing the scale and importance of the China Scholarship Council in the international academic landscape." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAISDcjkb2Km-n9CW5Nz_XsDirL_p0Q3nY7qozIIpRzRTkK8bB0rWPtYbyh7K5UGrDPKwcnjDEQzU4Y6BEN388boEvEqsfyftAuo8VytmUMqRwZR0yDWMWeej88twbMp7W41F71OWHuHMZ8d6Jj3SJB0fGk1T8TEHT3lhqoy1vAd_bzO_5sNSYRSUqyTjGeUBGKxUNjqsLWEBNuUegMk5_MvCtoXsWSnHasRmMG9lQFXufC9S-rgWIKjCLpKHh09_y1PZSRfoKjyptk"/>
+<span class="font-label-sm text-label-sm text-on-surface-variant">China</span>
+</div>
+<h4 class="font-bold text-primary mb-1">CSC China</h4>
+<p class="text-[12px] text-on-surface-variant mb-4">Chinese Ministry</p>
+<p class="text-on-tertiary-container font-bold text-body-md mb-4">Full Tuition + Room</p>
+<button class="w-full py-2 bg-on-primary-fixed-variant text-on-primary rounded-lg text-label-sm font-label-sm">View Guide</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Main Content Area -->
+<main class="max-w-max-width mx-auto px-gutter py-section-gap-md grid grid-cols-1 lg:grid-cols-12 gap-8">
+<!-- Left: Scholarship Grid -->
+<div class="lg:col-span-8 space-y-6">
+<h3 class="font-h3-desktop text-h3-desktop text-primary">Your Personal Matches</h3>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Scholarship Card 1 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 hover:shadow-lg transition-all group border-l-4 border-l-on-tertiary-container">
+<div class="flex justify-between items-start mb-4">
+<div class="flex flex-col gap-1">
+<span class="px-2 py-0.5 bg-tertiary-fixed text-on-tertiary-fixed rounded text-[10px] font-bold uppercase tracking-wider w-fit">94% Profile Fit</span>
+<h4 class="font-bold text-primary text-body-lg leading-snug group-hover:text-secondary-container transition-colors">Global Leaders Fellowship</h4>
+<p class="text-on-surface-variant text-label-sm font-label-sm">Imperial College London</p>
+</div>
+<button class="text-outline hover:text-secondary transition-colors">
+<span class="material-symbols-outlined">bookmark</span>
+</button>
+</div>
+<div class="flex items-center gap-2 mb-6">
+<div class="flex items-center gap-1 px-3 py-1 bg-surface-container rounded-full">
+<span class="material-symbols-outlined text-[16px] text-on-tertiary-container">eco</span>
+<span class="text-label-sm font-bold text-on-surface">$45,000 / yr</span>
+</div>
+<div class="px-3 py-1 bg-error-container text-on-error-container rounded-full text-label-sm font-bold">High Competition</div>
+</div>
+<div class="flex justify-between items-center pt-4 border-t border-outline-variant">
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">event</span>
+<span class="text-label-sm font-label-sm">Deadline: 15 Oct</span>
+</div>
+<button class="font-button-text text-button-text text-primary border-b border-primary hover:text-secondary-container transition-all">Details</button>
+</div>
+</div>
+<!-- Scholarship Card 2 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 hover:shadow-lg transition-all group border-l-4 border-l-secondary-container">
+<div class="flex justify-between items-start mb-4">
+<div class="flex flex-col gap-1">
+<span class="px-2 py-0.5 bg-secondary-fixed text-on-secondary-fixed rounded text-[10px] font-bold uppercase tracking-wider w-fit">88% Profile Fit</span>
+<h4 class="font-bold text-primary text-body-lg leading-snug group-hover:text-secondary-container transition-colors">STEM Excellence Grant</h4>
+<p class="text-on-surface-variant text-label-sm font-label-sm">University of Toronto</p>
+</div>
+<button class="text-on-tertiary-container">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">bookmark</span>
+</button>
+</div>
+<div class="flex items-center gap-2 mb-6">
+<div class="flex items-center gap-1 px-3 py-1 bg-surface-container rounded-full">
+<span class="material-symbols-outlined text-[16px] text-on-tertiary-container">eco</span>
+<span class="text-label-sm font-bold text-on-surface">$20,000 Total</span>
+</div>
+<div class="px-3 py-1 bg-tertiary-fixed text-on-tertiary-fixed-variant rounded-full text-label-sm font-bold">Moderate</div>
+</div>
+<div class="flex justify-between items-center pt-4 border-t border-outline-variant">
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">event</span>
+<span class="text-label-sm font-label-sm">Deadline: 02 Nov</span>
+</div>
+<button class="font-button-text text-button-text text-primary border-b border-primary hover:text-secondary-container transition-all">Details</button>
+</div>
+</div>
+<!-- Scholarship Card 3 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 hover:shadow-lg transition-all group border-l-4 border-l-on-tertiary-container">
+<div class="flex justify-between items-start mb-4">
+<div class="flex flex-col gap-1">
+<span class="px-2 py-0.5 bg-tertiary-fixed text-on-tertiary-fixed rounded text-[10px] font-bold uppercase tracking-wider w-fit">91% Profile Fit</span>
+<h4 class="font-bold text-primary text-body-lg leading-snug group-hover:text-secondary-container transition-colors">Future Innovators Award</h4>
+<p class="text-on-surface-variant text-label-sm font-label-sm">ETH Zurich</p>
+</div>
+<button class="text-outline hover:text-secondary transition-colors">
+<span class="material-symbols-outlined">bookmark</span>
+</button>
+</div>
+<div class="flex items-center gap-2 mb-6">
+<div class="flex items-center gap-1 px-3 py-1 bg-surface-container rounded-full">
+<span class="material-symbols-outlined text-[16px] text-on-tertiary-container">eco</span>
+<span class="text-label-sm font-bold text-on-surface">Full Tuition</span>
+</div>
+<div class="px-3 py-1 bg-error-container text-on-error-container rounded-full text-label-sm font-bold">Very High</div>
+</div>
+<div class="flex justify-between items-center pt-4 border-t border-outline-variant">
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">event</span>
+<span class="text-label-sm font-label-sm">Deadline: 30 Sep</span>
+</div>
+<button class="font-button-text text-button-text text-primary border-b border-primary hover:text-secondary-container transition-all">Details</button>
+</div>
+</div>
+<!-- Scholarship Card 4 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 hover:shadow-lg transition-all group border-l-4 border-l-secondary-container">
+<div class="flex justify-between items-start mb-4">
+<div class="flex flex-col gap-1">
+<span class="px-2 py-0.5 bg-secondary-fixed text-on-secondary-fixed rounded text-[10px] font-bold uppercase tracking-wider w-fit">85% Profile Fit</span>
+<h4 class="font-bold text-primary text-body-lg leading-snug group-hover:text-secondary-container transition-colors">Diversity in Tech Scholarship</h4>
+<p class="text-on-surface-variant text-label-sm font-label-sm">Stanford University</p>
+</div>
+<button class="text-outline hover:text-secondary transition-colors">
+<span class="material-symbols-outlined">bookmark</span>
+</button>
+</div>
+<div class="flex items-center gap-2 mb-6">
+<div class="flex items-center gap-1 px-3 py-1 bg-surface-container rounded-full">
+<span class="material-symbols-outlined text-[16px] text-on-tertiary-container">eco</span>
+<span class="text-label-sm font-bold text-on-surface">$15,000 / yr</span>
+</div>
+<div class="px-3 py-1 bg-tertiary-fixed text-on-tertiary-fixed-variant rounded-full text-label-sm font-bold">Moderate</div>
+</div>
+<div class="flex justify-between items-center pt-4 border-t border-outline-variant">
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">event</span>
+<span class="text-label-sm font-label-sm">Deadline: 12 Dec</span>
+</div>
+<button class="font-button-text text-button-text text-primary border-b border-primary hover:text-secondary-container transition-all">Details</button>
+</div>
+</div>
+</div>
+<!-- AI Insight Panel (High-end pattern) -->
+<div class="relative p-6 rounded-2xl bg-surface-container-lowest border border-outline-variant overflow-hidden">
+<div class="absolute top-0 right-0 w-32 h-32 bg-secondary opacity-5 blur-[80px]"></div>
+<div class="absolute -bottom-10 -left-10 w-48 h-48 bg-tertiary-container opacity-5 blur-[100px]"></div>
+<div class="flex items-start gap-4">
+<div class="bg-primary-container p-3 rounded-xl">
+<span class="material-symbols-outlined text-primary-fixed-dim" style="font-variation-settings: 'FILL' 1;">psychology</span>
+</div>
+<div>
+<h4 class="font-bold text-primary text-body-lg mb-2">AI Strategy Insights</h4>
+<p class="text-on-surface-variant leading-relaxed text-body-md mb-4">
+                            Your profile is strongest in <span class="font-bold text-on-tertiary-container">Research Impact</span>. To increase your success rate for the "Global Leaders Fellowship", consider emphasizing your 2023 lab publication in your personal statement. Our model suggests a 12% higher acceptance rate when mentioning specific SDG goals.
+                        </p>
+<button class="flex items-center gap-2 text-primary font-button-text hover:gap-3 transition-all">
+<span>Get Application Help</span>
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</div>
+</div>
+<div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-secondary-container to-tertiary-fixed"></div>
+</div>
+</div>
+<!-- Right: Sticky Sidebar -->
+<aside class="lg:col-span-4">
+<div class="sticky top-24 space-y-6">
+<!-- Saved Scholarships Card -->
+<div class="bg-surface-container-lowest rounded-2xl border border-outline-variant shadow-sm overflow-hidden">
+<div class="p-6 bg-primary-container text-on-primary">
+<div class="flex justify-between items-center mb-1">
+<h4 class="font-bold text-body-lg">Saved Scholarships (4)</h4>
+<span class="material-symbols-outlined">bookmarks</span>
+</div>
+<p class="text-primary-fixed-dim text-label-sm">Track your priority applications</p>
+</div>
+<div class="p-6">
+<ul class="space-y-4 mb-6">
+<li class="flex justify-between items-start">
+<div>
+<p class="font-bold text-primary text-label-sm">STEM Excellence Grant</p>
+<p class="text-[12px] text-on-surface-variant">U. Toronto · $20k</p>
+</div>
+<span class="material-symbols-outlined text-[18px] text-on-tertiary-container">check_circle</span>
+</li>
+<li class="flex justify-between items-start">
+<div>
+<p class="font-bold text-primary text-label-sm">Fulbright Fellowship</p>
+<p class="text-[12px] text-on-surface-variant">USA · Full Funding</p>
+</div>
+<span class="text-[10px] bg-secondary-fixed text-on-secondary-fixed px-2 py-0.5 rounded font-bold">DUE SOON</span>
+</li>
+<li class="flex justify-between items-start">
+<div>
+<p class="font-bold text-primary text-label-sm">Chevening Awards</p>
+<p class="text-[12px] text-on-surface-variant">UK · £30k + Airfare</p>
+</div>
+<span class="material-symbols-outlined text-[18px] text-outline">pending</span>
+</li>
+<li class="flex justify-between items-start">
+<div>
+<p class="font-bold text-primary text-label-sm">DAAD Masters Grant</p>
+<p class="text-[12px] text-on-surface-variant">Germany · €14k/yr</p>
+</div>
+<span class="material-symbols-outlined text-[18px] text-outline">pending</span>
+</li>
+</ul>
+<div class="pt-4 border-t border-outline-variant">
+<div class="flex justify-between items-center mb-4">
+<span class="text-on-surface-variant text-label-sm">Total Saved Value</span>
+<span class="font-bold text-on-tertiary-container text-body-lg">$148,000+</span>
+</div>
+<button class="w-full py-3 bg-secondary text-on-secondary rounded-xl font-button-text hover:bg-on-secondary-fixed-variant transition-colors shadow-sm shadow-secondary/20">
+                                Apply to All Saved
+                            </button>
+</div>
+</div>
+</div>
+<!-- Side Banner -->
+<div class="bg-surface-bright rounded-2xl border border-outline-variant p-6 relative overflow-hidden flex flex-col items-center text-center">
+<span class="material-symbols-outlined text-secondary-container text-[48px] mb-4">auto_awesome</span>
+<h5 class="font-bold text-primary mb-2">Need a tailored CV?</h5>
+<p class="text-on-surface-variant text-label-sm mb-4">Our AI re-writes your CV for each scholarship based on their specific requirements.</p>
+<button class="text-primary font-bold text-label-sm hover:underline">Launch CV Builder</button>
+</div>
+</div>
+</aside>
+</main>
+<!-- Footer (Shared Component) -->
+<footer class="bg-surface-container-lowest dark:bg-surface-dim border-t border-outline-variant mt-section-gap-lg">
+<div class="w-full py-8 px-gutter flex flex-col md:flex-row justify-between items-center max-w-max-width mx-auto">
+<div class="flex flex-col mb-4 md:mb-0">
+<span class="font-h3-desktop text-h3-desktop text-primary">UniGuide AI</span>
+<p class="font-label-sm text-label-sm text-on-surface-variant">© 2024 UniGuide AI. All rights reserved.</p>
+</div>
+<div class="flex gap-8">
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-secondary transition-colors" href="#">Privacy Policy</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-secondary transition-colors" href="#">Terms of Service</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-secondary transition-colors" href="#">Cookie Policy</a>
+</div>
+</div>
+</footer>
+</body></html>

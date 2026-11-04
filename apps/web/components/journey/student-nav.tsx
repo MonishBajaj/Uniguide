@@ -9,7 +9,7 @@ import type { NavItem } from "./nav-items";
 export function StudentNav({ items, label, notReached }: { items: NavItem[]; label: string; notReached: string }) {
   const current = navSection(usePathname());
   return (
-    <ul aria-label={label} className="flex items-center gap-4">
+    <ul aria-label={label} className="flex items-center gap-6">
       {items.map((item) => {
         const isCurrent = item.section === current;
         const quiet = item.reached === false;
@@ -18,15 +18,20 @@ export function StudentNav({ items, label, notReached }: { items: NavItem[]; lab
             <Link
               href={item.href}
               aria-current={isCurrent ? "page" : undefined}
-              className={`inline-flex items-center gap-1.5 border-b-2 py-1 text-sm whitespace-nowrap transition-colors duration-300 ${
-                isCurrent ? "border-accent font-semibold text-foreground" : `border-transparent hover:text-foreground ${quiet ? "text-muted" : "text-foreground"}`
+              className={`inline-flex items-center gap-2 py-1.5 text-sm whitespace-nowrap transition-all duration-200 border-b-2 ${
+                isCurrent
+                  ? "border-secondary font-bold text-primary"
+                  : `border-transparent hover:text-primary ${quiet ? "text-muted/70 hover:text-muted" : "text-muted hover:text-primary"}`
               }`}
             >
-              {item.label}
+              <span>{item.label}</span>
               {quiet ? <span className="sr-only"> ({notReached})</span> : null}
               {item.badge ? (
                 <>
-                  <span aria-hidden="true" className="min-w-5 rounded-full bg-conflicting px-1.5 text-center text-xs leading-5 font-semibold text-white">
+                  <span
+                    aria-hidden="true"
+                    className="flex h-5 min-w-5 items-center justify-center rounded-full bg-secondary px-1.5 text-xs font-bold text-white shadow-xs"
+                  >
                     {item.badge.count}
                   </span>
                   <span className="sr-only">, {item.badge.label}</span>

@@ -58,29 +58,31 @@ export function Editor({ documentId, initial, wordLimit }: { documentId: string;
           ref={area}
           onPaste={onPaste}
           rows={22}
-          className="field font-normal leading-7"
+          className="field font-normal leading-relaxed text-base min-h-[480px] p-5 bg-surface-2/20 border-border/80 focus:bg-surface transition-colors"
         />
         <input type="hidden" name="authorship" value={authorship} />
         <div className="flex flex-wrap items-center gap-3 text-sm">
           <button disabled={pending} className="btn btn-primary">{pending ? "Saving…" : "Save draft"}</button>
-          <span className={report.overLimit ? "text-conflicting" : "text-muted"}>
+          <span className={`px-3 py-1 rounded-full text-xs font-mono font-bold ${report.overLimit ? "bg-conflicting/10 text-conflicting" : "bg-surface-2 text-muted"}`}>
             {report.words}{wordLimit ? ` / ${wordLimit}` : ""} words
           </span>
-          {state ? <span role="status" className={state.ok ? "text-verified" : "text-conflicting"}>{state.message}</span> : null}
+          {state ? <span role="status" className={`text-xs font-semibold ${state.ok ? "text-verified" : "text-conflicting"}`}>{state.message}</span> : null}
         </div>
       </form>
-      <aside aria-label="Writing checks" className="grid content-start gap-3 rounded-2xl border border-border bg-surface p-4 text-sm">
-        <h2 className="font-semibold">Checks as you write</h2>
-        <p className="text-muted">
-          {Math.round(report.specificity * 100)}% of sentences contain a name, number or course.
+      <aside aria-label="Writing checks" className="grid content-start gap-3 rounded-xl border border-border bg-surface p-5 ambient-shadow text-sm">
+        <h2 className="font-serif font-bold text-base text-primary">Checks as you write</h2>
+        <div className="p-3 rounded-lg bg-surface-2/50 border border-border/60 text-xs text-muted leading-relaxed">
+          <span className="font-bold text-primary">{Math.round(report.specificity * 100)}%</span> of sentences contain a specific name, metric, or course.
           {report.iStarts > 0.4 ? " Many sentences start with “I”." : ""}
-        </p>
-        {report.flags.length === 0 ? <p className="text-muted">No clichés or vague phrases found.</p> : (
-          <ul className="grid gap-2">
+        </div>
+        {report.flags.length === 0 ? (
+          <p className="text-xs text-muted leading-relaxed">No clichés or vague phrases found. Every sentence carries weight.</p>
+        ) : (
+          <ul className="grid gap-2 text-xs">
             {report.flags.slice(0, 12).map((f, i) => (
-              <li key={i} className="rounded-lg bg-background p-2">
-                <span className="font-semibold">{KIND_LABEL[f.kind]}</span> in {f.sentence}: “{f.match}”
-                <span className="block text-muted">{f.question}</span>
+              <li key={i} className="rounded-lg border border-border/60 bg-surface-2/40 p-3 space-y-1">
+                <span className="font-bold text-primary">{KIND_LABEL[f.kind]}</span> in {f.sentence}: <span className="font-serif italic text-muted">“{f.match}”</span>
+                <span className="block text-muted text-[11px] leading-tight">{f.question}</span>
               </li>
             ))}
           </ul>

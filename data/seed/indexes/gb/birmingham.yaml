@@ -1,0 +1,8 @@
+institution: "University of Birmingham"
+country: GB
+official_domain: birmingham.ac.uk
+indexes:
+  - url: https://www.birmingham.ac.uk/postgraduate/courses
+    kind: programs
+  - url: https://www.birmingham.ac.uk/undergraduate/courses
+    kind: programs

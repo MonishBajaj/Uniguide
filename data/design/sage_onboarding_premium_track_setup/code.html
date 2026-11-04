@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Application Track Setup | UniGuide AI</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Icons -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-fixed-dim": "#adc6ff",
+                        "on-tertiary-fixed-variant": "#00513e",
+                        "surface-container-low": "#f3f4f5",
+                        "tertiary-fixed": "#a0f3d4",
+                        "surface-variant": "#e1e3e4",
+                        "surface-container": "#edeeef",
+                        "on-primary": "#ffffff",
+                        "on-secondary-container": "#650d00",
+                        "on-secondary": "#ffffff",
+                        "on-primary-fixed": "#001a41",
+                        "on-secondary-fixed-variant": "#8d1701",
+                        "surface-container-highest": "#e1e3e4",
+                        "on-primary-fixed-variant": "#2c4676",
+                        "on-background": "#191c1d",
+                        "secondary-container": "#fe694a",
+                        "surface-tint": "#455e90",
+                        "on-surface": "#191c1d",
+                        "on-tertiary-container": "#53a58a",
+                        "error": "#ba1a1a",
+                        "secondary": "#af3017",
+                        "primary-fixed": "#d8e2ff",
+                        "tertiary": "#001f16",
+                        "surface": "#f8f9fa",
+                        "secondary-fixed": "#ffdad3",
+                        "primary-container": "#00183d",
+                        "outline-variant": "#c4c6d0",
+                        "on-error": "#ffffff",
+                        "inverse-surface": "#2e3132",
+                        "surface-container-high": "#e7e8e9",
+                        "surface-bright": "#f8f9fa",
+                        "on-tertiary": "#ffffff",
+                        "background": "#f8f9fa",
+                        "secondary-fixed-dim": "#ffb4a4",
+                        "error-container": "#ffdad6",
+                        "on-error-container": "#93000a",
+                        "on-primary-container": "#7d96cb",
+                        "on-secondary-fixed": "#3e0500",
+                        "surface-container-lowest": "#ffffff",
+                        "outline": "#747780",
+                        "tertiary-fixed-dim": "#84d6b9",
+                        "tertiary-container": "#003628",
+                        "on-tertiary-fixed": "#002117",
+                        "on-surface-variant": "#44474f",
+                        "inverse-on-surface": "#f0f1f2",
+                        "surface-dim": "#d9dadb",
+                        "inverse-primary": "#adc6ff",
+                        "primary": "#00183d"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "h3-desktop": ["Playfair Display"],
+                        "label-sm": ["Plus Jakarta Sans"],
+                        "button-text": ["Plus Jakarta Sans"],
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "h2-desktop": ["Playfair Display"],
+                        "h1-mobile": ["Playfair Display"],
+                        "h1-desktop": ["Playfair Display"],
+                        "body-md": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "h3-desktop": ["24px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                        "label-sm": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                        "button-text": ["16px", {"lineHeight": "1", "fontWeight": "600"}],
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "h2-desktop": ["36px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                        "h1-mobile": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                        "h1-desktop": ["48px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                        "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .step-active { background-color: #00183d; }
+        .step-complete { background-color: #53a58a; }
+        .ambient-shadow { box-shadow: 0 8px 24px rgba(0, 24, 61, 0.06); }
+        .ai-border { border: 1.5px solid transparent; background: linear-gradient(white, white) padding-box, linear-gradient(45deg, #fe694a, #00183d) border-box; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body-md selection:bg-secondary-fixed-dim">
+<!-- Top Navigation Bar -->
+<header class="fixed top-0 left-0 w-full z-50 bg-surface dark:bg-background shadow-sm">
+<div class="flex justify-between items-center w-full px-6 py-3 max-w-screen-2xl mx-auto">
+<div class="flex items-center gap-2">
+<span class="font-h3-desktop text-h3-desktop font-bold text-primary dark:text-primary-fixed">UniGuide AI</span>
+</div>
+<div class="hidden md:flex items-center gap-8">
+<a class="font-body-md text-primary dark:text-primary-fixed border-b-2 border-secondary-container" href="#">Preferences</a>
+<a class="font-body-md text-on-surface-variant dark:text-outline-variant hover:text-secondary-container transition-colors" href="#">Notifications</a>
+<a class="font-body-md text-on-surface-variant dark:text-outline-variant hover:text-secondary-container transition-colors" href="#">Subscription</a>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex gap-2">
+<button class="p-2 text-on-surface-variant"><span class="material-symbols-outlined" data-icon="help">help</span></button>
+<button class="p-2 text-on-surface-variant"><span class="material-symbols-outlined" data-icon="notifications">notifications</span></button>
+</div>
+<button class="bg-secondary-container text-on-secondary-container px-6 py-2 rounded-full font-button-text hover:opacity-90 transition-all">Apply Now</button>
+</div>
+</div>
+</header>
+<main class="pt-16 min-h-screen flex flex-col md:flex-row">
+<!-- Sidebar Progress Navigation -->
+<aside class="w-full md:w-64 fixed left-0 top-16 h-[calc(100vh-64px)] hidden md:flex flex-col py-8 px-6 bg-surface-container-low z-40 border-r border-outline-variant">
+<div class="mb-10">
+<h3 class="font-h3-desktop text-h3-desktop text-primary font-bold">Sage AI</h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Onboarding Progress</p>
+</div>
+<nav class="space-y-6 flex-grow">
+<div class="flex items-center gap-4">
+<div class="w-8 h-8 rounded-full flex items-center justify-center bg-on-tertiary-container text-white">
+<span class="material-symbols-outlined text-[18px]" data-icon="check" data-weight="fill">check</span>
+</div>
+<span class="text-on-surface font-medium">Profile</span>
+</div>
+<div class="flex items-center gap-4">
+<div class="w-8 h-8 rounded-full flex items-center justify-center bg-primary text-white ring-4 ring-primary-fixed">
+<span class="font-label-sm">2</span>
+</div>
+<span class="text-primary font-bold">Goals</span>
+</div>
+<div class="flex items-center gap-4">
+<div class="w-8 h-8 rounded-full flex items-center justify-center border-2 border-outline-variant text-outline">
+<span class="font-label-sm">3</span>
+</div>
+<span class="text-on-surface-variant">Documents</span>
+</div>
+<div class="flex items-center gap-4">
+<div class="w-8 h-8 rounded-full flex items-center justify-center border-2 border-outline-variant text-outline">
+<span class="font-label-sm">4</span>
+</div>
+<span class="text-on-surface-variant">Review</span>
+</div>
+</nav>
+<button class="mt-auto bg-primary-container text-on-primary-container p-4 rounded-xl flex items-center justify-center gap-2 hover:opacity-90 transition-all">
+<span class="material-symbols-outlined" data-icon="smart_toy">smart_toy</span>
+<span class="font-button-text">Get AI Support</span>
+</button>
+</aside>
+<!-- Content Canvas -->
+<div class="flex-grow md:ml-64 flex flex-col md:flex-row h-[calc(100vh-64px)] overflow-hidden">
+<!-- Left Panel: Chat/Sage Message -->
+<section class="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center bg-surface-bright">
+<div class="max-w-md mx-auto space-y-8">
+<div class="flex items-start gap-4">
+<div class="w-12 h-12 rounded-full overflow-hidden flex-shrink-0 ambient-shadow">
+<img alt="Sage AI Counselor Avatar" class="w-full h-full object-cover" data-alt="A portrait of a futuristic AI counselor persona, depicted as a serene and intelligent feminine figure with ethereal glowing light patterns on her face. The style is hyper-realistic but stylized with soft navy and coral ambient lighting to match the premium brand aesthetic. She exudes trust, wisdom, and professional academic authority." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAWBbhm-izneX8p45FhQt8mmOdJnvKtydr6x_xy_n3zCbq6MhM6xIU51DW-NY_hYA6rk5buelaq1U2YjWjZFr7QEfX5_HUtN8DAqeH9bJEAdDQjSvvu3JKxjbE_7xgJP1PE2SZuepXE-kk7ukJAwXSh9HNeZUiR6dvbd_5_qGx63LO2ne356jWp3SntQ0vODAACZZNuG2Xkl7LD7aLeTo2LEPp0cCmkiy2RYd0uuPGdKIUW2UY8L1wRMcsuU24P09ZykNAj6Y3NapG3"/>
+</div>
+<div class="space-y-4">
+<div class="bg-surface-container-high p-6 rounded-2xl rounded-tl-none ambient-shadow">
+<p class="font-body-lg text-body-lg text-primary">
+                                    Let's set up your first Application Track. This tells me exactly where and what you're applying for — so every recommendation is built for this specific goal.
+                                </p>
+</div>
+<p class="text-label-sm text-outline px-2 italic">Sage AI • Academic Counselor</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Right Panel: Setup Card -->
+<section class="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center bg-surface-container">
+<div class="max-w-lg mx-auto w-full">
+<div class="bg-surface-container-lowest rounded-2xl overflow-hidden ambient-shadow ai-border">
+<!-- Card Header -->
+<div class="bg-secondary-container px-8 py-4">
+<h4 class="font-label-sm text-label-sm text-on-secondary-container uppercase tracking-widest">Application Track 1 of 2</h4>
+</div>
+<!-- Form Content -->
+<div class="p-8 space-y-8">
+<div class="space-y-2">
+<label class="font-label-sm text-label-sm text-on-surface-variant">Target Country</label>
+<div class="relative">
+<select class="w-full h-14 pl-12 pr-4 rounded-xl border border-outline bg-surface-bright focus:border-primary focus:ring-2 focus:ring-primary/20 appearance-none transition-all">
+<option value="usa">United States</option>
+<option value="uk">United Kingdom</option>
+<option value="canada">Canada</option>
+<option value="germany">Germany</option>
+</select>
+<div class="absolute left-4 top-1/2 -translate-y-1/2 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-primary" data-icon="public">public</span>
+</div>
+<div class="absolute right-4 top-1/2 -translate-y-1/2 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-outline" data-icon="expand_more">expand_more</span>
+</div>
+</div>
+</div>
+<div class="space-y-2">
+<label class="font-label-sm text-label-sm text-on-surface-variant">Target Program</label>
+<div class="relative">
+<input class="w-full h-14 pl-12 pr-4 rounded-xl border border-outline bg-surface-bright focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all" placeholder="e.g., MS in Computer Science" type="text"/>
+<div class="absolute left-4 top-1/2 -translate-y-1/2 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-primary" data-icon="school">school</span>
+</div>
+</div>
+</div>
+<div class="space-y-4">
+<label class="font-label-sm text-label-sm text-on-surface-variant">Intake Term</label>
+<div class="grid grid-cols-2 gap-4">
+<label class="cursor-pointer">
+<input checked="" class="peer hidden" name="term" type="radio"/>
+<div class="h-14 flex items-center justify-center rounded-xl border border-outline bg-surface-bright peer-checked:border-primary peer-checked:bg-primary-fixed-dim peer-checked:text-primary font-button-text transition-all">
+                                            Fall 2026
+                                        </div>
+</label>
+<label class="cursor-pointer">
+<input class="peer hidden" name="term" type="radio"/>
+<div class="h-14 flex items-center justify-center rounded-xl border border-outline bg-surface-bright peer-checked:border-primary peer-checked:bg-primary-fixed-dim peer-checked:text-primary font-button-text transition-all">
+                                            Spring 2026
+                                        </div>
+</label>
+</div>
+</div>
+<button class="w-full h-14 bg-secondary-container text-on-secondary-container rounded-full font-button-text hover:opacity-95 transform active:scale-95 transition-all flex items-center justify-center gap-2">
+                                Confirm Track 1
+                                <span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Progress Hint -->
+<div class="mt-8 flex justify-center gap-2">
+<div class="w-8 h-1.5 rounded-full bg-secondary-container"></div>
+<div class="w-8 h-1.5 rounded-full bg-outline-variant"></div>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- Visual Enhancements / Decor -->
+<div class="fixed bottom-0 right-0 p-8 pointer-events-none opacity-20">
+<span class="material-symbols-outlined text-[120px] text-primary" data-icon="auto_awesome">auto_awesome</span>
+</div>
+</body></html>

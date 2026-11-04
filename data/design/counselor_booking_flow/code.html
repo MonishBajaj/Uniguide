@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Counselor Booking | GlobalPath AI</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&amp;family=Plus+Jakarta+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-fixed": "#d8e2ff",
+                        "tertiary-container": "#003628",
+                        "surface-tint": "#455e90",
+                        "tertiary-fixed-dim": "#84d6b9",
+                        "on-secondary-fixed": "#3e0500",
+                        "error": "#ba1a1a",
+                        "surface-container-low": "#f3f4f5",
+                        "outline-variant": "#c4c6d0",
+                        "surface-dim": "#d9dadb",
+                        "surface": "#f8f9fa",
+                        "on-secondary-container": "#650d00",
+                        "surface-bright": "#f8f9fa",
+                        "outline": "#747780",
+                        "on-secondary-fixed-variant": "#8d1701",
+                        "on-primary-fixed": "#001a41",
+                        "surface-container": "#edeeef",
+                        "surface-container-highest": "#e1e3e4",
+                        "surface-container-high": "#e7e8e9",
+                        "on-tertiary": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "inverse-surface": "#2e3132",
+                        "on-primary-container": "#7d96cb",
+                        "on-background": "#191c1d",
+                        "on-tertiary-fixed-variant": "#00513e",
+                        "on-error": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "inverse-primary": "#adc6ff",
+                        "background": "#f8f9fa",
+                        "primary": "#00183d",
+                        "on-tertiary-fixed": "#002117",
+                        "on-tertiary-container": "#53a58a",
+                        "error-container": "#ffdad6",
+                        "on-error-container": "#93000a",
+                        "tertiary-fixed": "#a0f3d4",
+                        "tertiary": "#001f16",
+                        "secondary": "#af3017",
+                        "on-surface": "#191c1d",
+                        "on-surface-variant": "#44474f",
+                        "primary-container": "#0f2d5c",
+                        "secondary-container": "#fe694a",
+                        "on-primary-fixed-variant": "#2c4676",
+                        "on-primary": "#ffffff",
+                        "secondary-fixed": "#ffdad3",
+                        "inverse-on-surface": "#f0f1f2"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-mobile": "16px",
+                        "stack-gap": "16px",
+                        "gutter": "24px",
+                        "max-width": "1200px",
+                        "section-gap-md": "48px",
+                        "section-gap-lg": "80px"
+                    },
+                    "fontFamily": {
+                        "button-text": ["Plus Jakarta Sans"],
+                        "h3-desktop": ["Playfair Display"],
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "label-sm": ["Plus Jakarta Sans"],
+                        "h1-desktop": ["Playfair Display"],
+                        "h2-desktop": ["Playfair Display"],
+                        "h1-mobile": ["Playfair Display"],
+                        "body-md": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "button-text": ["16px", {"lineHeight": "1", "fontWeight": "600"}],
+                        "h3-desktop": ["24px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "label-sm": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                        "h1-desktop": ["48px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                        "h2-desktop": ["36px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                        "h1-mobile": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                        "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-background text-on-surface min-h-screen">
+<!-- Top Navigation Bar -->
+<nav class="fixed top-0 w-full z-50 flex justify-between items-center px-gutter max-w-max-width mx-auto bg-surface border-b border-outline-variant h-16">
+<div class="flex items-center gap-8">
+<span class="font-h2-desktop text-h3-desktop text-primary">GlobalPath AI</span>
+<div class="hidden md:flex items-center gap-6">
+<a class="text-on-surface-variant font-body-md hover:text-primary transition-colors" href="#">Dashboard</a>
+<a class="text-on-surface-variant font-body-md hover:text-primary transition-colors" href="#">Universities</a>
+<a class="text-primary border-b-2 border-primary font-bold pb-1 font-body-md" href="#">Mentorship</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer" data-icon="notifications">notifications</span>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer" data-icon="settings">settings</span>
+<div class="w-10 h-10 rounded-full overflow-hidden border border-outline-variant">
+<img alt="User profile" data-alt="A professional headshot of a smiling user in their late twenties, set against a clean, neutral studio background. The lighting is bright and even, reinforcing a polished and corporate professional aesthetic suitable for an academic platform. The overall color palette is muted and clean." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA4s4k-xVAxNk_UuxC8HZIWn8fdobTYzLdKDJVjlVrbMf8wx99eHi2t9BFZ1hYGfkfgzyHmUj5n2D58rhoYze7LmZ_L9Fsx4wuKXsgml8cbMnL06FrFDb3ubZsxMZD1BwXzRTPdKVMQvq5kyXs-I9jxYF6iREptoXpOnvprnwUrOpuThjiSx5MjqTBLqqWj93S9meoV8Xk9upz3BmG3pOPADBg7KNpVbVNQPEyT5R-xjRKYHvzlhMcJ4pAAwcsIssOLP1WZmOMBVqra"/>
+</div>
+</div>
+</nav>
+<!-- Side Navigation -->
+<aside class="fixed left-0 top-16 h-[calc(100vh-64px)] w-64 flex flex-col py-stack-gap bg-surface-container-low border-r border-outline-variant">
+<div class="px-6 mb-8">
+<h3 class="font-h3-desktop text-h3-desktop text-primary">Tool Suite</h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Admissions Toolkit</p>
+</div>
+<div class="flex flex-col gap-1 px-4">
+<a class="flex items-center gap-3 px-4 py-3 text-primary font-bold border-r-4 border-secondary bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="storefront">storefront</span>
+<span class="font-label-sm text-label-sm">Marketplace</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="description">description</span>
+<span class="font-label-sm text-label-sm">Applications</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="edit_note">edit_note</span>
+<span class="font-label-sm text-label-sm">Essays</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="record_voice_over">record_voice_over</span>
+<span class="font-label-sm text-label-sm">Interviews</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span class="font-label-sm text-label-sm">Scholarships</span>
+</a>
+</div>
+<div class="mt-auto px-6 pb-6">
+<button class="w-full bg-primary text-on-primary font-button-text text-button-text py-3 rounded-full hover:opacity-90 transition-all">Book Session</button>
+</div>
+</aside>
+<!-- Main Content: Marketplace Grid (Background for Modal) -->
+<main class="ml-64 mt-16 p-gutter max-w-max-width mx-auto">
+<header class="mb-10">
+<h1 class="font-h1-desktop text-h1-desktop text-primary mb-2">Find Your Mentor</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Expert guidance from Ivy League alumni and professional admissions consultants.</p>
+</header>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 opacity-40 pointer-events-none">
+<!-- Simulated Background Cards -->
+<div class="bg-surface border border-outline-variant rounded-xl p-6 shadow-sm">
+<div class="w-16 h-16 rounded-full bg-surface-container mb-4"></div>
+<div class="h-6 w-3/4 bg-surface-container rounded mb-2"></div>
+<div class="h-4 w-1/2 bg-surface-container rounded mb-4"></div>
+<div class="flex gap-2">
+<div class="h-6 w-16 bg-surface-container rounded-full"></div>
+<div class="h-6 w-16 bg-surface-container rounded-full"></div>
+</div>
+</div>
+<div class="bg-surface border border-outline-variant rounded-xl p-6 shadow-sm">
+<div class="w-16 h-16 rounded-full bg-surface-container mb-4"></div>
+<div class="h-6 w-3/4 bg-surface-container rounded mb-2"></div>
+<div class="h-4 w-1/2 bg-surface-container rounded mb-4"></div>
+<div class="flex gap-2">
+<div class="h-6 w-16 bg-surface-container rounded-full"></div>
+<div class="h-6 w-16 bg-surface-container rounded-full"></div>
+</div>
+</div>
+<div class="bg-surface border border-outline-variant rounded-xl p-6 shadow-sm">
+<div class="w-16 h-16 rounded-full bg-surface-container mb-4"></div>
+<div class="h-6 w-3/4 bg-surface-container rounded mb-2"></div>
+<div class="h-4 w-1/2 bg-surface-container rounded mb-4"></div>
+<div class="flex gap-2">
+<div class="h-6 w-16 bg-surface-container rounded-full"></div>
+<div class="h-6 w-16 bg-surface-container rounded-full"></div>
+</div>
+</div>
+</div>
+</main>
+<!-- Overlay Backdrop -->
+<div class="fixed inset-0 bg-primary/20 backdrop-blur-sm z-[60]"></div>
+<!-- Counselor Booking Flow Modal (Right-side Panel) -->
+<div class="fixed right-0 top-0 h-screen w-full max-w-[480px] bg-surface-container-lowest shadow-2xl z-[70] overflow-y-auto hide-scrollbar flex flex-col border-l border-outline-variant">
+<!-- Modal Header -->
+<div class="p-8 border-b border-outline-variant flex flex-col gap-6 bg-surface">
+<div class="flex items-center justify-between">
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-high transition-all">
+<span class="material-symbols-outlined text-on-surface" data-icon="close">close</span>
+</button>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">Booking Flow</span>
+<div class="w-10"></div>
+</div>
+<div class="flex items-center gap-5">
+<div class="w-20 h-20 rounded-xl overflow-hidden border-2 border-primary-fixed shadow-sm">
+<img alt="Counselor photo" data-alt="A detailed portrait of a professional female education counselor in a corporate setting. She is wearing a modern blazer and has an approachable, confident expression. The background is a blurred high-end academic office with warm lighting and deep navy accents that match the primary brand color. The image is crisp and exudes authority and trust." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCYgtfbLaoUAraKT8khlWE0FIS25LCmWqzsRjht3qznn-RacfIhiey7UXfvOtFjWNkCGL4qcA4Tv0ubTpbw_Rrwx2amXo3zMQX39ZZjcauV-yDdIi91yZ8VmUn0_1wzIKHWtjqhS5znnjwapQ2adcrJkNXvxoE7hyZJwcKWkZUOZkyTPzmNtImLDK7DeLOI96G8kiNIMSZglfTF2bBPgsW88xtGej3MudUdjsBYFmMKY3XEdMDvVvgDuVIC9Itu5NeqHAh1ZeOM3mpS"/>
+</div>
+<div>
+<h2 class="font-h2-desktop text-h3-desktop text-primary mb-1">Dr. Sarah Jenkins</h2>
+<p class="font-body-md text-body-md text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px] text-secondary" data-icon="verified" data-weight="fill" style="font-variation-settings: 'FILL' 1;">verified</span>
+                        Senior Admissions Advisor
+                    </p>
+</div>
+</div>
+<h1 class="font-h2-desktop text-h2-desktop text-primary">Book a Session</h1>
+</div>
+<!-- Booking Form Content -->
+<div class="flex-1 p-8 space-y-10">
+<!-- Step 1: Calendar Date Picker -->
+<section>
+<label class="font-label-sm text-label-sm text-primary mb-4 block">STEP 1: SELECT A DATE</label>
+<div class="bg-surface-container-low border border-outline-variant rounded-xl p-4">
+<div class="flex items-center justify-between mb-4 px-2">
+<span class="font-button-text text-button-text">October 2024</span>
+<div class="flex gap-2">
+<button class="p-1 hover:text-primary"><span class="material-symbols-outlined" data-icon="chevron_left">chevron_left</span></button>
+<button class="p-1 hover:text-primary"><span class="material-symbols-outlined" data-icon="chevron_right">chevron_right</span></button>
+</div>
+</div>
+<div class="grid grid-cols-7 gap-1 text-center">
+<span class="text-xs font-bold text-outline py-2">M</span>
+<span class="text-xs font-bold text-outline py-2">T</span>
+<span class="text-xs font-bold text-outline py-2">W</span>
+<span class="text-xs font-bold text-outline py-2">T</span>
+<span class="text-xs font-bold text-outline py-2">F</span>
+<span class="text-xs font-bold text-outline py-2">S</span>
+<span class="text-xs font-bold text-outline py-2">S</span>
+<!-- Empty slots for previous month -->
+<div class="py-3 text-outline/30 text-label-sm">28</div>
+<div class="py-3 text-outline/30 text-label-sm">29</div>
+<div class="py-3 text-outline/30 text-label-sm">30</div>
+<!-- Current month days -->
+<div class="py-3 text-on-surface hover:bg-primary-fixed cursor-pointer rounded-lg text-label-sm font-button-text">1</div>
+<div class="py-3 text-on-surface hover:bg-primary-fixed cursor-pointer rounded-lg text-label-sm font-button-text">2</div>
+<div class="py-3 text-on-surface hover:bg-primary-fixed cursor-pointer rounded-lg text-label-sm font-button-text">3</div>
+<div class="py-3 text-on-surface hover:bg-primary-fixed cursor-pointer rounded-lg text-label-sm font-button-text">4</div>
+<div class="py-3 bg-primary text-on-primary rounded-lg text-label-sm font-button-text">5</div>
+<div class="py-3 text-on-surface hover:bg-primary-fixed cursor-pointer rounded-lg text-label-sm font-button-text">6</div>
+<div class="py-3 text-on-surface hover:bg-primary-fixed cursor-pointer rounded-lg text-label-sm font-button-text">7</div>
+</div>
+</div>
+</section>
+<!-- Step 2: Time Slots -->
+<section>
+<label class="font-label-sm text-label-sm text-primary mb-4 block">STEP 2: AVAILABLE TIME SLOTS (EST)</label>
+<div class="flex flex-wrap gap-3">
+<button class="px-5 py-3 rounded-full border border-outline-variant bg-surface-container-highest text-primary font-button-text hover:border-primary transition-all">10:00 AM</button>
+<button class="px-5 py-3 rounded-full border-2 border-primary bg-primary-fixed text-primary font-bold shadow-sm">2:00 PM</button>
+<button class="px-5 py-3 rounded-full border border-outline-variant bg-surface-container-highest text-primary font-button-text hover:border-primary transition-all">4:00 PM</button>
+<button class="px-5 py-3 rounded-full border border-outline-variant opacity-40 bg-surface-dim text-on-surface-variant font-button-text cursor-not-allowed">5:30 PM</button>
+</div>
+</section>
+<!-- Textarea Input -->
+<section>
+<label class="font-label-sm text-label-sm text-primary mb-4 block">WHAT WOULD YOU LIKE HELP WITH?</label>
+<textarea class="w-full bg-surface-container-lowest border border-outline rounded-lg p-4 font-body-md focus:border-primary focus:ring-2 focus:ring-primary-fixed transition-all outline-none resize-none" placeholder="Briefly describe your goals for this session (e.g., Essay review, interview prep, university selection)..." rows="4"></textarea>
+</section>
+<!-- Payment Summary & Form -->
+<section class="space-y-6">
+<div class="bg-surface-container border border-outline-variant rounded-xl p-6">
+<div class="flex justify-between items-center mb-2">
+<span class="font-body-md text-on-surface-variant">50 min session</span>
+<span class="font-h3-desktop text-primary">$80.00</span>
+</div>
+<div class="flex justify-between items-center pt-4 border-t border-outline-variant">
+<span class="font-button-text text-primary">Total Due</span>
+<span class="font-h3-desktop text-primary">$80 total</span>
+</div>
+</div>
+<div class="space-y-4">
+<label class="font-label-sm text-label-sm text-primary block">SECURE PAYMENT</label>
+<div class="border border-outline rounded-lg p-4 flex flex-col gap-4 bg-white">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="credit_card">credit_card</span>
+<input class="border-none p-0 focus:ring-0 w-full font-body-md" placeholder="Card number" type="text"/>
+</div>
+<div class="flex gap-4 border-t border-outline-variant pt-4">
+<input class="border-none p-0 focus:ring-0 w-1/2 font-body-md" placeholder="MM / YY" type="text"/>
+<input class="border-none p-0 focus:ring-0 w-1/2 font-body-md" placeholder="CVC" type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]" data-icon="lock" data-weight="fill" style="font-variation-settings: 'FILL' 1;">lock</span>
+<p class="text-[12px] font-body-md">Payments are secured and encrypted by Stripe.</p>
+</div>
+</div>
+</section>
+</div>
+<!-- Sticky Footer CTA -->
+<div class="p-8 border-t border-outline-variant bg-surface sticky bottom-0">
+<button class="w-full h-[52px] bg-secondary text-on-secondary font-button-text text-button-text rounded-full shadow-lg hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center gap-2">
+                Confirm &amp; Pay $80
+                <span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
+</button>
+<p class="text-center mt-4 text-[12px] text-on-surface-variant font-body-md px-4">
+                By confirming, you agree to our <a class="underline" href="#">Cancellation Policy</a> and <a class="underline" href="#">Terms of Service</a>.
+            </p>
+</div>
+</div>
+<!-- Footer (Restricted visibility due to overlay, but present for structure) -->
+<footer class="w-full py-8 px-gutter flex justify-between items-center border-t border-outline-variant bg-surface-container-lowest ml-64 max-w-[calc(100%-16rem)]">
+<span class="font-label-sm text-label-sm text-on-surface-variant">© 2024 GlobalPath AI Admissions. All rights reserved.</span>
+<div class="flex gap-6">
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-secondary transition-colors" href="#">Privacy Policy</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-secondary transition-colors" href="#">Terms of Service</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-secondary transition-colors" href="#">Help Center</a>
+</div>
+</footer>
+</body></html>

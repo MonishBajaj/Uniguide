@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&amp;family=Plus+Jakarta+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "error": "#ba1a1a",
+                    "surface-dim": "#d9dadb",
+                    "primary-fixed": "#d8e2ff",
+                    "tertiary-container": "#003628",
+                    "secondary-fixed": "#ffdad3",
+                    "on-background": "#191c1d",
+                    "surface-container-high": "#e7e8e9",
+                    "surface-variant": "#e1e3e4",
+                    "inverse-primary": "#adc6ff",
+                    "on-primary-fixed": "#001a41",
+                    "background": "#f8f9fa",
+                    "surface-container-low": "#f3f4f5",
+                    "inverse-on-surface": "#f0f1f2",
+                    "primary": "#00183d",
+                    "on-surface-variant": "#44474f",
+                    "on-tertiary-fixed-variant": "#00513e",
+                    "tertiary": "#001f16",
+                    "on-secondary-fixed-variant": "#8d1701",
+                    "on-primary-container": "#7d96cb",
+                    "on-secondary": "#ffffff",
+                    "on-error-container": "#93000a",
+                    "on-error": "#ffffff",
+                    "on-secondary-fixed": "#3e0500",
+                    "on-tertiary-container": "#53a58a",
+                    "on-primary-fixed-variant": "#2c4676",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-bright": "#f8f9fa",
+                    "secondary": "#af3017",
+                    "surface-tint": "#455e90",
+                    "surface": "#f8f9fa",
+                    "primary-container": "#0f2d5c",
+                    "outline-variant": "#c4c6d0",
+                    "surface-container": "#edeeef",
+                    "on-tertiary-fixed": "#002117",
+                    "primary-fixed-dim": "#adc6ff",
+                    "on-secondary-container": "#650d00",
+                    "secondary-fixed-dim": "#ffb4a4",
+                    "on-surface": "#191c1d",
+                    "error-container": "#ffdad6",
+                    "on-tertiary": "#ffffff",
+                    "surface-container-highest": "#e1e3e4",
+                    "on-primary": "#ffffff",
+                    "tertiary-fixed": "#a0f3d4",
+                    "secondary-container": "#fe694a",
+                    "outline": "#747780",
+                    "tertiary-fixed-dim": "#84d6b9",
+                    "inverse-surface": "#2e3132"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "stack-gap": "16px",
+                    "section-gap-md": "48px",
+                    "max-width": "1200px",
+                    "section-gap-lg": "80px",
+                    "margin-mobile": "16px",
+                    "gutter": "24px"
+            },
+            "fontFamily": {
+                    "h3-desktop": ["Playfair Display"],
+                    "h1-desktop": ["Playfair Display"],
+                    "label-sm": ["Plus Jakarta Sans"],
+                    "h2-desktop": ["Playfair Display"],
+                    "h1-mobile": ["Playfair Display"],
+                    "body-lg": ["Plus Jakarta Sans"],
+                    "body-md": ["Plus Jakarta Sans"],
+                    "button-text": ["Plus Jakarta Sans"]
+            },
+            "fontSize": {
+                    "h3-desktop": ["24px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                    "h1-desktop": ["48px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "label-sm": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                    "h2-desktop": ["36px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                    "h1-mobile": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "button-text": ["16px", {"lineHeight": "1", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8f9fa; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .pulse-available { position: relative; width: 10px; height: 10px; background-color: #10b981; border-radius: 50%; }
+        .pulse-available::after { content: ''; position: absolute; width: 100%; height: 100%; border-radius: 50%; background-color: #10b981; opacity: 0.6; left: 0; top: 0; animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite; }
+        @keyframes ping { 75%, 100% { transform: scale(2.5); opacity: 0; } }
+    </style>
+</head>
+<body class="bg-background text-on-surface">
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-gutter h-20 bg-surface border-b border-outline-variant shadow-sm">
+<div class="flex items-center gap-8">
+<h1 class="font-h1-desktop text-h3-desktop font-bold text-primary">UniGuide AI</h1>
+<nav class="hidden md:flex gap-6 items-center">
+<a class="text-on-surface-variant font-medium hover:text-secondary transition-colors font-button-text text-body-md" href="#">Dashboard</a>
+<a class="text-on-surface-variant font-medium hover:text-secondary transition-colors font-button-text text-body-md" href="#">Universities</a>
+<a class="text-on-surface-variant font-medium hover:text-secondary transition-colors font-button-text text-body-md" href="#">Applications</a>
+<a class="text-on-surface-variant font-medium hover:text-secondary transition-colors font-button-text text-body-md" href="#">Mentorship</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative hidden lg:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="pl-10 pr-4 py-2 bg-surface-container border border-outline-variant rounded-lg focus:outline-none focus:border-primary" placeholder="Search..." type="text"/>
+</div>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">notifications</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">settings</button>
+<div class="w-10 h-10 rounded-full overflow-hidden border border-outline-variant">
+<img alt="User profile avatar" data-alt="A professional studio portrait of a woman with a warm, confident expression. The lighting is soft and directional, typical of corporate headshots, against a clean, neutral grey background. The image has a polished, high-end feel suitable for a modern tech platform's user profile." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCaeAxPQtN1X0g_UQQQkI_96a5EeW9yDTqiSVzZKuiuQNUoywhQ2rEz6XKpa8jfXx5Dnwi1yffdtD7DYXyysjwso2GazXYVzFa2CPlUFowQmUxKwoYRMT1aaqfuRYzw-eyK6w3Bv9Omjs2pD6oiiGZeXBbVe7JHpGHW2l5huRCMDShwY8nyha3nQfibRWS-RXzQ3noWwEQr1fKK6lSMGmIXmv9cbXlam7B-LGSYU9U6-sj5wWesF6WZKODKUVIMYPXs4D1ff-hl5qHv"/>
+</div>
+<button class="bg-primary text-on-primary px-6 py-2.5 rounded-full font-button-text text-body-md hover:opacity-90 transition-opacity">Apply Now</button>
+</div>
+</header>
+<div class="pt-20 flex min-h-screen max-w-[1440px] mx-auto">
+<!-- SideNavBar (Left) -->
+<aside class="fixed left-0 top-20 bottom-0 w-64 flex flex-col p-4 z-40 bg-surface-container-low border-r border-outline-variant">
+<div class="mb-8 px-2">
+<h2 class="font-h3-desktop text-h3-desktop text-primary">Community Hub</h2>
+<p class="text-on-surface-variant text-body-md">Admissions Portal</p>
+</div>
+<nav class="flex-1 flex flex-col gap-1">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">forum</span>
+<span class="font-button-text text-body-md">Forums</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">star</span>
+<span class="font-button-text text-body-md">Reviews</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 bg-primary-container text-on-primary-container rounded-lg font-bold transition-all scale-95 duration-150" href="#">
+<span class="material-symbols-outlined">contact_support</span>
+<span class="font-button-text text-body-md">Ask an Alum</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">auto_stories</span>
+<span class="font-button-text text-body-md">Success Stories</span>
+</a>
+</nav>
+<div class="mt-auto flex flex-col gap-1 pt-4 border-t border-outline-variant">
+<div class="bg-secondary-container/10 p-4 rounded-xl mb-4 border border-secondary-container/20">
+<p class="text-on-secondary-container font-bold text-body-md mb-2">Unlock Direct DM</p>
+<button class="w-full bg-secondary text-on-secondary py-2 rounded-lg font-button-text text-label-sm">Upgrade to Premium</button>
+</div>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-variant rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="font-button-text text-body-md">Help Center</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-variant rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-button-text text-body-md">Log Out</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Canvas (Middle) -->
+<main class="ml-64 mr-80 flex-1 p-8">
+<section class="max-w-4xl mx-auto">
+<div class="mb-8">
+<h2 class="font-h2-desktop text-h2-desktop text-primary mb-2">Connect with Alumni</h2>
+<p class="text-body-lg text-on-surface-variant max-w-2xl">Get personalized insights from students who have walked the path before you. Direct guidance from Ivy League and top global universities.</p>
+</div>
+<!-- Filters -->
+<div class="flex flex-wrap gap-4 mb-8 p-4 bg-white rounded-xl border border-outline-variant shadow-sm">
+<div class="flex-1 min-w-[200px]">
+<label class="block text-label-sm text-outline mb-1">University</label>
+<select class="w-full bg-surface-container border-none rounded-lg font-body-md py-2 px-3">
+<option>All Universities</option>
+<option>Stanford University</option>
+<option>MIT</option>
+<option>Oxford University</option>
+</select>
+</div>
+<div class="flex-1 min-w-[200px]">
+<label class="block text-label-sm text-outline mb-1">Program</label>
+<select class="w-full bg-surface-container border-none rounded-lg font-body-md py-2 px-3">
+<option>All Programs</option>
+<option>Computer Science</option>
+<option>Business Admin</option>
+<option>Architecture</option>
+</select>
+</div>
+<div class="flex-1 min-w-[200px]">
+<label class="block text-label-sm text-outline mb-1">Country</label>
+<select class="w-full bg-surface-container border-none rounded-lg font-body-md py-2 px-3">
+<option>Global Origin</option>
+<option>India</option>
+<option>China</option>
+<option>USA</option>
+</select>
+</div>
+<div class="flex items-end">
+<button class="bg-primary text-on-primary px-6 py-2.5 rounded-lg font-button-text flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px]">filter_list</span> Filter
+                        </button>
+</div>
+</div>
+<!-- Mentor Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+<!-- Mentor Card 1 -->
+<div class="bg-white p-6 rounded-xl border border-outline-variant hover:shadow-lg transition-all duration-300 relative group">
+<div class="absolute top-4 right-4 flex items-center gap-2">
+<span class="pulse-available"></span>
+<span class="text-[12px] font-bold text-tertiary-fixed-dim">Available</span>
+</div>
+<div class="flex flex-col items-center text-center">
+<div class="w-16 h-16 rounded-full border-2 border-primary-container p-0.5 mb-4 relative">
+<img alt="Mentor portrait" class="w-full h-full rounded-full object-cover" data-alt="A close-up headshot of a smiling male student with a warm, approachable look. He is set against a blurred academic backdrop with soft, natural lighting. The overall style is clean and professional, using a bright palette to convey reliability and peer-to-peer mentorship." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCJMNo5pkNXyb22Apa8Uh4wapUmUDv8c3B5yO-kAGsLYRebD1gPU3sjktxM_VWDi5cmqbbwtr9_S54mZBwgDAQApyZFF19ZUEYjdx4pKKIKRvOLeAB6ppUYu3xhn6fCmFKOCfyJModG6cfOpU0rJW-M5iEq7qy8aZg31IXzz7NceoSg7co_eP1ZKur3JsZO7M7KZA0r3ZTe90KclXPFO6faQBeojIBt33xbXk-JLcXgVRVq-v5ZNLMdELRxarNlw2np2GiSiq8XVR0b"/>
+</div>
+<h3 class="font-h3-desktop text-[18px] text-primary">Arjun Mehta</h3>
+<p class="text-label-sm text-secondary font-bold mb-1">Stanford University</p>
+<p class="text-body-md text-on-surface-variant mb-3">MS Computer Science</p>
+<div class="flex items-center gap-2 bg-surface-container px-3 py-1 rounded-full mb-4">
+<img alt="India flag" class="w-4 h-3 object-cover rounded-[1px]" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAi3pl0TH2nGDvdzlAfQyJuyJPQTmUgwKbCYgpASh9OzMMGQBdu6o23lWw23t1qINU1yy2nX088ohvzvHHNHp7uGU9RXj5w5K3CuPTBkQ7KAXfSE7QiAHpmXDEqZJmNhMYpSzA3MbWpyX2ZB7GHUPSeLMRKe_nHyZ71ALW5-slLRDna3BZZbOnUxbcYulJAvlc9JVVQnRnS4V-lTfjGHUMuo2hk5XDdB1lzyjk6rPgU2hto8RfonrMu3ztH_xv9OXftX3NnfUBCDO4G"/>
+<span class="text-label-sm text-on-surface-variant">India</span>
+</div>
+<div class="w-full pt-4 border-t border-outline-variant flex flex-col gap-3">
+<div class="flex justify-between items-center px-2">
+<span class="text-label-sm text-outline">Session Fee</span>
+<span class="text-body-md font-bold text-primary">Free</span>
+</div>
+<button class="w-full bg-secondary-container text-on-secondary px-4 py-3 rounded-full font-button-text text-label-sm hover:opacity-90 transition-opacity">Request Q&amp;A</button>
+</div>
+</div>
+</div>
+<!-- Mentor Card 2 -->
+<div class="bg-white p-6 rounded-xl border border-outline-variant hover:shadow-lg transition-all duration-300 relative group">
+<div class="absolute top-4 right-4 flex items-center gap-2">
+<span class="pulse-available"></span>
+<span class="text-[12px] font-bold text-tertiary-fixed-dim">Available</span>
+</div>
+<div class="flex flex-col items-center text-center">
+<div class="w-16 h-16 rounded-full border-2 border-primary-container p-0.5 mb-4">
+<img alt="Mentor portrait" class="w-full h-full rounded-full object-cover" data-alt="A portrait of a male graduate student in a high-contrast studio setting. He has an intelligent and supportive demeanor, wearing professional-casual attire. The lighting is clean and modern, emphasizing clarity and trust, aligned with a premium corporate academic brand." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBb7q3trTWblnNWFz2X4vIM5hz1K_uExdbbfO9H_-WkhD-8PNI8ircSwraOdl0v6XtX9B6fYczxNGO8I7H260ljVeYgilb7vmxD6mW8zTo44__0XWXyIQLPhYI30QeGlOTtpCpxS2TRdVV5TXcmzMb_ez4NbhDnMkziluNL-Ly9kl5Ju7ViiWM8WF0U1EIYyR0cBB60mz2rW9Fr-fhanbJ_XEoSGMDKSnU-m48Umb2PnvCtYp2hU7AHLjNuabVPZUoblNAWzuzkchhx"/>
+</div>
+<h3 class="font-h3-desktop text-[18px] text-primary">Rohan Sharma</h3>
+<p class="text-label-sm text-secondary font-bold mb-1">MIT</p>
+<p class="text-body-md text-on-surface-variant mb-3">MBA Sloan</p>
+<div class="flex items-center gap-2 bg-surface-container px-3 py-1 rounded-full mb-4">
+<img alt="India flag" class="w-4 h-3 object-cover rounded-[1px]" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC2ArAtzmQ9ggmaVHRI4nVLqDLZfvicmEjtSMHv6d8XaEFf-gzw4NjgtWVDyGCNKzAh4FoF0pYxTw2XPRDzvCePYt44Y3JLuzEEFfGT7jdAt0MgpGV3eKpHNHCF3TzrJpcBkz0FVr4YxRo9SMnnf7RcnZBi8nB8Dspb1_G4rm1u9LdxTV48cWcBDHJ2ZENfulDMY-x0m3mrFkqQ7UOcLSqHKXPr9xo1XtPGSfotXmAN26Tt3Fixe75jFfli9Hja5b7QQFX4ocYzYLOE"/>
+<span class="text-label-sm text-on-surface-variant">India</span>
+</div>
+<div class="w-full pt-4 border-t border-outline-variant flex flex-col gap-3">
+<div class="flex justify-between items-center px-2">
+<span class="text-label-sm text-outline">Session Fee</span>
+<span class="text-body-md font-bold text-primary">$25</span>
+</div>
+<button class="w-full bg-secondary-container text-on-secondary px-4 py-3 rounded-full font-button-text text-label-sm hover:opacity-90 transition-opacity">Request Q&amp;A</button>
+</div>
+</div>
+</div>
+<!-- Mentor Card 3 -->
+<div class="bg-white p-6 rounded-xl border border-outline-variant hover:shadow-lg transition-all duration-300 relative group">
+<div class="absolute top-4 right-4 flex items-center gap-2">
+<span class="pulse-available"></span>
+<span class="text-[12px] font-bold text-tertiary-fixed-dim">Available</span>
+</div>
+<div class="flex flex-col items-center text-center">
+<div class="w-16 h-16 rounded-full border-2 border-primary-container p-0.5 mb-4">
+<img alt="Mentor portrait" class="w-full h-full rounded-full object-cover" data-alt="A professional headshot of a young woman with a friendly, expert expression. She is in a brightly lit, modern environment with soft bokeh of a campus in the background. The aesthetic is clean, academic, and authoritative, representing a successful alumna from a top-tier university." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCNrDvqjGC9GOezAKvdZsegwo1NzUyMuqwfGuw1t5-lkCFZ_Dqx2DKmf-G6Efv4SU-z3_swopT5u9_0JvuzRkdEMkYc85OXiEUW1qOB7gAG51qnrrb6Quf9nSvFf0kRQO7gb1RE0vNkQKRQP2WW5W7-6XJW5tkQ1JJdD9TGKh-b9-zsHWRVhIi-grV6C0jAmKYF18bCtEe3SYDPjzbKTMMf7LDJIQiNB2xwYCgeul0jlW7zP0EgfDviBC5Wtbhegoo-_0AIsudsOXPe"/>
+</div>
+<h3 class="font-h3-desktop text-[18px] text-primary">Priya Das</h3>
+<p class="text-label-sm text-secondary font-bold mb-1">Oxford University</p>
+<p class="text-body-md text-on-surface-variant mb-3">MSc Economics</p>
+<div class="flex items-center gap-2 bg-surface-container px-3 py-1 rounded-full mb-4">
+<img alt="India flag" class="w-4 h-3 object-cover rounded-[1px]" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCtpR2YD5jubJQJ7ZZa8OXaCfbXYD6NCijGJ-kSahFg4Bq9txGiqCJwRXYD8fWNrLKTDvTQ7EjMG9mj8aWyH54aS6pja3iUb4bmMev-6Rf0Qw8T0CcsWXGXVSwhRca3Aa87nne9fLwQyKL3EABP7PLack4km8tfKmFTmn5ViXGJEUtYx-hyFILMTgRIw-xOT5piSw0BK26kVDXLFst4ADTaLkgy3tgGHjsoMDL-VjyR2EZyNUVgHDRQ4_pG5Sjc_VnoV3t1Y61XtHL5"/>
+<span class="text-label-sm text-on-surface-variant">India</span>
+</div>
+<div class="w-full pt-4 border-t border-outline-variant flex flex-col gap-3">
+<div class="flex justify-between items-center px-2">
+<span class="text-label-sm text-outline">Session Fee</span>
+<span class="text-body-md font-bold text-primary">Free</span>
+</div>
+<button class="w-full bg-secondary-container text-on-secondary px-4 py-3 rounded-full font-button-text text-label-sm hover:opacity-90 transition-opacity">Request Q&amp;A</button>
+</div>
+</div>
+</div>
+</div>
+<!-- AI Insight Panel -->
+<div class="mt-12 p-1 rounded-2xl bg-gradient-to-r from-secondary/40 via-primary/20 to-secondary/40">
+<div class="bg-white p-6 rounded-[14px]">
+<div class="flex items-center gap-3 mb-4">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+<h4 class="font-h3-desktop text-[20px] text-primary">AI Matching Insight</h4>
+</div>
+<p class="text-body-md text-on-surface-variant leading-relaxed">
+                            Based on your profile interest in <span class="text-primary font-bold">Stanford University</span> and your current application status, we recommend starting a session with <span class="text-secondary font-bold">Arjun Mehta</span>. He recently helped 3 students with SOP reviews for similar STEM programs.
+                        </p>
+</div>
+</div>
+</section>
+</main>
+<!-- Right Sidebar -->
+<aside class="fixed right-0 top-20 bottom-0 w-80 p-6 bg-surface-bright border-l border-outline-variant overflow-y-auto">
+<!-- Trending Discussions -->
+<div class="mb-10">
+<h3 class="font-h3-desktop text-[20px] text-primary mb-4">Trending Now</h3>
+<div class="space-y-4">
+<div class="flex flex-col gap-1 border-b border-outline-variant pb-4">
+<span class="text-[12px] font-bold text-secondary uppercase tracking-wider">Admissions 2024</span>
+<a class="text-body-md font-bold text-primary hover:text-secondary transition-colors" href="#">Spring Intake Visa delays: What you need to know</a>
+<div class="flex items-center gap-4 text-outline text-label-sm mt-1">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">visibility</span> 1.2k</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">chat_bubble</span> 48</span>
+</div>
+</div>
+<div class="flex flex-col gap-1 border-b border-outline-variant pb-4">
+<span class="text-[12px] font-bold text-secondary uppercase tracking-wider">Financial Aid</span>
+<a class="text-body-md font-bold text-primary hover:text-secondary transition-colors" href="#">Comparing Stanford vs. Harvard Scholarships</a>
+<div class="flex items-center gap-4 text-outline text-label-sm mt-1">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">visibility</span> 890</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">chat_bubble</span> 22</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Mentors Online -->
+<div>
+<div class="flex justify-between items-center mb-4">
+<h3 class="font-h3-desktop text-[20px] text-primary">Mentors Online</h3>
+<span class="bg-tertiary-container text-on-tertiary-fixed text-[10px] px-2 py-0.5 rounded-full font-bold">12 Active</span>
+</div>
+<div class="space-y-4">
+<div class="flex items-center gap-3">
+<div class="relative">
+<img alt="Online Mentor" class="w-10 h-10 rounded-full object-cover" data-alt="A portrait of a young woman with glasses, smiling softly, in a bright modern office. The image has a clean, airy feel with high-key lighting. The focus is sharp on her friendly expression, conveying accessibility and expertise as an online mentor on a professional education platform." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA_OCkPwFMtVLCKEl0g3nVgYAIAJjvmY-owTc4ja5Cdi3yAUiFDEbDhw9nD9KLRpzDGCKgNN7JAZxc41Mkba16nHBeY3MJxk7UhC_QMu8hcid80N9H3Qclesx6R5X2QpcXTMxj2QX3z6UEdYZBg9mzWazYBEje3oE5MXissQ8iPIN4L8TTAqQ7N7v6gDdV2q1BeWd8oQej4IR60SAgXXYEbOzh_QJ-0QQR_gq-Ztf56qeUW3XMXVEIP8Un8ZyPTkt1wY7VyskG9mA-S"/>
+<span class="absolute bottom-0 right-0 w-3 h-3 bg-tertiary-fixed-dim border-2 border-surface-bright rounded-full"></span>
+</div>
+<div>
+<p class="text-label-sm font-bold text-primary">Sanya V.</p>
+<p class="text-[12px] text-on-surface-variant">Columbia University</p>
+</div>
+<button class="ml-auto material-symbols-outlined text-outline hover:text-primary">mail</button>
+</div>
+<div class="flex items-center gap-3">
+<div class="relative">
+<img alt="Online Mentor" class="w-10 h-10 rounded-full object-cover" data-alt="A close-up portrait of a male mentor with a confident, friendly look. Set in a contemporary university library with warm, soft background lighting. The image emphasizes intellectual capability and peer support, aligned with a prestigious academic community aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDenDPjsEfySZ1CUhjualgAagSmO4KxnQkN1v_WHU6-8MZ-6wDUOQDgLF5U5Bz_H4jggSFVMxQm3L7PU2L1dSGdclEpfhwOAFu_LiUY-MD5QrdjzUhS1eegHIDxDo3Hd35HXvELPd80rvKaRqmz0kQv5WoRTgiklt7Y0pKknzgLszy0-oTgGBMfupLjf1LIDx9zprD54Afb6f0iUxEGJETRvYqWIB_Ewf_kI6fPOq4O8M0MzX13TY7KFPwVn9WfnDFqwKKzseuVKOgX"/>
+<span class="absolute bottom-0 right-0 w-3 h-3 bg-tertiary-fixed-dim border-2 border-surface-bright rounded-full"></span>
+</div>
+<div>
+<p class="text-label-sm font-bold text-primary">Vikram K.</p>
+<p class="text-[12px] text-on-surface-variant">UPenn Wharton</p>
+</div>
+<button class="ml-auto material-symbols-outlined text-outline hover:text-primary">mail</button>
+</div>
+</div>
+<button class="w-full mt-6 py-2 border border-outline text-primary rounded-lg text-label-sm hover:bg-surface-container transition-colors">View All Mentors</button>
+</div>
+</aside>
+</div>
+</body></html>

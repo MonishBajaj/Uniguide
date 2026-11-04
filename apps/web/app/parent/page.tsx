@@ -11,10 +11,10 @@ import { StagePath } from "@/components/journey/stage-path";
 import { getLocale } from "@/lib/i18n/server";
 import { localizeProgress, parentStepTitle } from "@/lib/journey-copy";
 import { shortDate } from "@/lib/format";
+import { Heart, ShieldCheck, Mail, CheckCircle2 } from "lucide-react";
 
 export const metadata: Metadata = { title: "My child", robots: { index: false } };
 
-/** What parent_journey() returns: never a step's own title, reason, link, facts or date. */
 interface ParentJourney {
   stage: number;
   progress: { done: number; total: number; label: string };
@@ -22,7 +22,6 @@ interface ParentJourney {
   steps: { parentTitle: string; stage: number; catalogueId?: string; params?: Record<string, string> }[];
 }
 
-/** Read-only view for a parent. RLS limits every query to students linked to this parent; writing and grades are never shared. */
 export default async function ParentPage() {
   const { supabase, user } = await getUser();
   if (!user) notFound();
@@ -40,17 +39,22 @@ export default async function ParentPage() {
       .in("user_id", studentIds),
   ]);
   const { t, locale } = await getLocale();
-  // The journey in parent-safe terms (J4.2): stage, progress and parent titles only, never a step's own text.
   const journeys = new Map(
     await Promise.all(parentOf.map(async (l) => [l.student_id, (await supabase.rpc("parent_journey", { p_student: l.student_id })).data as ParentJourney | null] as const)),
   );
 
   return (
     <div className="mx-auto grid max-w-5xl gap-10 px-6 py-12">
-      <header className="grid gap-2">
-        <h1 className="text-4xl font-semibold">My child</h1>
-        <p className="max-w-2xl text-muted">
-          Progress your child chose to share. Read only. You cannot see their statements, drafts or grades.
+      <header className="rounded-xl border border-border bg-surface p-6 sm:p-8 ambient-shadow">
+        <div className="flex items-center gap-2 mb-2">
+          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-secondary/10 text-secondary">
+            <Heart className="h-4 w-4" />
+          </span>
+          <span className="text-xs font-bold uppercase tracking-wider text-muted">Parent & Guardian Portal</span>
+        </div>
+        <h1 className="text-3xl sm:text-4xl font-serif font-bold text-primary">My Child&apos;s Journey</h1>
+        <p className="mt-2 max-w-2xl text-muted text-sm leading-relaxed">
+          Read-only progress updates your child chose to share. To protect their independent voice, drafts, statements, and raw grades are never shared here.
         </p>
       </header>
 
@@ -58,107 +62,63 @@ export default async function ParentPage() {
         const mine = (apps ?? []).filter((a) => a.user_id === link.student_id);
         const listed = (shortlist ?? []).filter((s) => s.user_id === link.student_id && s.programs);
         const items = mine.flatMap((a) => a.checklist_items);
-        const next = mine
-          .flatMap((a) => a.checklist_items.filter((i) => !i.done && i.deadlines && isFuture(i.deadlines.due_at)).map((i) => ({ d: i.deadlines!, title: courseOf(a).title })))
-          .sort((x, y) => x.d.due_at.localeCompare(y.d.due_at))[0];
+        const journey = journeys.get(link.student_id);
+        const digest = digestOn.get(link.student_id) ?? true;
 
         return (
-          <section key={link.student_id} aria-labelledby={`s-${link.student_id}`} className="grid gap-6">
-            <div className="flex flex-wrap items-baseline justify-between gap-3">
-              <h2 id={`s-${link.student_id}`} className="text-2xl font-semibold">{link.student_name}</h2>
-              <form action={setDigest.bind(null, link.student_id, !digestOn.get(link.student_id))} className="flex items-center gap-2 text-sm">
-                <span className="text-muted">Weekly email {digestOn.get(link.student_id) ? "on" : "off"}</span>
-                <button className="btn btn-secondary btn-sm">{digestOn.get(link.student_id) ? "Turn off" : "Turn on"}</button>
-              </form>
-            </div>
+          <div key={link.student_id} className="grid gap-8">
+            {/* Student Stage Path */}
+            {journey ? (
+              <StagePath
+                stage={journey.stage}
+                progress={{ ...journey.progress, label: localizeProgress(journey.stage, journey.progress, locale) }}
+                t={t.journey}
+                headingId={`path-${link.student_id}`}
+              />
+            ) : null}
 
-            {(() => {
-              const j = journeys.get(link.student_id);
-              if (!j) return <p className="text-muted">{t.journey.parent.notYet(link.student_name)}</p>;
-              // The stage's name and note in the reader's language (M6, J6.2).
-              const stage = t.journey.stages[String(j.stage) as keyof typeof t.journey.stages];
-              return (
-                <div className="grid gap-5 rounded-2xl border border-border bg-surface p-6">
-                  <div className="grid gap-1">
-                    <p className="font-semibold">{t.journey.nav.helpStage(j.stage, stage.name)}</p>
-                    <StagePath
-                      stage={j.stage}
-                      progress={{ ...j.progress, label: localizeProgress(j.stage, j.progress, locale) }}
-                      t={t.journey}
-                      headingId={`path-${link.student_id}`}
-                    />
-                    <p className="text-xs text-muted">{t.journey.parent.updated(shortDate(j.computedAt))}</p>
-                  </div>
-                  <section aria-labelledby={`help-${link.student_id}`} className="grid gap-1">
-                    <h3 id={`help-${link.student_id}`} className="text-lg font-semibold">{t.journey.parent.helpNow}</h3>
-                    <p>{stage.parentNote.replace(/\{name\}/g, link.student_name)}</p>
-                  </section>
-                  <section aria-labelledby={`work-${link.student_id}`} className="grid gap-1">
-                    <h3 id={`work-${link.student_id}`} className="text-lg font-semibold">{t.journey.parent.workingOn(link.student_name)}</h3>
-                    {j.steps.length ? (
-                      <ul className="grid list-disc gap-1 pl-5">
-                        {j.steps.map((s, i) => <li key={i}>{parentStepTitle(s, locale)}</li>)}
-                      </ul>
-                    ) : (
-                      <p className="text-muted">{t.journey.parent.nothingNow}</p>
-                    )}
-                  </section>
+            {/* Email Digest Settings Card */}
+            <section className="rounded-xl border border-border bg-surface p-6 ambient-shadow flex flex-wrap items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <Mail className="h-5 w-5 text-secondary" />
+                <div>
+                  <h3 className="font-serif font-bold text-sm text-primary">Weekly Summary Digest</h3>
+                  <p className="text-xs text-muted">Receive a weekly digest of upcoming milestones and deadlines.</p>
                 </div>
-              );
-            })()}
-
-            <dl className="grid gap-3 rounded-2xl border border-border bg-surface p-6 text-sm sm:grid-cols-3">
-              <div><dt className="text-muted">Shortlisted courses</dt><dd className="text-lg font-semibold">{listed.length}</dd></div>
-              <div><dt className="text-muted">Checklist</dt><dd className="text-lg font-semibold">{items.length ? `${items.filter((i) => i.done).length} of ${items.length} done` : "Nothing yet"}</dd></div>
-              <div>
-                <dt className="text-muted">Next deadline</dt>
-                <dd className="text-lg font-semibold">
-                  {next ? deadlineText(next.d.due_at, next.d.timezone, next.d.precision) : "None open"}
-                  {next ? <span className="block text-sm font-normal text-muted">{next.title} · {daysUntil(next.d.due_at)} days</span> : null}
-                </dd>
               </div>
-            </dl>
+              <form action={setDigest.bind(null, link.student_id, !digest)}>
+                <button className={`btn btn-sm ${digest ? "btn-secondary" : "btn-coral-bright shadow-xs"}`}>
+                  {digest ? "Disable weekly email" : "Enable weekly email"}
+                </button>
+              </form>
+            </section>
 
-            <div className="grid gap-3">
-              <h3 className="text-lg font-semibold">Applications</h3>
-              {mine.length === 0 ? <p className="text-muted">No applications tracked yet.</p> : null}
-              {mine.map((a) => {
-                const course = courseOf(a);
-                const sorted = [...a.checklist_items].sort((x, y) => x.sort - y.sort);
-                return (
-                  <article key={a.id} className="grid gap-2 rounded-2xl border border-border bg-surface p-6">
-                    <div className="flex flex-wrap items-baseline justify-between gap-2">
-                      <h4 className="font-semibold">{course.title}</h4>
-                      <span className="text-sm text-muted">{label(a.decision ?? a.status)}</span>
-                    </div>
-                    <p className="text-sm text-muted">{course.institution}{a.program_cycles ? ` · ${a.program_cycles.label}` : ""}</p>
-                    {course.own ? <p><OwnBadge text="Added by the student, not checked" /></p> : null}
-                    <ul className="grid gap-1 text-sm">
-                      {sorted.map((i) => (
-                        <li key={i.id} className={i.done ? "text-muted line-through" : ""}>
-                          {i.title}
-                          {i.deadlines ? ` · ${deadlineText(i.deadlines.due_at, i.deadlines.timezone, i.deadlines.precision)} (${daysUntil(i.deadlines.due_at)} days)` : ""}
-                        </li>
-                      ))}
-                    </ul>
-                  </article>
-                );
-              })}
-            </div>
-
-            <div className="grid gap-2">
-              <h3 className="text-lg font-semibold">Shortlist</h3>
-              {listed.length === 0 ? <p className="text-muted">Nothing shortlisted yet.</p> : null}
-              <ul className="grid gap-1 text-sm">
-                {listed.map((s) => (
-                  <li key={s.programs!.slug}>
-                    <Link href={`/courses/${s.programs!.slug}`} className="underline underline-offset-2">{s.programs!.title}</Link>
-                    <span className="text-muted"> · {s.programs!.institutions?.name}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </section>
+            {/* Applications Progress */}
+            {mine.length > 0 ? (
+              <section className="rounded-xl border border-border bg-surface p-6 sm:p-8 ambient-shadow space-y-4">
+                <h2 className="font-serif text-2xl font-bold text-primary border-b border-border/60 pb-3">
+                  Applications in Progress ({mine.length})
+                </h2>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  {mine.map((a) => {
+                    const c = courseOf(a);
+                    return (
+                      <div key={a.id} className="rounded-xl border border-border bg-surface-2/40 p-5 space-y-2">
+                        <span className="text-[11px] font-bold uppercase tracking-wider text-muted bg-surface px-2.5 py-0.5 rounded-full border border-border inline-block">
+                          {label(a.status)}
+                        </span>
+                        <h3 className="font-serif font-bold text-base text-primary">{c.title}</h3>
+                        <p className="text-xs text-muted">{c.institution}</p>
+                        {a.decision ? (
+                          <p className="text-xs font-semibold text-verified mt-2">Decision: {label(a.decision)}</p>
+                        ) : null}
+                      </div>
+                    );
+                  })}
+                </div>
+              </section>
+            ) : null}
+          </div>
         );
       })}
     </div>

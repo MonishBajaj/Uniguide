@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>UniGuide AI - Accessibility Settings</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-dim": "#d9dadb",
+                        "on-tertiary-fixed": "#002117",
+                        "tertiary-fixed": "#a0f3d4",
+                        "secondary-container": "#fe694a",
+                        "primary-fixed-dim": "#adc6ff",
+                        "inverse-on-surface": "#f0f1f2",
+                        "on-tertiary-fixed-variant": "#00513e",
+                        "on-secondary-fixed": "#3e0500",
+                        "on-primary-container": "#7d96cb",
+                        "secondary-fixed-dim": "#ffb4a4",
+                        "error": "#ba1a1a",
+                        "tertiary-container": "#003628",
+                        "surface-container": "#edeeef",
+                        "surface": "#f8f9fa",
+                        "secondary-fixed": "#ffdad3",
+                        "on-secondary-fixed-variant": "#8d1701",
+                        "on-tertiary": "#ffffff",
+                        "on-primary-fixed-variant": "#2c4676",
+                        "surface-tint": "#455e90",
+                        "background": "#f8f9fa",
+                        "on-error": "#ffffff",
+                        "on-surface-variant": "#44474f",
+                        "primary-container": "#0f2d5c",
+                        "on-background": "#191c1d",
+                        "tertiary": "#001f16",
+                        "outline-variant": "#c4c6d0",
+                        "on-tertiary-container": "#53a58a",
+                        "on-primary-fixed": "#001a41",
+                        "surface-variant": "#e1e3e4",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-highest": "#e1e3e4",
+                        "error-container": "#ffdad6",
+                        "surface-container-high": "#e7e8e9",
+                        "surface-bright": "#f8f9fa",
+                        "on-error-container": "#93000a",
+                        "secondary": "#af3017",
+                        "outline": "#747780",
+                        "on-secondary-container": "#650d00",
+                        "surface-container-low": "#f3f4f5",
+                        "on-primary": "#ffffff",
+                        "primary": "#00183d",
+                        "tertiary-fixed-dim": "#84d6b9",
+                        "on-secondary": "#ffffff",
+                        "primary-fixed": "#d8e2ff",
+                        "on-surface": "#191c1d",
+                        "inverse-surface": "#2e3132",
+                        "inverse-primary": "#adc6ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "section-gap-md": "48px",
+                        "max-width": "1200px",
+                        "section-gap-lg": "80px",
+                        "gutter": "24px",
+                        "stack-gap": "16px",
+                        "margin-mobile": "16px"
+                    },
+                    "fontFamily": {
+                        "h3-desktop": ["Playfair Display"],
+                        "label-sm": ["Plus Jakarta Sans"],
+                        "button-text": ["Plus Jakarta Sans"],
+                        "h2-desktop": ["Playfair Display"],
+                        "h1-mobile": ["Playfair Display"],
+                        "h1-desktop": ["Playfair Display"],
+                        "body-md": ["Plus Jakarta Sans"],
+                        "body-lg": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "h3-desktop": ["24px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                        "label-sm": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                        "button-text": ["16px", {"lineHeight": "1", "fontWeight": "600"}],
+                        "h2-desktop": ["36px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                        "h1-mobile": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                        "h1-desktop": ["48px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                        "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #00183d;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: #00183d;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md selection:bg-secondary-fixed selection:text-on-secondary-fixed">
+<header class="fixed docked full-width top-0 z-50 bg-surface shadow-sm px-6 py-3">
+<div class="flex justify-between items-center w-full max-w-screen-2xl mx-auto">
+<div class="flex items-center gap-4">
+<span class="font-h3-desktop text-h3-desktop font-bold text-primary">UniGuide AI</span>
+</div>
+<div class="hidden md:flex items-center space-x-8">
+<nav class="flex space-x-6">
+<a class="font-body-md text-on-surface-variant hover:text-secondary-container transition-colors duration-200" href="#">Dashboard</a>
+<a class="font-body-md text-on-surface-variant hover:text-secondary-container transition-colors duration-200" href="#">Universities</a>
+<a class="font-body-md text-primary font-bold border-b-2 border-secondary-container" href="#">Settings</a>
+</nav>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer" data-icon="help">help</span>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer" data-icon="notifications">notifications</span>
+<button class="bg-primary text-on-primary px-6 py-2 rounded-full font-button-text hover:opacity-90 transition-all">Apply Now</button>
+</div>
+</div>
+</div>
+</header>
+<div class="flex pt-16 min-h-screen">
+<!-- Side Navigation Shell -->
+<aside class="fixed left-0 top-0 h-full w-64 bg-surface-container-low flex flex-col py-8 px-4 z-40 mt-16">
+<div class="mb-8 px-4">
+<div class="flex items-center gap-3 mb-2">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container font-bold">JD</div>
+<div>
+<p class="font-label-sm text-primary font-bold">John Doe</p>
+<p class="text-[12px] text-on-surface-variant">Admissions Portal</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant font-medium hover:bg-surface-container transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-body-md">Preferences</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant font-medium hover:bg-surface-container transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="notifications_active">notifications_active</span>
+<span class="font-body-md">Notifications</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant font-medium hover:bg-surface-container transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span class="font-body-md">Subscription</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-primary font-bold border-r-4 border-secondary-container bg-surface-bright transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="accessibility_new">accessibility_new</span>
+<span class="font-body-md">Accessibility</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant font-medium hover:bg-surface-container transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="emoji_events">emoji_events</span>
+<span class="font-body-md">Milestones</span>
+</a>
+</nav>
+<div class="mt-auto px-4 py-6">
+<button class="w-full py-3 bg-secondary-container text-white rounded-xl font-button-text shadow-sm hover:opacity-90 transition-all">
+                    Get AI Support
+                </button>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-64 flex-1 p-10 bg-surface">
+<div class="max-w-[800px] mx-auto">
+<header class="mb-10">
+<h1 class="font-h3-desktop text-h3-desktop font-bold text-primary mb-2" style="font-size: 24px;">Accessibility</h1>
+<p class="text-on-surface-variant font-body-md">Tailor your UniGuide experience to suit your reading and viewing preferences.</p>
+</header>
+<div class="space-y-6">
+<!-- Font Size Section -->
+<section class="bg-white border border-outline-variant rounded-xl p-8 transition-all hover:shadow-[0_8px_24px_rgba(0,24,61,0.06)]">
+<div class="flex items-center gap-3 mb-6">
+<span class="material-symbols-outlined text-primary" data-icon="format_size">format_size</span>
+<h2 class="text-lg font-bold text-primary">Font Size</h2>
+</div>
+<div class="mb-8 p-6 bg-surface-container-lowest border border-dashed border-outline-variant rounded-lg">
+<p class="text-center font-body-lg text-on-surface">This is how your text will look</p>
+</div>
+<div class="px-2">
+<input class="w-full h-2 bg-surface-container-highest rounded-lg appearance-none cursor-pointer accent-primary" max="4" min="1" step="1" type="range" value="2"/>
+<div class="flex justify-between mt-4 text-[12px] font-bold text-outline uppercase tracking-wider">
+<span>Small</span>
+<span>Default</span>
+<span>Large</span>
+<span>Extra Large</span>
+</div>
+</div>
+</section>
+<!-- Bento Grid for Toggles -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- High Contrast Mode -->
+<div class="bg-white border border-outline-variant rounded-xl p-6 flex flex-col justify-between transition-all hover:shadow-[0_8px_24px_rgba(0,24,61,0.06)]">
+<div>
+<div class="flex items-center justify-between mb-4">
+<span class="material-symbols-outlined text-secondary" data-icon="contrast">contrast</span>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<h3 class="font-bold text-primary mb-2">High Contrast Mode</h3>
+<p class="text-on-surface-variant text-sm leading-relaxed">Increases color contrast for better readability.</p>
+</div>
+</div>
+<!-- Dyslexia-Friendly Font -->
+<div class="bg-white border border-outline-variant rounded-xl p-6 flex flex-col justify-between transition-all hover:shadow-[0_8px_24px_rgba(0,24,61,0.06)]">
+<div>
+<div class="flex items-center justify-between mb-4">
+<span class="material-symbols-outlined text-on-tertiary-container" data-icon="spellcheck">spellcheck</span>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<h3 class="font-bold text-primary mb-2">Dyslexia-Friendly Font</h3>
+<p class="text-on-surface-variant text-sm leading-relaxed">Uses OpenDyslexic font throughout the app.</p>
+</div>
+</div>
+</div>
+<!-- Additional AI Insight Card (Design System mandated) -->
+<div class="mt-8 border border-transparent rounded-xl p-[2px] bg-gradient-to-r from-secondary-container/30 to-transparent">
+<div class="bg-white rounded-[10px] p-6 flex gap-4">
+<span class="material-symbols-outlined text-secondary-container" data-icon="auto_awesome" data-weight="fill">auto_awesome</span>
+<div>
+<h4 class="font-bold text-primary mb-1">AI Recommendation</h4>
+<p class="text-sm text-on-surface-variant">Based on your activity, we suggest enabling <span class="font-bold text-primary">High Contrast Mode</span> during late-night study sessions to reduce eye strain.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-12 pt-8 border-t border-outline-variant flex justify-end gap-4">
+<button class="px-8 py-3 rounded-full border border-primary text-primary font-button-text hover:bg-surface-container transition-colors">Discard Changes</button>
+<button class="px-8 py-3 rounded-full bg-primary text-white font-button-text hover:opacity-95 transition-all shadow-md">Save Settings</button>
+</div>
+</div>
+</main>
+</div>
+<!-- Mobile Navigation (Responsive Pivot) -->
+<nav class="md:hidden fixed bottom-0 left-0 right-0 bg-surface flex justify-around py-4 z-50 shadow-[0_-4px_12px_rgba(0,0,0,0.05)]">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="dashboard">dashboard</span>
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="school">school</span>
+<span class="material-symbols-outlined text-primary" data-icon="settings">settings</span>
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="account_circle">account_circle</span>
+</nav>
+<!-- Decorative Academic Element -->
+<div class="fixed bottom-10 right-10 opacity-5 pointer-events-none select-none z-0">
+<img alt="Academic Excellence Background" class="w-64" data-alt="A highly detailed 3D render of a classical academic crest with an open book and torch motif, styled in deep Navy and rich Gold. The image has a luxurious, minimalist aesthetic with soft studio lighting and sharp focus on engraved textures, evoking prestige and higher education excellence. Isolated on a transparent-look neutral background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBAePQGmgymPzXLlLccAq1HQvRiR3TTGtbdkwgox2eCkrtUkVpx7a6EjCjpRyLY1jUP3m9sSVsXaIKMQqoG4YeebZha1Jjrx7ocni4F0KyvWPMAO0Ytv_z9FAlQmva_KOIZVF-229wNODkHqJYioO5ohR4SpqzTzeDGyYr7iiKFkNrK96l1YtQ22_VAJEzA49nE5f3Q3MywjLfTA53crhMhgsIaRSjaXMrUi2UGcjv38jcYgiDdmxI2KJ0vW4iOurNny9_cyuOwZd-P"/>
+</div>
+</body></html>

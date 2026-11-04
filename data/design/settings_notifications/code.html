@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>UniGuide AI - Notification Settings</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-dim": "#d9dadb",
+                        "on-tertiary-fixed": "#002117",
+                        "tertiary-fixed": "#a0f3d4",
+                        "secondary-container": "#fe694a",
+                        "primary-fixed-dim": "#adc6ff",
+                        "inverse-on-surface": "#f0f1f2",
+                        "on-tertiary-fixed-variant": "#00513e",
+                        "on-secondary-fixed": "#3e0500",
+                        "on-primary-container": "#7d96cb",
+                        "secondary-fixed-dim": "#ffb4a4",
+                        "error": "#ba1a1a",
+                        "tertiary-container": "#003628",
+                        "surface-container": "#edeeef",
+                        "surface": "#f8f9fa",
+                        "secondary-fixed": "#ffdad3",
+                        "on-secondary-fixed-variant": "#8d1701",
+                        "on-tertiary": "#ffffff",
+                        "on-primary-fixed-variant": "#2c4676",
+                        "surface-tint": "#455e90",
+                        "background": "#f8f9fa",
+                        "on-error": "#ffffff",
+                        "on-surface-variant": "#44474f",
+                        "primary-container": "#0f2d5c",
+                        "on-background": "#191c1d",
+                        "tertiary": "#001f16",
+                        "outline-variant": "#c4c6d0",
+                        "on-tertiary-container": "#53a58a",
+                        "on-primary-fixed": "#001a41",
+                        "surface-variant": "#e1e3e4",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-highest": "#e1e3e4",
+                        "error-container": "#ffdad6",
+                        "surface-container-high": "#e7e8e9",
+                        "surface-bright": "#f8f9fa",
+                        "on-error-container": "#93000a",
+                        "secondary": "#af3017",
+                        "outline": "#747780",
+                        "on-secondary-container": "#650d00",
+                        "surface-container-low": "#f3f4f5",
+                        "on-primary": "#ffffff",
+                        "primary": "#00183d",
+                        "tertiary-fixed-dim": "#84d6b9",
+                        "on-secondary": "#ffffff",
+                        "primary-fixed": "#d8e2ff",
+                        "on-surface": "#191c1d",
+                        "inverse-surface": "#2e3132",
+                        "inverse-primary": "#adc6ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "section-gap-md": "48px",
+                        "max-width": "1200px",
+                        "section-gap-lg": "80px",
+                        "gutter": "24px",
+                        "stack-gap": "16px",
+                        "margin-mobile": "16px"
+                    },
+                    "fontFamily": {
+                        "h3-desktop": ["Playfair Display"],
+                        "label-sm": ["Plus Jakarta Sans"],
+                        "button-text": ["Plus Jakarta Sans"],
+                        "h2-desktop": ["Playfair Display"],
+                        "h1-mobile": ["Playfair Display"],
+                        "h1-desktop": ["Playfair Display"],
+                        "body-md": ["Plus Jakarta Sans"],
+                        "body-lg": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "h3-desktop": ["24px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                        "label-sm": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                        "button-text": ["16px", {"lineHeight": "1", "fontWeight": "600"}],
+                        "h2-desktop": ["36px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                        "h1-mobile": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                        "h1-desktop": ["48px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                        "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .toggle-checked {
+            background-color: #53a58a; /* tertiary success */
+        }
+    </style>
+</head>
+<body class="bg-surface font-body-md text-on-surface min-h-screen">
+<!-- Top AppBar (JSON Source) -->
+<header class="bg-surface dark:bg-background shadow-sm fixed top-0 z-50 w-full docked full-width">
+<div class="flex justify-between items-center w-full px-6 py-3 max-w-screen-2xl mx-auto">
+<div class="flex items-center gap-8">
+<span class="font-h3-desktop text-h3-desktop font-bold text-primary dark:text-primary-fixed">UniGuide AI</span>
+<nav class="hidden md:flex gap-6 items-center">
+<a class="text-on-surface-variant dark:text-outline-variant font-medium hover:text-secondary-container transition-colors duration-200" href="#">Explore</a>
+<a class="text-on-surface-variant dark:text-outline-variant font-medium hover:text-secondary-container transition-colors duration-200" href="#">Universities</a>
+<a class="text-on-surface-variant dark:text-outline-variant font-medium hover:text-secondary-container transition-colors duration-200" href="#">Applications</a>
+<a class="text-primary dark:text-primary-fixed border-b-2 border-secondary-container font-medium hover:text-secondary-container transition-colors duration-200" href="#">Profile</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-4 text-on-surface-variant">
+<span class="material-symbols-outlined cursor-pointer hover:text-primary transition-colors" data-icon="help">help</span>
+<span class="material-symbols-outlined cursor-pointer hover:text-primary transition-colors" data-icon="notifications">notifications</span>
+<span class="material-symbols-outlined cursor-pointer hover:text-primary transition-colors" data-icon="account_circle">account_circle</span>
+</div>
+<button class="bg-primary text-on-primary font-button-text text-button-text px-6 py-2.5 rounded-full hover:bg-primary-container transition-all Active: opacity-80">
+                    Apply Now
+                </button>
+</div>
+</div>
+</header>
+<main class="pt-[68px] flex min-h-screen">
+<!-- Sidebar Navigation -->
+<aside class="w-[200px] bg-[#F7F6F2] border-r border-outline-variant sticky top-[68px] h-[calc(100vh-68px)] flex flex-col py-8 px-0">
+<h2 class="px-6 font-label-sm text-label-sm font-bold uppercase text-on-surface-variant mb-6">Settings</h2>
+<nav class="flex flex-col">
+<a class="px-6 py-3 font-body-md text-on-surface-variant font-medium hover:bg-surface-container transition-all" href="#">Account</a>
+<a class="px-6 py-3 font-body-md text-primary font-bold border-l-[4px] border-secondary-container bg-surface-bright transition-all" href="#">Notifications</a>
+<a class="px-6 py-3 font-body-md text-on-surface-variant font-medium hover:bg-surface-container transition-all" href="#">Subscription</a>
+<a class="px-6 py-3 font-body-md text-on-surface-variant font-medium hover:bg-surface-container transition-all" href="#">Accessibility</a>
+<a class="px-6 py-3 font-body-md text-on-surface-variant font-medium hover:bg-surface-container transition-all" href="#">Privacy</a>
+<a class="px-6 py-3 font-body-md text-on-surface-variant font-medium hover:bg-surface-container transition-all" href="#">Language</a>
+<a class="px-6 py-3 font-body-md text-on-surface-variant font-medium hover:bg-surface-container transition-all" href="#">Milestones</a>
+</nav>
+<div class="mt-auto px-4 pb-8">
+<button class="w-full bg-primary-container text-on-primary-fixed-variant font-label-sm text-label-sm py-3 rounded-lg flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined" data-icon="smart_toy">smart_toy</span>
+                    Get AI Support
+                </button>
+</div>
+</aside>
+<!-- Content Area -->
+<section class="flex-1 max-w-[1000px] mx-auto p-12 overflow-y-auto">
+<div class="mb-10">
+<h1 class="text-[20px] font-bold text-primary font-h2-desktop mb-1">Notification Preferences</h1>
+<p class="text-[13px] text-on-surface-variant">Choose how and when you hear from us</p>
+</div>
+<!-- Notification Matrix -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden mb-10">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low border-b border-outline-variant">
+<th class="px-6 py-4 font-label-sm text-label-sm text-on-surface">Event Type</th>
+<th class="px-6 py-4 font-label-sm text-label-sm text-on-surface text-center">In-App</th>
+<th class="px-6 py-4 font-label-sm text-label-sm text-on-surface text-center">Email</th>
+<th class="px-6 py-4 font-label-sm text-label-sm text-on-surface text-center">Push</th>
+<th class="px-6 py-4 font-label-sm text-label-sm text-on-surface text-center">WhatsApp</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<!-- Application Deadlines -->
+<tr>
+<td class="px-6 py-4 font-medium text-primary">Application Deadlines</td>
+<td class="px-6 py-4 text-center">
+<div class="inline-flex h-5 w-9 items-center rounded-full bg-[#53a58a] p-1 cursor-pointer">
+<div class="h-3 w-3 translate-x-4 rounded-full bg-white transition-transform"></div>
+</div>
+</td>
+<td class="px-6 py-4 text-center">
+<div class="inline-flex h-5 w-9 items-center rounded-full bg-[#53a58a] p-1 cursor-pointer">
+<div class="h-3 w-3 translate-x-4 rounded-full bg-white transition-transform"></div>
+</div>
+</td>
+<td class="px-6 py-4 text-center">
+<div class="inline-flex h-5 w-9 items-center rounded-full bg-[#53a58a] p-1 cursor-pointer">
+<div class="h-3 w-3 translate-x-4 rounded-full bg-white transition-transform"></div>
+</div>
+</td>
+<td class="px-6 py-4 text-center">
+<div class="inline-flex h-5 w-9 items-center rounded-full bg-outline-variant p-1 cursor-pointer">
+<div class="h-3 w-3 rounded-full bg-white transition-transform"></div>
+</div>
+</td>
+</tr>
+<!-- Scholarship Alerts -->
+<tr>
+<td class="px-6 py-4 font-medium text-primary">Scholarship Alerts</td>
+<td class="px-6 py-4 text-center">
+<div class="inline-flex h-5 w-9 items-center rounded-full bg-[#53a58a] p-1 cursor-pointer">
+<div class="h-3 w-3 translate-x-4 rounded-full bg-white transition-transform"></div>
+</div>
+</td>
+<td class="px-6 py-4 text-center">
+<div class="inline-flex h-5 w-9 items-center rounded-full bg-[#53a58a] p-1 cursor-pointer">
+<div class="h-3 w-3 translate-x-4 rounded-full bg-white transition-transform"></div>
+</div>
+</td>
+<td class="px-6 py-4 text-center">
+<div class="inline-flex h-5 w-9 items-center rounded-full bg-outline-variant p-1 cursor-pointer">
+<div class="h-3 w-3 rounded-full bg-white transition-transform"></div>
+</div>
+</td>
+<td class="px-6 py-4 text-center">
+<div class="inline-flex h-5 w-9 items-center rounded-full bg-outline-variant p-1 cursor-pointer">
+<div class="h-3 w-3 rounded-full bg-white transition-transform"></div>
+</div>
+</td>
+</tr>
+<!-- LOR Updates -->
+<tr>
+<td class="px-6 py-4 font-medium text-primary">LOR Updates</td>
+<td class="px-6 py-4 text-center">
+<div class="inline-flex h-5 w-9 items-center rounded-full bg-[#53a58a] p-1 cursor-pointer">
+<div class="h-3 w-3 translate-x-4 rounded-full bg-white transition-transform"></div>
+</div>
+</td>
+<td class="px-6 py-4 text-center">
+<div class="inline-flex h-5 w-9 items-center rounded-full bg-[#53a58a] p-1 cursor-pointer">
+<div class="h-3 w-3 translate-x-4 rounded-full bg-white transition-transform"></div>
+</div>
+</td>
+<td class="px-6 py-4 text-center">
+<div class="inline-flex h-5 w-9 items-center rounded-full bg-[#53a58a] p-1 cursor-pointer">
+<div class="h-3 w-3 translate-x-4 rounded-full bg-white transition-transform"></div>
+</div>
+</td>
+<td class="px-6 py-4 text-center">
+<div class="inline-flex h-5 w-9 items-center rounded-full bg-outline-variant p-1 cursor-pointer">
+<div class="h-3 w-3 rounded-full bg-white transition-transform"></div>
+</div>
+</td>
+</tr>
+<!-- Weekly Digest -->
+<tr>
+<td class="px-6 py-4 font-medium text-primary">Weekly Digest</td>
+<td class="px-6 py-4 text-center">
+<div class="inline-flex h-5 w-9 items-center rounded-full bg-outline-variant p-1 cursor-pointer">
+<div class="h-3 w-3 rounded-full bg-white transition-transform"></div>
+</div>
+</td>
+<td class="px-6 py-4 text-center">
+<div class="inline-flex h-5 w-9 items-center rounded-full bg-[#53a58a] p-1 cursor-pointer">
+<div class="h-3 w-3 translate-x-4 rounded-full bg-white transition-transform"></div>
+</div>
+</td>
+<td class="px-6 py-4 text-center">
+<div class="inline-flex h-5 w-9 items-center rounded-full bg-outline-variant p-1 cursor-pointer">
+<div class="h-3 w-3 rounded-full bg-white transition-transform"></div>
+</div>
+</td>
+<td class="px-6 py-4 text-center">
+<div class="inline-flex h-5 w-9 items-center rounded-full bg-outline-variant p-1 cursor-pointer">
+<div class="h-3 w-3 rounded-full bg-white transition-transform"></div>
+</div>
+</td>
+</tr>
+<!-- Community Replies -->
+<tr>
+<td class="px-6 py-4 font-medium text-primary">Community Replies</td>
+<td class="px-6 py-4 text-center">
+<div class="inline-flex h-5 w-9 items-center rounded-full bg-[#53a58a] p-1 cursor-pointer">
+<div class="h-3 w-3 translate-x-4 rounded-full bg-white transition-transform"></div>
+</div>
+</td>
+<td class="px-6 py-4 text-center">
+<div class="inline-flex h-5 w-9 items-center rounded-full bg-outline-variant p-1 cursor-pointer">
+<div class="h-3 w-3 rounded-full bg-white transition-transform"></div>
+</div>
+</td>
+<td class="px-6 py-4 text-center">
+<div class="inline-flex h-5 w-9 items-center rounded-full bg-outline-variant p-1 cursor-pointer">
+<div class="h-3 w-3 rounded-full bg-white transition-transform"></div>
+</div>
+</td>
+<td class="px-6 py-4 text-center">
+<div class="inline-flex h-5 w-9 items-center rounded-full bg-outline-variant p-1 cursor-pointer">
+<div class="h-3 w-3 rounded-full bg-white transition-transform"></div>
+</div>
+</td>
+</tr>
+<!-- Decision Alerts -->
+<tr>
+<td class="px-6 py-4 font-medium text-primary">Decision Alerts</td>
+<td class="px-6 py-4 text-center">
+<div class="inline-flex h-5 w-9 items-center rounded-full bg-[#53a58a] p-1 cursor-pointer">
+<div class="h-3 w-3 translate-x-4 rounded-full bg-white transition-transform"></div>
+</div>
+</td>
+<td class="px-6 py-4 text-center">
+<div class="inline-flex h-5 w-9 items-center rounded-full bg-[#53a58a] p-1 cursor-pointer">
+<div class="h-3 w-3 translate-x-4 rounded-full bg-white transition-transform"></div>
+</div>
+</td>
+<td class="px-6 py-4 text-center">
+<div class="inline-flex h-5 w-9 items-center rounded-full bg-[#53a58a] p-1 cursor-pointer">
+<div class="h-3 w-3 translate-x-4 rounded-full bg-white transition-transform"></div>
+</div>
+</td>
+<td class="px-6 py-4 text-center">
+<div class="inline-flex h-5 w-9 items-center rounded-full bg-outline-variant p-1 cursor-pointer">
+<div class="h-3 w-3 rounded-full bg-white transition-transform"></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- WhatsApp Section -->
+<div class="bg-[#FFF9E5] border border-[#FFE082] rounded-xl p-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
+<div class="max-w-md">
+<div class="flex items-center gap-3 mb-3">
+<h3 class="font-bold text-primary text-body-lg">Connect WhatsApp for instant deadline alerts</h3>
+<span class="bg-[#FFEDCC] text-[#8D6E11] text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wider">Popular with international students</span>
+</div>
+<p class="text-on-surface-variant text-body-md">Get high-priority alerts for university deadlines, visa updates, and interview invites directly in your favorite messaging app.</p>
+</div>
+<div class="w-full md:w-auto flex flex-col gap-4">
+<div class="flex items-center gap-2">
+<div class="relative">
+<select class="bg-surface border border-outline rounded-lg py-2 pl-3 pr-8 font-body-md text-on-surface appearance-none focus:border-primary focus:ring-1 focus:ring-primary outline-none">
+<option>+1</option>
+<option>+44</option>
+<option>+91</option>
+<option>+86</option>
+<option>+971</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-2.5 text-[18px] pointer-events-none" data-icon="expand_more">expand_more</span>
+</div>
+<input class="bg-surface border border-outline rounded-lg py-2 px-4 font-body-md w-full md:w-64 focus:border-primary focus:ring-1 focus:ring-primary outline-none" placeholder="Phone Number" type="tel"/>
+</div>
+<button class="bg-secondary-container text-on-secondary font-button-text text-button-text py-3 px-8 rounded-full hover:shadow-lg transition-all text-center">
+                        Verify &amp; Connect
+                    </button>
+</div>
+</div>
+<!-- AI Insight Panel -->
+<div class="mt-12 p-1 rounded-xl bg-gradient-to-r from-secondary-container/20 via-tertiary-fixed/20 to-secondary-container/20">
+<div class="bg-surface-container-lowest p-6 rounded-[10px] border border-white/40 shadow-sm flex gap-4">
+<div class="text-secondary-container">
+<span class="material-symbols-outlined text-[32px]" data-icon="auto_awesome">auto_awesome</span>
+</div>
+<div>
+<h4 class="font-bold text-primary mb-1">UniGuide Smart Alerts</h4>
+<p class="text-on-surface-variant text-body-md italic leading-relaxed">"Based on your profile, I recommend enabling WhatsApp alerts for **Scholarship Alerts**. International students who use mobile alerts are 40% more likely to submit scholarship applications before the early-bird deadlines."</p>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer Meta (Optional for completeness) -->
+<footer class="bg-surface py-8 border-t border-outline-variant ml-[200px]">
+<div class="max-w-[1000px] mx-auto px-12 flex justify-between items-center">
+<p class="text-label-sm text-on-surface-variant">© 2024 UniGuide AI. All academic rights reserved.</p>
+<div class="flex gap-6 text-label-sm text-on-surface-variant font-medium">
+<a class="hover:text-primary" href="#">Help Center</a>
+<a class="hover:text-primary" href="#">Privacy Policy</a>
+<a class="hover:text-primary" href="#">Terms of Service</a>
+</div>
+</div>
+</footer>
+</body></html>

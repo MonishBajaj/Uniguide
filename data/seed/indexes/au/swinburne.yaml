@@ -1,0 +1,10 @@
+institution: "Swinburne University of Technology"
+country: AU
+official_domain: swinburne.edu.au
+indexes:
+  - url: https://www.swinburne.edu.au/courses/find-a-course/engineering/
+    kind: programs
+  - url: https://www.swinburne.edu.au/courses/find-a-course/business/
+    kind: programs
+  - url: https://www.swinburne.edu.au/courses/find-a-course/information-technology/
+    kind: programs

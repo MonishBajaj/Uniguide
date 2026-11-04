@@ -13,9 +13,10 @@ import { getLocale } from "@/lib/i18n/server";
 import { localizeJourney } from "@/lib/journey-copy";
 import type { LoadedJourney } from "@/lib/journey-request";
 import { getJourney, saveJourney } from "@/lib/journey-request.server";
+import { InstitutionMonogram } from "@/components/ui/monogram";
+import { ArrowRight, Sparkles } from "lucide-react";
 
 export const metadata: Metadata = { title: "Home" };
-
 
 /**
  * Journey home (spec 6.2, journey M2 J2.3): where a signed-in student lands. Everything on it comes
@@ -42,7 +43,7 @@ export default async function JourneyHome({ searchParams }: PageProps<"/app">) {
   if (consentOk && result.stage === 1 && !entryPath) redirect("/app/onboarding");
   await saveJourney();
 
-  const greeting = <h1 className="text-4xl font-semibold">{j.home.greeting(displayName ?? "")}</h1>;
+  const greeting = <h1 className="text-3xl sm:text-4xl font-serif font-bold text-primary">{j.home.greeting(displayName ?? "")}</h1>;
   // Revoked consent: nothing personal may be used, so no steps; the layout's banner explains why.
   if (consentState === "revoked") return <div className="grid gap-6">{greeting}</div>;
 
@@ -53,27 +54,27 @@ export default async function JourneyHome({ searchParams }: PageProps<"/app">) {
     return (
       <div className="grid gap-8">
         <header>{greeting}</header>
-        <section aria-labelledby="made-it" className="grid gap-4 rounded-2xl border border-border bg-surface p-6">
-          <h2 id="made-it" className="text-3xl font-semibold">{j.arrived.title}</h2>
-          <p className="max-w-2xl text-lg">{institution ? j.arrived.body(institution) : j.arrived.bodyNoCourse}</p>
-          <h3 className="font-semibold">{j.arrived.links}</h3>
-          <ul className="grid gap-2">
-            <li><Link href="/app/departure" className="font-semibold text-accent underline underline-offset-2">{j.arrived.arrival}</Link></li>
+        <section aria-labelledby="made-it" className="grid gap-4 rounded-xl border border-border bg-surface p-8 ambient-shadow">
+          <h2 id="made-it" className="text-3xl font-serif font-bold text-primary">{j.arrived.title}</h2>
+          <p className="max-w-2xl text-lg text-muted">{institution ? j.arrived.body(institution) : j.arrived.bodyNoCourse}</p>
+          <h3 className="font-serif font-bold text-lg text-primary mt-2">{j.arrived.links}</h3>
+          <ul className="grid gap-3">
+            <li><Link href="/app/departure" className="font-semibold text-primary underline underline-offset-2 hover:text-secondary">{j.arrived.arrival}</Link></li>
             {going?.program.slug ? (
               <li>
-                <Link href={`/courses/${going.program.slug}/arrival`} className="font-semibold text-accent underline underline-offset-2">
+                <Link href={`/courses/${going.program.slug}/arrival`} className="font-semibold text-primary underline underline-offset-2 hover:text-secondary">
                   {j.arrived.arrivalGuide(institution)}
                 </Link>
               </li>
             ) : null}
             {going?.program.slug ? (
               <li>
-                <Link href={`/courses/${going.program.slug}#student-life`} className="font-semibold text-accent underline underline-offset-2">
+                <Link href={`/courses/${going.program.slug}#student-life`} className="font-semibold text-primary underline underline-offset-2 hover:text-secondary">
                   {j.arrived.studentLife(institution)}
                 </Link>
               </li>
             ) : null}
-            <li><Link href="/app/tracker" className="font-semibold text-accent underline underline-offset-2">{j.arrived.tracker}</Link></li>
+            <li><Link href="/app/tracker" className="font-semibold text-primary underline underline-offset-2 hover:text-secondary">{j.arrived.tracker}</Link></li>
           </ul>
         </section>
       </div>
@@ -85,32 +86,91 @@ export default async function JourneyHome({ searchParams }: PageProps<"/app">) {
   const status = readStatus(await searchParams);
   const alsoOpen = result.steps.filter((s) => s.rank === "carry_over").length;
 
+  // Application summary from Stitch dashboard_overview
+  const activeApps = input.applications.filter((a) => !a.declinedAt);
+
   return (
-    <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_18rem]">
+    <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_20rem]">
       <div className="grid min-w-0 content-start gap-8">
-        <header className="grid gap-2">
+        <header className="grid gap-1.5">
           {greeting}
-          <p className="text-lg text-muted">{j.home.summary(result.stage, stageName)}</p>
+          <p className="text-base text-muted">{j.home.summary(result.stage, stageName)}</p>
         </header>
+
         <StepStatus status={status} t={j.steps} from="/app" />
+
+        {/* Applications Progress Summary Card (Stitch design) */}
+        {activeApps.length > 0 ? (
+          <section className="rounded-xl border border-border bg-surface p-6 ambient-shadow">
+            <div className="flex items-center justify-between mb-5 border-b border-border/60 pb-3">
+              <h2 className="font-serif text-lg font-bold text-primary">{j.nav.applications}</h2>
+              <span className="text-xs font-bold uppercase tracking-wider bg-primary/10 text-primary px-3 py-1 rounded-full font-mono">
+                {activeApps.length}
+              </span>
+            </div>
+
+            <div className="grid gap-4">
+              {activeApps.slice(0, 4).map((app) => (
+                <div key={app.id} className="flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <InstitutionMonogram name={app.program.institution} size="sm" />
+                    <div className="min-w-0">
+                      <p className="font-serif text-sm font-bold text-primary truncate">{app.program.institution}</p>
+                      <p className="text-xs text-muted truncate">{app.program.title}</p>
+                    </div>
+                  </div>
+                  <Link
+                    href={`/app/tracker/${app.id}`}
+                    className="shrink-0 text-xs font-semibold text-primary hover:text-secondary inline-flex items-center gap-1"
+                  >
+                    <span>{j.applying.openChecklist}</span>
+                    <ArrowRight className="h-3.5 w-3.5" />
+                  </Link>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-5 pt-3 border-t border-border/60 flex justify-end">
+              <Link href="/app/tracker" className="text-xs font-bold text-primary hover:text-secondary inline-flex items-center gap-1">
+                <span>{j.home.stagePage}</span>
+                <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
+            </div>
+          </section>
+        ) : null}
+
+        {/* 7-Stage Stepper Path */}
         <StagePath stage={result.stage} progress={result.stageProgress} t={j} />
+
+        {/* Next Steps Section */}
         <section aria-labelledby="next-steps" className="grid gap-4">
           <div className="flex flex-wrap items-baseline justify-between gap-2">
-            <h2 id="next-steps" className="text-2xl font-semibold">{j.home.nextSteps}</h2>
-            <Link href="/app/steps" className="font-semibold text-accent underline underline-offset-2">{j.home.seeAll}</Link>
+            <div className="flex items-center gap-2">
+              <Sparkles className="h-5 w-5 text-secondary" />
+              <h2 id="next-steps" className="font-serif text-2xl font-bold text-primary">{j.home.nextSteps}</h2>
+            </div>
+            <Link href="/app/steps" className="text-sm font-semibold text-primary underline underline-offset-2 hover:text-secondary">
+              {j.home.seeAll}
+            </Link>
           </div>
+
           {next.length ? (
             <div className="grid gap-4">
-              {next.map((step) => <StepCard key={step.id} step={step} t={j} from="/app" timezone={dueTimezone(step.dueAt, input)} />)}
+              {next.map((step) => (
+                <StepCard key={step.id} step={step} t={j} from="/app" timezone={dueTimezone(step.dueAt, input)} />
+              ))}
             </div>
           ) : (
-            <div className="grid gap-2 rounded-2xl border border-border bg-surface p-5">
-              <p>{j.home.upToDate}</p>
-              <Link href={STAGES[result.stage].route} className="font-semibold text-accent underline underline-offset-2">{j.home.stagePage}</Link>
+            <div className="grid gap-3 rounded-xl border border-border bg-surface p-6 ambient-shadow text-center py-10">
+              <p className="text-muted text-base">{j.home.upToDate}</p>
+              <Link href={STAGES[result.stage].route} className="btn btn-primary btn-sm mx-auto">
+                {j.home.stagePage}
+              </Link>
             </div>
           )}
         </section>
       </div>
+
       <SideColumn t={j} stage={result.stage} deadlines={upcomingDeadlines(input, 3)} input={input} alsoOpen={alsoOpen} />
     </div>
   );

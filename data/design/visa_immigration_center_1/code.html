@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Visa &amp; Immigration Center | UniGuide AI</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&amp;family=Plus+Jakarta+Sans:wght@400;600;700&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary-container": "#003628",
+                    "on-primary-fixed-variant": "#2c4676",
+                    "outline-variant": "#c4c6d0",
+                    "on-error": "#ffffff",
+                    "secondary-fixed-dim": "#ffb4a4",
+                    "primary": "#00183d",
+                    "on-surface": "#191c1d",
+                    "inverse-primary": "#adc6ff",
+                    "on-tertiary-fixed-variant": "#00513e",
+                    "on-secondary": "#ffffff",
+                    "tertiary-fixed-dim": "#84d6b9",
+                    "surface": "#f8f9fa",
+                    "surface-dim": "#d9dadb",
+                    "tertiary": "#001f16",
+                    "secondary-container": "#fe694a",
+                    "on-surface-variant": "#44474f",
+                    "background": "#f8f9fa",
+                    "on-primary-fixed": "#001a41",
+                    "on-secondary-fixed-variant": "#8d1701",
+                    "on-background": "#191c1d",
+                    "on-primary": "#ffffff",
+                    "error-container": "#ffdad6",
+                    "inverse-surface": "#2e3132",
+                    "on-tertiary-container": "#53a58a",
+                    "on-secondary-container": "#650d00",
+                    "on-tertiary": "#ffffff",
+                    "surface-container-low": "#f3f4f5",
+                    "surface-container-high": "#e7e8e9",
+                    "surface-container": "#edeeef",
+                    "error": "#ba1a1a",
+                    "secondary": "#af3017",
+                    "on-primary-container": "#7d96cb",
+                    "on-secondary-fixed": "#3e0500",
+                    "primary-container": "#0f2d5c",
+                    "on-tertiary-fixed": "#002117",
+                    "inverse-on-surface": "#f0f1f2",
+                    "surface-variant": "#e1e3e4",
+                    "on-error-container": "#93000a",
+                    "primary-fixed-dim": "#adc6ff",
+                    "surface-bright": "#f8f9fa",
+                    "secondary-fixed": "#ffdad3",
+                    "surface-tint": "#455e90",
+                    "outline": "#747780",
+                    "surface-container-highest": "#e1e3e4",
+                    "surface-container-lowest": "#ffffff",
+                    "tertiary-fixed": "#a0f3d4",
+                    "primary-fixed": "#d8e2ff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "24px"
+            },
+            "spacing": {
+                    "margin-mobile": "16px",
+                    "section-gap-lg": "80px",
+                    "max-width": "1200px",
+                    "stack-gap": "16px",
+                    "section-gap-md": "48px",
+                    "gutter": "24px"
+            },
+            "fontFamily": {
+                    "h3-desktop": ["Playfair Display"],
+                    "h1-mobile": ["Playfair Display"],
+                    "body-md": ["Plus Jakarta Sans"],
+                    "body-lg": ["Plus Jakarta Sans"],
+                    "button-text": ["Plus Jakarta Sans"],
+                    "label-sm": ["Plus Jakarta Sans"],
+                    "h2-desktop": ["Playfair Display"],
+                    "h1-desktop": ["Playfair Display"]
+            },
+            "fontSize": {
+                    "h3-desktop": ["24px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                    "h1-mobile": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "button-text": ["16px", {"lineHeight": "1", "fontWeight": "600"}],
+                    "label-sm": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                    "h2-desktop": ["36px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                    "h1-desktop": ["48px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .active-step-line::before {
+            content: '';
+            position: absolute;
+            left: 11px;
+            top: 24px;
+            bottom: -24px;
+            width: 2px;
+            background-color: #e5e7eb;
+        }
+        .step-completed::before {
+            background-color: #53a58a;
+        }
+    </style>
+</head>
+<body class="bg-surface font-body-md text-on-surface">
+<!-- TopNavBar -->
+<nav class="bg-surface shadow-sm sticky top-0 z-50">
+<div class="flex justify-between items-center w-full px-gutter max-w-max-width mx-auto py-4">
+<div class="font-h3-desktop text-h3-desktop font-bold text-primary">UniGuide AI</div>
+<div class="hidden md:flex gap-8 items-center">
+<a class="text-on-surface-variant hover:text-secondary-container transition-colors duration-200 font-label-sm" href="#">Explore</a>
+<a class="text-on-surface-variant hover:text-secondary-container transition-colors duration-200 font-label-sm" href="#">Scholarships</a>
+<a class="text-on-surface-variant hover:text-secondary-container transition-colors duration-200 font-label-sm" href="#">Resources</a>
+<a class="text-on-surface-variant hover:text-secondary-container transition-colors duration-200 font-label-sm" href="#">Dashboard</a>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer">notifications</span>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer">account_circle</span>
+<button class="bg-primary text-white px-6 py-2 rounded-full font-button-text hover:bg-primary-container transition-all active:scale-98">Apply Now</button>
+</div>
+</div>
+</nav>
+<div class="flex max-w-[1440px] mx-auto min-h-screen">
+<!-- SideNavBar -->
+<aside class="hidden lg:flex flex-col h-screen w-64 bg-surface-container-low border-r border-outline-variant py-6 sticky top-16">
+<div class="px-6 mb-8">
+<h2 class="font-h3-desktop text-h3-desktop text-primary">Student Tools</h2>
+<p class="font-label-sm text-on-surface-variant opacity-70">AI-Powered Success</p>
+</div>
+<nav class="flex flex-col gap-1 px-2">
+<a class="flex items-center gap-3 text-on-surface-variant px-4 py-3 hover:bg-surface-container-high rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">psychology</span>
+<span class="font-label-sm">AI Counselor</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant px-4 py-3 hover:bg-surface-container-high rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-label-sm">Tracker</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant px-4 py-3 hover:bg-surface-container-high rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">edit_note</span>
+<span class="font-label-sm">SOP Workshop</span>
+</a>
+<a class="flex items-center gap-3 bg-primary-container text-on-primary-container rounded-lg px-4 py-3 font-bold active:scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined">description</span>
+<span class="font-label-sm">Visa Center</span>
+</a>
+</nav>
+<div class="mt-auto px-6">
+<button class="w-full py-3 border border-outline text-primary rounded-lg font-button-text hover:bg-surface-variant transition-colors">Contact Support</button>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-1 w-full max-w-max-width mx-auto px-gutter py-10 space-y-section-gap-md">
+<!-- Country Selector -->
+<section>
+<h1 class="font-h2-desktop text-h2-desktop text-primary mb-8">Select your destination country</h1>
+<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+<!-- USA Card (Selected) -->
+<div class="relative bg-white border-2 border-secondary-container p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow group cursor-pointer">
+<div class="absolute top-3 right-3 bg-secondary-container text-white text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">Selected</div>
+<div class="w-12 h-8 bg-surface-container mb-4 rounded flex items-center justify-center overflow-hidden">
+<img alt="USA Flag" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAlCZlOeB4i23F0JBHU7gTakuBxvsY8oSO1sqcxiDSNNh5njUsA4BTnTNt2ew63fCnbXGr7_vfpLguHNCsnIRuAYOXiR2Ok7h4HeEeaxlevj6AFBuqJoCWfU0UDt6BCM2-Q4HWNdOA4S336jJ4JEuOx7U_asKLe5-iBZc-f2SCGGjV9mVMHIAAxiWR2BqeupUYZT3IKYWk-vDTY2_YnGtjgvAZryMpDIx3bmRi8gu8zN8OWh7Qgy05Qs6YK_FVxWyf0nkpRTrrB1gfo"/>
+</div>
+<h3 class="font-h3-desktop text-[18px] text-primary mb-1">USA</h3>
+<p class="font-label-sm text-on-surface-variant mb-4">F-1 Student Visa</p>
+<button class="w-full text-secondary font-button-text text-sm flex items-center justify-center gap-2 group-hover:underline">
+                            View Guide <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+</div>
+<!-- Other Countries -->
+<div class="bg-white border border-outline-variant p-6 rounded-xl hover:shadow-md transition-shadow group cursor-pointer">
+<div class="w-12 h-8 bg-surface-container mb-4 rounded flex items-center justify-center overflow-hidden">
+<img alt="UK Flag" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC_huF3czbE07lZYwoxx08NpMUmN6x-EmdzKaKq1mL5v0cj5VNuVboV_BaZ1I4tc3CRefAMBwTxLx1KohTo5WoNQ_SarugSEHtJD0MhVHbC7rgtXo2oSQfPxbW6FSkaE19921i8Gywxo-AzXVt702cE1fWZnyqVlPagbXZAsasQv3SjoMEfnTi9MnTbIG2djArTbMLkKT6QNfWDHSGqbr70XC0LjBGO5AFbWtshp-rYZEUnDqJ0WOM1BPGuU9jTv5_8vKYmAIDwM9bK"/>
+</div>
+<h3 class="font-h3-desktop text-[18px] text-primary mb-1">UK</h3>
+<p class="font-label-sm text-on-surface-variant mb-4">Student Visa (Tier 4)</p>
+<button class="w-full text-primary font-button-text text-sm group-hover:underline">View Guide</button>
+</div>
+<div class="bg-white border border-outline-variant p-6 rounded-xl hover:shadow-md transition-shadow group cursor-pointer">
+<div class="w-12 h-8 bg-surface-container mb-4 rounded flex items-center justify-center overflow-hidden">
+<img alt="Canada Flag" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDDJq6pAym8AeZDoSQLm6BEa7buidnTVIZVzmT_TzIJCzfpjABmDBJVE3DVi86E_k7-tP4rYLAz3nw7y2zrPPdWgYLcbV5qKNjKjO6_ir0xdSh0NzQlIAud-ZZTFuTxnll5l76xBU16h-bgMG8hN_mR00MrTHicFtlcA4-ZNVAb2dkl3GSjrcE-YmoX0znT9o5AD1dC6ehg4Mvmv9Wk9W_MBOgyhFzrAJVtLc-gtNtw414e9B7Me7r8FJkk16L_viOgjsVDOx5l2H_G"/>
+</div>
+<h3 class="font-h3-desktop text-[18px] text-primary mb-1">Canada</h3>
+<p class="font-label-sm text-on-surface-variant mb-4">Study Permit</p>
+<button class="w-full text-primary font-button-text text-sm group-hover:underline">View Guide</button>
+</div>
+<div class="bg-white border border-outline-variant p-6 rounded-xl hover:shadow-md transition-shadow group cursor-pointer">
+<div class="w-12 h-8 bg-surface-container mb-4 rounded flex items-center justify-center overflow-hidden">
+<img alt="Australia Flag" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB98nBmp3_sRDyH-usaybF2yMD6OecjvOjkCUBMF78Qav---3EAka8F7uFadwnBMC8z6STzYU7_lM00B_EGsPdsTkI3RPx0kNeyYG2lp4tiBR_F1X-Hjf9wxnmvj7TbadLLwlZp2cbScorVJlFZObGuF_UMb0uDvFuzAet5uH9rP9K0tkdrFXXz2IEHkqzz-BmaIKLeoD7ol83x5GjzAthI9VfCvqpzsoAUxmVeGbIzLNPoXnjYJcCMvG7f04R454ilzg4OmhCvO1Pl"/>
+</div>
+<h3 class="font-h3-desktop text-[18px] text-primary mb-1">Australia</h3>
+<p class="font-label-sm text-on-surface-variant mb-4">Subclass 500</p>
+<button class="w-full text-primary font-button-text text-sm group-hover:underline">View Guide</button>
+</div>
+<div class="bg-white border border-outline-variant p-6 rounded-xl hover:shadow-md transition-shadow group cursor-pointer">
+<div class="w-12 h-8 bg-surface-container mb-4 rounded flex items-center justify-center overflow-hidden">
+<img alt="Germany Flag" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDzkrvOo_nvd9epsCdhnIsUsuWamECBzfCOy2nCXGCn6f6qeQzPBducdKc5LROL3P1E_E4PXFFYuLLYermn01qyVbATLVeU-n5DSb365Yo-te_E1jjKym6SnuOzPgO6Ovzpi3sUkHnaQX2z6s-ZYqw4S8DBIPqkEUaKSBiNj2stN-5LGiFmQewS5y_6GOvd74LwUuwWuP69_-q1Pxq7THii5KZO1368rb_ZrNWknCyA22ReZ7OapjDLi5NuDwY2HCNK2NjExT8dbm08"/>
+</div>
+<h3 class="font-h3-desktop text-[18px] text-primary mb-1">Germany</h3>
+<p class="font-label-sm text-on-surface-variant mb-4">National Visa</p>
+<button class="w-full text-primary font-button-text text-sm group-hover:underline">View Guide</button>
+</div>
+<!-- Row 2 -->
+<div class="bg-white border border-outline-variant p-6 rounded-xl hover:shadow-md transition-shadow group cursor-pointer">
+<div class="w-12 h-8 bg-surface-container mb-4 rounded flex items-center justify-center overflow-hidden">
+<img alt="France Flag" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBTkhkZoZqto7Og6SvR_Ini54jxlWosiqO6AjvzoqmSdtt37M4ZSH2DcO-S0VTzWh-Do8PT8UXMVCiwH3jvYj2PriG64OgGnsqXHqBa2Yj-P0QB9brZC4Nv7hFWsryPWjXf4eZ0FoUywH61JoN-B38oVsBMCdRH7EKXfosOmCXtWFpLmFxaLxkJOPewS7Zh4HLSUOm2k1OyLZjKLRXn_BBhdzAtF2g2Th-vJLNLMzoKVX7NoQdWLKS7kiz1oM5InuGiEBFphxf_1Uqy"/>
+</div>
+<h3 class="font-h3-desktop text-[18px] text-primary mb-1">France</h3>
+<p class="font-label-sm text-on-surface-variant mb-4">VLS-TS Visa</p>
+<button class="w-full text-primary font-button-text text-sm group-hover:underline">View Guide</button>
+</div>
+<div class="bg-white border border-outline-variant p-6 rounded-xl hover:shadow-md transition-shadow group cursor-pointer">
+<div class="w-12 h-8 bg-surface-container mb-4 rounded flex items-center justify-center overflow-hidden">
+<img alt="Netherlands Flag" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA_F1wtunjKAP-4sCuP6PWVKUkmqHW75ATI29Vd1YqC70JriN6jCLgWIq1zMjdJzjYx0hZyNqkbISGJiYAWw_a-pM4T3AYAMdZIAOisFzvCrv5B2mCuu9H3TCmxgW_68PzYOpibf60jMRJGA9NJhAKntHy_r5XcyH74ZE5v91izG-odeuLZVvuPGgdVqKWnJIr1YO38RgW_jfB5eNQXmBpj7FPdqk1KomUu2tdCn4lovv8WjbIDgWpayqDtwLYyhoXuLMbY8RTTtmMq"/>
+</div>
+<h3 class="font-h3-desktop text-[18px] text-primary mb-1">Netherlands</h3>
+<p class="font-label-sm text-on-surface-variant mb-4">MVV/VVR Permit</p>
+<button class="w-full text-primary font-button-text text-sm group-hover:underline">View Guide</button>
+</div>
+<div class="bg-white border border-outline-variant p-6 rounded-xl hover:shadow-md transition-shadow group cursor-pointer">
+<div class="w-12 h-8 bg-surface-container mb-4 rounded flex items-center justify-center overflow-hidden">
+<img alt="Japan Flag" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCciPSQEaknXCRPJypvGw9B4UCt_YA_dP4ysHnLApJL8yEhp1KBTKNUqTxBNThz42_hHym8RbGSykOq7z04ggjL8O6y2Vua-Ci230f3MDW-RT7UMrFuLF63IwYhCjG31r-99DZJ48XBCKVe8hD3raruM3fswBv3EDCIGLuAlaoJMAPZ1UEW8AEe9enN3IcJ1Pc4deMop7eraQv9v7aK-4fr7_GAGJgKvDpX_egjetF04bJrSGWZ7ee07HMSO6WJIUZ9zix_CBvwSqiW"/>
+</div>
+<h3 class="font-h3-desktop text-[18px] text-primary mb-1">Japan</h3>
+<p class="font-label-sm text-on-surface-variant mb-4">COE Student</p>
+<button class="w-full text-primary font-button-text text-sm group-hover:underline">View Guide</button>
+</div>
+<div class="bg-white border border-outline-variant p-6 rounded-xl hover:shadow-md transition-shadow group cursor-pointer">
+<div class="w-12 h-8 bg-surface-container mb-4 rounded flex items-center justify-center overflow-hidden">
+<img alt="Singapore Flag" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBnNwIv0KJiKm3C--iHsMB4rqgE_EmmgJgFelCxNegVKiG65uZSwq7CWtw_Xg4ZpA0A_3ipnvO2vP0iMfm7x4fMNKh7FgyQUIiFQLEWds-Kcx8l6SvOOJYkA3vulpP6d4Mn03pZpZ9UPVt8t3UScq-OdB_x3b0C8Y7AXcCC1u7lY_GsVaoCQQzJl_fv4RzE_4cdyWA4etNKtQSPHWrgkB1YrXuVmkp3UYtehvReW_IrMnMU78DhkwAnTBZe7jD1xl-5J7JdBPI_2Wqw"/>
+</div>
+<h3 class="font-h3-desktop text-[18px] text-primary mb-1">Singapore</h3>
+<p class="font-label-sm text-on-surface-variant mb-4">Student's Pass</p>
+<button class="w-full text-primary font-button-text text-sm group-hover:underline">View Guide</button>
+</div>
+<div class="bg-white border border-outline-variant p-6 rounded-xl hover:shadow-md transition-shadow group cursor-pointer">
+<div class="w-12 h-8 bg-surface-container mb-4 rounded flex items-center justify-center overflow-hidden">
+<img alt="Ireland Flag" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC1h5OXMkhMG1_1Q7Q_ZYTlNoJe1m6UP63c4JFY9sefEVYihDgtEzVmUDc53W4cdUk4FGl7Dd1AyMVqYxv_Rq3oAZq0jvPYqPskW3JCN2MddbGpIt0-n_pQuduRnXLH5hW4oQZ8lDr4dSaH8vWE9jgLoQI3TK9YCxWZYnlcxyMrlvnZWUWTagS9kl9foyXkNms0DxJfDrhOiQqhXDTEEwX9sOCPOSR8WdmLKArNve7VQK3K6J22h3molf4yYnuNbfIvVj50yBLNoIm5"/>
+</div>
+<h3 class="font-h3-desktop text-[18px] text-primary mb-1">Ireland</h3>
+<p class="font-label-sm text-on-surface-variant mb-4">Stamp 2 Visa</p>
+<button class="w-full text-primary font-button-text text-sm group-hover:underline">View Guide</button>
+</div>
+</div>
+</section>
+<!-- Main Layout Grid -->
+<div class="grid lg:grid-cols-12 gap-8">
+<!-- Left Column: Guide & Mock Interview -->
+<div class="lg:col-span-7 space-y-10">
+<!-- F-1 Step Tracker -->
+<div class="bg-white rounded-xl p-8 border border-outline-variant">
+<h2 class="font-h2-desktop text-[28px] text-primary mb-8">F-1 Student Visa — Complete Guide</h2>
+<div class="space-y-8 relative">
+<!-- Step 1 -->
+<div class="flex gap-6 relative active-step-line step-completed">
+<div class="z-10 bg-on-tertiary-container text-white w-6 h-6 rounded-full flex items-center justify-center shadow-lg">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">check</span>
+</div>
+<div>
+<h4 class="font-label-sm text-primary">Step 1: Receive Form I-20</h4>
+<p class="text-sm text-on-surface-variant">Obtained from your DSO at your US University.</p>
+</div>
+</div>
+<!-- Step 2 -->
+<div class="flex gap-6 relative active-step-line step-completed">
+<div class="z-10 bg-on-tertiary-container text-white w-6 h-6 rounded-full flex items-center justify-center shadow-lg">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">check</span>
+</div>
+<div>
+<h4 class="font-label-sm text-primary">Step 2: Pay SEVIS Fee</h4>
+<a class="text-sm text-secondary font-bold hover:underline" href="#">How to pay</a>
+</div>
+</div>
+<!-- Step 3 (Active) -->
+<div class="flex gap-6 relative active-step-line">
+<div class="z-10 bg-primary text-white w-6 h-6 rounded-full flex items-center justify-center border-2 border-white shadow-lg">
+<span class="text-xs font-bold">3</span>
+</div>
+<div class="flex-1 bg-surface-container-low p-6 rounded-xl border border-primary/10">
+<h4 class="font-label-sm text-primary mb-2">Step 3: Complete DS-160 Form</h4>
+<p class="text-sm text-on-surface-variant mb-4">Log in to <span class="text-primary font-mono bg-surface-variant px-1">ceac.state.gov</span> and provide accurate personal and academic information.</p>
+<div class="space-y-3">
+<div class="flex items-center gap-3 p-3 bg-white rounded-lg border border-outline-variant/50">
+<span class="material-symbols-outlined text-outline text-[20px]">check_box_outline_blank</span>
+<span class="text-sm">Upload digital visa photo (2x2 inch)</span>
+</div>
+<div class="flex items-center gap-3 p-3 bg-white rounded-lg border border-outline-variant/50">
+<span class="material-symbols-outlined text-outline text-[20px]">check_box_outline_blank</span>
+<span class="text-sm">Confirm SEVIS ID from I-20</span>
+</div>
+<details class="group">
+<summary class="list-none flex items-center gap-2 text-sm text-primary font-bold cursor-pointer hover:opacity-80">
+<span class="material-symbols-outlined transition-transform group-open:rotate-180">expand_more</span>
+                                                See Full Checklist
+                                            </summary>
+<div class="mt-2 pl-6 space-y-2 text-sm text-on-surface-variant">
+<p>• Passport valid for 6+ months</p>
+<p>• Detailed travel history (last 5 visits)</p>
+<p>• Family/Contact info in the USA</p>
+</div>
+</details>
+</div>
+</div>
+</div>
+<!-- Step 4-6 (Locked) -->
+<div class="flex gap-6 relative active-step-line opacity-40">
+<div class="z-10 bg-outline text-white w-6 h-6 rounded-full flex items-center justify-center">
+<span class="text-xs font-bold">4</span>
+</div>
+<div>
+<h4 class="font-label-sm text-on-surface-variant">Step 4: Visa Appointment Booking</h4>
+</div>
+</div>
+<div class="flex gap-6 relative active-step-line opacity-40">
+<div class="z-10 bg-outline text-white w-6 h-6 rounded-full flex items-center justify-center">
+<span class="text-xs font-bold">5</span>
+</div>
+<div>
+<h4 class="font-label-sm text-on-surface-variant">Step 5: Attend Biometrics</h4>
+</div>
+</div>
+<div class="flex gap-6 relative opacity-40">
+<div class="z-10 bg-outline text-white w-6 h-6 rounded-full flex items-center justify-center">
+<span class="text-xs font-bold">6</span>
+</div>
+<div>
+<h4 class="font-label-sm text-on-surface-variant">Step 6: Embassy Interview</h4>
+</div>
+</div>
+</div>
+<button class="mt-10 w-full py-4 border-2 border-primary text-primary rounded-full font-button-text flex items-center justify-center gap-2 hover:bg-primary hover:text-white transition-all">
+<span class="material-symbols-outlined">download</span> Download Full F-1 Checklist
+                        </button>
+</div>
+<!-- Mock Interview Section -->
+<div class="bg-white rounded-xl border border-outline-variant overflow-hidden">
+<div class="p-8 pb-0">
+<h2 class="font-h2-desktop text-[28px] text-primary mb-4">Practice Your F-1 Interview</h2>
+<p class="text-on-surface-variant mb-6">Our AI simulates a real visa officer to help you refine your answers and boost your confidence.</p>
+<button class="w-full bg-secondary-container text-white py-4 rounded-xl font-button-text text-lg shadow-lg hover:brightness-110 active:scale-[0.99] transition-all mb-8">
+                                Start AI Mock Interview
+                            </button>
+</div>
+<div class="bg-surface-container-low p-8 grid md:grid-cols-12 gap-8">
+<div class="md:col-span-8 space-y-4">
+<div class="bg-white p-6 rounded-xl border border-outline-variant shadow-sm relative">
+<div class="absolute -top-3 left-6 bg-primary text-white text-[10px] px-2 py-1 rounded font-bold uppercase">Officer's Question</div>
+<p class="font-h3-desktop text-[18px] text-primary italic">"Why did you choose this university specifically, given your previous academic background?"</p>
+</div>
+<div class="space-y-2">
+<label class="font-label-sm text-on-surface-variant">Your Draft Answer</label>
+<textarea class="w-full h-32 bg-white border border-outline-variant rounded-xl p-4 focus:ring-2 focus:ring-primary focus:border-transparent outline-none" placeholder="Type your answer here..."></textarea>
+</div>
+</div>
+<div class="md:col-span-4 bg-surface-container-high text-on-surface p-6 rounded-xl border border-outline-variant">
+<h5 class="font-bold flex items-center gap-2 mb-4 text-primary"><span class="material-symbols-outlined text-secondary-container">lightbulb</span> Interview Tips</h5>
+<div class="space-y-4 text-sm">
+<div>
+<p class="font-bold text-secondary mb-1 uppercase tracking-tighter text-xs">DO</p>
+<p class="text-on-surface-variant">Be concise. Focus on specific research labs or curriculum features.</p>
+</div>
+<div class="pt-2 border-t border-outline-variant">
+<p class="font-bold text-secondary mb-1 uppercase tracking-tighter text-xs">DON'T</p>
+<p class="text-on-surface-variant">Avoid generic answers like "It's a top-ranked school."</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Financials & Processing -->
+<div class="lg:col-span-5 space-y-8">
+<!-- Proof of Funds Calculator -->
+<div class="bg-white rounded-xl p-8 border border-outline-variant shadow-sm sticky top-24">
+<div class="flex items-center gap-3 mb-6">
+<div class="p-2 bg-secondary-container/10 rounded-lg">
+<span class="material-symbols-outlined text-secondary-container">calculate</span>
+</div>
+<h2 class="font-h3-desktop text-primary">Proof of Funds Calculator</h2>
+</div>
+<div class="space-y-6">
+<div>
+<label class="block font-label-sm text-on-surface-variant mb-2">Estimated Tuition (Per Year)</label>
+<div class="relative">
+<span class="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant">$</span>
+<input class="w-full pl-8 pr-4 py-3 bg-surface border border-outline-variant rounded-lg font-bold text-primary" type="text" value="52,000"/>
+</div>
+</div>
+<div>
+<label class="block font-label-sm text-on-surface-variant mb-2">Living Expenses (Estimated)</label>
+<div class="relative">
+<span class="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant">$</span>
+<input class="w-full pl-8 pr-4 py-3 bg-surface border border-outline-variant rounded-lg font-bold text-primary" type="text" value="18,000"/>
+</div>
+</div>
+<div class="pt-6 border-t border-outline-variant flex flex-col gap-2">
+<div class="flex justify-between items-center">
+<span class="font-label-sm text-on-surface-variant">Total Minimum Funds</span>
+<span class="text-[28px] font-bold text-tertiary-container">$70,000</span>
+</div>
+<div class="flex justify-between items-center bg-surface-container-low p-4 rounded-lg">
+<span class="text-sm font-label-sm">Estimated Equivalent</span>
+<span class="text-sm font-bold text-on-surface">₹58,10,000 (INR)</span>
+</div>
+</div>
+<div class="bg-secondary-container/5 border border-secondary-container/20 rounded-xl p-4 flex gap-4">
+<span class="material-symbols-outlined text-secondary-container" style="font-variation-settings: 'FILL' 1;">info</span>
+<p class="text-xs text-on-surface-variant leading-relaxed">Most consulates recommend showing 150% of the I-20 amount to ensure a safe margin for incidental costs.</p>
+</div>
+</div>
+<!-- Processing Time & Links -->
+<div class="mt-8 space-y-6">
+<div class="flex items-center justify-between">
+<span class="text-sm font-bold text-primary">Current Processing Time</span>
+<span class="bg-primary-container text-on-primary-container px-3 py-1 rounded-full text-xs font-bold">2–8 weeks</span>
+</div>
+<div class="space-y-3">
+<p class="font-label-sm text-on-surface-variant uppercase tracking-widest text-[10px]">Official Links</p>
+<a class="flex items-center justify-between p-3 border border-outline-variant rounded-lg hover:bg-surface transition-colors" href="#">
+<span class="text-sm font-bold">US Embassy Appointments</span>
+<span class="material-symbols-outlined text-[18px]">open_in_new</span>
+</a>
+<a class="flex items-center justify-between p-3 border border-outline-variant rounded-lg hover:bg-surface transition-colors" href="#">
+<span class="text-sm font-bold">Official F-1 FAQ</span>
+<span class="material-symbols-outlined text-[18px]">open_in_new</span>
+</a>
+</div>
+</div>
+</div>
+<!-- Side Promotion -->
+<div class="bg-primary text-white rounded-xl p-8 relative overflow-hidden group">
+<div class="relative z-10">
+<h3 class="font-h3-desktop mb-4">Premium Visa Concierge</h3>
+<p class="text-sm opacity-80 mb-6">Expert review of your DS-160 and unlimited mock interviews with former consulate officers.</p>
+<button class="bg-white text-primary px-6 py-2 rounded-full font-button-text text-sm group-hover:scale-105 transition-transform">Learn More</button>
+</div>
+<div class="absolute top-0 right-0 w-32 h-32 bg-secondary-container/20 rounded-full blur-3xl -mr-16 -mt-16"></div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- Mobile Navigation -->
+<nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-outline-variant flex justify-around items-center py-3 px-6 z-50">
+<button class="flex flex-col items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined">explore</span>
+<span class="text-[10px] font-label-sm">Explore</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined">analytics</span>
+<span class="text-[10px] font-label-sm">Tracker</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">description</span>
+<span class="text-[10px] font-bold">Visa</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined">account_circle</span>
+<span class="text-[10px] font-label-sm">Profile</span>
+</button>
+</nav>
+<!-- Visual Enhancements Section (Placeholder image logic applied) -->
+<section class="max-w-max-width mx-auto px-gutter py-section-gap-lg">
+<div class="relative h-[400px] rounded-2xl overflow-hidden shadow-2xl">
+<img class="w-full h-full object-cover" data-alt="A professional workspace featuring a high-end laptop, various international passports, and official documentation neatly organized on a clean white desk. Soft morning sunlight streams through a nearby window, creating a serene and bright light-mode atmosphere. The color palette is sophisticated with deep primary navies and subtle coral accents on stationery, suggesting a corporate yet premium academic journey. The focus is sharp and the mood is one of focused preparation and impending success." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB0t9Zj7GiOZkcz38W5TYmD6gCQ5iRF3YY83lF3M2VsNPxU4ePbmetgTUbhC9pwvCPIiaUZA5qcXviDpNjMs2JCEqKBwFGwQSUL7l6N2V2ZZUeFV_sIvlL0G5-hNzEuEwHG8tNo7jPNEVFJCvnf9_5J0rWOV8oKvYyx4NhHSMxePo_YKxODXftxwJScWHwkQO6JYQa_1ewQt8lDcNW-LXbnxK9ey10Wgu0fBTzhST9XWOvmxaWRwQSal3ZVS9Jgv51knaa6BWreIJD8"/>
+<div class="absolute inset-0 bg-gradient-to-t from-primary/80 to-transparent flex flex-col justify-end p-12">
+<h2 class="font-h1-desktop text-white mb-4">Your Future Awaits</h2>
+<p class="text-white/80 max-w-2xl font-body-lg">We've helped over 10,000 students navigate the complexities of international immigration. Trust UniGuide AI to handle the details so you can focus on your education.</p>
+</div>
+</div>
+</section>
+</body></html>

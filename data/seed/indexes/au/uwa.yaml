@@ -1,0 +1,10 @@
+institution: "The University of Western Australia"
+country: AU
+official_domain: uwa.edu.au
+indexes:
+  - url: https://www.handbooks.uwa.edu.au/undergraduate
+    kind: programs
+  - url: https://www.handbooks.uwa.edu.au/postgraduate
+    kind: programs
+  - url: https://www.handbooks.uwa.edu.au/college
+    kind: programs

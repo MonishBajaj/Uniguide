@@ -17,7 +17,8 @@ export const isMode = (value: unknown): value is Mode => MODES.includes(value as
 
 export const isLocalUrl = (url: string): boolean => {
   try {
-    return ["127.0.0.1", "localhost", "[::1]"].includes(new URL(url).hostname);
+    const host = new URL(url).hostname;
+    return ["127.0.0.1", "localhost", "[::1]"].includes(host) || host.endsWith(".ts.net") || host.endsWith(".local");
   } catch {
     return false;
   }

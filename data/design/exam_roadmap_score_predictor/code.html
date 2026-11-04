@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Exam Roadmap | UniGuide AI</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&amp;family=Plus+Jakarta+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .ambient-shadow {
+            box-shadow: 0 8px 24px rgba(0, 24, 61, 0.06);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-fixed": "#3e0500",
+                        "on-secondary-container": "#650d00",
+                        "primary-container": "#0f2d5c",
+                        "outline": "#747780",
+                        "on-background": "#191c1d",
+                        "tertiary-fixed": "#a0f3d4",
+                        "inverse-primary": "#adc6ff",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-fixed-dim": "#ffb4a4",
+                        "on-secondary": "#ffffff",
+                        "on-tertiary-container": "#53a58a",
+                        "inverse-surface": "#2e3132",
+                        "on-error-container": "#93000a",
+                        "on-secondary-fixed-variant": "#8d1701",
+                        "secondary-container": "#fe694a",
+                        "tertiary-fixed-dim": "#84d6b9",
+                        "primary-fixed-dim": "#adc6ff",
+                        "error": "#ba1a1a",
+                        "primary-fixed": "#d8e2ff",
+                        "tertiary-container": "#003628",
+                        "surface-container-low": "#f3f4f5",
+                        "on-surface": "#191c1d",
+                        "on-primary-fixed": "#001a41",
+                        "outline-variant": "#c4c6d0",
+                        "on-surface-variant": "#44474f",
+                        "surface-container": "#edeeef",
+                        "on-primary-fixed-variant": "#2c4676",
+                        "surface-variant": "#e1e3e4",
+                        "secondary": "#af3017",
+                        "error-container": "#ffdad6",
+                        "on-primary": "#ffffff",
+                        "surface": "#f8f9fa",
+                        "on-primary-container": "#7d96cb",
+                        "surface-dim": "#d9dadb",
+                        "surface-bright": "#f8f9fa",
+                        "on-error": "#ffffff",
+                        "tertiary": "#001f16",
+                        "surface-container-highest": "#e1e3e4",
+                        "on-tertiary-fixed": "#002117",
+                        "secondary-fixed": "#ffdad3",
+                        "primary": "#00183d",
+                        "surface-container-high": "#e7e8e9",
+                        "on-tertiary": "#ffffff",
+                        "inverse-on-surface": "#f0f1f2",
+                        "surface-tint": "#455e90",
+                        "on-tertiary-fixed-variant": "#00513e",
+                        "background": "#f8f9fa"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-gap": "16px",
+                        "max-width": "1200px",
+                        "section-gap-md": "48px",
+                        "section-gap-lg": "80px",
+                        "gutter": "24px",
+                        "margin-mobile": "16px"
+                    },
+                    "fontFamily": {
+                        "h1-desktop": ["Playfair Display"],
+                        "h3-desktop": ["Playfair Display"],
+                        "h2-desktop": ["Playfair Display"],
+                        "button-text": ["Plus Jakarta Sans"],
+                        "h1-mobile": ["Playfair Display"],
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "label-sm": ["Plus Jakarta Sans"],
+                        "body-md": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "h1-desktop": ["48px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                        "h3-desktop": ["24px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                        "h2-desktop": ["36px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                        "button-text": ["16px", {"lineHeight": "1", "fontWeight": "600"}],
+                        "h1-mobile": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "label-sm": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface font-body-md selection:bg-secondary-fixed">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 flex justify-between items-center px-gutter h-16 max-w-screen-2xl mx-auto bg-surface border-b border-surface-container-highest">
+<div class="flex items-center gap-8">
+<span class="font-h3-desktop text-h3-desktop font-bold text-primary">UniGuide AI</span>
+<div class="hidden md:flex gap-6">
+<a class="font-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Explore Universities</a>
+<a class="font-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Scholarships</a>
+<a class="font-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Resources</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-primary font-button-text px-4 py-2 hover:text-secondary transition-colors">Login</button>
+<button class="bg-primary text-on-primary font-button-text px-6 py-2.5 rounded-full hover:scale-95 transition-all">Get Started</button>
+</div>
+</nav>
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-16 h-[calc(100vh-64px)] w-64 flex flex-col p-4 space-y-4 bg-surface-container-low border-r border-surface-container-highest hidden md:flex">
+<div class="flex items-center gap-3 px-2 py-4">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container">
+<span class="material-symbols-outlined">person</span>
+</div>
+<div>
+<p class="font-label-sm font-bold text-primary">Global Scholar</p>
+<p class="text-[12px] text-on-surface-variant opacity-70">Premium Member</p>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">psychology</span>
+<span class="font-label-sm">AI Counselor</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 bg-secondary text-on-secondary rounded-lg font-bold transition-all" href="#">
+<span class="material-symbols-outlined">view_kanban</span>
+<span class="font-label-sm">Application Tracker</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">edit_note</span>
+<span class="font-label-sm">SOP Workshop</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-label-sm">Scholarships</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-sm">Settings</span>
+</a>
+</nav>
+<div class="pt-4 border-t border-outline-variant space-y-1">
+<button class="w-full text-left flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all">
+<span class="material-symbols-outlined">help</span>
+<span class="font-label-sm">Help Center</span>
+</button>
+<button class="w-full text-left flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-label-sm">Logout</span>
+</button>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="md:ml-64 pt-24 pb-20 px-gutter max-w-[1200px] mx-auto min-h-screen">
+<!-- Section 1: Exam Checklist -->
+<section class="mb-section-gap-lg">
+<div class="mb-8">
+<h1 class="font-h2-desktop text-h2-desktop text-primary">Your Required Exams</h1>
+<p class="font-body-lg text-on-surface-variant">Based on your target schools and programs</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+<!-- GRE Card -->
+<div class="bg-surface-container-lowest rounded-xl p-6 border border-outline-variant ambient-shadow transition-transform hover:-translate-y-1 duration-300">
+<div class="flex justify-between items-start mb-6">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 bg-primary-container rounded flex items-center justify-center text-on-primary">
+<span class="font-bold">GRE</span>
+</div>
+<div>
+<h3 class="font-h3-desktop text-[20px] text-primary">GRE General Test</h3>
+<p class="text-label-sm text-on-surface-variant">Graduate Record Examination</p>
+</div>
+</div>
+<span class="px-3 py-1 bg-primary text-on-primary text-[12px] font-bold rounded-full">Required</span>
+</div>
+<div class="space-y-4 mb-8">
+<div class="flex justify-between items-center bg-surface p-3 rounded-lg">
+<span class="text-on-surface-variant">Score Comparison</span>
+<span class="font-bold text-primary">Your: 312 | <span class="text-secondary">Target: 318</span></span>
+</div>
+<div class="grid grid-cols-2 gap-4 text-label-sm">
+<div>
+<p class="text-on-surface-variant">Deadline</p>
+<p class="font-bold text-primary">Nov 15, 2024</p>
+</div>
+<div>
+<p class="text-on-surface-variant">Fee / Waiver</p>
+<p class="font-bold text-primary">$220 / ✅ Available</p>
+</div>
+</div>
+</div>
+<div class="flex gap-3">
+<a class="flex-1 text-center py-2.5 font-button-text border border-primary text-primary rounded-full hover:bg-primary-fixed transition-colors" href="#">Register</a>
+<button class="flex-1 py-2.5 font-button-text bg-secondary text-on-secondary rounded-full hover:opacity-90 transition-all shadow-lg shadow-secondary/20">Find Prep Resources</button>
+</div>
+</div>
+<!-- TOEFL Card -->
+<div class="bg-surface-container-lowest rounded-xl p-6 border border-outline-variant ambient-shadow transition-transform hover:-translate-y-1 duration-300">
+<div class="flex justify-between items-start mb-6">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 bg-on-tertiary-container rounded flex items-center justify-center text-on-primary">
+<span class="font-bold">TFL</span>
+</div>
+<div>
+<h3 class="font-h3-desktop text-[20px] text-primary">TOEFL iBT</h3>
+<p class="text-label-sm text-on-surface-variant">Test of English as a Foreign Language</p>
+</div>
+</div>
+<span class="px-3 py-1 bg-tertiary-fixed-dim text-on-tertiary-fixed text-[12px] font-bold rounded-full">Recommended</span>
+</div>
+<div class="space-y-4 mb-8">
+<div class="flex justify-between items-center bg-surface p-3 rounded-lg">
+<span class="text-on-surface-variant">Score Comparison</span>
+<span class="font-bold text-primary">Your: 102 | <span class="text-secondary">Target: 105</span></span>
+</div>
+<div class="grid grid-cols-2 gap-4 text-label-sm">
+<div>
+<p class="text-on-surface-variant">Deadline</p>
+<p class="font-bold text-primary">Dec 01, 2024</p>
+</div>
+<div>
+<p class="text-on-surface-variant">Fee / Waiver</p>
+<p class="font-bold text-primary">$195 / ❌ Not Available</p>
+</div>
+</div>
+</div>
+<div class="flex gap-3">
+<a class="flex-1 text-center py-2.5 font-button-text border border-primary text-primary rounded-full hover:bg-primary-fixed transition-colors" href="#">Register</a>
+<button class="flex-1 py-2.5 font-button-text bg-secondary text-on-secondary rounded-full hover:opacity-90 transition-all shadow-lg shadow-secondary/20">Find Prep Resources</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Section 2: Exam Timeline -->
+<section class="mb-section-gap-lg">
+<h2 class="font-h3-desktop text-h3-desktop text-primary mb-8">Your Exam Timeline</h2>
+<div class="bg-surface-container rounded-xl p-8 border border-outline-variant overflow-x-auto">
+<div class="min-w-[800px] relative">
+<!-- Gantt Headers -->
+<div class="grid grid-cols-6 mb-8 text-center text-label-sm text-on-surface-variant border-b border-outline-variant pb-4">
+<div>Start Prep</div>
+<div>Practice Test</div>
+<div>Register</div>
+<div>Take Exam</div>
+<div>Scores Sent</div>
+<div>App Deadline</div>
+</div>
+<!-- Today Line -->
+<div class="absolute left-1/3 top-0 bottom-0 w-px border-l-2 border-dashed border-secondary z-10 flex flex-col items-center">
+<span class="bg-secondary text-white text-[10px] px-2 py-0.5 rounded-full mb-1">Today</span>
+</div>
+<!-- Gantt Rows -->
+<div class="space-y-8 relative pb-4">
+<div class="flex items-center">
+<span class="w-24 font-bold text-primary">GRE</span>
+<div class="flex-1 h-8 bg-surface rounded-full relative overflow-hidden ml-4">
+<div class="absolute left-0 w-3/4 h-full bg-primary-container rounded-full opacity-80"></div>
+</div>
+</div>
+<div class="flex items-center">
+<span class="w-24 font-bold text-primary">TOEFL</span>
+<div class="flex-1 h-8 bg-surface rounded-full relative overflow-hidden ml-4">
+<div class="absolute left-[15%] w-2/3 h-full bg-on-tertiary-container rounded-full opacity-80"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Two Column Layout for GPA and Score Predictor -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-section-gap-md">
+<!-- Section 3: GPA Converter -->
+<section>
+<h2 class="font-h3-desktop text-h3-desktop text-primary mb-6">GPA Converter</h2>
+<div class="bg-surface-container-lowest rounded-xl p-8 border border-outline-variant ambient-shadow h-full flex flex-col">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8 flex-1">
+<!-- Left: Input -->
+<div class="space-y-6">
+<div>
+<label class="text-label-sm text-on-surface-variant mb-2 block">Select grading system</label>
+<select class="w-full bg-surface border border-outline-variant rounded-lg p-3 font-body-md focus:ring-2 focus:ring-primary focus:outline-none">
+<option>India (Percentage 100%)</option>
+<option>UK (First Class/Honours)</option>
+<option>China (4.0/5.0 Scale)</option>
+</select>
+</div>
+<div>
+<label class="text-label-sm text-on-surface-variant mb-2 block">Your Score</label>
+<input class="w-full bg-surface border border-outline-variant rounded-lg p-3 font-body-md focus:ring-2 focus:ring-primary focus:outline-none" placeholder="e.g. 85" type="text"/>
+</div>
+<div class="pt-4">
+<p class="text-label-sm text-on-surface-variant mb-1">Converted GPA</p>
+<p class="text-h2-desktop font-h2-desktop text-on-tertiary-container">3.82 / 4.0 GPA</p>
+</div>
+</div>
+<!-- Right: Comparison -->
+<div class="bg-surface p-6 rounded-lg space-y-4 border border-outline-variant">
+<p class="font-bold text-primary text-label-sm uppercase tracking-wider">Target Schools</p>
+<div class="p-3 border border-error bg-red-50 rounded-lg flex justify-between items-center">
+<div class="flex items-center gap-2">
+<span class="font-bold text-primary">MIT</span>
+<span class="text-on-surface-variant text-[12px]">avg: 3.9</span>
+</div>
+<span class="text-error font-bold text-sm">Below ↓</span>
+</div>
+<div class="p-3 border border-on-tertiary-container bg-green-50 rounded-lg flex justify-between items-center">
+<div class="flex items-center gap-2">
+<span class="font-bold text-primary">Georgia Tech</span>
+<span class="text-on-surface-variant text-[12px]">avg: 3.7</span>
+</div>
+<span class="text-on-tertiary-container font-bold text-sm">Above ↑</span>
+</div>
+<div class="p-3 border border-on-tertiary-container bg-green-50 rounded-lg flex justify-between items-center">
+<div class="flex items-center gap-2">
+<span class="font-bold text-primary">CMU</span>
+<span class="text-on-surface-variant text-[12px]">avg: 3.75</span>
+</div>
+<span class="text-on-tertiary-container font-bold text-sm">Above ↑</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Section 4: Score Predictor -->
+<section>
+<h2 class="font-h3-desktop text-h3-desktop text-primary mb-6">Predict your exam score</h2>
+<div class="bg-surface-container-lowest rounded-xl p-8 border border-outline-variant ambient-shadow h-full">
+<div class="grid grid-cols-2 gap-4 mb-8">
+<div>
+<label class="text-label-sm text-on-surface-variant mb-2 block">Verbal Score</label>
+<input class="w-full bg-surface border border-outline-variant rounded-lg p-3 font-body-md focus:ring-2 focus:ring-primary focus:outline-none" placeholder="150" type="number"/>
+</div>
+<div>
+<label class="text-label-sm text-on-surface-variant mb-2 block">Quant Score</label>
+<input class="w-full bg-surface border border-outline-variant rounded-lg p-3 font-body-md focus:ring-2 focus:ring-primary focus:outline-none" placeholder="160" type="number"/>
+</div>
+</div>
+<button class="w-full bg-secondary text-on-secondary py-3 rounded-full font-button-text mb-8 hover:opacity-90 transition-all">Predict</button>
+<div class="text-center mb-8">
+<p class="text-on-surface-variant mb-1">Your Potential Range</p>
+<h4 class="font-h3-desktop text-h3-desktop text-primary">Predicted GRE Score: <span class="font-bold">312 – 320</span></h4>
+</div>
+<!-- Visualization -->
+<div class="relative pt-8 pb-12 px-2">
+<div class="h-2 w-full bg-surface-container-highest rounded-full"></div>
+<!-- Range Band -->
+<div class="absolute top-[32px] left-[45%] right-[25%] h-2 bg-secondary/30 rounded-full"></div>
+<!-- Scale -->
+<div class="flex justify-between mt-4 text-[12px] text-on-surface-variant">
+<span>280</span>
+<span>300</span>
+<span>320</span>
+<span>340</span>
+</div>
+<!-- Dots (Target Schools) -->
+<div class="absolute top-[28px] left-[55%] w-3 h-3 bg-primary rounded-full border-2 border-white group cursor-help">
+<span class="absolute -top-8 left-1/2 -translate-x-1/2 bg-primary text-white px-2 py-1 rounded text-[10px] whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">Columbia (315)</span>
+</div>
+<div class="absolute top-[28px] left-[68%] w-3 h-3 bg-primary rounded-full border-2 border-white group cursor-help">
+<span class="absolute -top-8 left-1/2 -translate-x-1/2 bg-primary text-white px-2 py-1 rounded text-[10px] whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">Stanford (322)</span>
+</div>
+<div class="absolute top-[28px] left-[50%] w-3 h-3 bg-primary rounded-full border-2 border-white group cursor-help">
+<span class="absolute -top-8 left-1/2 -translate-x-1/2 bg-primary text-white px-2 py-1 rounded text-[10px] whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">UC Berkeley (312)</span>
+</div>
+</div>
+<div class="flex items-center gap-3 bg-surface-container-high p-4 rounded-lg border border-secondary/20">
+<span class="material-symbols-outlined text-secondary">trending_up</span>
+<p class="text-label-sm text-on-surface-variant">
+                            You're within range of <span class="font-bold text-primary">8 of your 12 target schools</span>. Focus on Quant to reach your dream school average.
+                        </p>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-primary text-on-primary">
+<div class="w-full py-12 px-gutter flex flex-col md:flex-row justify-between items-center max-w-screen-2xl mx-auto">
+<div class="mb-8 md:mb-0 text-center md:text-left">
+<span class="font-h3-desktop text-h3-desktop font-bold text-on-primary">UniGuide AI</span>
+<p class="text-primary-fixed-dim opacity-80 mt-2">© 2024 UniGuide AI. Academic Excellence Redefined.</p>
+</div>
+<div class="flex gap-8">
+<a class="text-primary-fixed-dim opacity-80 hover:text-secondary-fixed transition-colors" href="#">Privacy Policy</a>
+<a class="text-primary-fixed-dim opacity-80 hover:text-secondary-fixed transition-colors" href="#">Terms of Service</a>
+<a class="text-primary-fixed-dim opacity-80 hover:text-secondary-fixed transition-colors" href="#">Contact Us</a>
+</div>
+</div>
+</footer>
+</body></html>

@@ -5,6 +5,7 @@ import { getUser } from "@/lib/supabase/server";
 import { addRecommender, addRequest, removeRecommender, saveBragNotes } from "./actions";
 import { RequestRow } from "./request-row";
 import { courseLabel } from "@/lib/own-application";
+import { Users, Mail, Plus, ChevronLeft } from "lucide-react";
 
 export const metadata: Metadata = { title: "Recommendation letters" };
 
@@ -20,89 +21,96 @@ export default async function RecommendersPage() {
   const title = new Map((apps ?? []).map((a) => [a.id, courseLabel(a)]));
 
   return (
-    <div className="grid gap-8">
-      <header>
-        <Link href="/app/tracker" className="text-sm text-muted underline underline-offset-2">Tracker</Link>
-        <h1 className="mt-2 text-4xl font-semibold">Recommendation letters</h1>
-        <p className="mt-2 max-w-2xl text-muted">
-          Who is writing for you and for which applications. We keep only their name and how they know you, and we never
-          contact them; we remind you to check in before each letter is due.
+    <div className="grid gap-8 max-w-4xl mx-auto">
+      <div>
+        <Link href="/app/tracker" className="inline-flex items-center gap-1 text-xs font-semibold text-muted hover:text-primary transition-colors">
+          <ChevronLeft className="h-4 w-4" />
+          <span>Back to Tracker</span>
+        </Link>
+      </div>
+
+      <header className="rounded-xl border border-border bg-surface p-6 sm:p-8 ambient-shadow">
+        <div className="flex items-center gap-2 mb-2">
+          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
+            <Users className="h-4 w-4" />
+          </span>
+          <span className="text-xs font-bold uppercase tracking-wider text-muted">LOR Management Hub</span>
+        </div>
+        <h1 className="text-3xl sm:text-4xl font-serif font-bold text-primary">Recommendation Letters</h1>
+        <p className="mt-2 text-sm text-muted max-w-2xl leading-relaxed">
+          Manage professors, supervisors, and mentors writing letters for your applications. We store only their name and professional relationship, and we never contact them directly without your consent.
         </p>
       </header>
 
+      {/* Add Recommender Card */}
+      <section className="rounded-xl border border-border bg-surface p-6 sm:p-8 ambient-shadow">
+        <h2 className="text-lg font-serif font-bold text-primary mb-4 flex items-center gap-2">
+          <Plus className="h-4 w-4 text-secondary" />
+          <span>Add a Recommender</span>
+        </h2>
+        <form action={addRecommender} className="grid gap-4 sm:grid-cols-2">
+          <label className="grid gap-1.5 text-xs font-bold uppercase tracking-wider text-muted">
+            Full Name
+            <input name="name" required placeholder="Dr. Jane Smith" className="field text-sm" />
+          </label>
+          <label className="grid gap-1.5 text-xs font-bold uppercase tracking-wider text-muted">
+            Relationship
+            <input name="relationship" placeholder="Undergraduate Thesis Supervisor" className="field text-sm" />
+          </label>
+          <div className="sm:col-span-2 flex justify-end pt-2">
+            <button className="btn btn-coral-bright btn-sm shadow-xs">Add Recommender</button>
+          </div>
+        </form>
+      </section>
+
+      {/* Existing Recommenders List */}
       {(recommenders ?? []).map((r) => {
         const linked = new Set(r.recommendation_requests.map((q) => q.application_id));
         const open = [...title].filter(([id]) => !linked.has(id));
         return (
-          <section key={r.id} aria-label={r.name} className="grid gap-3 rounded-2xl border border-border bg-surface p-6">
-            <div className="flex flex-wrap items-baseline justify-between gap-2">
-              <h2 className="text-lg font-semibold">
-                {r.name}
-                {r.relationship ? <span className="font-normal text-muted"> · {r.relationship}</span> : null}
-              </h2>
-              <form action={removeRecommender.bind(null, r.id)}>
-                <button className="btn btn-secondary btn-sm">Remove {r.name}</button>
-              </form>
+          <section key={r.id} aria-label={r.name} className="grid gap-5 rounded-xl border border-border bg-surface p-6 sm:p-8 ambient-shadow">
+            <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-border/60 pb-4">
+              <div>
+                <h2 className="text-xl font-serif font-bold text-primary">
+                  {r.name}
+                </h2>
+                {r.relationship ? <p className="text-xs text-muted mt-0.5">{r.relationship}</p> : null}
+              </div>
+              <div className="flex items-center gap-2">
+                <Link href={`/app/recommenders/${r.id}/brag-sheet`} className="btn btn-secondary btn-sm">
+                  Brag Sheet
+                </Link>
+                <form action={removeRecommender.bind(null, r.id)}>
+                  <button className="btn btn-secondary btn-sm text-conflicting hover:bg-conflicting/10">Remove</button>
+                </form>
+              </div>
             </div>
+
             {r.recommendation_requests.length ? (
-              <ul className="grid gap-2">
-                {r.recommendation_requests.map((q) => <RequestRow key={q.id} request={q} title={title.get(q.application_id) ?? "Application"} />)}
-              </ul>
+              <div className="grid gap-3">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-muted">Assigned Applications</h3>
+                <ul className="grid gap-2">
+                  {r.recommendation_requests.map((q) => <RequestRow key={q.id} request={q} title={title.get(q.application_id) ?? "Application"} />)}
+                </ul>
+              </div>
             ) : (
-              <p className="text-sm text-muted">Not writing for any application yet.</p>
+              <p className="text-xs text-muted">Not assigned to any application yet.</p>
             )}
+
             {open.length ? (
-              <form action={addRequest.bind(null, r.id)} className="flex flex-wrap items-end gap-2 text-sm">
-                <label className="grid gap-1">
-                  Add a letter for
-                  <select name="application_id" className="field" style={{ width: "18rem" }}>
+              <form action={addRequest.bind(null, r.id)} className="flex flex-wrap items-end gap-3 text-xs pt-3 border-t border-border/60">
+                <label className="grid gap-1 font-semibold text-muted">
+                  Assign to application
+                  <select name="application_id" className="field text-xs py-1.5" style={{ width: "20rem" }}>
                     {open.map(([id, t]) => <option key={id} value={id}>{t}</option>)}
                   </select>
                 </label>
-                <label className="grid gap-1">
-                  Status
-                  <select name="status" defaultValue="not_asked" className="field" style={{ width: "10rem" }}>
-                    {Object.entries(LETTER_STATUSES).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
-                  </select>
-                </label>
-                <label className="grid gap-1">
-                  Letter due
-                  <input type="date" name="due_on" className="field" style={{ width: "10.5rem" }} />
-                </label>
-                <button className="btn btn-secondary">Add</button>
+                <button className="btn btn-secondary btn-sm py-1.5">Assign</button>
               </form>
             ) : null}
-            <details className="rounded-lg border border-border p-3 text-sm">
-              <summary className="cursor-pointer font-semibold">Brag sheet for {r.name}</summary>
-              <form action={saveBragNotes.bind(null, r.id)} className="mt-3 grid gap-2">
-                <label className="grid gap-1">
-                  What you hope {r.name} might mention, one point per line
-                  <textarea
-                    name="brag_notes"
-                    rows={4}
-                    maxLength={3000}
-                    defaultValue={r.brag_notes ?? ""}
-                    placeholder="For example: led the 4-person capstone and built its scheduling model"
-                    className="field"
-                  />
-                </label>
-                <p className="text-muted">Facts they can check, in your words. The sheet adds your CV and the courses and due dates for their letters.</p>
-                <div className="flex flex-wrap gap-2">
-                  <button className="btn btn-secondary btn-sm">Save notes</button>
-                  <Link href={`/app/recommenders/${r.id}/brag-sheet`} className="btn btn-secondary btn-sm">Open printable brag sheet</Link>
-                </div>
-              </form>
-            </details>
           </section>
         );
       })}
-
-      <form action={addRecommender} className="grid gap-3 rounded-2xl border border-border bg-surface p-6 sm:grid-cols-[1fr_1fr_auto] sm:items-end">
-        <h2 className="text-lg font-semibold sm:col-span-3">Add a recommender</h2>
-        <label className="grid gap-1 text-sm">Name<input name="name" required maxLength={120} className="field" /></label>
-        <label className="grid gap-1 text-sm">How they know you (optional)<input name="relationship" maxLength={120} placeholder="For example: thesis supervisor" className="field" /></label>
-        <button className="btn btn-primary">Add recommender</button>
-      </form>
     </div>
   );
 }

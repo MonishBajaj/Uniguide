@@ -24,9 +24,22 @@ export function ProfileForm({ profile }: { profile: Tables<"profiles"> }) {
   const weight = (k: string) => Math.round((prefs.weights?.[k] ?? 0.5) * 10);
 
   return (
-    <form action={action} className="grid gap-6 rounded-2xl border border-border bg-surface p-6">
-      <fieldset id="qualification" className="grid scroll-mt-24 gap-4 sm:grid-cols-2">
-        <legend className="mb-2 text-lg font-semibold">Your most recent qualification</legend>
+    <form action={action} className="grid gap-8 rounded-xl border border-border bg-surface p-6 sm:p-8 ambient-shadow">
+      <fieldset id="identity" className="grid scroll-mt-24 gap-4 sm:grid-cols-2 border-b border-border/60 pb-8">
+        <legend className="mb-2 text-xl font-serif font-bold text-primary">Your Identity</legend>
+        <label className="grid gap-2 text-sm font-semibold sm:col-span-2">
+          Your full name
+          <input
+            name="display_name"
+            defaultValue={profile.display_name ?? ""}
+            placeholder="e.g. Alex Johnson"
+            className="field font-normal"
+          />
+        </label>
+      </fieldset>
+
+      <fieldset id="qualification" className="grid scroll-mt-24 gap-4 sm:grid-cols-2 border-b border-border/60 pb-8">
+        <legend className="mb-2 text-xl font-serif font-bold text-primary">Your most recent qualification</legend>
         <label className="grid gap-2 text-sm font-semibold sm:col-span-2">
           Qualification
           <select name="home_qualification" defaultValue={profile.home_qualification ?? ""} className="field font-normal">

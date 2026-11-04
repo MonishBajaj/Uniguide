@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>UniGuide AI Enterprise Dashboard - Team &amp; Reports</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary-container": "#003628",
+                    "surface-bright": "#f8f9fa",
+                    "error-container": "#ffdad6",
+                    "surface-container": "#edeeef",
+                    "surface": "#f8f9fa",
+                    "on-tertiary-container": "#53a58a",
+                    "on-background": "#191c1d",
+                    "on-primary-fixed": "#001a41",
+                    "secondary": "#af3017",
+                    "on-primary-fixed-variant": "#2c4676",
+                    "surface-tint": "#455e90",
+                    "primary": "#00183d",
+                    "on-tertiary-fixed": "#002117",
+                    "on-secondary": "#ffffff",
+                    "secondary-container": "#fe694a",
+                    "primary-fixed-dim": "#adc6ff",
+                    "on-error": "#ffffff",
+                    "on-primary-container": "#7d96cb",
+                    "on-surface-variant": "#44474f",
+                    "inverse-on-surface": "#f0f1f2",
+                    "surface-container-high": "#e7e8e9",
+                    "tertiary-fixed": "#a0f3d4",
+                    "secondary-fixed": "#ffdad3",
+                    "on-secondary-fixed": "#3e0500",
+                    "on-primary": "#ffffff",
+                    "tertiary": "#001f16",
+                    "surface-dim": "#d9dadb",
+                    "primary-container": "#0f2d5c",
+                    "primary-fixed": "#d8e2ff",
+                    "inverse-surface": "#2e3132",
+                    "surface-variant": "#e1e3e4",
+                    "surface-container-lowest": "#ffffff",
+                    "on-tertiary-fixed-variant": "#00513e",
+                    "error": "#ba1a1a",
+                    "surface-container-highest": "#e1e3e4",
+                    "outline-variant": "#c4c6d0",
+                    "inverse-primary": "#adc6ff",
+                    "on-secondary-container": "#650d00",
+                    "secondary-fixed-dim": "#ffb4a4",
+                    "on-tertiary": "#ffffff",
+                    "on-surface": "#191c1d",
+                    "tertiary-fixed-dim": "#84d6b9",
+                    "outline": "#747780",
+                    "surface-container-low": "#f3f4f5",
+                    "on-error-container": "#93000a",
+                    "background": "#f8f9fa",
+                    "on-secondary-fixed-variant": "#8d1701"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "section-gap-md": "48px",
+                    "margin-mobile": "16px",
+                    "gutter": "24px",
+                    "section-gap-lg": "80px",
+                    "stack-gap": "16px",
+                    "max-width": "1200px"
+            },
+            "fontFamily": {
+                    "label-sm": ["Plus Jakarta Sans"],
+                    "h1-desktop": ["Playfair Display"],
+                    "h2-desktop": ["Playfair Display"],
+                    "body-lg": ["Plus Jakarta Sans"],
+                    "h3-desktop": ["Playfair Display"],
+                    "button-text": ["Plus Jakarta Sans"],
+                    "h1-mobile": ["Playfair Display"],
+                    "body-md": ["Plus Jakarta Sans"]
+            },
+            "fontSize": {
+                    "label-sm": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                    "h1-desktop": ["48px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "h2-desktop": ["36px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "h3-desktop": ["24px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                    "button-text": ["16px", {"lineHeight": "1", "fontWeight": "600"}],
+                    "h1-mobile": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { background-color: #f8f9fa; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .shadow-ambient {
+            box-shadow: 0 8px 24px rgba(0, 24, 61, 0.06);
+        }
+    </style>
+</head>
+<body class="font-body-md text-on-background">
+<!-- SideNavBar -->
+<aside class="bg-primary h-screen w-64 fixed left-0 top-0 flex flex-col py-8 z-50">
+<div class="px-8 mb-10">
+<h1 class="font-h3-desktop text-h3-desktop text-on-primary font-bold">Admissions Portal</h1>
+<p class="text-on-primary/60 text-label-sm font-label-sm">Enterprise Management</p>
+</div>
+<nav class="flex-grow">
+<a class="flex items-center gap-3 px-6 py-4 border-l-4 border-transparent text-on-primary/70 hover:text-on-primary hover:bg-primary-container/50 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-4 border-l-4 border-transparent text-on-primary/70 hover:text-on-primary hover:bg-primary-container/50 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">school</span>
+<span class="font-body-md">Students</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-4 border-l-4 border-transparent text-on-primary/70 hover:text-on-primary hover:bg-primary-container/50 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">description</span>
+<span class="font-body-md">Applications</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-4 border-l-4 border-secondary bg-primary-container text-on-primary font-bold" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="font-body-md">Team Members</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-4 border-l-4 border-transparent text-on-primary/70 hover:text-on-primary hover:bg-primary-container/50 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">query_stats</span>
+<span class="font-body-md">Analytics</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-4 border-l-4 border-transparent text-on-primary/70 hover:text-on-primary hover:bg-primary-container/50 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body-md">Settings</span>
+</a>
+</nav>
+<div class="mt-auto px-4 space-y-2">
+<a class="flex items-center gap-3 px-6 py-3 text-on-primary/70 hover:text-on-primary hover:bg-primary-container/30 rounded-lg transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="font-body-md">Help Center</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-on-primary/70 hover:text-on-primary hover:bg-primary-container/30 rounded-lg transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-body-md">Logout</span>
+</a>
+</div>
+</aside>
+<!-- TopAppBar -->
+<header class="bg-surface-bright flex justify-between items-center px-8 py-4 ml-64 w-[calc(100%-16rem)] sticky top-0 border-b border-outline-variant z-40">
+<div class="flex items-center gap-6 flex-1">
+<h2 class="font-h3-desktop text-primary font-bold">Global Admissions Pro</h2>
+<div class="relative w-96 group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full bg-surface-container-low border-none rounded-full py-2 pl-10 pr-4 text-body-md focus:ring-2 focus:ring-primary outline-none transition-all" placeholder="Search team or reports..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-colors">
+<span class="material-symbols-outlined">apps</span>
+</button>
+<button class="flex items-center gap-2 p-1 pl-3 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-colors border border-outline-variant">
+<span class="font-label-sm">Admin</span>
+<span class="material-symbols-outlined">account_circle</span>
+</button>
+</div>
+</header>
+<!-- Main Content -->
+<main class="ml-64 p-8 max-w-[1200px] mx-auto">
+<!-- Team Panel Section -->
+<section class="mb-section-gap-lg">
+<div class="flex justify-between items-end mb-8">
+<div>
+<h3 class="font-h2-desktop text-h2-desktop text-primary">Team Management</h3>
+<p class="text-body-lg text-on-surface-variant mt-2">Manage access levels and counselor assignments for your agency.</p>
+</div>
+</div>
+<div class="grid grid-cols-12 gap-gutter">
+<!-- Team Table -->
+<div class="col-span-8 bg-surface-container-lowest rounded-xl border border-outline-variant shadow-ambient overflow-hidden">
+<table class="w-full text-left">
+<thead>
+<tr class="bg-surface-container-low border-b border-outline-variant">
+<th class="px-6 py-4 font-label-sm text-on-surface-variant uppercase tracking-wider">Member</th>
+<th class="px-6 py-4 font-label-sm text-on-surface-variant uppercase tracking-wider">Role</th>
+<th class="px-6 py-4 font-label-sm text-on-surface-variant uppercase tracking-wider text-center">Students</th>
+<th class="px-6 py-4 font-label-sm text-on-surface-variant uppercase tracking-wider text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<tr class="hover:bg-surface-bright transition-colors">
+<td class="px-6 py-5">
+<div class="flex items-center gap-3">
+<img class="w-10 h-10 rounded-full object-cover" data-alt="A professional headshot of a middle-aged woman with a confident smile, wearing a navy blazer in a brightly lit, modern corporate office. The background is softly blurred with clean white and gray architectural lines. High-key professional lighting reinforces a trustworthy and academic premium aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAQof2bBWSW1_DqoMBa9I9bCpvWDtxZSAwxm_yNxKVShyTfy4qmnFfeRY4osvIJpvg0fVeBWpvIHhzJkeqjMaouyrYlR_gbwSfDhsXirJWGdiw_wfDvsHgN8pTnvF39FmGy3bEGyuQgzrc-K_h7Z_gqG88_VSo95wAheyqoZcN4CiqZVFTWMphZVKdIzyzlbdmi892j1Ybh7HjPx-7W8eDxiG4vDwj_R-Oe-dFLVxOOUb4wWoW6sllQqLFEOuuqdc8NwjHGIAHfho82"/>
+<div>
+<p class="font-body-md font-bold text-primary">Sarah Jenkins</p>
+<p class="text-label-sm text-on-surface-variant">s.jenkins@uniguide.edu</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="px-3 py-1 rounded-full bg-primary-container text-on-primary-container font-label-sm text-label-sm">Admin</span>
+</td>
+<td class="px-6 py-5 text-center font-body-md text-primary">12</td>
+<td class="px-6 py-5 text-right">
+<button class="text-secondary font-label-sm hover:underline">Remove</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-bright transition-colors">
+<td class="px-6 py-5">
+<div class="flex items-center gap-3">
+<img class="w-10 h-10 rounded-full object-cover" data-alt="A professional portrait of a young man with glasses and a friendly demeanor, wearing a smart casual sweater. The lighting is soft and natural, against a minimalist cream background. The overall style is clean, modern, and suggests academic reliability and approachable expertise." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAoLJyDty64xM16suP1R0Whqr5UG3UOJIL1gWROvS_yPSfFNCftY3FbNJ8vNT-kON7p7c0u6F0396OyLhVTBbf6lNM9O8cPIbQPWawimQeTF0S9iPW3MhbE7c7XMIFktJekWIp9IAaWR0IYxqEwE8rftxzUBAzJHWHF9a0ujqiFJjZDcAUf19KxE7gqRed6Tepqef6u3rroLepBw4QMDq2ACBKn6M90HwQv3mV6O6bQz2ByZw-B6X4Pfok-fQbSpvAEZwElIma1sNBd"/>
+<div>
+<p class="font-body-md font-bold text-primary">Marcus Chen</p>
+<p class="text-label-sm text-on-surface-variant">m.chen@uniguide.edu</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="px-3 py-1 rounded-full bg-tertiary-fixed text-on-tertiary-fixed-variant font-label-sm text-label-sm">Counselor</span>
+</td>
+<td class="px-6 py-5 text-center font-body-md text-primary">24</td>
+<td class="px-6 py-5 text-right">
+<button class="text-secondary font-label-sm hover:underline">Remove</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-bright transition-colors">
+<td class="px-6 py-5">
+<div class="flex items-center gap-3">
+<img class="w-10 h-10 rounded-full object-cover" data-alt="A professional corporate headshot of a woman in a structured white shirt, looking directly at the camera with a poised and stable expression. The background is a solid, warm gray. The lighting is soft and professional, emphasizing a minimalist and prestigious corporate aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCsh5pDVp3fb-ZNTKUTKwLgSK5Xt4706iiG1V08uu5Cb5pPkh-sMCrRc8ihrmBjaULMjPK25jUU5aaW_6RFTJXLbd3tmkatp25Y4r2VEiDk4Af96ttKpf-YKuVYIyIUG73vdO8G4HvDuEwP7cQ3jhaukirJ_3fEYYt-AuKJQzcGP9rAsXX29vA1e9bDnS8hHA-523QPNqRuHN6TfgCv5j6Y83-qNE7_It1XpvTTLgxoobKNhn-6vR71Eamzs9NGeP-x_qRkNQhr5IO-"/>
+<div>
+<p class="font-body-md font-bold text-primary">Elena Rodriguez</p>
+<p class="text-label-sm text-on-surface-variant">e.rod@uniguide.edu</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="px-3 py-1 rounded-full bg-surface-container-high text-on-surface-variant font-label-sm text-label-sm">Viewer</span>
+</td>
+<td class="px-6 py-5 text-center font-body-md text-primary">6</td>
+<td class="px-6 py-5 text-right">
+<button class="text-secondary font-label-sm hover:underline">Remove</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Add Team Member Form & Roles -->
+<div class="col-span-4 space-y-6">
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant shadow-ambient">
+<h4 class="font-h3-desktop text-primary mb-4">Add Team Member</h4>
+<form class="space-y-4">
+<div>
+<label class="block font-label-sm text-on-surface-variant mb-1.5">Email Address</label>
+<input class="w-full border-outline border rounded-lg px-4 py-2.5 font-body-md focus:border-primary focus:ring-0 outline-none transition-all" placeholder="colleague@agency.com" type="email"/>
+</div>
+<div>
+<label class="block font-label-sm text-on-surface-variant mb-1.5">Assign Role</label>
+<select class="w-full border-outline border rounded-lg px-4 py-2.5 font-body-md focus:border-primary focus:ring-0 outline-none transition-all bg-surface-container-lowest">
+<option>Counselor</option>
+<option>Admin</option>
+<option>Viewer</option>
+</select>
+</div>
+<button class="w-full bg-secondary text-on-secondary font-button-text py-3 rounded-full hover:bg-on-secondary-fixed-variant transition-colors flex items-center justify-center gap-2 shadow-sm" type="submit">
+<span class="material-symbols-outlined text-[20px]">person_add</span>
+                                Invite Member
+                            </button>
+</form>
+</div>
+<div class="bg-primary-container/10 p-6 rounded-xl border border-primary-container/20">
+<h4 class="font-label-sm text-primary uppercase tracking-widest mb-4">Role Permissions</h4>
+<ul class="space-y-4">
+<li class="flex gap-3">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">shield_person</span>
+<div>
+<p class="font-bold text-primary font-body-md leading-tight">Admin</p>
+<p class="text-label-sm text-on-surface-variant">Full system access, billing, and team management.</p>
+</div>
+</li>
+<li class="flex gap-3">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">assignment_ind</span>
+<div>
+<p class="font-bold text-primary font-body-md leading-tight">Counselor</p>
+<p class="text-label-sm text-on-surface-variant">Manage assigned students and track applications.</p>
+</div>
+</li>
+<li class="flex gap-3">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">visibility</span>
+<div>
+<p class="font-bold text-primary font-body-md leading-tight">Viewer</p>
+<p class="text-label-sm text-on-surface-variant">Read-only access to dashboards and reports.</p>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</section>
+<!-- Reports Section -->
+<section class="mb-section-gap-lg">
+<div class="flex justify-between items-end mb-8">
+<div>
+<h3 class="font-h2-desktop text-h2-desktop text-primary">Performance Reports</h3>
+<p class="text-body-lg text-on-surface-variant mt-2">Analytical insights and data exports for executive review.</p>
+</div>
+<div class="flex gap-3">
+<button class="bg-surface-container-highest text-primary px-6 py-2.5 rounded-full font-button-text border border-outline-variant hover:bg-surface-container-low transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">calendar_today</span>
+                        Last 30 Days
+                    </button>
+</div>
+</div>
+<!-- Summary Stats (Bento Style) -->
+<div class="grid grid-cols-3 gap-gutter mb-gutter">
+<div class="bg-white p-8 rounded-xl border border-outline-variant shadow-ambient flex items-center gap-6">
+<div class="w-14 h-14 bg-tertiary-fixed/30 rounded-full flex items-center justify-center text-on-tertiary-fixed-variant">
+<span class="material-symbols-outlined text-[32px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+<div>
+<p class="text-on-surface-variant font-label-sm uppercase tracking-wide">Application Success Rate</p>
+<h4 class="font-h2-desktop text-primary">78%</h4>
+<p class="text-label-sm text-on-tertiary-container mt-1 flex items-center gap-1 font-bold">
+<span class="material-symbols-outlined text-[14px]">trending_up</span>
+                            +5.2% vs last month
+                        </p>
+</div>
+</div>
+<div class="bg-white p-8 rounded-xl border border-outline-variant shadow-ambient flex items-center gap-6">
+<div class="w-14 h-14 bg-secondary-fixed/30 rounded-full flex items-center justify-center text-on-secondary-fixed">
+<span class="material-symbols-outlined text-[32px]" style="font-variation-settings: 'FILL' 1;">payments</span>
+</div>
+<div>
+<p class="text-on-surface-variant font-label-sm uppercase tracking-wide">Avg Scholarships</p>
+<h4 class="font-h2-desktop text-primary">$280K</h4>
+<p class="text-label-sm text-on-surface-variant mt-1">Per counseling cycle</p>
+</div>
+</div>
+<div class="bg-white p-8 rounded-xl border border-outline-variant shadow-ambient flex items-center gap-6">
+<div class="w-14 h-14 bg-primary-fixed/30 rounded-full flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[32px]" style="font-variation-settings: 'FILL' 1;">group</span>
+</div>
+<div>
+<p class="text-on-surface-variant font-label-sm uppercase tracking-wide">Total Students</p>
+<h4 class="font-h2-desktop text-primary">42</h4>
+<p class="text-label-sm text-on-surface-variant mt-1">Actively managed</p>
+</div>
+</div>
+</div>
+<!-- Export Section -->
+<div class="bg-surface-container-low p-10 rounded-xl border border-outline-variant">
+<div class="flex items-center gap-3 mb-8">
+<span class="material-symbols-outlined text-primary">file_export</span>
+<h4 class="font-h3-desktop text-primary">Data Exports</h4>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+<!-- Export Card 1 -->
+<div class="bg-white p-6 rounded-xl border border-outline-variant flex flex-col items-center text-center transition-transform hover:scale-[1.02] duration-200">
+<div class="mb-4">
+<span class="material-symbols-outlined text-[48px] text-primary" style="font-variation-settings: 'FILL' 0;">csv</span>
+</div>
+<h5 class="font-bold text-primary font-body-lg mb-2">Export All Students</h5>
+<p class="text-label-sm text-on-surface-variant mb-6">Complete database of all registered students, contact info, and counselor assignments.</p>
+<button class="mt-auto flex items-center gap-2 text-primary font-button-text border border-primary px-6 py-2 rounded-full hover:bg-primary hover:text-white transition-all">
+<span class="material-symbols-outlined text-[18px]">download</span>
+                            Download CSV
+                        </button>
+</div>
+<!-- Export Card 2 -->
+<div class="bg-white p-6 rounded-xl border border-outline-variant flex flex-col items-center text-center transition-transform hover:scale-[1.02] duration-200">
+<div class="mb-4">
+<span class="material-symbols-outlined text-[48px] text-secondary" style="font-variation-settings: 'FILL' 0;">event_busy</span>
+</div>
+<h5 class="font-bold text-primary font-body-lg mb-2">Deadline Report</h5>
+<p class="text-label-sm text-on-surface-variant mb-6">A prioritized list of upcoming application deadlines for all active students.</p>
+<button class="mt-auto flex items-center gap-2 text-primary font-button-text border border-primary px-6 py-2 rounded-full hover:bg-primary hover:text-white transition-all">
+<span class="material-symbols-outlined text-[18px]">download</span>
+                            Download CSV
+                        </button>
+</div>
+<!-- Export Card 3 -->
+<div class="bg-white p-6 rounded-xl border border-outline-variant flex flex-col items-center text-center transition-transform hover:scale-[1.02] duration-200">
+<div class="mb-4">
+<span class="material-symbols-outlined text-[48px] text-tertiary-container" style="font-variation-settings: 'FILL' 0;">bar_chart_4_bars</span>
+</div>
+<h5 class="font-bold text-primary font-body-lg mb-2">Success Report</h5>
+<p class="text-label-sm text-on-surface-variant mb-6">Detailed analysis of accepted vs. rejected applications and scholarship totals.</p>
+<button class="mt-auto flex items-center gap-2 text-primary font-button-text border border-primary px-6 py-2 rounded-full hover:bg-primary hover:text-white transition-all">
+<span class="material-symbols-outlined text-[18px]">download</span>
+                            Download CSV
+                        </button>
+</div>
+</div>
+</div>
+</section>
+<!-- AI Insight Panel -->
+<section class="mt-section-gap-md relative">
+<div class="absolute -inset-1 bg-gradient-to-r from-secondary/40 via-primary/20 to-secondary/40 rounded-2xl blur-sm opacity-25"></div>
+<div class="relative bg-white p-8 rounded-2xl border border-outline-variant flex items-center justify-between">
+<div class="flex items-center gap-6">
+<div class="p-3 bg-secondary/10 rounded-xl">
+<span class="material-symbols-outlined text-secondary text-[32px]">auto_awesome</span>
+</div>
+<div>
+<h4 class="font-h3-desktop text-primary">UniGuide AI Insight</h4>
+<p class="text-body-md text-on-surface-variant">Based on recent success rates, increasing focus on scholarship-eligible profiles could improve conversion by 14%.</p>
+</div>
+</div>
+<button class="bg-primary text-on-primary px-8 py-3 rounded-full font-button-text hover:bg-primary-container transition-colors">
+                    Generate Strategy
+                </button>
+</div>
+</section>
+</main>
+<!-- Footer Space -->
+<div class="h-16"></div>
+</body></html>

@@ -17,13 +17,14 @@ import { TrackSwitcher } from "@/components/track-switcher";
 import { WelcomePrompt } from "@/components/journey/welcome-prompt";
 import { welcomeOf } from "@/lib/onboarding";
 import { getLocale } from "@/lib/i18n/server";
+import { Sparkles, SlidersHorizontal, ArrowRight } from "lucide-react";
 
 export const metadata: Metadata = { title: "My matches" };
 
 const RESULT_STYLE = {
-  meets: "text-verified",
-  does_not_meet: "text-conflicting",
-  needs_clarification: "text-unverified",
+  meets: "text-verified font-bold",
+  does_not_meet: "text-conflicting font-bold",
+  needs_clarification: "text-unverified font-bold",
 } as const;
 const RESULT_TEXT = { meets: "Meets", does_not_meet: "Does not meet", needs_clarification: "Needs checking" } as const;
 const RULES: Record<Exclusion["rule"], string> = {
@@ -46,10 +47,10 @@ export default async function MatchPage({ searchParams }: PageProps<"/app/match"
   const { lite } = await readDisplay();
   if (!inputs) {
     return (
-      <div className="rounded-2xl border border-border bg-surface p-8">
-        <h1 className="text-2xl font-semibold">{all.journey.empty.profileTitle}</h1>
-        <p className="mt-2 text-muted">{all.journey.empty.profileBody}</p>
-        <Link href="/app/onboarding?screen=3" className="btn btn-primary mt-6">{all.journey.empty.profileAction}</Link>
+      <div className="rounded-xl border border-border bg-surface p-8 ambient-shadow max-w-xl mx-auto text-center py-12">
+        <h1 className="text-2xl font-serif font-bold text-primary">{all.journey.empty.profileTitle}</h1>
+        <p className="mt-2 text-muted text-sm leading-relaxed">{all.journey.empty.profileBody}</p>
+        <Link href="/app/onboarding?screen=3" className="btn btn-coral-bright mt-6 shadow-sm">{all.journey.empty.profileAction}</Link>
       </div>
     );
   }
@@ -121,153 +122,146 @@ export default async function MatchPage({ searchParams }: PageProps<"/app/match"
   return (
     <div className="grid gap-10">
       <WelcomePrompt welcome={welcomeOf(params.welcome)} t={all.journey.onboarding} />
-      <header>
-        <h1 className="text-4xl font-semibold">Your matches{track ? `: ${track.name}` : ""}</h1>
+
+      <header className="rounded-xl border border-border bg-surface p-6 sm:p-8 ambient-shadow">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-3xl sm:text-4xl font-serif font-bold text-primary">
+              Your Course Matches{track ? `: ${track.name}` : ""}
+            </h1>
+            <p className="mt-2 text-sm text-muted max-w-2xl leading-relaxed">
+              {feasible.length} {feasible.length === 1 ? "course fits" : "courses fit"} your limits, ordered deterministically by suitability to your preferences. Suitability is not your chance of admission.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Link
+              href="/app/match/what-if"
+              className="btn btn-secondary btn-sm gap-1.5 whitespace-nowrap hover:border-primary/40 hover:text-primary"
+            >
+              <SlidersHorizontal className="h-4 w-4" />
+              <span>Simulate What-If</span>
+            </Link>
+          </div>
+        </div>
+
         {tracks?.length ? (
-          <div className="mt-4">
+          <div className="mt-6 pt-4 border-t border-border/60">
             <TrackSwitcher
               href={(v) => (v === "main" ? "/app/match" : `/app/match?track=${v}`)}
-              options={[{ value: "main", label: "Main (your profile)" }, ...tracks.map((t) => ({ value: t.id, label: t.name }))]}
+              options={[{ value: "main", label: "Main Profile" }, ...tracks.map((t) => ({ value: t.id, label: t.name }))]}
               current={track?.id ?? "main"}
             />
           </div>
         ) : null}
-        <p className="mt-2 text-sm"><Link href="/app/match/what-if" className="underline underline-offset-2">Try what if: change your grades, budget or scores and see what moves</Link></p>
-        <p className="mt-2 max-w-[680px] text-muted">
-          {feasible.length} {feasible.length === 1 ? "course fits" : "courses fit"} your limits, ordered by suitability to your preferences. Suitability is not your
-          chance of admission.{" "}
-          {excluded.length ? `${excluded.length} ${excluded.length === 1 ? "course was" : "courses were"} set aside; the reasons are below.` : ""}
-        </p>
       </header>
 
+      {goals.length ? (
+        <section aria-labelledby="score-goals">
+          <ScoreGoals rows={goals} />
+        </section>
+      ) : null}
+
       {feasible.length === 0 ? (
-        // J3.5: while the catalogue is small, an empty list says so and offers what to do next.
-        <div className="rounded-2xl border border-border bg-surface p-8">
-          <h2 className="text-xl font-semibold">{all.journey.empty.matchTitle}</h2>
-          <p className="mt-2 max-w-[680px] text-muted">{all.journey.empty.matchBody}</p>
-          {excluded.length ? <p className="mt-2 text-muted">{all.journey.empty.whyAside}</p> : null}
-          <div className="mt-6 flex flex-wrap items-start gap-3">
+        <div className="rounded-xl border border-border bg-surface p-8 ambient-shadow text-center py-12">
+          <h2 className="text-xl font-serif font-bold text-primary">{all.journey.empty.matchTitle}</h2>
+          <p className="mt-2 max-w-md mx-auto text-muted text-sm leading-relaxed">{all.journey.empty.matchBody}</p>
+          {excluded.length ? <p className="mt-2 text-xs text-muted">{all.journey.empty.whyAside}</p> : null}
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
             <FindUniversitiesButton label={all.journey.empty.findUniversities} />
             <Link href="/app/match/what-if" className="btn btn-secondary">{all.journey.empty.tryWhatIf}</Link>
             <Link href="/courses" className="btn btn-secondary">{all.journey.empty.browse}</Link>
           </div>
         </div>
       ) : (
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-6 md:grid-cols-2">
           {feasible.slice(0, listSize(40, lite)).map((r) => {
             const card = byId.get(r.programId)!;
             const cost = r.cost;
             const base = cost.converted ?? (cost.currency ? { amount: cost.base, currency: cost.currency } : null);
             return (
               <ProgramCard key={r.programId} card={card} signedIn>
-                <dl className="grid grid-cols-2 gap-3 text-sm">
+                <div className="rounded-lg bg-surface-2/60 border border-border/60 p-3.5 grid grid-cols-2 gap-3 text-xs">
                   <div>
-                    <dt className="text-muted">Suitability</dt>
-                    <dd className="font-semibold">
-                      {r.fit.score == null ? "No preferences set" : `${r.fit.score} / 100`}
-                      <span className="block text-xs font-normal text-muted">{Math.round(r.fit.dataCoverage * 100)}% of the data it needs is known</span>
-                    </dd>
+                    <span className="text-muted block text-[11px] uppercase tracking-wider font-semibold">Suitability Score</span>
+                    <span className="font-serif text-lg font-bold text-primary block mt-0.5">
+                      {r.fit.score == null ? "No preferences" : `${r.fit.score} / 100`}
+                    </span>
+                    <span className="text-[10px] text-muted">Based on verified facts</span>
                   </div>
+
                   <div>
-                    <dt className="text-muted">Base cost</dt>
-                    <dd className="font-semibold">
-                      {base && cost.lines.length ? `${cost.converted ? "about " : ""}${money(base.amount, base.currency)}` : "Not yet known"}
-                      {!cost.complete && cost.lines.length ? <span className="block text-xs font-normal text-unverified">Incomplete, the real total is higher</span> : null}
-                    </dd>
+                    <span className="text-muted block text-[11px] uppercase tracking-wider font-semibold">Estimated Base Cost</span>
+                    <span className="font-serif text-lg font-bold text-primary block mt-0.5">
+                      {base && cost.lines.length ? `${cost.converted ? "about " : ""}${money(base.amount, base.currency)}` : "Not published"}
+                    </span>
+                    {!cost.complete && cost.lines.length ? (
+                      <span className="text-[10px] text-unverified block">Incomplete facts</span>
+                    ) : null}
                   </div>
+
                   {showBands ? (
-                    <div className="col-span-2">
-                      <dt className="text-muted">Band (low confidence)</dt>
-                      <dd className="font-semibold">
+                    <div className="col-span-2 pt-2 border-t border-border/40">
+                      <span className="text-muted block text-[11px]">Admissions Band:</span>
+                      <span className="font-semibold text-primary">
                         {(() => {
                           const band = admissionBand(statsBy.get(r.programId), r.eligibility.overall, student.classPercentile);
                           return band ? band[0]!.toUpperCase() + band.slice(1) : "Not enough verified data";
                         })()}
-                      </dd>
-                      {(() => {
-                        const est = estimateFor(r.programId);
-                        return est ? (
-                          <dd className="text-xs text-muted">
-                            Model estimate: about {Math.max(1, Math.min(9, Math.round(est.probability * 10)))} in 10 applicants with a grade
-                            like yours, learned from {est.n} shared outcomes for this course. Experimental.
-                          </dd>
-                        ) : null;
-                      })()}
+                      </span>
                     </div>
                   ) : null}
-                  <div className="col-span-2">
-                    <dt className="text-muted">Next deadline</dt>
-                    <dd className="font-semibold">
-                      {r.nextDeadline
-                        ? `${deadlineText(r.nextDeadline.dueAt, r.nextDeadline.timezone ?? "UTC", r.nextDeadline.precision)} (${daysUntil(r.nextDeadline.dueAt)} days)`
-                        : "Not yet known"}
-                    </dd>
+
+                  <div className="col-span-2 pt-2 border-t border-border/40 flex items-center justify-between">
+                    <span className={`text-xs ${RESULT_STYLE[r.eligibility.overall]}`}>
+                      Eligibility: {RESULT_TEXT[r.eligibility.overall]}
+                    </span>
+                    <ExplainButton programId={r.programId} />
                   </div>
-                </dl>
-                <details className="text-sm">
-                  <summary className={`cursor-pointer font-semibold ${RESULT_STYLE[r.eligibility.overall]}`}>
-                    Requirements: {RESULT_TEXT[r.eligibility.overall].toLowerCase()}
-                  </summary>
-                  <ul className="mt-2 grid gap-1">
-                    {r.eligibility.checks.map((c, i) => (
-                      <li key={i}>
-                        <span className={`font-semibold ${RESULT_STYLE[c.result]}`}>{RESULT_TEXT[c.result]}:</span> {c.reason}
-                      </li>
-                    ))}
-                  </ul>
-                </details>
-                <ExplainButton programId={r.programId} />
+                </div>
               </ProgramCard>
             );
           })}
         </div>
       )}
 
-      <section id="score-goals" aria-labelledby="score-goals-title" className="grid gap-3 scroll-mt-24">
-        <h2 id="score-goals-title" className="text-2xl font-semibold">{all.journey.panels.scoreGoalsTitle}</h2>
-        <p className="max-w-[680px] text-muted">{all.journey.panels.scoreGoalsIntro}</p>
-        <ScoreGoals
-          rows={goals}
-          empty={
-            student.testScores?.length ? (
-              all.journey.panels.scoreGoalsNoMinimum
-            ) : (
-              <Link href="/app/profile#scores-section" className="underline underline-offset-2">{all.journey.panels.scoreGoalsNoScore}</Link>
-            )
-          }
-        />
-      </section>
+      {excluded.length > 0 ? (
+        <section aria-labelledby="excluded-heading" className="rounded-xl border border-border bg-surface p-6 sm:p-8 ambient-shadow mt-4">
+          <h2 id="excluded-heading" className="text-xl font-serif font-bold text-primary mb-2">
+            Courses set aside ({excluded.length})
+          </h2>
+          <p className="text-xs text-muted mb-6">
+            These courses were excluded by your stated constraints (budget, destination, test minimums, or delivery mode).
+          </p>
 
-      {lite && feasible.length > listSize(40, lite) ? (
-        <p className="text-sm text-muted">
-          Showing your top {listSize(40, lite)} because data saver is on. <Link href="/accessibility" className="underline underline-offset-2">Show more</Link>
-        </p>
-      ) : null}
-
-      {excluded.length ? (
-        <section aria-labelledby="excluded">
-          <h2 id="excluded" className="text-2xl font-semibold">Set aside, and why</h2>
-          <div className="mt-4 grid gap-3">
-            {[...groups.entries()].map(([rule, items]) => (
-              <details key={rule} className="rounded-2xl border border-border bg-surface p-4">
-                <summary className="cursor-pointer font-semibold">{RULES[rule]} ({items.length})</summary>
-                <ul className="mt-3 grid gap-2 text-sm">
-                  {items.slice(0, 50).map((r) => {
-                    const card = byId.get(r.programId)!;
+          <div className="space-y-6">
+            {[...groups.entries()].map(([rule, list]) => (
+              <div key={rule} className="rounded-lg border border-border/60 bg-surface-2/40 p-4">
+                <h3 className="font-semibold text-sm text-primary mb-2">
+                  {RULES[rule]} ({list.length})
+                </h3>
+                <ul className="grid gap-2 text-xs">
+                  {list.slice(0, 5).map((ex) => {
+                    const c = byId.get(ex.programId);
+                    if (!c) return null;
                     return (
-                      <li key={r.programId}>
-                        <Link href={`/courses/${card.slug}`} className="underline underline-offset-2">{card.title}</Link>, {card.institution_name}
-                        <span className="text-muted">: {r.exclusions.map((e) => e.reason).join(" ")}</span>
+                      <li key={ex.programId} className="flex items-center justify-between gap-2">
+                        <Link href={`/courses/${c.slug}`} className="text-primary hover:underline font-medium truncate">
+                          {c.institution_name}: {c.title}
+                        </Link>
+                        <span className="text-muted shrink-0 text-[11px]">{ex.exclusions[0]?.reason}</span>
                       </li>
                     );
                   })}
+                  {list.length > 5 ? (
+                    <li className="text-muted text-[11px] pt-1">...and {list.length - 5} more</li>
+                  ) : null}
                 </ul>
-              </details>
+              </div>
             ))}
           </div>
         </section>
       ) : null}
-      <p className="text-xs text-muted">Matching rules version {algorithmVersion}. Showing the first 200 courses for your levels and countries.</p>
     </div>
   );
 }

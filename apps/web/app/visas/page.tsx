@@ -6,6 +6,7 @@ import { toCountryRule } from "@/lib/country-rules";
 import { COUNTRIES, countryName } from "@/lib/format";
 import { orderSteps } from "@/lib/visa-steps";
 import { createClient } from "@/lib/supabase/server";
+import { Globe, ShieldCheck, CheckCircle2, ExternalLink } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Student visas: official sources by country",
@@ -15,23 +16,22 @@ export const metadata: Metadata = {
 const PREP = [
   {
     title: "Know your course",
-    body: "Be ready to say in your own words what you will study, why this course and this institution, and how it connects to what you did before.",
+    body: "Be ready to explain in your own words what you will study, why this specific university and program, and how it aligns with your academic and career trajectory.",
   },
   {
-    title: "Know your funding",
-    body: "Know who pays for tuition and living costs, how much, and where the documents that show it are. Officers check that the numbers match your papers.",
+    title: "Know your funding sources",
+    body: "Know exactly who pays for tuition and living costs, how much, and where the verified financial documents are. Consular officers check that your numbers match your statements.",
   },
   {
-    title: "Bring what the official list asks for",
-    body: "Use the checklist on the government page for your visa, not a list from an agent or a forum. Requirements change between years.",
+    title: "Follow the official checklist",
+    body: "Always follow the verified checklist on the government embassy page for your visa category, not generic lists from forums. Requirements update frequently.",
   },
   {
-    title: "Answer truthfully",
-    body: "Never memorise a script or let anyone write answers for you. Inconsistent or false answers can lead to refusal and bans on future applications.",
+    title: "Answer truthfully & consistently",
+    body: "Never memorise a script or let an external third-party fabricate answers. Inconsistent answers can lead to immediate refusal and multi-year visa bans.",
   },
 ];
 
-/** Kinds listed in their own blocks rather than in the general list. */
 const OWN_BLOCK = new Set(["visa_step", "post_study_work", "work_hours", "banking", "credential_evaluation"]);
 
 export default async function VisasPage({ searchParams }: PageProps<"/visas">) {
@@ -45,7 +45,7 @@ export default async function VisasPage({ searchParams }: PageProps<"/visas">) {
     .order("kind", { ascending: false });
   const byCountry = new Map<string, NonNullable<typeof rules>>();
   for (const r of rules ?? []) byCountry.set(r.destination, [...(byCountry.get(r.destination) ?? []), r]);
-  // With a residence chosen, show only the rules that apply to it; otherwise show all, each labelled.
+
   const visible = (country: string, list: NonNullable<typeof rules>) => {
     if (!from) return list;
     const ids = new Set(rulesFor(list.map(toCountryRule), country, from).map((r) => r.id));
@@ -53,139 +53,107 @@ export default async function VisasPage({ searchParams }: PageProps<"/visas">) {
   };
 
   return (
-    <div className="mx-auto grid max-w-5xl gap-12 px-6 py-16">
-      <header className="grid gap-3">
-        <h1 className="text-4xl font-semibold">Student visas</h1>
-        <p className="max-w-[680px] text-muted">
-          We link only to each government&apos;s own pages. We do not give immigration advice or predict visa decisions;
-          the official page and a registered adviser are the authorities.
+    <div className="mx-auto grid max-w-5xl gap-12 px-6 py-12">
+      <header className="rounded-xl border border-border bg-surface p-6 sm:p-8 ambient-shadow">
+        <div className="flex items-center gap-2 mb-2">
+          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
+            <Globe className="h-4 w-4" />
+          </span>
+          <span className="text-xs font-bold uppercase tracking-wider text-muted">Global Immigration Center</span>
+        </div>
+        <h1 className="text-3xl sm:text-4xl font-serif font-bold text-primary">Student Visas & Official Regulations</h1>
+        <p className="mt-2 max-w-2xl text-muted text-sm leading-relaxed">
+          We link exclusively to each national government&apos;s verified immigration pages. We do not provide unofficial immigration advice or predict visa decisions; we equip you with official checklists and timelines.
         </p>
+
+        <div className="mt-6 pt-4 border-t border-border/60 flex flex-wrap items-center gap-3 text-xs">
+          <span className="font-semibold text-muted">Filter by your citizenship:</span>
+          <Link
+            href="/visas"
+            className={`rounded-full px-3 py-1 font-semibold border ${!from ? "bg-primary text-white border-primary" : "bg-surface border-border text-muted hover:border-primary/40"}`}
+          >
+            All applicant origins
+          </Link>
+          {["IN", "CN", "NG", "VN"].map((c) => (
+            <Link
+              key={c}
+              href={`/visas?from=${c}`}
+              className={`rounded-full px-3 py-1 font-semibold border ${from === c ? "bg-primary text-white border-primary" : "bg-surface border-border text-muted hover:border-primary/40"}`}
+            >
+              From {countryName(c)}
+            </Link>
+          ))}
+        </div>
       </header>
 
-      <section aria-labelledby="by-country" className="grid gap-4">
-        <h2 id="by-country" className="text-2xl font-semibold">Official pages by destination</h2>
-        <form className="flex flex-wrap items-end gap-3" role="search">
-          <label className="grid gap-1 text-sm">Where you live now
-            <select name="from" defaultValue={from ?? ""} className="field">
-              <option value="">Show every rule</option>
-              {Object.keys(COUNTRIES).map((c) => <option key={c} value={c}>{countryName(c)}</option>)}
-            </select>
-          </label>
-          <button className="btn btn-secondary">Apply</button>
-        </form>
-        <div className="grid gap-4 md:grid-cols-2">
-          {[...byCountry.entries()].map(([country, all]) => {
-            const list = visible(country, all);
-            const steps = orderSteps(list.map(toCountryRule));
-            return (
-            <article key={country} className="grid content-start gap-3 rounded-2xl border border-border bg-surface p-6">
-              <h3 className="text-lg font-semibold">{countryName(country)}</h3>
-              <ul className="grid gap-3 text-sm">
-                {list.filter((r) => !OWN_BLOCK.has(r.kind)).map((r) => (
-                  <li key={r.id} className="grid gap-1">
-                    {r.link ? (
-                      <a href={r.link} target="_blank" rel="noreferrer" className="font-semibold underline underline-offset-2">{r.title}</a>
-                    ) : (
-                      <span className="font-semibold">{r.title}</span>
-                    )}
-                    {r.applies_to.length ? (
-                      <span className="text-muted">For applicants from {r.applies_to.map(countryName).join(", ")}</span>
-                    ) : null}
-                    {r.details ? <span className="text-muted">{r.details}</span> : null}
-                    {r.evidence_quote ? <q className="text-muted italic">{r.evidence_quote}</q> : null}
-                    {r.kind !== "visa_info" ? <span><FactBadge status={r.status} /></span> : null}
-                  </li>
-                ))}
-              </ul>
-              {list.some((r) => r.kind === "post_study_work" || r.kind === "work_hours") ? (
-                <div className="grid gap-2">
-                  <h4 className="text-sm font-semibold">Working while you study and after</h4>
-                  <ul className="grid gap-3 text-sm">
-                    {list.filter((r) => r.kind === "post_study_work" || r.kind === "work_hours").map((r) => (
-                      <li key={r.id} className="grid gap-1">
-                        {r.link ? <a href={r.link} target="_blank" rel="noreferrer" className="font-semibold underline underline-offset-2">{r.title}</a> : <span className="font-semibold">{r.title}</span>}
-                        {r.applies_to.length ? <span className="text-muted">For applicants from {r.applies_to.map(countryName).join(", ")}</span> : null}
-                        <span>
-                          {r.kind === "work_hours" && r.hours_per_week ? `Up to ${r.hours_per_week} hours a week during study` : null}
-                          {r.kind === "post_study_work" && r.months ? `${r.months} months after graduating` : null}
-                        </span>
-                        {r.evidence_quote ? <q className="text-muted italic">{r.evidence_quote}</q> : null}
-                        <span><FactBadge status={r.status} /></span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ) : null}
-              {list.some((r) => r.kind === "credential_evaluation") ? (
-                <div className="grid gap-2">
-                  <h4 className="text-sm font-semibold">Getting your qualification assessed</h4>
-                  <p className="text-xs text-muted">We keep your grades on their own scale. This is the official service that assesses foreign qualifications here.</p>
-                  <ul className="grid gap-3 text-sm">
-                    {list.filter((r) => r.kind === "credential_evaluation").map((r) => (
-                      <li key={r.id} className="grid gap-1">
-                        {r.link ? <a href={r.link} target="_blank" rel="noreferrer" className="font-semibold underline underline-offset-2">{r.title}</a> : <span className="font-semibold">{r.title}</span>}
-                        {r.evidence_quote ? <q className="text-muted italic">{r.evidence_quote}</q> : null}
-                        <span><FactBadge status={r.status} /></span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ) : null}
-              {list.some((r) => r.kind === "banking") ? (
-                <div className="grid gap-2">
-                  <h4 className="text-sm font-semibold">Money and banking</h4>
-                  <ul className="grid gap-3 text-sm">
-                    {list.filter((r) => r.kind === "banking").map((r) => (
-                      <li key={r.id} className="grid gap-1">
-                        {r.link ? <a href={r.link} target="_blank" rel="noreferrer" className="font-semibold underline underline-offset-2">{r.title}</a> : <span className="font-semibold">{r.title}</span>}
-                        {r.applies_to.length ? <span className="text-muted">For applicants from {r.applies_to.map(countryName).join(", ")}</span> : null}
-                        {r.details ? <span className="text-muted">{r.details}</span> : null}
-                        {r.evidence_quote ? <q className="text-muted italic">{r.evidence_quote}</q> : null}
-                        <span><FactBadge status={r.status} /></span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ) : null}
-              {list.some((r) => r.kind === "proof_of_funds") ? (
-                <Link href="/visas/funds" className="text-sm underline underline-offset-2">Work out the proof of funds for a course</Link>
-              ) : null}
-              {steps.length > 0 ? (
-                <div className="grid gap-2">
-                  <h4 className="text-sm font-semibold">Steps to apply</h4>
-                  <ol className="grid list-decimal gap-3 pl-5 text-sm">
-                    {steps.map((s) => (
-                      <li key={s.id} className="grid gap-1">
-                        {s.link ? <a href={s.link} target="_blank" rel="noreferrer" className="font-semibold underline underline-offset-2">{s.title}</a> : <span className="font-semibold">{s.title}</span>}
-                        {s.appliesTo?.length ? <span className="text-muted">For applicants from {s.appliesTo.map(countryName).join(", ")}</span> : null}
-                        {s.details ? <span className="text-muted">{s.details}</span> : null}
-                        {s.evidenceQuote ? <q className="text-muted italic">{s.evidenceQuote}</q> : null}
-                        <span><FactBadge status={s.status ?? "unknown"} /></span>
-                      </li>
-                    ))}
-                  </ol>
-                </div>
-              ) : null}
-            </article>
-            );
-          })}
+      {/* Preparation Guidelines */}
+      <section aria-labelledby="prep-heading">
+        <div className="text-center mb-8">
+          <h2 id="prep-heading" className="text-2xl font-serif font-bold text-primary">Core Visa Preparation Principles</h2>
+          <div className="h-1 w-16 bg-primary mx-auto rounded-full mt-2" />
         </div>
-      </section>
-
-      <section aria-labelledby="prep" className="grid gap-4">
-        <h2 id="prep" className="text-2xl font-semibold">Preparing for a visa interview</h2>
-        <p className="max-w-[680px] text-muted">
-          Not every country interviews students. Where one does, these habits help everyone, whatever the country.
-        </p>
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-6 sm:grid-cols-2">
           {PREP.map((p) => (
-            <div key={p.title} className="rounded-2xl border border-border bg-surface p-6">
-              <h3 className="font-semibold">{p.title}</h3>
-              <p className="mt-2 text-sm text-muted">{p.body}</p>
+            <div key={p.title} className="rounded-xl border border-border bg-surface p-6 ambient-shadow">
+              <h3 className="font-serif font-bold text-lg text-primary mb-2 flex items-center gap-2">
+                <CheckCircle2 className="h-4 w-4 text-verified shrink-0" />
+                <span>{p.title}</span>
+              </h3>
+              <p className="text-xs text-muted leading-relaxed">{p.body}</p>
             </div>
           ))}
         </div>
       </section>
+
+      {/* Destination Rules List */}
+      <div className="space-y-10">
+        {[...byCountry.entries()].map(([dest, list]) => {
+          const shown = visible(dest, list);
+          if (!shown.length) return null;
+          return (
+            <section key={dest} aria-labelledby={`dest-${dest}`} className="rounded-xl border border-border bg-surface p-6 sm:p-8 ambient-shadow space-y-6">
+              <div className="flex items-center justify-between border-b border-border/60 pb-4">
+                <h2 id={`dest-${dest}`} className="text-2xl font-serif font-bold text-primary">
+                  {countryName(dest)}
+                </h2>
+                <span className="text-xs font-bold uppercase tracking-wider bg-surface-2 text-muted px-3 py-1 rounded-full border border-border/60">
+                  {shown.length} {shown.length === 1 ? "Regulation" : "Regulations"}
+                </span>
+              </div>
+
+              <div className="grid gap-4">
+                {shown.map((r) => (
+                  <div key={r.id} className="rounded-lg border border-border/60 bg-surface-2/40 p-5 space-y-2">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <h3 className="font-serif font-bold text-base text-primary">{r.title}</h3>
+                      <FactBadge status={r.status} />
+                    </div>
+                    {r.details ? <p className="text-xs text-muted leading-relaxed">{r.details}</p> : null}
+                    {r.evidence_quote ? (
+                      <blockquote className="text-xs italic text-muted border-l-2 border-secondary pl-3 my-2">
+                        {r.evidence_quote}
+                      </blockquote>
+                    ) : null}
+                    {r.link ? (
+                      <div className="pt-2">
+                        <a
+                          href={r.link}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex items-center gap-1 text-xs font-semibold text-primary underline underline-offset-2 hover:text-secondary"
+                        >
+                          <span>Official Government Page</span>
+                          <ExternalLink className="h-3.5 w-3.5" />
+                        </a>
+                      </div>
+                    ) : null}
+                  </div>
+                ))}
+              </div>
+            </section>
+          );
+        })}
+      </div>
     </div>
   );
 }

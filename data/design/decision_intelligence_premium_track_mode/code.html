@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>UniGuide AI | Decision Intelligence</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&amp;family=Plus+Jakarta+Sans:wght@400;600;700&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface": "#f8f9fa",
+                      "tertiary-fixed-dim": "#84d6b9",
+                      "on-secondary": "#ffffff",
+                      "on-surface": "#191c1d",
+                      "surface-container-highest": "#e1e3e4",
+                      "surface-container": "#edeeef",
+                      "tertiary": "#001f16",
+                      "on-tertiary-fixed": "#002117",
+                      "on-secondary-container": "#650d00",
+                      "inverse-surface": "#2e3132",
+                      "surface-tint": "#455e90",
+                      "outline": "#747780",
+                      "tertiary-container": "#003628",
+                      "on-primary": "#ffffff",
+                      "on-primary-container": "#7d96cb",
+                      "on-error": "#ffffff",
+                      "surface-dim": "#d9dadb",
+                      "secondary": "#af3017",
+                      "on-surface-variant": "#44474f",
+                      "inverse-primary": "#adc6ff",
+                      "on-primary-fixed": "#001a41",
+                      "secondary-container": "#fe694a",
+                      "primary-fixed-dim": "#adc6ff",
+                      "secondary-fixed": "#ffdad3",
+                      "surface-container-high": "#e7e8e9",
+                      "secondary-fixed-dim": "#ffb4a4",
+                      "surface-container-low": "#f3f4f5",
+                      "on-error-container": "#93000a",
+                      "inverse-on-surface": "#f0f1f2",
+                      "primary-fixed": "#d8e2ff",
+                      "background": "#f8f9fa",
+                      "on-tertiary-container": "#53a58a",
+                      "on-secondary-fixed-variant": "#8d1701",
+                      "error-container": "#ffdad6",
+                      "primary-container": "#0f2d5c",
+                      "tertiary-fixed": "#a0f3d4",
+                      "surface-bright": "#f8f9fa",
+                      "on-secondary-fixed": "#3e0500",
+                      "on-primary-fixed-variant": "#2c4676",
+                      "on-background": "#191c1d",
+                      "surface-container-lowest": "#ffffff",
+                      "primary": "#00183d",
+                      "surface-variant": "#e1e3e4",
+                      "outline-variant": "#c4c6d0",
+                      "on-tertiary": "#ffffff",
+                      "error": "#ba1a1a",
+                      "on-tertiary-fixed-variant": "#00513e"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "margin-mobile": "16px",
+                      "section-gap-lg": "80px",
+                      "stack-gap": "16px",
+                      "section-gap-md": "48px",
+                      "max-width": "1200px",
+                      "gutter": "24px"
+              },
+              "fontFamily": {
+                      "body-lg": ["Plus Jakarta Sans"],
+                      "h2-desktop": ["Playfair Display"],
+                      "h1-mobile": ["Playfair Display"],
+                      "h1-desktop": ["Playfair Display"],
+                      "label-sm": ["Plus Jakarta Sans"],
+                      "h3-desktop": ["Playfair Display"],
+                      "button-text": ["Plus Jakarta Sans"],
+                      "body-md": ["Plus Jakarta Sans"]
+              },
+              "fontSize": {
+                      "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                      "h2-desktop": ["36px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                      "h1-mobile": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                      "h1-desktop": ["48px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                      "label-sm": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                      "h3-desktop": ["24px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                      "button-text": ["16px", {"lineHeight": "1", "fontWeight": "600"}],
+                      "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}]
+              }
+            },
+          },
+        }
+      </script>
+</head>
+<body class="bg-surface font-body-md text-on-surface">
+<!-- Top Navigation Bar -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-gutter h-16 max-w-full mx-auto bg-surface border-b border-outline-variant">
+<div class="flex items-center gap-4">
+<h1 class="font-h3-desktop text-h3-desktop font-bold text-primary">UniGuide AI</h1>
+</div>
+<nav class="hidden md:flex items-center gap-8">
+<a class="text-on-surface-variant hover:text-secondary transition-colors duration-200" href="#">Dashboard</a>
+<a class="text-on-surface-variant hover:text-secondary transition-colors duration-200" href="#">Admissions</a>
+<a class="text-on-surface-variant hover:text-secondary transition-colors duration-200" href="#">Financials</a>
+<a class="text-primary font-bold border-b-2 border-secondary" href="#">Decisions</a>
+</nav>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary" data-icon="notifications">notifications</span>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary" data-icon="settings">settings</span>
+<div class="flex items-center gap-2">
+<button class="px-4 py-2 bg-primary text-white rounded-full font-button-text text-sm">Accept Offer</button>
+</div>
+</div>
+</header>
+<main class="pt-24 pb-32 max-w-max-width mx-auto px-gutter flex gap-stack-gap">
+<!-- Side Navigation (Web) -->
+<aside class="hidden md:flex flex-col h-[calc(100vh-120px)] w-64 sticky top-24 gap-stack-gap">
+<div class="p-4 bg-surface-container-low rounded-xl">
+<div class="flex items-center gap-3 mb-6">
+<div class="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-white" data-icon="psychology">psychology</span>
+</div>
+<div>
+<p class="font-bold text-primary leading-tight">UniGuide AI</p>
+<p class="text-[10px] text-on-surface-variant uppercase tracking-widest">Decision Intelligence</p>
+</div>
+</div>
+<nav class="space-y-1">
+<a class="flex items-center gap-3 p-3 text-on-surface-variant hover:bg-surface-container-highest rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-sm text-label-sm">Home</span>
+</a>
+<a class="flex items-center gap-3 p-3 bg-primary-container text-on-primary-container rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="compare_arrows">compare_arrows</span>
+<span class="font-label-sm text-label-sm">Comparisons</span>
+</a>
+<a class="flex items-center gap-3 p-3 text-on-surface-variant hover:bg-surface-container-highest rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="account_balance_wallet">account_balance_wallet</span>
+<span class="font-label-sm text-label-sm">Financial Aid</span>
+</a>
+<a class="flex items-center gap-3 p-3 text-on-surface-variant hover:bg-surface-container-highest rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="timer">timer</span>
+<span class="font-label-sm text-label-sm">Deadlines</span>
+</a>
+</nav>
+</div>
+<div class="mt-auto p-4">
+<button class="w-full py-3 bg-secondary text-white rounded-full font-button-text hover:opacity-90 transition-all flex items-center justify-center gap-2">
+                    Submit Application
+                </button>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<div class="flex-1 space-y-stack-gap">
+<!-- Hero Header -->
+<section class="bg-[#E1F5EE] rounded-2xl p-8 border border-tertiary-fixed-dim relative overflow-hidden">
+<div class="relative z-10">
+<div class="flex items-center gap-2 mb-2">
+<span class="px-2 py-0.5 bg-tertiary text-tertiary-fixed text-[10px] font-bold uppercase rounded tracking-wider">Premium Access</span>
+</div>
+<h2 class="font-h2-desktop text-[28px] font-bold text-primary mb-2">Congratulations! You got in! 🎉 — MS CS · USA Track</h2>
+<p class="text-body-lg text-on-surface-variant mb-6">You have 3 accepted offers. Let's help you make the best decision.</p>
+<div class="flex flex-wrap gap-3">
+<span class="flex items-center gap-2 px-4 py-2 bg-white rounded-full border border-outline-variant font-label-sm text-primary">
+<img alt="MIT Logo" class="w-5 h-5 rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBBiOOSC84s55HH70M3KyJuFxqve2BokTtD6w0t5gzv6-FumTlbh8sDZEbRxRKNX6U8t-2g1rZGHIc0f3U7sp1UraaKuClSKU7tbKDsoDAa0LJzec0TYsKZqwPluAsK2BEUfbq-PwkVK8nxFAV6pE4zJOfaW80J2SXW0mrqHn-5CjXRz43BSuWauGsVgFvWhuKWYn1kWO9tUCexXWo_Lne1gCCv0Hg5fhxAH1ut3d2PmKXQ33HhTm_H0RRt5ilaD_quP2u3aAo1XyR3"/> MIT
+                    </span>
+<span class="flex items-center gap-2 px-4 py-2 bg-white rounded-full border border-outline-variant font-label-sm text-primary">
+<img alt="Georgia Tech Logo" class="w-5 h-5 rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBesLWqhHpWiCOXhNkshLxFV62FzoieuwmsKQ_jGiOoc4PDNiWcMPqV94cZLIXIDcLjeDHzV01vbGb3-Y9dTDk3-XXSzTgYNMHCaYYZ1VpvrFMngndxdRWhZdDVaN51jmSrfODw2pR0dBxwTKTGBgLjuKEaW0dDvjJN-Wi99UKZfO36wf56MJrS5AZFQgvAV76QxD1z65fr-cYOv0QflBqNIho1dh83tPmg7MIz84mM77WcPNV5rk3LWFqgbQFDITo_PlS4N8b43EiE"/> Georgia Tech
+                    </span>
+<span class="flex items-center gap-2 px-4 py-2 bg-white rounded-full border border-outline-variant font-label-sm text-primary">
+<img alt="UT Austin Logo" class="w-5 h-5 rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAC8FE9LIBr1ZF4AcdjFMHqopQrJolzB63Emdrrqvm09IUb76IkwWT6hG_DjAxU2LFzet_jVaaRcdIrtNBL8lfkx-XmAB7W1HlhAwqGNIZl6QpM2Asy5F_URRANn5RFvU8oz-eBF6TDV2UVRAVnVv56QPbfEre8L9544HrNp9A9-yX-FmsgnK9wPUY2TqJ24xUakqUv2vL_ZTyukOeM8podC0lsYW9sSFP8PsdN0GUauIq-Bxt44y41F-YrBOv9pM0owAwYsvzEigkg"/> UT Austin
+                    </span>
+</div>
+</div>
+</section>
+<!-- Track Switcher -->
+<div class="px-4 py-3 bg-surface-container-high rounded-xl flex items-center gap-3 border border-outline-variant">
+<span class="material-symbols-outlined text-primary text-sm" data-icon="account_tree">account_tree</span>
+<p class="text-sm font-semibold text-on-surface">
+    Comparing admits from: <span class="text-primary cursor-pointer hover:underline">MS CS · USA ▾</span>
+<span class="mx-3 text-outline-variant">|</span>
+<span class="text-on-surface-variant font-normal">Switch to </span><span class="text-secondary cursor-pointer hover:underline">Australia MS Data ▾</span>
+</p>
+</div>
+<!-- School Selector -->
+<section class="bg-surface-container-lowest rounded-2xl p-8 border border-outline-variant shadow-sm">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+<div class="space-y-4">
+<h3 class="font-h3-desktop text-h3-desktop text-primary">Select schools to compare:</h3>
+<div class="flex flex-wrap gap-3">
+<label class="flex items-center gap-2 px-4 py-2 bg-primary-container text-on-primary-container rounded-full border border-primary cursor-pointer">
+<input checked="" class="rounded-sm border-primary text-primary focus:ring-primary" type="checkbox"/>
+<span class="font-label-sm">MIT</span>
+</label>
+<label class="flex items-center gap-2 px-4 py-2 bg-primary-container text-on-primary-container rounded-full border border-primary cursor-pointer">
+<input checked="" class="rounded-sm border-primary text-primary focus:ring-primary" type="checkbox"/>
+<span class="font-label-sm">Georgia Tech</span>
+</label>
+<label class="flex items-center gap-2 px-4 py-2 bg-primary-container text-on-primary-container rounded-full border border-primary cursor-pointer">
+<input checked="" class="rounded-sm border-primary text-primary focus:ring-primary" type="checkbox"/>
+<span class="font-label-sm">UT Austin</span>
+</label>
+<button class="flex items-center gap-2 px-4 py-2 bg-transparent text-on-surface-variant border border-dashed border-outline rounded-full hover:bg-surface-container-high transition-all">
+<span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+<span class="font-label-sm">+ Add another school</span>
+</button>
+</div>
+</div>
+<button class="px-8 py-4 bg-secondary-container text-on-secondary-container rounded-full font-button-text text-lg hover:scale-[1.02] transition-transform shadow-md">
+                        Compare 3 Selected Schools →
+                    </button>
+</div>
+</section>
+<!-- Comparison Table Bento -->
+<section class="bg-surface-container-lowest rounded-2xl border border-outline-variant overflow-hidden shadow-sm">
+<div class="overflow-x-auto custom-scrollbar">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container text-on-surface-variant border-b border-outline-variant">
+<th class="p-6 font-bold text-sm uppercase tracking-wider sticky left-0 bg-surface-container z-10">Metric</th>
+<th class="p-6 min-w-[200px]">
+<div class="flex items-center gap-2">
+<img alt="MIT" class="w-6 h-6 rounded" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDFEk2Aprko6r_ScTFX5oDH5BlAe2ap_gaJo0NxxPEkd4tEiKisvCdR-s6rulO80vPHcAHp388XBRYaFKX8zp1Gs2wg-lNBYfX4LDgSjWkxg5Pg3gW9P5YVFLoPTV4tk5TBKRr2UiJSileBDwajwWn529C7wjYlsaY-DbMEM23cuwuc6E11eXpBX_Uq62nMnHXrzp_6cZGF0b-7JqWQlegCvDN8EBFPrZKeJXprKW-tGMSpmV7H9SupiwNI9nOrXaJ_ff6mvB3EJ3pO"/>
+<span class="font-bold text-primary">MIT</span>
+</div>
+</th>
+<th class="p-6 min-w-[200px]">
+<div class="flex items-center gap-2">
+<img alt="GT" class="w-6 h-6 rounded" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCAflpCYdxkiBYkFD98oItIa93CUdUNHSbO_ftWiu1eZw2Z1SjKzV5s8HSPFoowvMFkBrqqkavXv5Cp1FbL93sT0v978xRnwFgbfAAuzQvhZEbXLhgH-GyB-qXirTc3LOw29L_29ww3iAoUDPCdS2SSZduB2hXE2VpXW13ICkMIDpYSg5pG6Jca8WwSUzlwPs8EuDo3i47VtW9I81JcrjRfUl6B7frxBkeuGs-ZwqKwYcWhDqImlkvhNGcV0wMHQLl04XdOmUUSSkrH"/>
+<span class="font-bold text-primary">Georgia Tech</span>
+</div>
+</th>
+<th class="p-6 min-w-[200px]">
+<div class="flex items-center gap-2">
+<img alt="UT" class="w-6 h-6 rounded" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoKY9CyKaLs85z359rZIOqAOGEUzFcqbQ75x9Fhmj1BE_CIjF1thhd7vwK1dXkTrxhjDyhMadTN8HEcFtWmccwMKA84URCm4DuGyzsYQH5yJmPUNeNsiWydcM7QemuySG6ew1U4zYdVOdn37VPLQ34CjM1hLmdhS2mQ9FBEpMbZGk00N9gb2KAr8fGMeBBmwEa2mGE70vWyojNimuzSAjdexR2OH3i2pPX2yFEMzi_rekkAOpxdlaTgE1tVBr55s5rknVp-nUTuLzm"/>
+<span class="font-bold text-primary">UT Austin</span>
+</div>
+</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<tr>
+<td class="p-6 font-semibold sticky left-0 bg-white z-10">Tuition (Annual)</td>
+<td class="p-6">$59,750</td>
+<td class="p-6">$31,370</td>
+<td class="p-6">$38,326</td>
+</tr>
+<tr>
+<td class="p-6 font-semibold sticky left-0 bg-white z-10">Living Costs</td>
+<td class="p-6">$22,000</td>
+<td class="p-6">$16,500</td>
+<td class="p-6">$14,200</td>
+</tr>
+<tr>
+<td class="p-6 font-semibold sticky left-0 bg-white z-10">Scholarship/Aid</td>
+<td class="p-6">$15,000</td>
+<td class="p-6">$12,000</td>
+<td class="p-6">$25,000</td>
+</tr>
+<tr class="bg-surface-container-low">
+<td class="p-6 font-bold text-primary sticky left-0 bg-surface-container-low z-10">Net Annual Cost</td>
+<td class="p-6">$66,750</td>
+<td class="p-6 bg-tertiary-fixed text-on-tertiary-fixed font-bold rounded-lg border-2 border-tertiary/20">
+                                    $35,870
+                                    <div class="text-[10px] uppercase font-bold text-on-tertiary-fixed-variant">Lowest Cost</div>
+</td>
+<td class="p-6">
+                                    $27,526
+                                    <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-secondary text-white">
+<span class="material-symbols-outlined text-xs mr-1" data-icon="emoji_events">emoji_events</span> Best Value
+                                    </span>
+</td>
+</tr>
+<tr>
+<td class="p-6 font-semibold sticky left-0 bg-white z-10">RA/TA Availability</td>
+<td class="p-6 text-green-600 font-bold">High</td>
+<td class="p-6 text-green-600 font-bold">High</td>
+<td class="p-6 text-orange-500 font-bold">Medium</td>
+</tr>
+<tr>
+<td class="p-6 font-semibold sticky left-0 bg-white z-10">STEM OPT Status</td>
+<td class="p-6">Yes</td>
+<td class="p-6">Yes</td>
+<td class="p-6">Yes</td>
+</tr>
+<tr>
+<td class="p-6 font-semibold sticky left-0 bg-white z-10">Decision Deadline</td>
+<td class="p-6">May 1, 2026</td>
+<td class="p-6">May 1, 2026</td>
+<td class="p-6">May 1, 2026</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<!-- Decision Matrix & Priorities -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-stack-gap">
+<!-- Priorities Section -->
+<section class="bg-surface-container-lowest rounded-2xl p-8 border border-outline-variant shadow-sm">
+<h3 class="font-h3-desktop text-h3-desktop text-primary mb-6">Set your priorities</h3>
+<div class="space-y-6">
+<div class="space-y-2">
+<div class="flex justify-between text-sm font-semibold">
+<span>Affordability</span>
+<span class="text-secondary">80%</span>
+</div>
+<input class="w-full accent-secondary h-2 bg-surface-container rounded-lg appearance-none cursor-pointer" type="range" value="80"/>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between text-sm font-semibold">
+<span>Career Outcomes</span>
+<span class="text-secondary">95%</span>
+</div>
+<input class="w-full accent-secondary h-2 bg-surface-container rounded-lg appearance-none cursor-pointer" type="range" value="95"/>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between text-sm font-semibold">
+<span>Location</span>
+<span class="text-secondary">40%</span>
+</div>
+<input class="w-full accent-secondary h-2 bg-surface-container rounded-lg appearance-none cursor-pointer" type="range" value="40"/>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between text-sm font-semibold">
+<span>Research Quality</span>
+<span class="text-secondary">70%</span>
+</div>
+<input class="w-full accent-secondary h-2 bg-surface-container rounded-lg appearance-none cursor-pointer" type="range" value="70"/>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between text-sm font-semibold">
+<span>Funding Availability</span>
+<span class="text-secondary">90%</span>
+</div>
+<input class="w-full accent-secondary h-2 bg-surface-container rounded-lg appearance-none cursor-pointer" type="range" value="90"/>
+</div>
+</div>
+</section>
+<!-- AI Scoring Results -->
+<section class="bg-primary text-white rounded-2xl p-8 flex flex-col justify-between">
+<div>
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-tertiary-fixed-dim" data-icon="bolt">bolt</span>
+<span class="text-sm font-bold uppercase tracking-widest text-primary-fixed">AI Weighted Score</span>
+</div>
+<h3 class="font-h3-desktop text-h3-desktop mb-8">Personalized Rank</h3>
+</div>
+<div class="space-y-6">
+<div class="relative pt-1">
+<div class="flex items-center justify-between mb-2">
+<div class="flex items-center gap-2">
+<span class="text-xl">🏆</span>
+<span class="font-bold">UT Austin</span>
+</div>
+<div class="text-right">
+<span class="text-h3-desktop font-bold">87</span>
+</div>
+</div>
+<div class="overflow-hidden h-4 text-xs flex rounded bg-white/20">
+<div class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-secondary" style="width:87%"></div>
+</div>
+</div>
+<div class="relative pt-1 opacity-80">
+<div class="flex items-center justify-between mb-2">
+<span class="font-bold">MIT</span>
+<div class="text-right">
+<span class="text-xl font-bold">81</span>
+</div>
+</div>
+<div class="overflow-hidden h-3 text-xs flex rounded bg-white/20">
+<div class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-outline" style="width:81%"></div>
+</div>
+</div>
+<div class="relative pt-1 opacity-60">
+<div class="flex items-center justify-between mb-2">
+<span class="font-bold">Georgia Tech</span>
+<div class="text-right">
+<span class="text-xl font-bold">79</span>
+</div>
+</div>
+<div class="overflow-hidden h-3 text-xs flex rounded bg-white/20">
+<div class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-outline" style="width:79%"></div>
+</div>
+</div>
+</div>
+<p class="mt-8 text-xs text-primary-fixed/60 italic">* Scores are calculated based on your career goals and financial constraints.</p>
+</section>
+</div>
+<!-- Gut Check Prompt -->
+<section class="bg-surface-container-low rounded-2xl p-10 text-center border border-outline-variant">
+<h3 class="font-h2-desktop text-h2-desktop text-primary mb-2">Setting aside the numbers — which school makes you most excited?</h3>
+<p class="text-on-surface-variant mb-10 max-w-2xl mx-auto">Sometimes the best choice isn't the logical one. Close your eyes and think of the campus you truly see yourself at.</p>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<button class="group p-8 bg-white border border-outline-variant rounded-2xl hover:border-secondary hover:shadow-xl transition-all">
+<img alt="MIT" class="w-16 h-16 mx-auto mb-4 rounded-xl grayscale group-hover:grayscale-0 transition-all" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCgm14pdPvYXHT-6E7kmiWFTyswZTPX3zsYoN6ntYm_kCTSV_S_5ylc9hXJaH-PnOl9fkEpPFD_xHcJ_jLagBHsYz9Uzi4EeErIm-YpwAiyIWrRpGkjPsG5lYpK01xcnFE_2mr3T0M4qt2CUbzpoGYn-tHO4Tdwy8oDZv_dcR_HwjGH8o36B894iZH_0Hi4UvIHBKDok0KJesfWlt_EYHlK87x2oEEC5KJiS0Rp2c6xIRenxvTF9Y550Wbf73XBJoglLJ9X4s8y0Ts6"/>
+<span class="block font-bold text-primary group-hover:text-secondary">MIT</span>
+</button>
+<button class="group p-8 bg-white border border-outline-variant rounded-2xl hover:border-secondary hover:shadow-xl transition-all">
+<img alt="GT" class="w-16 h-16 mx-auto mb-4 rounded-xl grayscale group-hover:grayscale-0 transition-all" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCiOOhAAgnELGUdTcYuh8Ktuy_pazDa8nlWwmbqwNl33S26uIMXYcphvxUJHMWgXAnTsyDroMYnm5PO8o2pDGbjcwdCA-hP0GREhzt8r5EqQjHsVjYtHa81aEtOp_qxw33TXkS_DrV-Q7EHFRJp8RFn9Vu737vC5O1Nt44MDLonjOR3sdXmX7YtD_nITvIArCOGs3iGZquOh-IIrAN7WNOmOMhL0RFZKIPIr4XuL5IWlPerY4LsND6IGysUlTyiaShJereL5Uld0JfC"/>
+<span class="block font-bold text-primary group-hover:text-secondary">Georgia Tech</span>
+</button>
+<button class="group p-8 bg-white border border-outline-variant rounded-2xl hover:border-secondary hover:shadow-xl transition-all">
+<img alt="UT" class="w-16 h-16 mx-auto mb-4 rounded-xl grayscale group-hover:grayscale-0 transition-all" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCp_4ibo_jHZuLlvprg1idhlEPYQ4dvwK8A6tPTO6Cf6RZRvZeJe9DcWvlDIcirNl0iqjyE4SakVZRO2KPJCe5Ya74mjK1kJXA4xXJ8AVdH3a3M97zh2SdW4SZHyJ1M-B3ttbBKqZ-PWiGNWY1cFo2_otUfEVNwiuP9rVKgq1mNHHR5k6usqCJA2PGCH37QxzReJNlLILQB0NPM124ZH3A4zfZQaXahWRXywsztRNY7elDkluddVecTKADt2kXAhTj3IQ9JXUorUy04"/>
+<span class="block font-bold text-primary group-hover:text-secondary">UT Austin</span>
+</button>
+</div>
+</section>
+</div>
+</main>
+<!-- Countdown Banner (Fixed Bottom) -->
+<div class="fixed bottom-0 left-0 w-full bg-[#FF6B6B] py-3 px-gutter z-50 shadow-[0_-4px_20px_rgba(0,0,0,0.1)]">
+<div class="max-w-max-width mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+<div class="flex items-center gap-3 text-white">
+<span class="material-symbols-outlined text-3xl" data-icon="alarm">alarm</span>
+<div>
+<p class="font-bold text-lg leading-none">You have 23 days to accept.</p>
+<p class="text-sm opacity-90">Deadline: May 1, 2026</p>
+</div>
+</div>
+<button class="px-6 py-2.5 bg-white text-secondary rounded-full font-button-text hover:bg-surface-container-low transition-colors flex items-center gap-2 group">
+                Ask Sage to help me decide
+                <span class="material-symbols-outlined transition-transform group-hover:translate-x-1" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</div>
+</body></html>

@@ -1,0 +1,10 @@
+institution: "Australian National University"
+country: AU
+official_domain: anu.edu.au
+indexes:
+  - url: https://study.anu.edu.au/all-programs-and-courses
+    kind: programs
+  - url: https://study.anu.edu.au/all-programs-and-courses?page=1
+    kind: programs
+  - url: https://study.anu.edu.au/all-programs-and-courses?page=2
+    kind: programs

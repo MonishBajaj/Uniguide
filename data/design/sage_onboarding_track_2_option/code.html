@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>UniGuide AI - Track Confirmation</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "primary-fixed-dim": "#adc6ff",
+                    "on-tertiary-fixed-variant": "#00513e",
+                    "surface-container-low": "#f3f4f5",
+                    "tertiary-fixed": "#a0f3d4",
+                    "surface-variant": "#e1e3e4",
+                    "surface-container": "#edeeef",
+                    "on-primary": "#ffffff",
+                    "on-secondary-container": "#650d00",
+                    "on-secondary": "#ffffff",
+                    "on-primary-fixed": "#001a41",
+                    "on-secondary-fixed-variant": "#8d1701",
+                    "surface-container-highest": "#e1e3e4",
+                    "on-primary-fixed-variant": "#2c4676",
+                    "on-background": "#191c1d",
+                    "secondary-container": "#fe694a",
+                    "surface-tint": "#455e90",
+                    "on-surface": "#191c1d",
+                    "on-tertiary-container": "#53a58a",
+                    "error": "#ba1a1a",
+                    "secondary": "#af3017",
+                    "primary-fixed": "#d8e2ff",
+                    "tertiary": "#001f16",
+                    "surface": "#f8f9fa",
+                    "secondary-fixed": "#ffdad3",
+                    "primary-container": "#0f2d5c",
+                    "outline-variant": "#c4c6d0",
+                    "on-error": "#ffffff",
+                    "inverse-surface": "#2e3132",
+                    "surface-container-high": "#e7e8e9",
+                    "surface-bright": "#f8f9fa",
+                    "on-tertiary": "#ffffff",
+                    "background": "#f8f9fa",
+                    "secondary-fixed-dim": "#ffb4a4",
+                    "error-container": "#ffdad6",
+                    "on-error-container": "#93000a",
+                    "on-primary-container": "#7d96cb",
+                    "on-secondary-fixed": "#3e0500",
+                    "surface-container-lowest": "#ffffff",
+                    "outline": "#747780",
+                    "tertiary-fixed-dim": "#84d6b9",
+                    "tertiary-container": "#003628",
+                    "on-tertiary-fixed": "#002117",
+                    "on-surface-variant": "#44474f",
+                    "inverse-on-surface": "#f0f1f2",
+                    "surface-dim": "#d9dadb",
+                    "inverse-primary": "#adc6ff",
+                    "primary": "#00183d"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "stack-gap": "16px",
+                    "margin-mobile": "16px",
+                    "gutter": "24px",
+                    "section-gap-lg": "80px",
+                    "section-gap-md": "48px",
+                    "max-width": "1200px"
+            },
+            "fontFamily": {
+                    "h3-desktop": ["Playfair Display"],
+                    "label-sm": ["Plus Jakarta Sans"],
+                    "button-text": ["Plus Jakarta Sans"],
+                    "body-lg": ["Plus Jakarta Sans"],
+                    "h2-desktop": ["Playfair Display"],
+                    "h1-mobile": ["Playfair Display"],
+                    "h1-desktop": ["Playfair Display"],
+                    "body-md": ["Plus Jakarta Sans"]
+            },
+            "fontSize": {
+                    "h3-desktop": ["24px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                    "label-sm": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                    "button-text": ["16px", {"lineHeight": "1", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "h2-desktop": ["36px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                    "h1-mobile": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                    "h1-desktop": ["48px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .ai-border-glow {
+            border: 1px solid transparent;
+            background: linear-gradient(to right, white, white), linear-gradient(to right, #00183d, #fe694a);
+            background-clip: padding-box, border-box;
+            background-origin: padding-box, border-box;
+        }
+        .scroll-hide::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md min-h-screen flex flex-col">
+<!-- TopAppBar -->
+<header class="bg-surface dark:bg-background shadow-sm docked full-width top-0 z-50 sticky">
+<div class="flex justify-between items-center w-full px-6 py-3 max-w-screen-2xl mx-auto">
+<div class="flex items-center gap-8">
+<span class="font-h3-desktop text-h3-desktop font-bold text-primary dark:text-primary-fixed">UniGuide AI</span>
+<nav class="hidden md:flex gap-6 items-center">
+<a class="font-label-sm text-label-sm text-on-surface-variant dark:text-outline-variant hover:text-secondary-container transition-colors duration-200" href="#">University Search</a>
+<a class="font-label-sm text-label-sm text-primary dark:text-primary-fixed border-b-2 border-secondary-container" href="#">Application Tracks</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant dark:text-outline-variant hover:text-secondary-container transition-colors duration-200" href="#">Visa Support</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="hidden md:flex items-center bg-surface-container rounded-full px-4 py-1.5 gap-2 border border-outline-variant">
+<span class="material-symbols-outlined text-primary" data-icon="search">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-label-sm w-48" placeholder="Search institutions..." type="text"/>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors relative">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-secondary rounded-full"></span>
+</button>
+<button class="flex items-center gap-2 bg-primary text-on-primary px-5 py-2 rounded-full font-button-text hover:opacity-90 transition-all">
+                        Apply Now
+                    </button>
+<button class="p-1 rounded-full border border-outline-variant ml-2">
+<span class="material-symbols-outlined text-primary text-[32px]" data-icon="account_circle">account_circle</span>
+</button>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content: Split-Screen Interface -->
+<main class="flex-grow flex flex-col md:flex-row h-[calc(100vh-64px)] overflow-hidden">
+<!-- Left Side: Application Summary & Visual Confirmation -->
+<section class="w-full md:w-1/2 bg-surface-container-low p-8 md:p-12 overflow-y-auto scroll-hide">
+<div class="max-w-xl mx-auto">
+<div class="mb-10">
+<span class="inline-flex items-center gap-2 bg-on-tertiary-fixed-variant/10 text-on-tertiary-fixed-variant px-4 py-2 rounded-full font-label-sm text-label-sm mb-6">
+<span class="material-symbols-outlined text-sm" data-icon="check_circle" data-weight="fill">check_circle</span>
+                        Track 1 Confirmed
+                    </span>
+<h1 class="font-h1-desktop text-h1-desktop text-primary mb-4 leading-tight">Master of Computer Science</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant mb-8">Stanford University • Fall 2024 Intake</p>
+</div>
+<!-- Track Card Progress -->
+<div class="bg-surface-container-lowest rounded-xl p-8 border border-outline-variant shadow-sm mb-8">
+<h3 class="font-h3-desktop text-h3-desktop text-primary mb-6">Application Progress</h3>
+<div class="space-y-6">
+<div class="flex items-center gap-4">
+<div class="w-8 h-8 rounded-full bg-on-tertiary-fixed-variant flex items-center justify-center text-white">
+<span class="material-symbols-outlined text-base" data-icon="check">check</span>
+</div>
+<div class="flex-grow">
+<p class="font-label-sm text-label-sm text-primary">University Selection</p>
+<p class="text-xs text-on-surface-variant">Completed on Oct 12</p>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white">
+<span class="material-symbols-outlined text-base" data-icon="edit">edit</span>
+</div>
+<div class="flex-grow">
+<p class="font-label-sm text-label-sm text-primary">Document Preparation</p>
+<div class="w-full bg-surface-container mt-2 h-1.5 rounded-full overflow-hidden">
+<div class="bg-primary w-1/3 h-full"></div>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-4 opacity-50">
+<div class="w-8 h-8 rounded-full border-2 border-outline-variant flex items-center justify-center text-outline">
+<span class="material-symbols-outlined text-base" data-icon="send">send</span>
+</div>
+<div class="flex-grow">
+<p class="font-label-sm text-label-sm text-primary">Submission Review</p>
+<p class="text-xs text-on-surface-variant">Pending documentation</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Visual Accent: University Image -->
+<div class="rounded-xl overflow-hidden h-64 relative group shadow-lg">
+<img alt="Stanford University Campus" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-alt="A wide-angle, cinematic photograph of a prestigious ivy-league university campus during a golden hour sunset. The architecture features historic sandstone buildings with ornate arches and lush green courtyards. The lighting is warm and ethereal, casting long shadows and highlighting the academic heritage. The overall mood is aspirational, successful, and deeply intellectual, aligned with a premium corporate aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAWBbhm-izneX8p45FhQt8mmOdJnvKtydr6x_xy_n3zCbq6MhM6xIU51DW-NY_hYA6rk5buelaq1U2YjWjZFr7QEfX5_HUtN8DAqeH9bJEAdDQjSvvu3JKxjbE_7xgJP1PE2SZuepXE-kk7ukJAwXSh9HNeZUiR6dvbd_5_qGx63LO2ne356jWp3SntQ0vODAACZZNuG2Xkl7LD7aLeTo2LEPp0cCmkiy2RYd0uuPGdKIUW2UY8L1wRMcsuU24P09ZykNAj6Y3NapG3"/>
+<div class="absolute inset-0 bg-gradient-to-t from-primary/80 to-transparent flex items-end p-6">
+<div class="text-white">
+<p class="font-label-sm text-label-sm opacity-80">Ranked #1 for CS</p>
+<p class="font-h3-desktop text-h3-desktop">Stanford University</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Right Side: Sage AI Chat Interface -->
+<section class="w-full md:w-1/2 bg-surface flex flex-col h-full border-l border-outline-variant">
+<div class="p-6 border-b border-outline-variant flex justify-between items-center bg-white/50 backdrop-blur-sm sticky top-0 z-10">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary-container" data-icon="smart_toy">smart_toy</span>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-primary">Sage AI</p>
+<p class="text-[10px] uppercase tracking-wider text-secondary font-bold">Premium Advisor</p>
+</div>
+</div>
+<div class="flex gap-2">
+<span class="inline-flex h-2 w-2 rounded-full bg-on-tertiary-fixed-variant animate-pulse"></span>
+<span class="text-[12px] text-on-surface-variant">Sage is active</span>
+</div>
+</div>
+<div class="flex-grow p-8 flex flex-col justify-end gap-6 overflow-y-auto">
+<!-- Previous Chat History (Subtle) -->
+<div class="flex justify-end">
+<div class="bg-primary-container text-on-primary-container p-4 rounded-2xl rounded-tr-none max-w-[85%] shadow-sm">
+<p class="font-body-md text-body-md">Yes, please confirm Stanford as my primary track.</p>
+</div>
+</div>
+<!-- Sage Response -->
+<div class="flex justify-start items-start gap-4">
+<div class="w-8 h-8 rounded-full bg-primary-container flex-shrink-0 flex items-center justify-center mt-1">
+<span class="material-symbols-outlined text-xs text-on-primary-container" data-icon="smart_toy">smart_toy</span>
+</div>
+<div class="ai-border-glow p-5 rounded-2xl rounded-tl-none max-w-[85%] shadow-md">
+<div class="flex items-center gap-2 mb-2">
+<span class="text-[10px] font-bold text-secondary-container uppercase">AI Insight</span>
+</div>
+<p class="font-body-lg text-body-lg text-primary leading-relaxed">
+                            Excellent choice. Your Stanford track is now live with priority monitoring.
+                            <br/><br/>
+                            Since you're a <span class="font-bold text-secondary">Premium member</span>, you have 1 more track included in your plan. Would you like to set it up now or later?
+                        </p>
+</div>
+</div>
+</div>
+<!-- Contextual CTA Area -->
+<div class="p-8 bg-surface-container-high border-t border-outline-variant">
+<div class="flex flex-col gap-4 max-w-md mx-auto">
+<button class="w-full bg-secondary-container text-on-secondary-container py-4 rounded-full font-button-text text-lg flex items-center justify-center gap-3 hover:scale-[1.02] active:scale-95 transition-all shadow-lg">
+<span class="material-symbols-outlined" data-icon="add_circle">add_circle</span>
+                        Set Up Track 2
+                    </button>
+<button class="w-full py-3 rounded-full font-button-text text-on-surface-variant hover:bg-surface-container transition-all flex items-center justify-center gap-2 group">
+                        Do this later
+                        <span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+<p class="text-center mt-6 text-xs text-outline font-label-sm uppercase tracking-widest">
+                    Track 2 can be any university globally
+                </p>
+</div>
+</section>
+</main>
+<!-- SideNavBar (Hidden by default, shown for desktop context if needed, but suppressed per transactional rule - however template requires presence if top-level, we treat this as a focused 'Transaction/Confirmation' page which prioritizes canvas) -->
+<!-- Suppressing SideNav for focused onboarding flow per "UX Goal" logic in prompt -->
+<!-- Mobile Navigation Shell -->
+<div class="md:hidden fixed bottom-0 left-0 right-0 bg-surface-container-lowest border-t border-outline-variant px-6 py-3 flex justify-between items-center z-50">
+<button class="flex flex-col items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="text-[10px] font-medium">Home</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-primary">
+<span class="material-symbols-outlined" data-icon="assignment" data-weight="fill">assignment</span>
+<span class="text-[10px] font-bold">Tracks</span>
+</button>
+<div class="relative -top-8">
+<button class="bg-secondary-container text-on-secondary-container w-14 h-14 rounded-full shadow-xl flex items-center justify-center border-4 border-surface">
+<span class="material-symbols-outlined" data-icon="smart_toy">smart_toy</span>
+</button>
+</div>
+<button class="flex flex-col items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="text-[10px] font-medium">Alerts</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="text-[10px] font-medium">Profile</span>
+</button>
+</div>
+</body></html>

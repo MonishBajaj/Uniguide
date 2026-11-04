@@ -8,6 +8,7 @@ import { getLocale } from "@/lib/i18n/server";
 import { getUser } from "@/lib/supabase/server";
 import { setAcceptedOffer, setTaskDone } from "./actions";
 import { courseOf } from "@/lib/own-application";
+import { Plane, Calendar, CheckCircle2, ChevronLeft } from "lucide-react";
 
 export const metadata: Metadata = { title: "Before you leave" };
 
@@ -22,35 +23,43 @@ export default async function DeparturePage() {
       .eq("decision", "admitted")
       .order("created_at");
     return (
-      <div className="grid gap-8">
-        <header>
-          <h1 className="text-4xl font-semibold">Before you leave</h1>
-          <p className="mt-2 max-w-2xl text-muted">
-            Once you have chosen an offer, this becomes a timeline of what to arrange before the course starts: housing,
-            insurance, travel, documents, and the visa steps for your destination with their official pages.
+      <div className="grid gap-8 max-w-4xl mx-auto">
+        <header className="rounded-xl border border-border bg-surface p-6 sm:p-8 ambient-shadow">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
+              <Plane className="h-4 w-4" />
+            </span>
+            <span className="text-xs font-bold uppercase tracking-wider text-muted">Pre-Departure & Arrival Hub</span>
+          </div>
+          <h1 className="text-3xl sm:text-4xl font-serif font-bold text-primary">Before You Leave</h1>
+          <p className="mt-2 text-sm text-muted max-w-2xl leading-relaxed">
+            Once you have selected your accepted offer, this unlocks an interactive timeline of milestones before classes begin: housing, healthcare, visas, travel booking, and official documents.
           </p>
         </header>
+
         {(offers ?? []).length ? (
-          <section aria-labelledby="choose" className="grid gap-3 rounded-2xl border border-border bg-surface p-6">
-            <h2 id="choose" className="text-lg font-semibold">Which offer are you taking?</h2>
-            <ul className="grid gap-2">
+          <section aria-labelledby="choose" className="rounded-xl border border-border bg-surface p-6 sm:p-8 ambient-shadow">
+            <h2 id="choose" className="text-xl font-serif font-bold text-primary mb-4">Which offer are you taking?</h2>
+            <ul className="grid gap-3">
               {offers!.map((o) => (
-                <li key={o.id} className="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-background p-3">
-                  <span>
-                    <span className="font-semibold">{courseOf(o).title}</span>
-                    <span className="text-muted"> · {courseOf(o).institution}</span>
-                  </span>
+                <li key={o.id} className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-xl bg-surface-2/50 border border-border/60">
+                  <div>
+                    <h3 className="font-serif font-bold text-base text-primary">{courseOf(o).title}</h3>
+                    <p className="text-xs text-muted mt-0.5">{courseOf(o).institution}</p>
+                  </div>
                   <form action={setAcceptedOffer.bind(null, o.id)}>
-                    <button className="btn btn-primary btn-sm">I&apos;m taking this offer</button>
+                    <button className="btn btn-coral-bright btn-sm shadow-xs">I&apos;m taking this offer</button>
                   </form>
                 </li>
               ))}
             </ul>
           </section>
         ) : (
-          <p className="rounded-2xl border border-border bg-surface p-6 text-muted">
-            No offers yet. Record an admission on the application in your <Link href="/app/tracker" className="underline underline-offset-2">tracker</Link> and it will appear here.
-          </p>
+          <div className="rounded-xl border border-border bg-surface p-8 ambient-shadow text-center py-12">
+            <p className="text-sm text-muted">
+              No offers recorded yet. Mark an admission on your applications in the <Link href="/app/tracker" className="font-semibold text-primary underline underline-offset-2">Tracker</Link> to unlock your departure timeline.
+            </p>
+          </div>
         )}
       </div>
     );
@@ -63,61 +72,87 @@ export default async function DeparturePage() {
   const doneCount = tasks.filter((t) => done.has(t.key)).length;
 
   return (
-    <div className="grid gap-8">
-      <header className="grid gap-2">
-        <h1 className="text-4xl font-semibold">Before you leave</h1>
-        <p className="text-muted">
-          <Link href={`/app/tracker/${app.id}`} className="font-semibold text-foreground underline-offset-2 hover:underline">{program.title}</Link>
-          {" · "}{program.institutions!.name}
-        </p>
-        <p>
-          {start
-            ? start.approximate
-              ? <>The course starts around <strong>{shortDate(start.date)}</strong>. That date is estimated from the intake; use the one in your offer letter.</>
-              : <>The course starts on <strong>{shortDate(start.date)}</strong>.</>
-            : "We do not know when this course starts, so the steps have no dates. Check your offer letter."}
-        </p>
-        <div className="mt-2 flex flex-wrap items-center gap-3">
-          <a href="/app/departure/calendar.ics" className="btn btn-secondary btn-sm">Add to calendar (.ics)</a>
-          <form action={setAcceptedOffer.bind(null, null)}>
-            <button className="btn btn-secondary btn-sm">Choose a different offer</button>
-          </form>
-          <p className="text-sm font-semibold">{doneCount} of {tasks.length} done</p>
+    <div className="grid gap-8 max-w-4xl mx-auto">
+      <header className="rounded-xl border border-border bg-surface p-6 sm:p-8 ambient-shadow">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+          <div>
+            <div className="flex items-center gap-2 mb-2">
+              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-verified/10 text-verified">
+                <Plane className="h-4 w-4" />
+              </span>
+              <span className="text-xs font-bold uppercase tracking-wider text-muted">Confirmed Destination</span>
+            </div>
+            <h1 className="text-3xl sm:text-4xl font-serif font-bold text-primary">Before you leave</h1>
+            <p className="text-sm font-semibold text-secondary mt-1">
+              <Link href={`/app/tracker/${app.id}`} className="hover:underline">
+                {program.title}
+              </Link>
+              {" · "}{program.institutions!.name}
+            </p>
+            <p className="mt-2 text-xs text-muted">
+              {start
+                ? start.approximate
+                  ? <>The course starts around <strong>{shortDate(start.date)}</strong> (estimated from intake cycle).</>
+                  : <>The course starts on <strong>{shortDate(start.date)}</strong>.</>
+                : "Check your official admission letter for exact orientation and arrival dates."}
+            </p>
+          </div>
+
+          <div className="flex flex-col gap-2 sm:items-end">
+            <span className="text-xs font-bold text-primary bg-primary/10 px-3 py-1 rounded-full">
+              {doneCount} of {tasks.length} tasks completed
+            </span>
+            <div className="flex gap-2 mt-1">
+              <a href="/app/departure/calendar.ics" className="btn btn-secondary btn-sm">Add to Calendar (.ics)</a>
+              <form action={setAcceptedOffer.bind(null, null)}>
+                <button className="btn btn-secondary btn-sm">Change Offer</button>
+              </form>
+            </div>
+          </div>
         </div>
       </header>
 
       {groupByMonth(tasks).map((group) => (
-        <section key={group.month ?? "undated"} aria-label={group.month ? monthName(group.month) : "Steps"} className="grid gap-3">
-          <h2 className="text-2xl font-semibold">{group.month ? monthName(group.month) : "Steps"}</h2>
+        <section key={group.month ?? "undated"} aria-label={group.month ? monthName(group.month) : "Steps"} className="grid gap-4">
+          <div className="flex items-center gap-2 border-b border-border/70 pb-2">
+            <Calendar className="h-5 w-5 text-secondary" />
+            <h2 className="font-serif text-2xl font-bold text-primary">{group.month ? monthName(group.month) : "General Steps"}</h2>
+          </div>
+
           <ul className="grid gap-3">
             {group.tasks.map((t) => {
               const isDone = done.has(t.key);
               const late = !isDone && t.due != null && t.due < today;
               return (
-                <li key={t.key} className="grid grid-cols-[auto_1fr] gap-3 rounded-2xl border border-border bg-surface p-4 text-sm">
+                <li key={t.key} className="grid grid-cols-[auto_1fr] gap-4 rounded-xl border border-border bg-surface p-5 ambient-shadow hover:border-primary/40 transition-all text-sm">
                   <form action={setTaskDone.bind(null, app.id, t.key, !isDone)}>
                     <button
                       aria-pressed={isDone}
                       aria-label={`${t.title}: ${isDone ? "done, mark not done" : "mark done"}`}
-                      className={`grid h-6 w-6 place-items-center rounded-md border ${isDone ? "border-accent bg-accent text-background" : "border-border bg-background"}`}
+                      className={`grid h-6 w-6 place-items-center rounded-md border transition-all ${
+                        isDone ? "border-verified bg-verified text-white" : "border-border bg-surface hover:border-primary"
+                      }`}
                     >
-                      <span aria-hidden="true">{isDone ? "✓" : ""}</span>
+                      <span aria-hidden="true" className="font-bold text-xs">{isDone ? "✓" : ""}</span>
                     </button>
                   </form>
-                  <div className="grid gap-1">
+
+                  <div className="grid gap-1.5">
                     <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                      <h3 className={`text-base font-semibold ${isDone ? "text-muted line-through" : ""}`}>{t.title}</h3>
+                      <h3 className={`text-base font-serif font-bold ${isDone ? "text-muted line-through" : "text-primary"}`}>{t.title}</h3>
                       {t.due ? (
-                        <span className={late ? "font-semibold text-conflicting" : "text-muted"}>
-                          {t.weeksBefore < 0 ? "First week" : `By ${shortDate(t.due)}`}{late ? " · overdue" : ""}
+                        <span className={`text-xs font-mono ${late ? "font-bold text-conflicting" : "text-muted"}`}>
+                          {t.weeksBefore < 0 ? "First week" : `By ${shortDate(t.due)}`}{late ? " · Overdue" : ""}
                         </span>
                       ) : null}
                       {t.status ? <FactBadge status={t.status as Parameters<typeof FactBadge>[0]["status"]} /> : null}
                     </div>
-                    <p className="text-muted">{t.body}</p>
-                    {t.leadFromSource ? <p className="text-sm text-muted">The timing comes from the official page.</p> : null}
+                    <p className="text-muted text-xs leading-relaxed">{t.body}</p>
+                    {t.leadFromSource ? <p className="text-[11px] text-muted italic">Timing sourced directly from official regulations.</p> : null}
                     {t.link ? (
-                      <a href={t.link} target="_blank" rel="noreferrer" className="justify-self-start underline underline-offset-2">Official page</a>
+                      <a href={t.link} target="_blank" rel="noreferrer" className="justify-self-start text-xs font-semibold text-primary underline underline-offset-2 hover:text-secondary">
+                        Official guidance page
+                      </a>
                     ) : null}
                   </div>
                 </li>
@@ -127,17 +162,18 @@ export default async function DeparturePage() {
         </section>
       ))}
 
-      <section id="arrived" aria-labelledby="arrived-title" className="grid scroll-mt-24 gap-2 rounded-2xl border border-border bg-surface p-6">
-        <h2 id="arrived-title" className="text-lg font-semibold">{ta.askTitle}</h2>
-        <p className="text-muted">{arrived ? ta.doneBody : ta.askBody}</p>
+      {/* Arrival Confirmation */}
+      <section id="arrived" aria-labelledby="arrived-title" className="rounded-xl border border-border bg-surface p-6 sm:p-8 ambient-shadow">
+        <h2 id="arrived-title" className="font-serif text-2xl font-bold text-primary mb-2">Have you arrived on campus?</h2>
+        <p className="text-sm text-muted mb-4 leading-relaxed">
+          When you touch down and arrive at university, mark this milestone to conclude the pre-departure phase.
+        </p>
         <form action={setTaskDone.bind(null, app.id, "arrived", !arrived)}>
-          <button className={`btn btn-sm ${arrived ? "btn-secondary" : "btn-primary"}`}>{arrived ? ta.undo : ta.button}</button>
+          <button className={`btn ${arrived ? "btn-secondary" : "btn-coral-bright shadow-sm"}`}>
+            {arrived ? "Mark as not arrived yet" : "I have arrived on campus"}
+          </button>
         </form>
       </section>
-
-      <p className="text-xs text-muted">
-        General steps, not immigration or legal advice. Rules change; your university and the official pages decide what applies to you.
-      </p>
     </div>
   );
 }

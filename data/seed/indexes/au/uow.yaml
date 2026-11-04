@@ -1,0 +1,10 @@
+institution: "University of Wollongong"
+country: AU
+official_domain: uow.edu.au
+indexes:
+  - url: https://www.uow.edu.au/study/courses/
+    kind: programs
+  - url: https://www.uow.edu.au/study/courses/?page=2
+    kind: programs
+  - url: https://www.uow.edu.au/study/courses/?page=3
+    kind: programs

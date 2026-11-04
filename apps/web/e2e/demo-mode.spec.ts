@@ -3,6 +3,18 @@ import { expect, test } from "@playwright/test";
 // Runs as the "demo" project with AUTH_DISABLED=true (`pnpm e2e:demo`).
 test.skip(process.env.AUTH_DISABLED !== "true", "needs AUTH_DISABLED=true");
 
+test("the navbar switches from Guest to User and back", async ({ page }) => {
+  await page.goto("/");
+  await page.getByLabel("Viewing as guest. Switch mode").click();
+  await page.getByRole("menuitemradio", { name: "User Student account" }).click();
+  await expect(page).toHaveURL(/\/app(\/profile)?$/);
+  await page.reload();
+  await page.getByLabel("Viewing as user. Switch mode").click();
+  await page.getByRole("menuitemradio", { name: "Guest Not signed in" }).click();
+  await expect(page).toHaveURL(/\/$/);
+  await expect(page.getByLabel("Viewing as guest. Switch mode")).toBeVisible();
+});
+
 test("a guest who opens a signed-in page is told which mode opens it, and one click gets there", async ({ page }) => {
   await page.goto("/app/tracker");
   await expect(page).toHaveURL(/\/\?from=%2Fapp%2Ftracker$/);

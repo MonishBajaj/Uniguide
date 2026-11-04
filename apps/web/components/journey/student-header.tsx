@@ -7,6 +7,7 @@ import { HelpButton, HelpDialog } from "./help-dialog";
 import { HelpContent, type HelpCopy } from "./help-panel";
 import type { NavItem } from "./nav-items";
 import { StudentNav } from "./student-nav";
+import { GraduationCap, Sparkles } from "lucide-react";
 
 const HREFS: Record<Exclude<NavSection, "account">, string> = {
   home: "/app",
@@ -72,27 +73,43 @@ export function StudentHeader({
         { href: "/app/notifications", label: unread ? t.nav.updatesCount(unread) : t.nav.updates },
         { href: "/accessibility", label: t.nav.display },
       ]}
-      end={accountEnd}
+      end={null}
     />
   );
 
   return (
     <>
-      <header className="sticky top-3 z-40 flex justify-center px-4 pt-3 print:hidden">
-        <nav aria-label={nav.main} className="flex max-w-full items-center gap-4 rounded-2xl border border-border bg-surface/80 px-4 py-2 backdrop-blur-md">
-          <Link href="/app" className="text-base font-semibold whitespace-nowrap">
-            Uniguide
-          </Link>
-          <div className="hidden min-w-0 overflow-x-auto [scrollbar-width:none] md:block [&::-webkit-scrollbar]:hidden">
-            <StudentNav items={items} label={nav.label} notReached={nav.notReached} />
+      <header className="sticky top-0 z-40 w-full border-b border-border/70 bg-surface/90 backdrop-blur-md transition-all print:hidden">
+        <div className="mx-auto flex h-16 max-w-[1200px] items-center justify-between px-6">
+          <div className="flex items-center gap-8">
+            <Link href="/app" className="flex items-center gap-2.5 group">
+              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-white shadow-sm transition-transform group-hover:scale-105">
+                <GraduationCap className="h-5 w-5" />
+              </span>
+              <span className="font-serif text-xl font-bold tracking-tight text-primary leading-none">
+                Uniguide
+              </span>
+            </Link>
+
+            <nav aria-label={nav.main} className="hidden md:block">
+              <StudentNav items={items} label={nav.label} notReached={nav.notReached} />
+            </nav>
           </div>
-          {/* Phones open help from the bottom bar. */}
-          <div className="hidden md:block">
-            <HelpButton className="btn btn-secondary btn-sm whitespace-nowrap">{nav.help}</HelpButton>
+
+          <div className="flex items-center gap-3">
+            {/* Phones open help from the bottom bar. */}
+            <div className="hidden md:block">
+              <HelpButton className="btn btn-secondary btn-sm gap-1.5 whitespace-nowrap border-border hover:border-primary/40 hover:text-primary">
+                <Sparkles className="h-3.5 w-3.5 text-secondary" />
+                <span>{nav.help}</span>
+              </HelpButton>
+            </div>
+            {accountEnd}
+            {account}
           </div>
-          {account}
-        </nav>
+        </div>
       </header>
+
       <BottomBar items={items} labels={{ nav: nav.label, help: nav.help, more: nav.more, close: nav.close, notReached: nav.notReached }} />
       <HelpDialog title={nav.helpTitle} close={nav.close}>
         <HelpContent copy={help} pageHelp={pageHelp} courseSlug={courseSlug} />

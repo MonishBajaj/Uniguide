@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Student Profile Dashboard | UniGuide AI</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&amp;family=Plus+Jakarta+Sans:wght@400;600;700&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-dim": "#d9dadb",
+                    "tertiary": "#001f16",
+                    "on-secondary-container": "#650d00",
+                    "on-secondary-fixed": "#3e0500",
+                    "surface-tint": "#455e90",
+                    "primary-fixed": "#d8e2ff",
+                    "on-tertiary-container": "#53a58a",
+                    "tertiary-fixed-dim": "#84d6b9",
+                    "surface-container-highest": "#e1e3e4",
+                    "secondary-fixed": "#ffdad3",
+                    "on-tertiary-fixed-variant": "#00513e",
+                    "on-tertiary-fixed": "#002117",
+                    "inverse-surface": "#2e3132",
+                    "on-tertiary": "#ffffff",
+                    "surface-container-high": "#e7e8e9",
+                    "on-primary-fixed-variant": "#2c4676",
+                    "surface": "#f8f9fa",
+                    "secondary": "#af3017",
+                    "primary": "#00183d",
+                    "inverse-primary": "#adc6ff",
+                    "on-error": "#ffffff",
+                    "surface-variant": "#e1e3e4",
+                    "surface-bright": "#f8f9fa",
+                    "on-primary-fixed": "#001a41",
+                    "on-primary": "#ffffff",
+                    "inverse-on-surface": "#f0f1f2",
+                    "background": "#f8f9fa",
+                    "on-error-container": "#93000a",
+                    "tertiary-fixed": "#a0f3d4",
+                    "primary-fixed-dim": "#adc6ff",
+                    "outline-variant": "#c4c6d0",
+                    "surface-container-lowest": "#ffffff",
+                    "error": "#ba1a1a",
+                    "on-primary-container": "#7d96cb",
+                    "surface-container-low": "#f3f4f5",
+                    "secondary-container": "#fe694a",
+                    "primary-container": "#0f2d5c",
+                    "error-container": "#ffdad6",
+                    "on-background": "#191c1d",
+                    "on-surface": "#191c1d",
+                    "on-secondary": "#ffffff",
+                    "surface-container": "#edeeef",
+                    "secondary-fixed-dim": "#ffb4a4",
+                    "outline": "#747780",
+                    "on-surface-variant": "#44474f",
+                    "on-secondary-fixed-variant": "#8d1701",
+                    "tertiary-container": "#003628"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "stack-gap": "16px",
+                    "section-gap-md": "48px",
+                    "section-gap-lg": "80px",
+                    "gutter": "24px",
+                    "max-width": "1200px",
+                    "margin-mobile": "16px"
+            },
+            "fontFamily": {
+                    "button-text": ["Plus Jakarta Sans"],
+                    "body-lg": ["Plus Jakarta Sans"],
+                    "h3-desktop": ["Playfair Display"],
+                    "label-sm": ["Plus Jakarta Sans"],
+                    "h1-desktop": ["Playfair Display"],
+                    "body-md": ["Plus Jakarta Sans"],
+                    "h2-desktop": ["Playfair Display"],
+                    "h1-mobile": ["Playfair Display"]
+            },
+            "fontSize": {
+                    "button-text": ["16px", {"lineHeight": "1", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "h3-desktop": ["24px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                    "label-sm": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                    "h1-desktop": ["48px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "h2-desktop": ["36px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                    "h1-mobile": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .progress-ring__circle {
+            transition: stroke-dashoffset 0.35s;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+        .profile-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .profile-scrollbar::-webkit-scrollbar-thumb {
+            background-color: #E5E7EB;
+            border-radius: 10px;
+        }
+        .nav-item-active {
+            border-left: 3px solid #af3017;
+            background-color: #fef2f2;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body class="bg-[#F7F6F2] font-body-md text-on-surface">
+<!-- Top Navigation (Shell) -->
+<header class="fixed top-0 left-0 w-full h-[64px] z-50 bg-surface/90 backdrop-blur-md border-b border-outline-variant/20 shadow-sm flex items-center">
+<div class="w-full max-w-[1200px] mx-auto flex justify-between items-center px-gutter h-full">
+<div class="font-h3-desktop text-h3-desktop font-bold text-primary tracking-tight">UniGuide AI</div>
+<nav class="hidden md:flex gap-8">
+<a class="text-on-surface-variant hover:text-primary transition-colors font-body-md text-body-md" href="#">Features</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-body-md text-body-md" href="#">Universities</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-body-md text-body-md" href="#">AI Insights</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-body-md text-body-md" href="#">Pricing</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-body-md text-body-md" href="#">About</a>
+</nav>
+<div class="flex gap-4">
+<button class="px-6 py-2 rounded-full border border-primary text-primary font-button-text text-button-text hover:bg-surface-container-low transition-all">Login</button>
+<button class="px-6 py-2 rounded-full bg-primary text-white font-button-text text-button-text hover:opacity-90 transition-all">Apply Now</button>
+</div>
+</div>
+</header>
+<div class="flex h-screen pt-[64px]">
+<!-- LEFT SIDEBAR -->
+<aside class="w-[240px] fixed h-[calc(100vh-64px)] bg-surface-container-lowest border-r border-outline-variant/30 flex flex-col z-40">
+<!-- User Identity -->
+<div class="p-6 flex flex-col items-center text-center border-b border-outline-variant/10">
+<div class="relative group cursor-pointer mb-4">
+<img alt="User Avatar" class="w-[80px] h-[80px] rounded-full object-cover border-2 border-surface-container" data-alt="A professional headshot of a smiling young male student in a minimalist photography studio setting. He is wearing a clean navy blue crew-neck sweater. The lighting is soft and even, highlighting a warm skin tone and a bright, aspirational academic vibe. The background is a soft, out-of-focus academic hall." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCksxiTMqx4NkPM0ss4FzGwYlyEjSF1zQ8edTW-i3uP_mJD3L6dORGTypH0Ht2RKj80xYTBX2NLHgbXdF18-aqzJuV2Gg8758TZqQ5_SwDJ42TvqLx6HDXffIOZPue8vy0i1cZxfVWjhjLnvb5WWd4eP1VRZikvSYBsnmaN-WeWFo0_BH5-S3UohuibcPZZkbm65jQwNw5xHBJgSVYKsDDXX1eVkJautt0yD0LvlWZGcP9YcqPNYaseh08OQnES4z8gKa5jZsZ_Ld-t"/>
+<div class="absolute inset-0 bg-primary/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-white text-[20px]">photo_camera</span>
+</div>
+</div>
+<h2 class="text-primary font-bold text-[16px]">Arjun Sharma</h2>
+<p class="text-[13px] text-outline mt-1 leading-tight">MS in Computer Science<br/>Fall 2026 | USA &amp; Canada</p>
+</div>
+<!-- Progress Ring -->
+<div class="p-6 flex flex-col items-center">
+<div class="relative flex items-center justify-center w-[120px] h-[120px]">
+<svg class="w-full h-full">
+<circle class="text-surface-container stroke-current" cx="60" cy="60" fill="transparent" r="50" stroke-width="8"></circle>
+<circle class="text-secondary stroke-current progress-ring__circle" cx="60" cy="60" fill="transparent" r="50" stroke-dasharray="314.159" stroke-dashoffset="69.1" stroke-linecap="round" stroke-width="8"></circle>
+</svg>
+<div class="absolute flex flex-col items-center">
+<span class="text-[18px] font-bold text-primary">78%</span>
+<span class="text-[10px] text-outline-variant uppercase font-bold">complete</span>
+</div>
+</div>
+<p class="text-[12px] text-secondary font-semibold mt-3">3 sections left</p>
+</div>
+<!-- Navigation List -->
+<nav class="flex-1 mt-2">
+<ul class="space-y-1">
+<li>
+<a class="nav-item-active flex items-center px-6 py-3 text-secondary text-sm" href="#">
+<span class="material-symbols-outlined mr-3">dashboard</span> Overview
+                        </a>
+</li>
+<li>
+<a class="flex items-center px-6 py-3 text-on-surface-variant hover:bg-surface-container-low text-sm transition-colors" href="#">
+<span class="material-symbols-outlined mr-3">school</span> Education
+                        </a>
+</li>
+<li>
+<a class="flex items-center px-6 py-3 text-on-surface-variant hover:bg-surface-container-low text-sm transition-colors" href="#">
+<span class="material-symbols-outlined mr-3">verified</span> Certificates
+                        </a>
+</li>
+<li>
+<a class="flex items-center px-6 py-3 text-on-surface-variant hover:bg-surface-container-low text-sm transition-colors" href="#">
+<span class="material-symbols-outlined mr-3">favorite</span> Wishlist
+                        </a>
+</li>
+<li>
+<a class="flex items-center px-6 py-3 text-on-surface-variant hover:bg-surface-container-low text-sm transition-colors" href="#">
+<span class="material-symbols-outlined mr-3">description</span> Documents
+                        </a>
+</li>
+</ul>
+</nav>
+<!-- Bottom Support -->
+<div class="p-6 mt-auto">
+<a class="flex items-center text-primary font-semibold text-sm hover:translate-x-1 transition-transform" href="#">
+<span class="material-symbols-outlined mr-2 text-[18px]">chat_bubble</span>
+                    Ask Sage to update →
+                </a>
+</div>
+</aside>
+<!-- MAIN CONTENT AREA -->
+<main class="ml-[240px] flex-1 overflow-y-auto profile-scrollbar">
+<div class="max-w-[960px] mx-auto px-gutter py-stack-gap space-y-stack-gap">
+<!-- Section 1: Profile Header Card -->
+<section class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 p-8 flex flex-col md:flex-row justify-between items-start md:items-center">
+<div class="flex items-center gap-6">
+<img alt="Arjun Sharma Profile" class="w-16 h-16 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuABjUfFy-GRtqSjiA0M8G24E8xVtvoRkng1PfLCVv0ay8E80rFf_Yz-E7mRGjUh5lgiS3YgdTXpE5WaKlBXc3vuIEclr4lxdCJxNv5ZYLuaax70BVNjgCuaqoLQWSu149dNC5beTvXppHvdeNmt68sp2O1sHsdVoBym0Cn-IjcqJQW8MxlnH7X7i2kny-q90ELphIRSrWJklhBFj8LgZmQcSHkoE3o8YmGp9gaZFzdLLEjyFNtm1YhXxkGgNHlZWCvuQb3eYV1XMOXe"/>
+<div>
+<h1 class="text-primary font-bold text-[22px]">Arjun Sharma</h1>
+<p class="text-on-surface-variant text-sm">Targeting Top 50 Engineering Programs</p>
+<div class="flex gap-2 mt-3">
+<span class="px-3 py-1 bg-surface-container-high rounded-full text-[12px] font-semibold text-on-surface-variant">Fall 2026</span>
+<span class="px-3 py-1 bg-surface-container-high rounded-full text-[12px] font-semibold text-on-surface-variant">USA &amp; Canada</span>
+<span class="px-3 py-1 bg-surface-container-high rounded-full text-[12px] font-semibold text-on-surface-variant">MS Computer Science</span>
+</div>
+</div>
+</div>
+<div class="mt-6 md:mt-0 flex flex-col items-end gap-3">
+<button class="px-4 py-2 rounded-full border border-outline-variant text-on-surface-variant font-button-text text-sm hover:bg-surface-container transition-all flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">edit</span> Edit Profile
+                        </button>
+<div class="flex items-center gap-2">
+<span class="text-xs font-bold text-outline uppercase tracking-wider">Profile Strength</span>
+<div class="flex gap-1">
+<div class="w-6 h-1.5 bg-secondary rounded-full"></div>
+<div class="w-6 h-1.5 bg-secondary rounded-full"></div>
+<div class="w-6 h-1.5 bg-secondary rounded-full"></div>
+<div class="w-6 h-1.5 bg-secondary rounded-full"></div>
+<div class="w-6 h-1.5 bg-outline-variant/30 rounded-full"></div>
+</div>
+</div>
+</div>
+</section>
+<!-- Section 2: Two-column grid -->
+<section class="grid grid-cols-1 md:grid-cols-2 gap-stack-gap">
+<!-- Card A: Academic Background -->
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/30 group">
+<div class="flex justify-between items-center mb-6">
+<h3 class="text-primary font-bold text-[18px]">Academic Background</h3>
+<span class="material-symbols-outlined text-outline-variant opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">edit</span>
+</div>
+<div class="space-y-4">
+<div class="flex justify-between border-b border-outline-variant/10 pb-2">
+<span class="text-on-surface-variant text-sm">University</span>
+<span class="text-primary font-semibold text-sm">IIT Delhi</span>
+</div>
+<div class="flex justify-between border-b border-outline-variant/10 pb-2">
+<span class="text-on-surface-variant text-sm">Degree</span>
+<span class="text-primary font-semibold text-sm">B.Tech, Computer Science</span>
+</div>
+<div class="flex justify-between border-b border-outline-variant/10 pb-2">
+<span class="text-on-surface-variant text-sm">GPA</span>
+<span class="text-primary font-semibold text-sm">3.8 / 4.0</span>
+</div>
+<div class="flex justify-between border-b border-outline-variant/10 pb-2">
+<span class="text-on-surface-variant text-sm">Graduation Year</span>
+<span class="text-primary font-semibold text-sm">2024</span>
+</div>
+</div>
+<button class="mt-6 w-full py-3 rounded-xl border border-dashed border-outline-variant text-on-surface-variant font-semibold text-sm hover:bg-surface-container-low transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[20px]">add_circle</span> Add work experience
+                        </button>
+</div>
+<!-- Card B: Test Scores -->
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/30">
+<h3 class="text-primary font-bold text-[18px] mb-6">Test Scores</h3>
+<div class="flex flex-wrap gap-3 mb-8">
+<div class="px-4 py-2 bg-on-primary-container/10 border border-on-primary-container/30 rounded-xl flex items-center gap-3">
+<span class="text-xs font-bold text-on-primary-container">GRE</span>
+<span class="text-lg font-bold text-primary">315</span>
+</div>
+<div class="px-4 py-2 bg-on-tertiary-container/10 border border-on-tertiary-container/30 rounded-xl flex items-center gap-3">
+<span class="text-xs font-bold text-on-tertiary-container">TOEFL</span>
+<span class="text-lg font-bold text-primary">104</span>
+</div>
+<button class="px-4 py-2 border border-outline-variant border-dashed rounded-xl flex items-center gap-2 text-outline-variant hover:text-primary hover:border-primary transition-colors">
+<span class="text-xs font-bold uppercase">IELTS</span>
+<span class="material-symbols-outlined text-[18px]">add</span>
+</button>
+</div>
+<button class="w-full py-2 bg-surface-container-high rounded-full text-primary font-bold text-sm hover:bg-surface-container-highest transition-all">
+                            + Add Score
+                        </button>
+</div>
+<!-- Card C: Country & Program Preferences -->
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/30">
+<h3 class="text-primary font-bold text-[18px] mb-6">Country &amp; Program</h3>
+<div class="space-y-6">
+<div>
+<label class="text-[11px] font-bold text-outline-variant uppercase mb-2 block">Destination Countries</label>
+<div class="flex gap-2">
+<span class="px-3 py-1.5 bg-secondary text-white rounded-full text-[13px] font-semibold flex items-center gap-2">
+                                        🇺🇸 USA
+                                    </span>
+<span class="px-3 py-1.5 bg-secondary text-white rounded-full text-[13px] font-semibold flex items-center gap-2">
+                                        🇨🇦 Canada
+                                    </span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div>
+<label class="text-[11px] font-bold text-outline-variant uppercase mb-2 block">Annual Budget</label>
+<span class="text-primary font-semibold">$30k - $50k/yr</span>
+</div>
+<div>
+<label class="text-[11px] font-bold text-outline-variant uppercase mb-2 block">Program Type</label>
+<div class="flex gap-2 flex-wrap">
+<span class="px-2 py-0.5 bg-surface-container-high rounded text-[12px] font-semibold">MS</span>
+<span class="px-2 py-0.5 bg-surface-container-high rounded text-[12px] font-semibold">Full-time</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Card D: Career Goals -->
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/30 flex flex-col">
+<h3 class="text-primary font-bold text-[18px] mb-4">Career Goals</h3>
+<div class="flex-1">
+<textarea class="w-full border-none p-0 focus:ring-0 text-sm text-on-surface-variant bg-transparent resize-none leading-relaxed" rows="4">I aim to transition into Machine Learning Engineering at a top-tier tech firm. Seeking programs with strong research labs in NLP and industrial internship ties in Silicon Valley.</textarea>
+</div>
+<div class="mt-4 pt-4 border-t border-outline-variant/10 flex justify-between items-center">
+<span class="text-[11px] text-outline italic">Updated 2 days ago</span>
+<span class="material-symbols-outlined text-secondary text-[20px]">check_circle</span>
+</div>
+</div>
+</section>
+<!-- Section 3: Analytics Chart Card -->
+<section class="bg-surface-container-lowest p-8 rounded-xl border border-outline-variant/30">
+<h3 class="text-primary font-bold text-[20px] mb-8 font-h3-desktop">How your profile compares to admitted students</h3>
+<div class="space-y-10">
+<!-- Top 10 Schools -->
+<div>
+<div class="flex justify-between items-center mb-4">
+<h4 class="text-sm font-bold text-primary">Top 10 Schools</h4>
+<div class="flex gap-4">
+<div class="flex items-center gap-1.5"><div class="w-3 h-3 bg-secondary rounded-full"></div><span class="text-[10px] uppercase font-bold text-outline">You</span></div>
+<div class="flex items-center gap-1.5"><div class="w-3 h-3 border-2 border-dashed border-primary rounded-full"></div><span class="text-[10px] uppercase font-bold text-outline">Admitted Avg</span></div>
+</div>
+</div>
+<div class="space-y-4">
+<!-- GPA -->
+<div class="relative h-6 w-full bg-surface-container-high rounded-full overflow-hidden">
+<div class="absolute inset-y-0 left-0 bg-secondary w-[85%] rounded-full transition-all duration-1000"></div>
+<div class="absolute inset-y-0 left-[92%] border-l-2 border-dashed border-primary z-10"></div>
+<div class="absolute inset-0 flex items-center px-4 justify-between">
+<span class="text-[11px] font-bold text-white z-20">GPA: 3.8</span>
+<span class="text-[11px] font-bold text-primary z-20">Target: 3.92</span>
+</div>
+</div>
+<!-- GRE -->
+<div class="relative h-6 w-full bg-surface-container-high rounded-full overflow-hidden">
+<div class="absolute inset-y-0 left-0 bg-secondary w-[70%] rounded-full transition-all duration-1000"></div>
+<div class="absolute inset-y-0 left-[88%] border-l-2 border-dashed border-primary z-10"></div>
+<div class="absolute inset-0 flex items-center px-4 justify-between">
+<span class="text-[11px] font-bold text-white z-20">GRE: 315</span>
+<span class="text-[11px] font-bold text-primary z-20">Target: 328</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Top 50 Schools -->
+<div>
+<h4 class="text-sm font-bold text-primary mb-4">Top 50 Schools</h4>
+<div class="space-y-4">
+<div class="relative h-6 w-full bg-surface-container-high rounded-full overflow-hidden">
+<div class="absolute inset-y-0 left-0 bg-secondary w-[95%] rounded-full transition-all duration-1000"></div>
+<div class="absolute inset-y-0 left-[88%] border-l-2 border-dashed border-primary z-10"></div>
+<div class="absolute inset-0 flex items-center px-4">
+<span class="text-[11px] font-bold text-white z-20">GPA: Above Average</span>
+</div>
+</div>
+<div class="relative h-6 w-full bg-surface-container-high rounded-full overflow-hidden">
+<div class="absolute inset-y-0 left-0 bg-secondary w-[90%] rounded-full transition-all duration-1000"></div>
+<div class="absolute inset-y-0 left-[82%] border-l-2 border-dashed border-primary z-10"></div>
+<div class="absolute inset-0 flex items-center px-4">
+<span class="text-[11px] font-bold text-white z-20">GRE: Competitive</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Section 4: Completion Banner -->
+<section class="bg-secondary p-8 rounded-xl shadow-lg relative overflow-hidden group">
+<!-- Subtle pulsing gradient background -->
+<div class="absolute inset-0 bg-gradient-to-r from-secondary-container/20 to-transparent opacity-50"></div>
+<div class="relative z-10 flex flex-col md:flex-row justify-between items-center gap-6">
+<div class="flex-1">
+<h3 class="text-white font-bold text-[20px] mb-4">Complete 2 more sections to unlock your personalized match list →</h3>
+<div class="flex flex-wrap gap-2">
+<span class="px-4 py-1.5 border border-white/40 bg-white/10 rounded-full text-white text-[13px] font-semibold flex items-center gap-2 hover:bg-white/20 transition-all cursor-pointer">
+<span class="material-symbols-outlined text-[16px]">add</span> Add Work Experience
+                                </span>
+<span class="px-4 py-1.5 border border-white/40 bg-white/10 rounded-full text-white text-[13px] font-semibold flex items-center gap-2 hover:bg-white/20 transition-all cursor-pointer">
+<span class="material-symbols-outlined text-[16px]">add</span> Add IELTS Score
+                                </span>
+</div>
+</div>
+<button class="whitespace-nowrap px-8 py-3 bg-white text-secondary font-bold rounded-full shadow-sm hover:scale-105 transition-transform">
+                            View My Matches →
+                        </button>
+</div>
+</section>
+</div>
+<!-- Footer (Shell) -->
+<footer class="bg-surface-container-lowest py-section-gap-md border-t border-outline-variant/30 mt-section-gap-lg">
+<div class="max-w-[1200px] mx-auto px-gutter grid grid-cols-1 md:grid-cols-4 gap-stack-gap">
+<div class="col-span-1 md:col-span-1">
+<div class="font-h3-desktop text-h3-desktop font-bold text-primary mb-4">UniGuide AI</div>
+<p class="text-on-surface-variant text-sm pr-4">Empowering global students with AI-driven academic consultancy and strategic planning.</p>
+</div>
+<div>
+<h4 class="font-bold text-primary mb-4">Quick Links</h4>
+<ul class="space-y-2">
+<li><a class="text-on-surface-variant hover:text-primary text-sm" href="#">Success Stories</a></li>
+<li><a class="text-on-surface-variant hover:text-primary text-sm" href="#">Visa Guidance</a></li>
+<li><a class="text-on-surface-variant hover:text-primary text-sm" href="#">FAQ</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-bold text-primary mb-4">Legal</h4>
+<ul class="space-y-2">
+<li><a class="text-on-surface-variant hover:text-primary text-sm" href="#">Privacy Policy</a></li>
+<li><a class="text-on-surface-variant hover:text-primary text-sm" href="#">Terms of Service</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-bold text-primary mb-4">Contact</h4>
+<ul class="space-y-2">
+<li><a class="text-on-surface-variant hover:text-primary text-sm" href="#">Contact Support</a></li>
+<li class="text-on-surface-variant text-sm">support@uniguide.ai</li>
+</ul>
+</div>
+</div>
+<div class="max-w-[1200px] mx-auto px-gutter mt-12 pt-8 border-t border-outline-variant/10 text-center">
+<p class="text-on-surface-variant text-sm">© 2024 UniGuide AI. Global Excellence in Academic Consulting.</p>
+</div>
+</footer>
+</main>
+</div>
+</body></html>

@@ -1,0 +1,10 @@
+institution: "Adelaide University"
+country: AU
+official_domain: adelaide.edu.au
+indexes:
+  - url: https://adelaide.edu.au/study/study-areas/arts-humanities-social-sciences/
+    kind: programs
+  - url: https://adelaide.edu.au/study/study-areas/business-marketing-management/
+    kind: programs
+  - url: https://adelaide.edu.au/study/study-areas/engineering/
+    kind: programs

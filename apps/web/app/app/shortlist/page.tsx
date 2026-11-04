@@ -15,6 +15,7 @@ import { getUser } from "@/lib/supabase/server";
 import { startApplyingTo } from "../tracker/actions";
 import { chooseIntake, removeFromShortlist } from "./actions";
 import { MergeLocalShortlist } from "./merge-local";
+import { BookmarkCheck, Sparkles, TrendingUp, DollarSign } from "lucide-react";
 
 export const metadata: Metadata = { title: "Shortlist" };
 
@@ -47,29 +48,38 @@ export default async function ShortlistPage() {
   const ti = all.journey.intakeChoice;
 
   return (
-    <div className="grid gap-8">
-      <header>
-        <h1 className="text-4xl font-semibold">Shortlist</h1>
-        <p className="mt-2 text-muted">Courses you shortlist move up our checking queue, so their facts get verified first.</p>
+    <div className="grid gap-8 max-w-6xl mx-auto">
+      <header className="rounded-xl border border-border bg-surface p-6 sm:p-8 ambient-shadow">
+        <div className="flex items-center gap-2 mb-2">
+          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
+            <BookmarkCheck className="h-4 w-4" />
+          </span>
+          <span className="text-xs font-bold uppercase tracking-wider text-muted">Verified Shortlist</span>
+        </div>
+        <h1 className="text-3xl sm:text-4xl font-serif font-bold text-primary">Shortlist</h1>
+        <p className="mt-2 text-sm text-muted max-w-2xl leading-relaxed">
+          Courses you shortlist move up our checking queue, so their facts get verified first.
+        </p>
       </header>
       <MergeLocalShortlist />
       {(cards ?? []).length === 0 ? (
-        <div className="rounded-2xl border border-border bg-surface p-8">
-          <h2 className="text-xl font-semibold">{all.journey.empty.shortlistTitle}</h2>
-          <p className="mt-2 text-muted">{all.journey.empty.shortlistBody}</p>
-          <div className="mt-6 flex flex-wrap gap-3">
+        <div className="rounded-xl border border-border bg-surface p-8 sm:p-12 text-center ambient-shadow max-w-xl mx-auto">
+          <BookmarkCheck className="h-10 w-10 text-muted mx-auto mb-4 opacity-50" />
+          <h2 className="font-serif text-2xl font-bold text-primary">{all.journey.empty.shortlistTitle}</h2>
+          <p className="mt-2 text-sm text-muted leading-relaxed">{all.journey.empty.shortlistBody}</p>
+          <div className="mt-6 flex flex-wrap justify-center gap-3">
             <Link href="/app/match" className="btn btn-primary">{all.journey.empty.seeMatches}</Link>
             <Link href="/courses" className="btn btn-secondary">{all.journey.empty.search}</Link>
           </div>
         </div>
       ) : (
         <>
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid gap-6 md:grid-cols-2">
             {cards!.map((card) => {
               return (
-                <div key={card.id} className="grid gap-2">
+                <div key={card.id} className="grid content-between gap-3 p-4 rounded-xl border border-border bg-surface ambient-shadow">
                   <ProgramCard card={card} signedIn showShortlist={false} deadline={cardDeadline(cycles.get(card.id!)?.deadlines)} />
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap items-center gap-2 pt-3 border-t border-border/60">
                     {(() => {
                       const app = appFor.get(card.id!);
                       if (app && app.status !== "shortlisted") {
@@ -89,7 +99,7 @@ export default async function ShortlistPage() {
                       );
                     })()}
                     <form action={removeFromShortlist.bind(null, card.id!)}>
-                      <button className="btn btn-secondary btn-sm">
+                      <button className="btn btn-secondary btn-sm text-muted hover:text-foreground">
                         Remove<span className="sr-only">: {card.title}</span>
                       </button>
                     </form>
@@ -183,57 +193,77 @@ async function Panels({
 
   return (
     <>
-      <section id="advice" aria-labelledby="advice-title" className="grid gap-3 scroll-mt-24">
-        <h2 id="advice-title" className="text-2xl font-semibold">{t.adviceTitle}</h2>
-        <p className="max-w-[680px] text-muted">{t.adviceIntro}</p>
+      <section id="advice" aria-labelledby="advice-title" className="grid gap-4 scroll-mt-24 rounded-xl border border-border bg-surface p-6 sm:p-8 ambient-shadow">
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <Sparkles className="h-4 w-4 text-secondary" />
+            <span className="text-xs font-bold uppercase tracking-wider text-muted">Strategic Balance</span>
+          </div>
+          <h2 id="advice-title" className="font-serif text-2xl font-bold text-primary">{t.adviceTitle}</h2>
+          <p className="mt-1 text-xs text-muted max-w-2xl leading-relaxed">{t.adviceIntro}</p>
+        </div>
         <ShortlistAdvice advice={advice} />
       </section>
 
-      <section id="comparison" aria-labelledby="comparison-title" className="grid gap-3 scroll-mt-24">
-        <h2 id="comparison-title" className="text-2xl font-semibold">{t.comparisonTitle}</h2>
-        <p className="max-w-[680px] text-muted">{t.comparisonIntro}</p>
+      <section id="comparison" aria-labelledby="comparison-title" className="grid gap-4 scroll-mt-24 rounded-xl border border-border bg-surface p-6 sm:p-8 ambient-shadow">
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <TrendingUp className="h-4 w-4 text-secondary" />
+            <span className="text-xs font-bold uppercase tracking-wider text-muted">Requirements Matrix</span>
+          </div>
+          <h2 id="comparison-title" className="font-serif text-2xl font-bold text-primary">{t.comparisonTitle}</h2>
+          <p className="mt-1 text-xs text-muted max-w-2xl leading-relaxed">{t.comparisonIntro}</p>
+        </div>
         <ProfileComparison rows={comparison} scrollLabel={t.comparisonTable} />
       </section>
 
-      <section id="costs" aria-labelledby="costs-title" className="grid gap-3 scroll-mt-24">
-        <h2 id="costs-title" className="text-2xl font-semibold">{t.costsTitle}</h2>
-        <p className="max-w-[680px] text-muted">{t.costsIntro}</p>
-        {budget ? null : (
-          <p className="text-sm">
-            {t.costsNoBudget} <Link href="/app/profile#budget" className="underline underline-offset-2">{t.addBudget}</Link>
-          </p>
-        )}
-        <ul className="grid gap-3 md:grid-cols-2">
+      <section id="costs" aria-labelledby="costs-title" className="grid gap-4 scroll-mt-24 rounded-xl border border-border bg-surface p-6 sm:p-8 ambient-shadow">
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <DollarSign className="h-4 w-4 text-secondary" />
+            <span className="text-xs font-bold uppercase tracking-wider text-muted">Financial Comparison</span>
+          </div>
+          <h2 id="costs-title" className="font-serif text-2xl font-bold text-primary">{t.costsTitle}</h2>
+          <p className="mt-1 text-xs text-muted max-w-2xl leading-relaxed">{t.costsIntro}</p>
+          {budget ? null : (
+            <p className="mt-2 text-xs text-muted">
+              {t.costsNoBudget} <Link href="/app/profile#budget" className="font-semibold underline underline-offset-2 hover:text-primary">{t.addBudget}</Link>
+            </p>
+          )}
+        </div>
+        <ul className="grid gap-4 md:grid-cols-2">
           {costs.map(({ programId, title, cost, inBudgetCurrency }) => (
-            <li key={programId} className="grid content-start gap-2 rounded-2xl border border-border bg-surface p-4 text-sm">
-              <p className="font-semibold">{title}</p>
-              {cost.currency && cost.lines.length ? (
-                <>
-                  <dl className="grid gap-1">
-                    <div>
-                      <dt className="text-muted">{offers.expected}</dt>
-                      <dd className="text-xl font-semibold">{money(cost.base, cost.currency)}</dd>
-                      <dd className="text-muted">{offers.range(money(cost.low, cost.currency), money(cost.high, cost.currency))}</dd>
-                    </div>
-                    {cost.converted ? (
+            <li key={programId} className="grid content-between gap-3 rounded-xl border border-border/70 bg-surface-2/40 p-5 text-sm">
+              <div>
+                <p className="font-serif font-bold text-base text-primary mb-2">{title}</p>
+                {cost.currency && cost.lines.length ? (
+                  <div className="space-y-3">
+                    <dl className="grid gap-1">
                       <div>
-                        <dt className="text-muted">{offers.about(cost.converted.currency)}</dt>
-                        <dd className="font-semibold">{money(cost.converted.amount, cost.converted.currency)}</dd>
-                        <dd className="text-xs text-muted">{offers.rate(cost.converted.rate.source, shortDate(cost.converted.rate.asOf))}</dd>
+                        <dt className="text-xs text-muted">{offers.expected}</dt>
+                        <dd className="font-serif text-2xl font-bold text-primary">{money(cost.base, cost.currency)}</dd>
+                        <dd className="text-xs text-muted">{offers.range(money(cost.low, cost.currency), money(cost.high, cost.currency))}</dd>
                       </div>
+                      {cost.converted ? (
+                        <div className="pt-2 border-t border-border/60">
+                          <dt className="text-xs text-muted">{offers.about(cost.converted.currency)}</dt>
+                          <dd className="font-serif text-lg font-bold text-primary">{money(cost.converted.amount, cost.converted.currency)}</dd>
+                          <dd className="text-[11px] text-muted">{offers.rate(cost.converted.rate.source, shortDate(cost.converted.rate.asOf))}</dd>
+                        </div>
+                      ) : null}
+                    </dl>
+                    {budget && inBudgetCurrency !== null && inBudgetCurrency > budget.amount ? (
+                      <p className="text-xs font-bold text-conflicting bg-conflicting/10 px-2.5 py-1 rounded-md">{offers.overBudget}</p>
                     ) : null}
-                  </dl>
-                  {budget && inBudgetCurrency !== null && inBudgetCurrency > budget.amount ? (
-                    <p className="font-semibold text-conflicting">{offers.overBudget}</p>
-                  ) : null}
-                  <div className="flex flex-wrap gap-1">
-                    {[...new Set(cost.lines.map((l) => l.status))].map((s) => <FactBadge key={s} status={s} />)}
+                    <div className="flex flex-wrap gap-1 pt-1">
+                      {[...new Set(cost.lines.map((l) => l.status))].map((s) => <FactBadge key={s} status={s} />)}
+                    </div>
+                    {!cost.complete ? <p className="text-xs text-unverified">{offers.lowerBound(cost.missing.join(", "))}</p> : null}
                   </div>
-                  {!cost.complete ? <p className="text-xs text-unverified">{offers.lowerBound(cost.missing.join(", "))}</p> : null}
-                </>
-              ) : (
-                <p className="text-muted">{t.noCosts}</p>
-              )}
+                ) : (
+                  <p className="text-xs text-muted">{t.noCosts}</p>
+                )}
+              </div>
             </li>
           ))}
         </ul>

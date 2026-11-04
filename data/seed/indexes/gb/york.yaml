@@ -1,0 +1,6 @@
+institution: "University of York"
+country: GB
+official_domain: york.ac.uk
+indexes:
+  - url: https://www.york.ac.uk/study/postgraduate-taught/courses/
+    kind: programs

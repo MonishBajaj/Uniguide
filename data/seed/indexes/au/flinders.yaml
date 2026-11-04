@@ -1,0 +1,6 @@
+institution: "Flinders University"
+country: AU
+official_domain: flinders.edu.au
+indexes:
+  - url: https://www.flinders.edu.au/study/courses
+    kind: programs

@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Deadline Calendar View | UniGuide AI Enterprise</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&amp;family=Plus+Jakarta+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-container": "#003628",
+                        "surface-bright": "#f8f9fa",
+                        "error-container": "#ffdad6",
+                        "surface-container": "#edeeef",
+                        "surface": "#f8f9fa",
+                        "on-tertiary-container": "#53a58a",
+                        "on-background": "#191c1d",
+                        "on-primary-fixed": "#001a41",
+                        "secondary": "#af3017",
+                        "on-primary-fixed-variant": "#2c4676",
+                        "surface-tint": "#455e90",
+                        "primary": "#00183d",
+                        "on-tertiary-fixed": "#002117",
+                        "on-secondary": "#ffffff",
+                        "secondary-container": "#fe694a",
+                        "primary-fixed-dim": "#adc6ff",
+                        "on-error": "#ffffff",
+                        "on-primary-container": "#7d96cb",
+                        "on-surface-variant": "#44474f",
+                        "inverse-on-surface": "#f0f1f2",
+                        "surface-container-high": "#e7e8e9",
+                        "tertiary-fixed": "#a0f3d4",
+                        "secondary-fixed": "#ffdad3",
+                        "on-secondary-fixed": "#3e0500",
+                        "on-primary": "#ffffff",
+                        "tertiary": "#001f16",
+                        "surface-dim": "#d9dadb",
+                        "primary-container": "#0f2d5c",
+                        "primary-fixed": "#d8e2ff",
+                        "inverse-surface": "#2e3132",
+                        "surface-variant": "#e1e3e4",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-fixed-variant": "#00513e",
+                        "error": "#ba1a1a",
+                        "surface-container-highest": "#e1e3e4",
+                        "outline-variant": "#c4c6d0",
+                        "inverse-primary": "#adc6ff",
+                        "on-secondary-container": "#650d00",
+                        "secondary-fixed-dim": "#ffb4a4",
+                        "on-tertiary": "#ffffff",
+                        "on-surface": "#191c1d",
+                        "tertiary-fixed-dim": "#84d6b9",
+                        "outline": "#747780",
+                        "surface-container-low": "#f3f4f5",
+                        "on-error-container": "#93000a",
+                        "background": "#f8f9fa",
+                        "on-secondary-fixed-variant": "#8d1701"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "section-gap-md": "48px",
+                        "margin-mobile": "16px",
+                        "gutter": "24px",
+                        "section-gap-lg": "80px",
+                        "stack-gap": "16px",
+                        "max-width": "1200px"
+                    },
+                    "fontFamily": {
+                        "label-sm": ["Plus Jakarta Sans"],
+                        "h1-desktop": ["Playfair Display"],
+                        "h2-desktop": ["Playfair Display"],
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "h3-desktop": ["Playfair Display"],
+                        "button-text": ["Plus Jakarta Sans"],
+                        "h1-mobile": ["Playfair Display"],
+                        "body-md": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "label-sm": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                        "h1-desktop": ["48px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                        "h2-desktop": ["36px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "h3-desktop": ["24px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                        "button-text": ["16px", {"lineHeight": "1", "fontWeight": "600"}],
+                        "h1-mobile": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                        "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+            background-color: #e5e7eb;
+        }
+        .calendar-cell {
+            min-height: 120px;
+            background-color: white;
+            transition: all 0.2s ease;
+        }
+        .calendar-cell:hover {
+            background-color: #f3f4f5;
+        }
+        .ambient-shadow {
+            box-shadow: 0 8px 24px rgba(0, 24, 61, 0.06);
+        }
+        .ai-border {
+            border: 1.5px solid transparent;
+            background-image: linear-gradient(white, white), linear-gradient(to right, #af3017, #fe694a);
+            background-origin: border-box;
+            background-clip: padding-box, border-box;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md overflow-hidden">
+<!-- SideNavBar -->
+<aside class="h-screen w-64 fixed left-0 top-0 bg-primary dark:bg-primary-container flex flex-col py-8 z-50">
+<div class="px-6 mb-10">
+<h1 class="font-h3-desktop text-h3-desktop text-on-primary">Admissions Portal</h1>
+<p class="text-on-primary/60 text-label-sm uppercase tracking-wider mt-1">Enterprise Management</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-6 py-4 border-l-4 border-transparent text-on-primary/70 hover:text-on-primary hover:bg-primary-container/50 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-4 border-l-4 border-transparent text-on-primary/70 hover:text-on-primary hover:bg-primary-container/50 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">school</span>
+<span class="font-body-md">Students</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-4 border-l-4 border-secondary bg-primary-container text-on-primary font-bold transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">description</span>
+<span class="font-body-md">Applications</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-4 border-l-4 border-transparent text-on-primary/70 hover:text-on-primary hover:bg-primary-container/50 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="font-body-md">Team Members</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-4 border-l-4 border-transparent text-on-primary/70 hover:text-on-primary hover:bg-primary-container/50 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">query_stats</span>
+<span class="font-body-md">Analytics</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-4 border-l-4 border-transparent text-on-primary/70 hover:text-on-primary hover:bg-primary-container/50 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body-md">Settings</span>
+</a>
+</nav>
+<div class="mt-auto px-6 space-y-2">
+<a class="flex items-center gap-3 py-3 text-on-primary/70 hover:text-on-primary transition-colors" href="#">
+<span class="material-symbols-outlined">help</span>
+<span>Help Center</span>
+</a>
+<a class="flex items-center gap-3 py-3 text-on-primary/70 hover:text-on-primary transition-colors" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span>Logout</span>
+</a>
+</div>
+</aside>
+<!-- TopAppBar -->
+<header class="flex justify-between items-center px-8 py-4 ml-64 w-[calc(100%-16rem)] bg-surface-bright border-b border-outline-variant sticky top-0 z-40">
+<div class="flex items-center gap-6">
+<h2 class="font-h3-desktop text-primary font-bold">Global Admissions Pro</h2>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="pl-10 pr-4 py-2 bg-surface-container rounded-lg border-none focus:ring-2 focus:ring-primary w-64" placeholder="Search applications..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 rounded-full hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant">notifications</span>
+</button>
+<button class="p-2 rounded-full hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant">apps</span>
+</button>
+<div class="flex items-center gap-3 ml-4 pl-4 border-l border-outline-variant">
+<div class="text-right">
+<p class="font-label-sm text-primary">Dr. Alistair Cook</p>
+<p class="text-[12px] text-on-surface-variant">Senior Administrator</p>
+</div>
+<span class="material-symbols-outlined text-primary scale-125">account_circle</span>
+</div>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="ml-64 p-8 w-[calc(100%-16rem)] h-[calc(100vh-72px)] overflow-y-auto">
+<!-- Header Actions -->
+<div class="flex justify-between items-end mb-8">
+<div>
+<h3 class="font-h2-desktop text-h2-desktop text-primary">Deadline Calendar</h3>
+<p class="text-on-surface-variant mt-1">Monitoring 1,248 active university applications across 12 regions.</p>
+</div>
+<div class="flex gap-4">
+<div class="flex bg-surface-container rounded-lg p-1">
+<button class="px-4 py-2 rounded-md bg-white shadow-sm font-label-sm text-primary">Monthly</button>
+<button class="px-4 py-2 rounded-md font-label-sm text-on-surface-variant">Weekly</button>
+</div>
+<button class="flex items-center gap-2 bg-primary text-on-primary px-6 py-2 rounded-full font-button-text hover:bg-primary-container transition-all scale-95 active:scale-100">
+<span class="material-symbols-outlined">filter_list</span>
+                    Filter View
+                </button>
+</div>
+</div>
+<div class="flex gap-gutter h-full pb-10">
+<!-- Calendar Container -->
+<div class="flex-1 bg-white rounded-xl border border-outline-variant overflow-hidden ambient-shadow">
+<!-- Calendar Header -->
+<div class="flex justify-between items-center px-6 py-4 border-b border-outline-variant">
+<div class="flex items-center gap-4">
+<h4 class="font-h3-desktop text-primary">December 2024</h4>
+<div class="flex gap-1">
+<button class="p-1 hover:bg-surface-container rounded transition-colors">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<button class="p-1 hover:bg-surface-container rounded transition-colors">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+<div class="flex gap-6 text-label-sm">
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 rounded-full bg-secondary"></span>
+<span>High Urgency (&gt;5)</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 rounded-full bg-secondary-container"></span>
+<span>Medium Urgency (1-4)</span>
+</div>
+</div>
+</div>
+<!-- Calendar Weekdays -->
+<div class="grid grid-cols-7 bg-surface-container-low border-b border-outline-variant">
+<div class="py-3 text-center text-label-sm text-on-surface-variant">SUN</div>
+<div class="py-3 text-center text-label-sm text-on-surface-variant">MON</div>
+<div class="py-3 text-center text-label-sm text-on-surface-variant">TUE</div>
+<div class="py-3 text-center text-label-sm text-on-surface-variant">WED</div>
+<div class="py-3 text-center text-label-sm text-on-surface-variant">THU</div>
+<div class="py-3 text-center text-label-sm text-on-surface-variant">FRI</div>
+<div class="py-3 text-center text-label-sm text-on-surface-variant">SAT</div>
+</div>
+<!-- Calendar Grid -->
+<div class="calendar-grid">
+<!-- Week 1 (Partial) -->
+<div class="calendar-cell p-3 opacity-30 bg-surface-container-low"><span class="text-label-sm">24</span></div>
+<div class="calendar-cell p-3 opacity-30 bg-surface-container-low"><span class="text-label-sm">25</span></div>
+<div class="calendar-cell p-3 opacity-30 bg-surface-container-low"><span class="text-label-sm">26</span></div>
+<div class="calendar-cell p-3 opacity-30 bg-surface-container-low"><span class="text-label-sm">27</span></div>
+<div class="calendar-cell p-3 opacity-30 bg-surface-container-low"><span class="text-label-sm">28</span></div>
+<div class="calendar-cell p-3 opacity-30 bg-surface-container-low"><span class="text-label-sm">29</span></div>
+<div class="calendar-cell p-3 opacity-30 bg-surface-container-low"><span class="text-label-sm">30</span></div>
+<!-- Week 2 -->
+<div class="calendar-cell p-3"><span class="text-label-sm">1</span></div>
+<div class="calendar-cell p-3 relative">
+<span class="text-label-sm">2</span>
+<div class="absolute bottom-3 left-3 flex gap-1">
+<span class="w-2 h-2 rounded-full bg-secondary-container"></span>
+</div>
+</div>
+<div class="calendar-cell p-3"><span class="text-label-sm">3</span></div>
+<div class="calendar-cell p-3"><span class="text-label-sm">4</span></div>
+<div class="calendar-cell p-3"><span class="text-label-sm">5</span></div>
+<div class="calendar-cell p-3"><span class="text-label-sm">6</span></div>
+<div class="calendar-cell p-3"><span class="text-label-sm">7</span></div>
+<!-- Week 3 -->
+<div class="calendar-cell p-3"><span class="text-label-sm">8</span></div>
+<div class="calendar-cell p-3 relative">
+<span class="text-label-sm">9</span>
+<div class="absolute bottom-3 left-3 flex gap-1">
+<span class="w-2 h-2 rounded-full bg-secondary-container"></span>
+<span class="w-2 h-2 rounded-full bg-secondary-container"></span>
+</div>
+</div>
+<div class="calendar-cell p-3"><span class="text-label-sm">10</span></div>
+<div class="calendar-cell p-3"><span class="text-label-sm">11</span></div>
+<div class="calendar-cell p-3 relative">
+<span class="text-label-sm">12</span>
+<div class="absolute bottom-3 left-3 flex gap-1">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+</div>
+</div>
+<div class="calendar-cell p-3"><span class="text-label-sm">13</span></div>
+<div class="calendar-cell p-3"><span class="text-label-sm">14</span></div>
+<!-- Week 4 -->
+<div class="calendar-cell p-3 ring-2 ring-primary bg-surface-container-low relative">
+<span class="text-label-sm font-bold text-primary">15</span>
+<div class="absolute bottom-3 left-3 flex gap-1">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+</div>
+</div>
+<div class="calendar-cell p-3"><span class="text-label-sm">16</span></div>
+<div class="calendar-cell p-3"><span class="text-label-sm">17</span></div>
+<div class="calendar-cell p-3 relative">
+<span class="text-label-sm">18</span>
+<div class="absolute bottom-3 left-3 flex gap-1">
+<span class="w-2 h-2 rounded-full bg-secondary-container"></span>
+</div>
+</div>
+<div class="calendar-cell p-3"><span class="text-label-sm">19</span></div>
+<div class="calendar-cell p-3"><span class="text-label-sm">20</span></div>
+<div class="calendar-cell p-3 relative">
+<span class="text-label-sm">21</span>
+<div class="absolute bottom-3 left-3 flex gap-1">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+</div>
+</div>
+</div>
+</div>
+<!-- Side Panel (Active State for Dec 15) -->
+<aside class="w-96 bg-white rounded-xl border border-outline-variant flex flex-col ambient-shadow overflow-hidden">
+<div class="p-6 border-b border-outline-variant bg-surface-container-low">
+<div class="flex justify-between items-start">
+<div>
+<span class="text-label-sm text-on-secondary-fixed-variant bg-secondary-fixed px-2 py-1 rounded">High Urgency</span>
+<h5 class="font-h3-desktop text-primary mt-2">Dec 15: MIT Deadline</h5>
+</div>
+<button class="p-1 hover:bg-surface-variant rounded-full">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<p class="text-body-md text-on-surface-variant mt-2">5 Total Students applying for Undergraduate Engineering.</p>
+</div>
+<!-- AI Insights Panel -->
+<div class="m-6 p-4 ai-border rounded-lg bg-surface-container-lowest">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-secondary scale-75">auto_awesome</span>
+<span class="font-label-sm text-secondary">AI STATUS CHECK</span>
+</div>
+<p class="text-[13px] text-on-surface-variant">3 students have incomplete financial affidavits. We recommend triggering an automated reminder before 5:00 PM EST today.</p>
+</div>
+<!-- Student List -->
+<div class="flex-1 overflow-y-auto px-6 pb-6">
+<h6 class="text-label-sm text-on-surface-variant uppercase tracking-widest mb-4">Assigned Students</h6>
+<div class="space-y-4">
+<!-- Student Item -->
+<div class="flex items-center gap-3 p-3 rounded-xl border border-outline-variant hover:bg-surface-container-low transition-colors cursor-pointer group">
+<img alt="Priya Sharma" class="w-10 h-10 rounded-full bg-secondary-fixed" data-alt="A professional headshot of a young South Asian female student with a bright, ambitious smile. She is wearing a smart-casual academic blazer against a soft-focus university library background. The lighting is warm and natural, reinforcing a premium, trustworthy academic atmosphere with rich navy and coral tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB-Qa6P5RzCWp-lfSnUlM8t27d2cDAjkWItXLKgjFBhrK1od8yHuMmA_5_8GixAO2YU_sW6kKXfbA32t7qucYbQO2V9wTsubcHw0gvmKfEbs-cvfzdLbbC6De67FdWsTD8oj-v8TQos-b0En6BUAofUy2wR-erPa1sJOH1HAbvayaAvBFjbUV0XRmqD0zqLFu3mc6ReioWdQg3F0f2-9YEgMhVrTsBdhxBQcnd4vmDEcN0DoF17fZyIV2_O1crrFFp0ivV07HqQxIma"/>
+<div class="flex-1">
+<p class="font-label-sm text-primary">Priya Sharma</p>
+<p class="text-[12px] text-on-surface-variant">92% Completion</p>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary">chevron_right</span>
+</div>
+<!-- Student Item -->
+<div class="flex items-center gap-3 p-3 rounded-xl border border-outline-variant hover:bg-surface-container-low transition-colors cursor-pointer group">
+<img alt="James Lee" class="w-10 h-10 rounded-full bg-primary-fixed" data-alt="A professional headshot of a young East Asian male student looking confident and focused. He is wearing a crisp white shirt in a modern, clean-lit studio setting. The visual style is minimal and high-end, utilizing the brand's corporate palette of deep navy and bright surface whites." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD4iLZTqIIiJT0bTLpLmEEehMjJI2T2SBVKB0M4ZXajq-lUJiNhjCyd28QlYcC0SkDQ-ej6N_5uQGqGISqHOVyhhiiJ4-u8QHaRjLx8SBLq0gyWOJ4onPPr-RBkPYLkDMOJfMusIU6Tp7Qf1AJ-cPw4uxXtXXu2-mMzl8icu_rtjJcL9zpRxQr7exBp4G35SkHJDzqscT-9USugxS4SgUqD1gGlYIvalYyTbLDuJ0bi9y-p7pzyWv65WNyXeKOTgmUkJe4yCDBHChvP"/>
+<div class="flex-1">
+<p class="font-label-sm text-primary">James Lee</p>
+<p class="text-[12px] text-on-surface-variant">78% Completion</p>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary">chevron_right</span>
+</div>
+<!-- Student Item -->
+<div class="flex items-center gap-3 p-3 rounded-xl border border-outline-variant hover:bg-surface-container-low transition-colors cursor-pointer group border-secondary/30 bg-secondary/5">
+<img alt="Elena Rodriguez" class="w-10 h-10 rounded-full bg-secondary-fixed-dim" data-alt="A professional headshot of a young Hispanic female student with an intelligent and friendly expression. She is posed in a contemporary office environment with soft bokeh effects. The lighting is high-key and professional, adhering to a minimalist, corporate aesthetic with sophisticated tonal layers of gray and navy." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCd4Etwu9FtDlx-jVeSN1Bg2Cnxpbn-YTVHEAaettwawt6NYkuusImaOY_0uuQI4G2WFj3ZcFMhICA__qz6NS77U1A6wzjcIx-RKY0HfYjbfLQjX3k8iPuWi4bW66zFMB9S8itH0tS2EBbXr_-bq5pcjsTall4yel8veMRDnDBZco38Rlg-E_GK35koQtOebKrzNx3VGW_4sB46cSMKyasq6hBFQtHlSPFVLyc9WoX6WtjAsHh-cy_NVDho0MsFVvprkPtueyrvkwqN"/>
+<div class="flex-1">
+<p class="font-label-sm text-primary">Elena Rodriguez</p>
+<p class="text-[12px] text-secondary font-bold">Action Required</p>
+</div>
+<span class="material-symbols-outlined text-secondary">warning</span>
+</div>
+<!-- Others indicator -->
+<div class="text-center py-2">
+<button class="text-label-sm text-primary hover:underline">View 2 other students</button>
+</div>
+</div>
+</div>
+<div class="p-6 border-t border-outline-variant">
+<button class="w-full bg-secondary text-on-secondary py-3 rounded-full font-button-text hover:brightness-110 transition-all">
+                        Send Bulk Reminders
+                    </button>
+</div>
+</aside>
+</div>
+</main>
+<!-- FAB for quick action -->
+<button class="fixed bottom-8 right-8 w-14 h-14 bg-secondary text-on-secondary rounded-full flex items-center justify-center ambient-shadow hover:scale-105 active:scale-95 transition-transform z-50">
+<span class="material-symbols-outlined scale-125">add</span>
+</button>
+</body></html>

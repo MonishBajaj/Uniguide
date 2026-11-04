@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>UniGuide AI Enterprise Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-container": "#003628",
+                        "surface-bright": "#f8f9fa",
+                        "error-container": "#ffdad6",
+                        "surface-container": "#edeeef",
+                        "surface": "#f8f9fa",
+                        "on-tertiary-container": "#53a58a",
+                        "on-background": "#191c1d",
+                        "on-primary-fixed": "#001a41",
+                        "secondary": "#af3017",
+                        "on-primary-fixed-variant": "#2c4676",
+                        "surface-tint": "#455e90",
+                        "primary": "#00183d",
+                        "on-tertiary-fixed": "#002117",
+                        "on-secondary": "#ffffff",
+                        "secondary-container": "#fe694a",
+                        "primary-fixed-dim": "#adc6ff",
+                        "on-error": "#ffffff",
+                        "on-primary-container": "#7d96cb",
+                        "on-surface-variant": "#44474f",
+                        "inverse-on-surface": "#f0f1f2",
+                        "surface-container-high": "#e7e8e9",
+                        "tertiary-fixed": "#a0f3d4",
+                        "secondary-fixed": "#ffdad3",
+                        "on-secondary-fixed": "#3e0500",
+                        "on-primary": "#ffffff",
+                        "tertiary": "#001f16",
+                        "surface-dim": "#d9dadb",
+                        "primary-container": "#0f2d5c",
+                        "primary-fixed": "#d8e2ff",
+                        "inverse-surface": "#2e3132",
+                        "surface-variant": "#e1e3e4",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-fixed-variant": "#00513e",
+                        "error": "#ba1a1a",
+                        "surface-container-highest": "#e1e3e4",
+                        "outline-variant": "#c4c6d0",
+                        "inverse-primary": "#adc6ff",
+                        "on-secondary-container": "#650d00",
+                        "secondary-fixed-dim": "#ffb4a4",
+                        "on-tertiary": "#ffffff",
+                        "on-surface": "#191c1d",
+                        "tertiary-fixed-dim": "#84d6b9",
+                        "outline": "#747780",
+                        "surface-container-low": "#f3f4f5",
+                        "on-error-container": "#93000a",
+                        "background": "#f8f9fa",
+                        "on-secondary-fixed-variant": "#8d1701"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "section-gap-md": "48px",
+                        "margin-mobile": "16px",
+                        "gutter": "24px",
+                        "section-gap-lg": "80px",
+                        "stack-gap": "16px",
+                        "max-width": "1200px"
+                    },
+                    "fontFamily": {
+                        "label-sm": ["Plus Jakarta Sans"],
+                        "h1-desktop": ["Playfair Display"],
+                        "h2-desktop": ["Playfair Display"],
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "h3-desktop": ["Playfair Display"],
+                        "button-text": ["Plus Jakarta Sans"],
+                        "h1-mobile": ["Playfair Display"],
+                        "body-md": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "label-sm": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                        "h1-desktop": ["48px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                        "h2-desktop": ["36px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "h3-desktop": ["24px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                        "button-text": ["16px", {"lineHeight": "1", "fontWeight": "600"}],
+                        "h1-mobile": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                        "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        body {
+            background-color: #f8f9fa;
+        }
+        .custom-shadow {
+            box-shadow: 0 8px 24px rgba(0, 24, 61, 0.06);
+        }
+    </style>
+</head>
+<body class="font-body-md text-on-surface">
+<!-- Sidebar Wrapper (Fixed Left) -->
+<aside class="h-screen w-64 fixed left-0 top-0 bg-primary-container text-on-primary flex flex-col py-8 z-50">
+<!-- Logo & Header -->
+<div class="px-6 mb-10">
+<div class="flex items-center gap-3 mb-2">
+<div class="w-10 h-10 bg-on-primary rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-primary" data-icon="school">school</span>
+</div>
+<span class="font-h3-desktop text-h3-desktop text-on-primary font-bold">UniGuide AI</span>
+</div>
+<p class="text-[10px] font-bold tracking-[0.1em] text-on-primary/60 uppercase">Admin Panel</p>
+</div>
+<!-- Navigation Links -->
+<nav class="flex-1 space-y-1">
+<!-- Active Link: Students -->
+<a class="flex items-center gap-3 px-6 py-4 border-l-4 border-secondary-container bg-primary/20 text-on-primary font-bold group transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-body-md">Students</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-4 border-l-4 border-transparent text-on-primary/70 hover:text-on-primary hover:bg-primary/10 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="event">event</span>
+<span class="font-body-md">Deadlines</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-4 border-l-4 border-transparent text-on-primary/70 hover:text-on-primary hover:bg-primary/10 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span class="font-body-md">Team</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-4 border-l-4 border-transparent text-on-primary/70 hover:text-on-primary hover:bg-primary/10 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="query_stats">query_stats</span>
+<span class="font-body-md">Reports</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-4 border-l-4 border-transparent text-on-primary/70 hover:text-on-primary hover:bg-primary/10 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-body-md">Settings</span>
+</a>
+</nav>
+<!-- Footer / User Profile -->
+<div class="px-6 pt-6 border-t border-on-primary/10">
+<div class="flex items-center gap-3 mb-6">
+<div class="relative">
+<img alt="Sarah Chen" class="w-10 h-10 rounded-full border-2 border-secondary-container object-cover" data-alt="A professional headshot of Sarah Chen, a modern education consultant in her 30s. She is smiling confidently, wearing a navy blue blazer over a crisp white shirt. The background is a soft-focus, high-end office environment with warm architectural lighting and minimalist wooden accents, conveying authority and trust." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDQj4gJ17OZKjlN2OPAYcgCXEZMD3thrl4lv02ywsgqd_oIxmbGOHdfHxTWv6qZhHdGRpQstrL8eS4ZfZzepF9nh2HHSzc3YyqzxxRJILbZBK8sOQ_6KHAJHMo9cHpG7PE5uZh-5swgG1XgKvF5r8FPabrB719-xxLeSmnWJHPcHYqA3wwSuzZDe1byRInCJqmnIb_049ot-GVStdH1DrdmCnUBD4OOBrryhP648w7UXFnKsDf_04S2b9Gnt0eZT4mRJBgPRUMzODr9"/>
+<div class="absolute bottom-0 right-0 w-3 h-3 bg-tertiary-fixed rounded-full border-2 border-primary-container"></div>
+</div>
+<div class="overflow-hidden">
+<p class="font-label-sm text-on-primary truncate">Sarah Chen</p>
+<p class="text-[12px] text-on-primary/60 truncate">Agency Admin</p>
+</div>
+</div>
+<button class="flex items-center gap-3 text-on-primary/70 hover:text-secondary-fixed transition-colors w-full px-2 py-2">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span class="font-button-text text-sm">Logout</span>
+</button>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-64 min-h-screen bg-[#F7F6F2] pb-12">
+<!-- Alert Banner -->
+<div class="bg-error text-on-error px-8 py-3 flex items-center justify-between sticky top-0 z-40">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined" data-icon="warning">warning</span>
+<span class="font-button-text">5 students have deadlines in the next 7 days — Review Now →</span>
+</div>
+<button class="hover:bg-on-error/10 p-1 rounded transition-colors">
+<span class="material-symbols-outlined" data-icon="close">close</span>
+</button>
+</div>
+<!-- Top App Bar Content -->
+<header class="px-8 py-6 flex justify-between items-center bg-white/50 backdrop-blur-md mb-6">
+<h1 class="font-h2-desktop text-h2-desktop text-primary">Students Roster</h1>
+<div class="flex items-center gap-4">
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline" data-icon="search">search</span>
+<input class="pl-10 pr-4 py-2 bg-white border border-outline-variant rounded-lg w-72 focus:ring-2 focus:ring-primary focus:border-transparent transition-all" placeholder="Search students, programs..." type="text"/>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-2 text-primary hover:bg-surface-container rounded-full transition-colors relative">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-1 right-1 w-2 h-2 bg-secondary rounded-full"></span>
+</button>
+<button class="p-2 text-primary hover:bg-surface-container rounded-full transition-colors">
+<span class="material-symbols-outlined" data-icon="apps">apps</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Main Dashboard Content -->
+<div class="px-8 space-y-8">
+<!-- Students Table Card -->
+<section class="bg-white rounded-xl custom-shadow overflow-hidden border border-outline-variant">
+<!-- Card Header -->
+<div class="px-6 py-6 border-b border-outline-variant flex flex-wrap items-center justify-between gap-4">
+<div class="space-y-1">
+<div class="flex items-center gap-3">
+<h2 class="font-h3-desktop text-h3-desktop text-primary">All Students (42)</h2>
+<span class="px-3 py-1 bg-secondary-fixed text-on-secondary-fixed text-xs font-bold rounded-full">
+                                5 rows need urgent attention
+                            </span>
+</div>
+<p class="text-on-surface-variant text-sm">Managing international admissions workflows</p>
+</div>
+<div class="flex items-center gap-3">
+<div class="flex bg-surface-container-low p-1 rounded-lg border border-outline-variant">
+<button class="px-4 py-1.5 text-sm font-semibold bg-white shadow-sm rounded-md text-primary">Counselor</button>
+<button class="px-4 py-1.5 text-sm font-medium text-on-surface-variant hover:text-primary transition-colors">Urgency</button>
+<button class="px-4 py-1.5 text-sm font-medium text-on-surface-variant hover:text-primary transition-colors">Deadline</button>
+</div>
+<button class="flex items-center gap-2 bg-secondary-container text-on-secondary px-6 py-2.5 rounded-full font-button-text hover:bg-secondary transition-all shadow-md active:scale-95">
+<span class="material-symbols-outlined text-[20px]" data-icon="add">add</span>
+                            Add Student
+                        </button>
+</div>
+</div>
+<!-- Table Content -->
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-lowest text-on-surface-variant text-[12px] font-bold uppercase tracking-wider">
+<th class="px-6 py-4 font-semibold border-b border-outline-variant">Student</th>
+<th class="px-6 py-4 font-semibold border-b border-outline-variant">Target Programs</th>
+<th class="px-6 py-4 font-semibold border-b border-outline-variant">Active Apps</th>
+<th class="px-6 py-4 font-semibold border-b border-outline-variant text-error">Urgent Deadlines</th>
+<th class="px-6 py-4 font-semibold border-b border-outline-variant">LORs Pending</th>
+<th class="px-6 py-4 font-semibold border-b border-outline-variant">Last Active</th>
+<th class="px-6 py-4 font-semibold border-b border-outline-variant">Counselor</th>
+<th class="px-6 py-4 font-semibold border-b border-outline-variant text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<!-- RED ROW (URGENT) -->
+<tr class="bg-error-container/20 border-l-4 border-error hover:bg-error-container/30 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<img class="w-10 h-10 rounded-full object-cover" data-alt="A portrait of a young Indian female student with a bright, motivated expression. She has dark hair and is wearing a stylish modern kurta. The lighting is natural and warm, set in a clean, contemporary home office with books and a laptop in the background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBGYnPH41cqTxk8NMYNUg_w8w4kDa4rNGf8yBA1txr5jVNhwI01hSM-oSiC8CQnTsp7rfMW3lTKB4DmeUYfWEtF96bEaJVLAYWkFrrkQhbBGp2Bpunks65GrZ7EIcsjSZ65_zPLf1YJLghQzt58rybTfLj30pewg7mkrB-D_D8Ou3fYo1wcFsabav9s--MEA1OJnvS2XNTPWdKfL3GCRZ5Duq2q1sd_cnm8mCQUU8va3gJT4p66OGJ3pJsvV9iYM4Cagirr7cD4DrQt"/>
+<div>
+<p class="font-bold text-primary">Priya Sharma</p>
+<p class="text-xs text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="flag">flag</span> India
+                                            </p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex gap-1 flex-wrap">
+<span class="px-2 py-0.5 bg-primary-container/10 text-primary-container text-[11px] font-bold rounded border border-primary-container/20">MS CS</span>
+<span class="px-2 py-0.5 bg-primary-container/10 text-primary-container text-[11px] font-bold rounded border border-primary-container/20">PhD AI</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="font-semibold text-primary">8 apps</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2 text-error font-bold">
+                                        Dec 15 <span class="w-2 h-2 rounded-full bg-error animate-pulse"></span>
+<p class="text-[10px] text-error">(4 days left)</p>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="text-error font-semibold">2 pending</span>
+</td>
+<td class="px-6 py-4 text-sm text-on-surface-variant">2 hrs ago</td>
+<td class="px-6 py-4 text-sm font-medium">David Miller</td>
+<td class="px-6 py-4 text-right">
+<a class="text-secondary-container font-button-text hover:underline text-sm flex items-center justify-end gap-1" href="#">
+                                        View Tracker <span class="material-symbols-outlined text-[16px]" data-icon="arrow_forward">arrow_forward</span>
+</a>
+</td>
+</tr>
+<!-- AMBER ROW (WARNING) -->
+<tr class="border-l-4 border-secondary-container hover:bg-surface-container transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<img class="w-10 h-10 rounded-full object-cover" data-alt="A close-up portrait of a South Asian male student, mid-20s, with a scholarly and focused demeanor. He is wearing a simple grey hoodie and glasses. The background is a modern university library with blurred bookshelves and cool, academic lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCf5yUCvsOn7Uf6vJ-vbldyMzdyZvLVCI5aGnrYTlf1p4YaUqFzX9sblhANu1GJ1LKgVmb_85cLC0J1W3hiciymKWBq5wLU5WPltRh90N82U9ASBpBsSd3FFUImuk9cMjluNfFw-LyJXcEnIhRNZbStRBIItM_Pj7J-k96PMT0JNnSbdWLdIC-QWQyntBbC4ImvX-BnJaZJ-xSz7QL9E4SMNkIhhX7XQirr-P8EqH6eV668KKcgGpFI1gNXem62V9royrPh6eugpf3E"/>
+<div>
+<p class="font-bold text-primary">Raj Kumar</p>
+<p class="text-xs text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="flag">flag</span> India
+                                            </p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex gap-1 flex-wrap">
+<span class="px-2 py-0.5 bg-primary-container/10 text-primary-container text-[11px] font-bold rounded border border-primary-container/20">MBA</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="font-semibold text-primary">5 apps</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2 text-on-secondary-fixed-variant font-bold">
+                                        Jan 02 <span class="w-2 h-2 rounded-full bg-secondary-container"></span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="text-on-surface-variant italic">0 pending</span>
+</td>
+<td class="px-6 py-4 text-sm text-on-surface-variant">5 hrs ago</td>
+<td class="px-6 py-4 text-sm font-medium">David Miller</td>
+<td class="px-6 py-4 text-right">
+<a class="text-secondary-container font-button-text hover:underline text-sm flex items-center justify-end gap-1" href="#">
+                                        View Tracker <span class="material-symbols-outlined text-[16px]" data-icon="arrow_forward">arrow_forward</span>
+</a>
+</td>
+</tr>
+<!-- NORMAL ROW -->
+<tr class="border-l-4 border-transparent hover:bg-surface-container transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<img class="w-10 h-10 rounded-full object-cover" data-alt="A portrait of a young East Asian female student, early 20s, with a warm and inviting smile. She is in a casual setting like a campus cafe, with soft natural light highlighting her features. The aesthetic is clean, professional, and optimistic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCx9aZEO9p-HBri-s7b7IYgn7vpZKkce9etjdCu2UTyRxfmOOgeGKwxAxdsXSyOjj-8LfA6hQfs2C1qC5pFn_nESLoJ-11CM1Y0mBKlPhn7019qdRfXedT4rOyZkoaEUqejzBTDph1PDzdlauLidq0CiIj51HM0PqJNKz9Z6ugUJK4k1uOYspL9WsWXLbIODdOxlQ4qY8h8vDxLWvvQigL_6Zki_voal1HXBKWuObl8umJrzj67PKjoJBhAHHwF7ngisTv1C2cVX_zZ"/>
+<div>
+<p class="font-bold text-primary">Li Wei</p>
+<p class="text-xs text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="flag">flag</span> China
+                                            </p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex gap-1 flex-wrap">
+<span class="px-2 py-0.5 bg-primary-container/10 text-primary-container text-[11px] font-bold rounded border border-primary-container/20">MSc Finance</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="font-semibold text-primary">3 apps</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2 text-on-surface-variant">
+                                        Feb 15
+                                    </div>
+</td>
+<td class="px-6 py-4">
+<span class="text-on-surface-variant italic">0 pending</span>
+</td>
+<td class="px-6 py-4 text-sm text-on-surface-variant">Yesterday</td>
+<td class="px-6 py-4 text-sm font-medium">Sophie Turner</td>
+<td class="px-6 py-4 text-right">
+<a class="text-secondary-container font-button-text hover:underline text-sm flex items-center justify-end gap-1" href="#">
+                                        View Tracker <span class="material-symbols-outlined text-[16px]" data-icon="arrow_forward">arrow_forward</span>
+</a>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Footer Pagination-like state -->
+<div class="px-6 py-4 bg-surface-container-lowest border-t border-outline-variant flex justify-between items-center">
+<p class="text-xs text-on-surface-variant font-medium">Showing 3 of 42 Students</p>
+<div class="flex gap-2">
+<button class="p-1.5 rounded border border-outline-variant hover:bg-surface-container transition-colors disabled:opacity-50" disabled="">
+<span class="material-symbols-outlined text-[18px]" data-icon="chevron_left">chevron_left</span>
+</button>
+<button class="p-1.5 rounded border border-outline-variant hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-[18px]" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Bottom Dashboard Quick Stats -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- AI Insight Panel -->
+<div class="bg-white p-6 rounded-xl border-l-4 border-secondary-container custom-shadow flex flex-col justify-between">
+<div>
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-secondary-container" data-icon="auto_awesome">auto_awesome</span>
+<h4 class="font-bold text-primary">AI Admissions Insight</h4>
+</div>
+<p class="text-sm text-on-surface-variant leading-relaxed">
+                            Students aiming for Ivy League MS CS programs are falling behind on <strong>SOP Drafts</strong>. Recommended action: Bulk email LOR reminders to "Priority Group A".
+                        </p>
+</div>
+<button class="mt-4 text-primary font-bold text-xs uppercase tracking-wider flex items-center gap-1 hover:text-secondary-container transition-colors">
+                        Execute Bulk Action <span class="material-symbols-outlined text-[14px]" data-icon="bolt">bolt</span>
+</button>
+</div>
+<div class="bg-primary text-on-primary p-6 rounded-xl custom-shadow">
+<h4 class="text-on-primary/60 text-xs font-bold uppercase mb-2">Team Capacity</h4>
+<div class="flex items-end justify-between mb-4">
+<span class="text-3xl font-h2-desktop">84%</span>
+<span class="text-xs bg-tertiary-container text-on-tertiary-container px-2 py-1 rounded">Optimal</span>
+</div>
+<div class="w-full bg-on-primary/20 h-2 rounded-full overflow-hidden">
+<div class="bg-tertiary-fixed-dim h-full w-[84%]"></div>
+</div>
+<p class="mt-4 text-xs text-on-primary/70">Next counselor opening: Monday, Dec 18.</p>
+</div>
+<div class="bg-white p-6 rounded-xl border border-outline-variant custom-shadow">
+<h4 class="text-on-surface-variant text-xs font-bold uppercase mb-4">Upcoming Agency Reviews</h4>
+<div class="space-y-4">
+<div class="flex items-center justify-between text-sm">
+<span class="font-medium text-primary">Quarterly Growth Report</span>
+<span class="text-outline text-xs">Tomorrow</span>
+</div>
+<div class="flex items-center justify-between text-sm">
+<span class="font-medium text-primary">Visa Support Sync</span>
+<span class="text-outline text-xs">Friday</span>
+</div>
+<div class="pt-2 border-t border-outline-variant">
+<a class="text-secondary-container text-xs font-bold hover:underline" href="#">Manage Team Reports →</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Contextual FAB (Hidden on detail pages as per mandate, visible here) -->
+<button class="fixed bottom-8 right-8 w-14 h-14 bg-primary text-on-primary rounded-full shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-50 group">
+<span class="material-symbols-outlined" data-icon="support_agent">support_agent</span>
+<span class="absolute right-16 bg-primary-container text-on-primary px-4 py-2 rounded-lg text-sm font-bold opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">Talk to Support AI</span>
+</button>
+</body></html>

@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Scholarship Matching | UniGuide AI</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&amp;family=Plus+Jakarta+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "error": "#ba1a1a",
+                        "on-background": "#191c1d",
+                        "on-tertiary-fixed-variant": "#00513e",
+                        "surface-tint": "#455e90",
+                        "surface-container-low": "#f3f4f5",
+                        "on-secondary-fixed": "#3e0500",
+                        "primary": "#00183d",
+                        "on-primary-fixed": "#001a41",
+                        "inverse-surface": "#2e3132",
+                        "surface-bright": "#f8f9fa",
+                        "primary-fixed-dim": "#adc6ff",
+                        "on-primary-container": "#7d96cb",
+                        "on-tertiary": "#ffffff",
+                        "inverse-primary": "#adc6ff",
+                        "on-tertiary-container": "#53a58a",
+                        "on-secondary-container": "#650d00",
+                        "on-tertiary-fixed": "#002117",
+                        "surface": "#f8f9fa",
+                        "tertiary-fixed": "#a0f3d4",
+                        "secondary-fixed-dim": "#ffb4a4",
+                        "surface-variant": "#e1e3e4",
+                        "on-error": "#ffffff",
+                        "primary-container": "#0f2d5c",
+                        "on-surface": "#191c1d",
+                        "surface-container-highest": "#e1e3e4",
+                        "on-secondary": "#ffffff",
+                        "background": "#f8f9fa",
+                        "tertiary-container": "#003628",
+                        "on-secondary-fixed-variant": "#8d1701",
+                        "surface-container-high": "#e7e8e9",
+                        "outline-variant": "#c4c6d0",
+                        "on-primary-fixed-variant": "#2c4676",
+                        "tertiary": "#001f16",
+                        "surface-container-lowest": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "surface-container": "#edeeef",
+                        "secondary-container": "#fe694a",
+                        "tertiary-fixed-dim": "#84d6b9",
+                        "outline": "#747780",
+                        "secondary-fixed": "#ffdad3",
+                        "inverse-on-surface": "#f0f1f2",
+                        "on-surface-variant": "#44474f",
+                        "secondary": "#af3017",
+                        "primary-fixed": "#d8e2ff",
+                        "on-primary": "#ffffff",
+                        "surface-dim": "#d9dadb",
+                        "on-error-container": "#93000a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-gap": "16px",
+                        "section-gap-lg": "80px",
+                        "margin-mobile": "16px",
+                        "section-gap-md": "48px",
+                        "max-width": "1200px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "h2-desktop": ["Playfair Display"],
+                        "h1-desktop": ["Playfair Display"],
+                        "h3-desktop": ["Playfair Display"],
+                        "h1-mobile": ["Playfair Display"],
+                        "button-text": ["Plus Jakarta Sans"],
+                        "body-md": ["Plus Jakarta Sans"],
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "label-sm": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "h2-desktop": ["36px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                        "h1-desktop": ["48px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                        "h3-desktop": ["24px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                        "h1-mobile": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                        "button-text": ["16px", {"lineHeight": "1", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "label-sm": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .scholarship-card:hover {
+            box-shadow: 0 8px 24px rgba(0, 24, 61, 0.06);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md">
+<!-- Shell Container -->
+<div class="flex min-h-screen">
+<!-- SideNavBar (Authority: JSON) -->
+<nav class="hidden lg:flex flex-col h-screen p-6 sticky top-0 bg-primary-container dark:bg-primary text-on-primary dark:text-primary-fixed w-80 shrink-0">
+<div class="mb-10">
+<span class="font-h3-desktop text-h3-desktop text-on-primary font-bold">UniGuide AI</span>
+<div class="mt-8 flex items-center gap-3">
+<div class="w-12 h-12 rounded-full overflow-hidden border-2 border-on-primary-fixed-variant">
+<img alt="User profile" data-alt="A professional studio portrait of a young male student wearing a crisp white shirt, posing against a neutral grey background. The lighting is soft and even, highlighting a confident yet friendly expression. The image is clean and high-resolution, perfectly suited for a premium educational platform's user profile avatar." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCDXtyrPc-UaQ6WEuITeKgxePeR3i3rJ1dR5xSszWKcv-KSqpRtipgYeIGTY4WavYt_MJulCAoJOIjAOC9AORCi6BaPzkA-GHNDENT-NPN2lQ3LPdOc2-MNxcfjp7g2g89BJ3ZUHAb1eDxCi3q3UoGIO5ZeLJ3P1mCN_k7xTKz4NvQbuMMZ-LqghA22anOwPm_aYBAZkMa7QfBbgxeplESJU1NXG_akWbrHhOOWjHfZkpM4kANw-0duRtcFxcSu0McxPdmxdoSLR9JF"/>
+</div>
+<div>
+<p class="font-label-sm text-on-primary">Application Progress</p>
+<p class="text-xs opacity-70">65% Completed</p>
+</div>
+</div>
+</div>
+<div class="space-y-2 flex-grow">
+<a class="flex items-center gap-3 p-3 text-on-primary-container opacity-70 hover:bg-primary-fixed-variant hover:opacity-100 transition-all duration-300 ease-in-out rounded-xl" href="#">
+<span class="material-symbols-outlined">person</span>
+<span>Identity</span>
+</a>
+<a class="flex items-center gap-3 p-3 text-secondary-fixed bg-on-primary-fixed-variant rounded-xl transition-all duration-300 ease-in-out" href="#">
+<span class="material-symbols-outlined">school</span>
+<span>Academic</span>
+</a>
+<a class="flex items-center gap-3 p-3 text-on-primary-container opacity-70 hover:bg-primary-fixed-variant hover:opacity-100 transition-all duration-300 ease-in-out rounded-xl" href="#">
+<span class="material-symbols-outlined">psychology</span>
+<span>Preferences</span>
+</a>
+<a class="flex items-center gap-3 p-3 text-on-primary-container opacity-70 hover:bg-primary-fixed-variant hover:opacity-100 transition-all duration-300 ease-in-out rounded-xl" href="#">
+<span class="material-symbols-outlined">description</span>
+<span>Documents</span>
+</a>
+<a class="flex items-center gap-3 p-3 text-on-primary-container opacity-70 hover:bg-primary-fixed-variant hover:opacity-100 transition-all duration-300 ease-in-out rounded-xl" href="#">
+<span class="material-symbols-outlined">verified</span>
+<span>Review</span>
+</a>
+</div>
+<div class="mt-auto space-y-4 pt-6 border-t border-on-primary-fixed-variant">
+<button class="w-full py-3 px-4 bg-secondary-container text-on-secondary-container font-button-text rounded-full hover:opacity-90 transition-all">
+                    Get AI Help
+                </button>
+<div class="space-y-1">
+<a class="flex items-center gap-3 p-2 text-on-primary-container opacity-70 hover:opacity-100 text-sm" href="#">
+<span class="material-symbols-outlined text-sm">settings</span>
+<span>Settings</span>
+</a>
+<a class="flex items-center gap-3 p-2 text-on-primary-container opacity-70 hover:opacity-100 text-sm" href="#">
+<span class="material-symbols-outlined text-sm">help</span>
+<span>Support</span>
+</a>
+</div>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-grow min-w-0">
+<!-- TopAppBar (Authority: JSON) -->
+<header class="bg-surface dark:bg-surface-dim shadow-sm w-full sticky top-0 z-40">
+<div class="flex justify-between items-center h-20 px-gutter max-w-max-width mx-auto w-full">
+<div class="flex items-center gap-8">
+<span class="lg:hidden font-h2-desktop text-h2-desktop font-bold text-primary dark:text-primary-fixed-dim">UniGuide AI</span>
+<nav class="hidden md:flex gap-6">
+<a class="font-label-sm text-on-surface-variant hover:text-secondary-container transition-colors duration-200" href="#">Programs</a>
+<a class="font-label-sm text-primary dark:text-primary-fixed-dim border-b-2 border-secondary-container py-1" href="#">Scholarships</a>
+<a class="font-label-sm text-on-surface-variant hover:text-secondary-container transition-colors duration-200" href="#">Mentors</a>
+<a class="font-label-sm text-on-surface-variant hover:text-secondary-container transition-colors duration-200" href="#">About</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="px-6 py-2 rounded-full font-button-text border border-primary text-primary hover:bg-surface-container transition-all">Login</button>
+<button class="px-6 py-2 rounded-full font-button-text bg-primary text-on-primary hover:opacity-90 transition-all">Apply Now</button>
+</div>
+</div>
+</header>
+<!-- Hero Filter Bar -->
+<section class="bg-tertiary-fixed/10 py-12 px-gutter">
+<div class="max-w-max-width mx-auto">
+<h1 class="font-h1-desktop text-h1-desktop text-primary mb-8">Personalized Scholarships</h1>
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4 bg-white p-4 rounded-2xl shadow-sm border border-outline-variant">
+<div class="flex flex-col gap-1 px-4 border-r border-outline-variant">
+<span class="text-[10px] uppercase font-bold text-on-surface-variant tracking-wider">Field of Study</span>
+<div class="flex items-center justify-between">
+<span class="font-semibold">Computer Science</span>
+<span class="material-symbols-outlined text-primary">keyboard_arrow_down</span>
+</div>
+</div>
+<div class="flex flex-col gap-1 px-4 border-r border-outline-variant">
+<span class="text-[10px] uppercase font-bold text-on-surface-variant tracking-wider">Destination</span>
+<div class="flex items-center justify-between">
+<span class="font-semibold">United States</span>
+<span class="material-symbols-outlined text-primary">public</span>
+</div>
+</div>
+<div class="flex flex-col gap-1 px-4 border-r border-outline-variant">
+<span class="text-[10px] uppercase font-bold text-on-surface-variant tracking-wider">Amount</span>
+<div class="flex items-center justify-between">
+<span class="font-semibold">$10k - $50k</span>
+<span class="material-symbols-outlined text-primary">attach_money</span>
+</div>
+</div>
+<button class="bg-primary text-on-primary rounded-xl h-full font-button-text flex items-center justify-center gap-2 py-3 md:py-0">
+<span class="material-symbols-outlined">tune</span>
+                            Refine Matches
+                        </button>
+</div>
+</div>
+</section>
+<!-- Teal Context Banner -->
+<div class="bg-tertiary-container text-tertiary-fixed py-4 px-gutter">
+<div class="max-w-max-width mx-auto flex justify-between items-center">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-tertiary-fixed-dim" style="font-variation-settings: 'FILL' 1;">stars</span>
+<p class="font-label-sm">Showing scholarships for: <span class="text-white font-bold">MS CS · USA 🇺🇸</span></p>
+</div>
+<button class="bg-secondary-container text-on-secondary-container px-5 py-2 rounded-full font-button-text text-sm flex items-center gap-2 hover:opacity-90 transition-all">
+                        Switch Track
+                        <span class="material-symbols-outlined text-sm">keyboard_arrow_down</span>
+</button>
+</div>
+</div>
+<!-- Content Grid -->
+<section class="max-w-max-width mx-auto px-gutter py-section-gap-md">
+<div class="flex items-baseline justify-between mb-8">
+<h2 class="font-h2-desktop text-h2-desktop text-primary">Top Matches for You</h2>
+<p class="text-on-surface-variant font-label-sm">24 scholarships found</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
+<!-- Scholarship Card 1 -->
+<div class="scholarship-card bg-surface-container-lowest border border-outline-variant rounded-xl p-6 transition-all group relative overflow-hidden">
+<div class="absolute top-4 right-4 bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full font-label-sm text-xs">
+                            94% Track Match
+                        </div>
+<div class="mb-6 h-12 w-12 rounded-lg bg-surface-container flex items-center justify-center">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">account_balance</span>
+</div>
+<h3 class="font-h3-desktop text-h3-desktop mb-2 group-hover:text-secondary transition-colors">Global Tech Leaders Award</h3>
+<p class="text-on-surface-variant text-sm mb-6">Offered by Stanford Engineering for exceptional international graduate students in computing.</p>
+<div class="flex flex-wrap gap-2 mb-6">
+<span class="bg-tertiary-fixed/30 text-on-tertiary-fixed-variant px-3 py-1 rounded-full text-xs font-bold">Full Tuition</span>
+<span class="bg-primary-fixed/30 text-on-primary-fixed-variant px-3 py-1 rounded-full text-xs font-bold">Merit-Based</span>
+</div>
+<div class="pt-6 border-t border-outline-variant flex justify-between items-center">
+<div>
+<p class="text-[10px] uppercase font-bold text-on-surface-variant">Amount</p>
+<p class="font-bold text-primary">$45,000</p>
+</div>
+<div class="text-right">
+<p class="text-[10px] uppercase font-bold text-on-surface-variant">Deadline</p>
+<p class="font-bold text-primary">Oct 15</p>
+</div>
+</div>
+</div>
+<!-- Scholarship Card 2 -->
+<div class="scholarship-card bg-surface-container-lowest border border-outline-variant rounded-xl p-6 transition-all group relative overflow-hidden">
+<div class="absolute top-4 right-4 bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full font-label-sm text-xs">
+                            89% Track Match
+                        </div>
+<div class="mb-6 h-12 w-12 rounded-lg bg-surface-container flex items-center justify-center">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">science</span>
+</div>
+<h3 class="font-h3-desktop text-h3-desktop mb-2 group-hover:text-secondary transition-colors">Future Innovators Grant</h3>
+<p class="text-on-surface-variant text-sm mb-6">A private endowment supporting Research Assistants specializing in Machine Learning and AI.</p>
+<div class="flex flex-wrap gap-2 mb-6">
+<span class="bg-tertiary-fixed/30 text-on-tertiary-fixed-variant px-3 py-1 rounded-full text-xs font-bold">$20k Stipend</span>
+<span class="bg-primary-fixed/30 text-on-primary-fixed-variant px-3 py-1 rounded-full text-xs font-bold">Research</span>
+</div>
+<div class="pt-6 border-t border-outline-variant flex justify-between items-center">
+<div>
+<p class="text-[10px] uppercase font-bold text-on-surface-variant">Amount</p>
+<p class="font-bold text-primary">$20,000</p>
+</div>
+<div class="text-right">
+<p class="text-[10px] uppercase font-bold text-on-surface-variant">Deadline</p>
+<p class="font-bold text-primary">Nov 02</p>
+</div>
+</div>
+</div>
+<!-- Scholarship Card 3 -->
+<div class="scholarship-card bg-surface-container-lowest border border-outline-variant rounded-xl p-6 transition-all group relative overflow-hidden">
+<div class="absolute top-4 right-4 bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full font-label-sm text-xs">
+                            82% Track Match
+                        </div>
+<div class="mb-6 h-12 w-12 rounded-lg bg-surface-container flex items-center justify-center">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">diversity_3</span>
+</div>
+<h3 class="font-h3-desktop text-h3-desktop mb-2 group-hover:text-secondary transition-colors">Diversity in STEM Excellence</h3>
+<p class="text-on-surface-variant text-sm mb-6">Focuses on bridging the gap for underrepresented regions in North American Tech universities.</p>
+<div class="flex flex-wrap gap-2 mb-6">
+<span class="bg-tertiary-fixed/30 text-on-tertiary-fixed-variant px-3 py-1 rounded-full text-xs font-bold">Partial Waiver</span>
+<span class="bg-primary-fixed/30 text-on-primary-fixed-variant px-3 py-1 rounded-full text-xs font-bold">Regional</span>
+</div>
+<div class="pt-6 border-t border-outline-variant flex justify-between items-center">
+<div>
+<p class="text-[10px] uppercase font-bold text-on-surface-variant">Amount</p>
+<p class="font-bold text-primary">$15,000</p>
+</div>
+<div class="text-right">
+<p class="text-[10px] uppercase font-bold text-on-surface-variant">Deadline</p>
+<p class="font-bold text-primary">Dec 20</p>
+</div>
+</div>
+</div>
+</div>
+<!-- AI Insight Panel -->
+<div class="mt-section-gap-md p-8 rounded-2xl border-2 border-transparent relative" style="background: linear-gradient(white, white) padding-box, linear-gradient(to right, #af3017, #00183d) border-box;">
+<div class="flex flex-col md:flex-row gap-8 items-center">
+<div class="shrink-0">
+<div class="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-3xl" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+</div>
+</div>
+<div class="space-y-2">
+<h4 class="font-h3-desktop text-h3-desktop text-primary">AI Matching Insight</h4>
+<p class="text-body-md text-on-surface-variant">Based on your Academic profile and GRE scores, you have a high probability for "Global Tech Leaders Award". We recommend focusing your Statement of Purpose on your recent Open Source contributions to increase matching to 98%.</p>
+</div>
+<div class="shrink-0 w-full md:w-auto">
+<button class="w-full bg-primary text-on-primary px-8 py-3 rounded-full font-button-text">Optimize Profile</button>
+</div>
+</div>
+</div>
+</section>
+</main>
+</div>
+<!-- Footer (Authority: JSON) -->
+<footer class="bg-surface-container-lowest dark:bg-surface-dim border-t border-outline-variant">
+<div class="w-full py-8 px-gutter flex flex-col md:flex-row justify-between items-center max-w-max-width mx-auto">
+<div class="mb-4 md:mb-0">
+<span class="font-h3-desktop text-h3-desktop text-primary font-bold">UniGuide AI</span>
+<p class="font-label-sm text-on-surface-variant mt-1">© 2024 UniGuide AI. All rights reserved.</p>
+</div>
+<div class="flex gap-6">
+<a class="font-label-sm text-on-surface-variant hover:text-secondary transition-colors" href="#">Privacy Policy</a>
+<a class="font-label-sm text-on-surface-variant hover:text-secondary transition-colors" href="#">Terms of Service</a>
+<a class="font-label-sm text-on-surface-variant hover:text-secondary transition-colors" href="#">Cookie Policy</a>
+</div>
+</div>
+</footer>
+</body></html>

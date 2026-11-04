@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Academic Resume / CV Builder | UniGuide AI</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-background": "#191c1d",
+                    "inverse-on-surface": "#f0f1f2",
+                    "surface-container-low": "#f3f4f5",
+                    "on-primary-fixed": "#001a41",
+                    "on-error-container": "#93000a",
+                    "on-tertiary-fixed-variant": "#00513e",
+                    "primary-container": "#0f2d5c",
+                    "on-surface": "#191c1d",
+                    "on-secondary-fixed": "#3e0500",
+                    "secondary-fixed-dim": "#ffb4a4",
+                    "on-secondary-container": "#650d00",
+                    "primary-fixed": "#d8e2ff",
+                    "surface-container-highest": "#e1e3e4",
+                    "surface-variant": "#e1e3e4",
+                    "surface-tint": "#455e90",
+                    "surface": "#f8f9fa",
+                    "error-container": "#ffdad6",
+                    "on-tertiary-container": "#53a58a",
+                    "outline-variant": "#c4c6d0",
+                    "on-tertiary-fixed": "#002117",
+                    "on-primary-fixed-variant": "#2c4676",
+                    "tertiary-fixed-dim": "#84d6b9",
+                    "on-tertiary": "#ffffff",
+                    "inverse-surface": "#2e3132",
+                    "primary-fixed-dim": "#adc6ff",
+                    "on-primary-container": "#7d96cb",
+                    "inverse-primary": "#adc6ff",
+                    "secondary-fixed": "#ffdad3",
+                    "on-primary": "#ffffff",
+                    "tertiary-container": "#003628",
+                    "surface-container-high": "#e7e8e9",
+                    "tertiary-fixed": "#a0f3d4",
+                    "error": "#ba1a1a",
+                    "outline": "#747780",
+                    "background": "#f8f9fa",
+                    "surface-container-lowest": "#ffffff",
+                    "secondary": "#af3017",
+                    "surface-container": "#edeeef",
+                    "on-surface-variant": "#44474f",
+                    "secondary-container": "#fe694a",
+                    "surface-bright": "#f8f9fa",
+                    "on-secondary-fixed-variant": "#8d1701",
+                    "on-secondary": "#ffffff",
+                    "on-error": "#ffffff",
+                    "tertiary": "#001f16",
+                    "primary": "#00183d",
+                    "surface-dim": "#d9dadb"
+            },
+            "borderRadius": {
+                    "DEFAULT": "4px",
+                    "lg": "12px",
+                    "xl": "24px",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "max-width": "1200px",
+                    "margin-mobile": "16px",
+                    "section-gap-md": "48px",
+                    "section-gap-lg": "80px",
+                    "stack-gap": "16px",
+                    "gutter": "24px"
+            },
+            "fontFamily": {
+                    "body-lg": ["Plus Jakarta Sans"],
+                    "button-text": ["Plus Jakarta Sans"],
+                    "h3-desktop": ["Playfair Display"],
+                    "h1-desktop": ["Playfair Display"],
+                    "body-md": ["Plus Jakarta Sans"],
+                    "h1-mobile": ["Playfair Display"],
+                    "label-sm": ["Plus Jakarta Sans"],
+                    "h2-desktop": ["Playfair Display"]
+            },
+            "fontSize": {
+                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "button-text": ["16px", {"lineHeight": "1", "fontWeight": "600"}],
+                    "h3-desktop": ["24px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                    "h1-desktop": ["48px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "h1-mobile": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                    "label-sm": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                    "h2-desktop": ["36px", {"lineHeight": "1.3", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .a4-preview {
+            aspect-ratio: 1 / 1.414;
+            box-shadow: 0 8px 24px rgba(0, 24, 61, 0.06);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #c4c6d0;
+            border-radius: 10px;
+        }
+        .drag-handle {
+            cursor: grab;
+        }
+        .drag-handle:active {
+            cursor: grabbing;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body-md min-h-screen">
+<!-- TopNavBar (Shared Component) -->
+<nav class="fixed top-0 w-full z-50 flex justify-between items-center px-gutter h-16 bg-surface border-b border-surface-container-highest max-w-none">
+<div class="flex items-center gap-8">
+<span class="font-h3-desktop text-h3-desktop font-bold text-primary">UniGuide AI</span>
+<div class="hidden md:flex gap-6">
+<a class="text-on-surface-variant hover:text-primary transition-colors duration-200 font-body-md" href="#">Explore Universities</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors duration-200 font-body-md" href="#">Scholarships</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors duration-200 font-body-md" href="#">Resources</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="px-6 py-2 rounded-full border border-primary text-primary font-button-text hover:bg-primary-container transition-all scale-95 active:opacity-80">Login</button>
+<button class="px-6 py-2 rounded-full bg-primary text-on-primary font-button-text hover:text-secondary-fixed transition-all scale-95 active:opacity-80">Get Started</button>
+</div>
+</nav>
+<!-- SideNavBar (Shared Component) -->
+<aside class="fixed left-0 top-16 h-[calc(100vh-64px)] w-64 bg-surface-container-low border-r border-surface-container-highest flex flex-col p-4 space-y-4">
+<div class="flex items-center gap-3 px-2 py-4">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container">
+<span class="material-symbols-outlined">person</span>
+</div>
+<div>
+<p class="text-label-sm font-bold text-primary">Global Scholar</p>
+<p class="text-[10px] text-on-surface-variant">Premium Member</p>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all font-label-sm" href="#">
+<span class="material-symbols-outlined">psychology</span> AI Counselor
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all font-label-sm" href="#">
+<span class="material-symbols-outlined">view_kanban</span> Application Tracker
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 bg-secondary text-on-secondary rounded-lg font-bold transition-all font-label-sm" href="#">
+<span class="material-symbols-outlined">edit_note</span> SOP Workshop
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all font-label-sm" href="#">
+<span class="material-symbols-outlined">payments</span> Scholarships
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all font-label-sm" href="#">
+<span class="material-symbols-outlined">settings</span> Settings
+            </a>
+</nav>
+<div class="mt-auto space-y-2">
+<button class="w-full py-2 bg-primary-container text-on-primary-container rounded-lg font-button-text text-sm hover:opacity-90">Upgrade to Pro</button>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all font-label-sm" href="#">
+<span class="material-symbols-outlined">help</span> Help Center
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all font-label-sm" href="#">
+<span class="material-symbols-outlined">logout</span> Logout
+            </a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-64 pt-16 min-h-screen flex flex-col">
+<!-- Tab Bar Header -->
+<div class="h-12 bg-surface-container-lowest border-b border-surface-container-highest flex px-8 items-center justify-between sticky top-16 z-40">
+<div class="flex h-full items-center gap-8">
+<button class="h-full px-2 text-on-surface-variant font-label-sm hover:text-primary transition-colors">Letter of Recommendation Manager</button>
+<button class="h-full px-2 text-primary font-bold font-label-sm border-b-2 border-secondary">Academic Resume / CV Builder</button>
+</div>
+<div class="flex items-center gap-3">
+<button class="flex items-center gap-2 px-4 py-1.5 rounded-full border border-outline text-on-surface-variant font-button-text text-sm hover:bg-surface-container-low transition-all">
+<span class="material-symbols-outlined text-[18px]">download</span> Download DOCX
+                </button>
+<button class="flex items-center gap-2 px-4 py-1.5 rounded-full bg-secondary text-on-secondary font-button-text text-sm hover:opacity-90 transition-all">
+<span class="material-symbols-outlined text-[18px]">picture_as_pdf</span> Download PDF
+                </button>
+</div>
+</div>
+<div class="p-8 max-w-[1200px] mx-auto w-full space-y-8">
+<!-- Template Selector -->
+<section class="space-y-4">
+<h3 class="font-h3-desktop text-primary">Choose a Template</h3>
+<div class="grid grid-cols-4 gap-6">
+<!-- Template 1 -->
+<label class="cursor-pointer group">
+<input checked="" class="hidden peer" name="template" type="radio"/>
+<div class="relative rounded-lg border-2 border-transparent overflow-hidden peer-checked:border-secondary transition-all">
+<img class="w-full aspect-[1/1.414] object-cover bg-white" data-alt="A clean and professional undergraduate academic resume template displayed as a clean white document with navy headers and structured columns. The lighting is bright and crisp, emphasizing a minimalist and organized academic aesthetic consistent with prestigious university standards. High-contrast serif headings stand out against the functional sans-serif body text." src="https://lh3.googleusercontent.com/aida-public/AB6AXuByNNWvoFSikEv3eX0OoE3vxpn4gJXpyA8LbU3yrz5m-KbblDMi1MBaRYD_tYnTHlvgbcYo-A2tdGDB47jrzWrkTUeIdEyZvYoxhHYfXdmn3bfjXxAIgCczkZQf0J2oP2Lbe6_6l_4mFPWLM2n4ssBz43rygA9qDPxbyKHl8v7OYZATPrjOFfK6UZZaERGMHecxkyyZbb5mMFWC-rJekoeXqAz5z01sB4eaMVMVgIx7UlPtqNLDItBMMN_7EUZPSyHxBIw-_27l8rO3"/>
+<div class="absolute inset-0 bg-primary/0 group-hover:bg-primary/5 transition-colors"></div>
+</div>
+<p class="mt-2 text-center font-label-sm text-on-surface-variant group-hover:text-primary transition-colors">Undergraduate</p>
+</label>
+<!-- Template 2 -->
+<label class="cursor-pointer group">
+<input class="hidden peer" name="template" type="radio"/>
+<div class="relative rounded-lg border-2 border-transparent overflow-hidden peer-checked:border-secondary transition-all">
+<img class="w-full aspect-[1/1.414] object-cover bg-white" data-alt="A sophisticated Master's Research CV template featuring a two-column layout that highlights academic publications and research experience. The design uses a professional palette of deep navy and charcoal on an off-white paper texture, creating a scholarly and authoritative mood suitable for graduate school applications." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD8rs_SYYT8Em05zzuYftrSfm8Hb-kj78yOqvKTOxZkIDdMGrnOA3x3Wdvb2tFRb1r-uKjMg0Qv45aeoNf0cFqKnaeuk4evAvk72e4DR5sd0gCHIxoBEvLFXZezWZuNsSOMxaTAdW3-0hq6c-FVYOg2AoPjtQryNH3G8iNUZLMwNDF5js8s98dsxCr8C65dVshn_HOFXt7a3ZIpiUcAM36EO4ayMMeLtkzeCpPOT4uYLUdBvIVQmCPdJUGgQ8mb-3YG5uNjTT6kJWWE"/>
+<div class="absolute inset-0 bg-primary/0 group-hover:bg-primary/5 transition-colors"></div>
+</div>
+<p class="mt-2 text-center font-label-sm text-on-surface-variant group-hover:text-primary transition-colors">Master's Research</p>
+</label>
+<!-- Template 3 -->
+<label class="cursor-pointer group">
+<input class="hidden peer" name="template" type="radio"/>
+<div class="relative rounded-lg border-2 border-transparent overflow-hidden peer-checked:border-secondary transition-all">
+<img class="w-full aspect-[1/1.414] object-cover bg-white" data-alt="A comprehensive PhD curriculum vitae template with multiple pages, focusing on extensive publication lists and teaching history. The visual style is highly structured and traditional, using elegant serif typography and generous white space to convey academic excellence and intellectual depth in a modern, clean light-mode interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBiSC8zaFKKo8mmvGqm6A8rPAH2egIQGv3IWrnbvevhbzL1eQdjtWEmKikchR2_84WzxFtM8sX4eCHvGSbPt8D93wfpmVBNrfGiVp7xQkc8o0xFSlUG_F6hrgRbuGkFm4I64aUbhcpOq8PA5YHJ8RhLmuohDoei9Jinh43Xjbfc9kGctWbSDIIPqTjp28YOdR_ls-GsJGfwFg3MED9l6piKJ3pT0TQX5_ewqh2q1IfwRf9a2m5lH_8VyQ8auxeqJ3tZkzSFev9chJ8F"/>
+<div class="absolute inset-0 bg-primary/0 group-hover:bg-primary/5 transition-colors"></div>
+</div>
+<p class="mt-2 text-center font-label-sm text-on-surface-variant group-hover:text-primary transition-colors">PhD</p>
+</label>
+<!-- Template 4 -->
+<label class="cursor-pointer group">
+<input class="hidden peer" name="template" type="radio"/>
+<div class="relative rounded-lg border-2 border-transparent overflow-hidden peer-checked:border-secondary transition-all">
+<img class="w-full aspect-[1/1.414] object-cover bg-white" data-alt="A sleek MBA resume template designed for professional impact and leadership demonstration. The layout is modern and concise, using bold navy accents and clear progress bars for skills. The lighting is soft and professional, highlighting a business-oriented academic premium aesthetic with sharp, clean lines." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDYaJ2-Gl3pXk1Ubhx19d4ramPOjEX3zBbR8unfjfQre1z3bGlbPS9xiusq4clQSi21K4ZtOp1YpgCpoVCxY8V_MebjUIpb2JXo6iKf0oqPD1SQZsmAhyKRk0E3y1sNxty6d4tnVffr7uX498v1Y9Cd5msYKFsOphsyc6K7TfA2VjvXgy0uhuGfBmZRcyPipVbyE_vOj2OH06rANYSPS43r95HhSPLwN7NQ_T_4g8KNYjm0N8x5qcR1EZo_UukW93BlHJe7CYlFMorv"/>
+<div class="absolute inset-0 bg-primary/0 group-hover:bg-primary/5 transition-colors"></div>
+</div>
+<p class="mt-2 text-center font-label-sm text-on-surface-variant group-hover:text-primary transition-colors">MBA</p>
+</label>
+</div>
+</section>
+<!-- Main Workspace -->
+<div class="flex gap-8 items-start">
+<!-- Editor (Left) -->
+<div class="w-[55%] space-y-6">
+<div class="flex items-center justify-between">
+<h3 class="font-h3-desktop text-primary">Resume Editor</h3>
+<p class="text-xs text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">cloud_done</span> Autosaved at 10:42 AM
+                        </p>
+</div>
+<div class="space-y-4">
+<!-- Education Section -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-5 shadow-sm group">
+<div class="flex items-center gap-3 mb-4">
+<span class="material-symbols-outlined text-outline drag-handle">drag_indicator</span>
+<input class="bg-transparent border-none font-bold text-primary focus:ring-0 p-0 text-lg" type="text" value="Education"/>
+</div>
+<div class="space-y-4 pl-8">
+<div class="relative p-4 border border-dashed border-outline-variant rounded bg-surface hover:border-primary transition-all">
+<div class="flex justify-between items-start mb-2">
+<div class="flex-1">
+<input class="w-full bg-transparent border-none font-bold text-on-surface focus:ring-0 p-0 mb-1" type="text" value="Bachelor of Science in Computer Science"/>
+<input class="w-full bg-transparent border-none text-on-surface-variant focus:ring-0 p-0 text-sm" type="text" value="Stanford University"/>
+</div>
+<div class="text-right">
+<input class="bg-transparent border-none text-on-surface-variant focus:ring-0 p-0 text-xs text-right" type="text" value="Sep 2020 - Present"/>
+</div>
+</div>
+<textarea class="w-full bg-transparent border-none text-sm text-on-surface-variant focus:ring-0 p-0 resize-none overflow-hidden" rows="2">GPA: 3.92/4.0. Relevant coursework: Data Structures, Algorithms, Machine Learning.</textarea>
+<button class="absolute -top-2 -right-2 w-6 h-6 bg-error text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"><span class="material-symbols-outlined text-[14px]">close</span></button>
+</div>
+<button class="text-secondary font-label-sm flex items-center gap-2 hover:underline">
+<span class="material-symbols-outlined text-[18px]">add</span> Add Entry
+                                </button>
+</div>
+</div>
+<!-- Research Projects Section -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-5 shadow-sm">
+<div class="flex items-center gap-3 mb-4">
+<span class="material-symbols-outlined text-outline drag-handle">drag_indicator</span>
+<input class="bg-transparent border-none font-bold text-primary focus:ring-0 p-0 text-lg" type="text" value="Research Projects"/>
+</div>
+<div class="space-y-4 pl-8">
+<div class="p-4 border border-dashed border-outline-variant rounded bg-surface">
+<div class="flex justify-between items-start mb-2">
+<div class="flex-1">
+<input class="w-full bg-transparent border-none font-bold text-on-surface focus:ring-0 p-0 mb-1" type="text" value="Neural Network Optimization for Edge Devices"/>
+<input class="w-full bg-transparent border-none text-on-surface-variant focus:ring-0 p-0 text-sm" type="text" value="Advisor: Dr. Sarah Chen"/>
+</div>
+<div class="text-right">
+<input class="bg-transparent border-none text-on-surface-variant focus:ring-0 p-0 text-xs text-right" type="text" value="Jan 2023 - Present"/>
+</div>
+</div>
+<textarea class="w-full bg-transparent border-none text-sm text-on-surface-variant focus:ring-0 p-0 resize-none overflow-hidden" rows="2">Implementing model pruning techniques to reduce inference latency by 40% on ARM-based architectures.</textarea>
+</div>
+<button class="text-secondary font-label-sm flex items-center gap-2 hover:underline">
+<span class="material-symbols-outlined text-[18px]">add</span> Add Entry
+                                </button>
+</div>
+</div>
+<!-- Skills Section -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-5 shadow-sm">
+<div class="flex items-center gap-3 mb-4">
+<span class="material-symbols-outlined text-outline drag-handle">drag_indicator</span>
+<input class="bg-transparent border-none font-bold text-primary focus:ring-0 p-0 text-lg" type="text" value="Skills"/>
+</div>
+<div class="pl-8">
+<div class="flex flex-wrap gap-2 mb-4">
+<span class="px-3 py-1 bg-surface-container-high rounded-full text-xs text-primary font-bold flex items-center gap-1">Python <button><span class="material-symbols-outlined text-[14px]">close</span></button></span>
+<span class="px-3 py-1 bg-surface-container-high rounded-full text-xs text-primary font-bold flex items-center gap-1">PyTorch <button><span class="material-symbols-outlined text-[14px]">close</span></button></span>
+<span class="px-3 py-1 bg-surface-container-high rounded-full text-xs text-primary font-bold flex items-center gap-1">C++ <button><span class="material-symbols-outlined text-[14px]">close</span></button></span>
+<span class="px-3 py-1 bg-surface-container-high rounded-full text-xs text-primary font-bold flex items-center gap-1">Academic Writing <button><span class="material-symbols-outlined text-[14px]">close</span></button></span>
+<button class="px-3 py-1 border border-dashed border-outline-variant rounded-full text-xs text-on-surface-variant hover:border-secondary hover:text-secondary">+ Add Skill</button>
+</div>
+</div>
+</div>
+<!-- Publications Section (Placeholder) -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-4 opacity-70">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-outline drag-handle">drag_indicator</span>
+<span class="font-bold text-primary">Publications</span>
+<span class="ml-auto text-xs italic">Drag to reorder</span>
+</div>
+</div>
+</div>
+<!-- AI Insight Panel -->
+<div class="p-6 rounded-lg bg-surface-container-lowest border border-secondary/20 relative overflow-hidden">
+<div class="absolute top-0 left-0 w-1 h-full bg-secondary"></div>
+<div class="flex items-start gap-4">
+<div class="w-10 h-10 rounded-full bg-secondary-fixed flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+</div>
+<div class="flex-1">
+<h4 class="font-bold text-primary mb-1">AI Recommendation</h4>
+<p class="text-sm text-on-surface-variant">Your research experience at Stanford is highly relevant for Ivy League PhD applications. We recommend expanding on the "Neural Network Optimization" entry to include specific quantitative results to increase your profile strength score.</p>
+<button class="mt-3 text-secondary font-bold text-xs uppercase tracking-wider hover:opacity-80">Apply Suggestion</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Preview Panel (Right) -->
+<div class="w-[45%] sticky top-32">
+<div class="bg-surface-container-high rounded-lg p-4 flex items-center justify-between mb-4">
+<div class="flex items-center gap-2">
+<button class="w-8 h-8 rounded flex items-center justify-center bg-surface-container-lowest text-primary hover:bg-white shadow-sm transition-all"><span class="material-symbols-outlined">zoom_out</span></button>
+<span class="text-xs font-bold text-primary">100%</span>
+<button class="w-8 h-8 rounded flex items-center justify-center bg-surface-container-lowest text-primary hover:bg-white shadow-sm transition-all"><span class="material-symbols-outlined">zoom_in</span></button>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined">print</span></button>
+<button class="text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined">fullscreen</span></button>
+</div>
+</div>
+<div class="bg-surface-container-highest rounded-lg p-8 h-[750px] overflow-y-auto custom-scrollbar flex justify-center">
+<div class="a4-preview bg-white w-full max-w-[500px] p-10 flex flex-col text-[10px] text-gray-800 shadow-xl origin-top">
+<!-- Live Render Preview Content -->
+<div class="text-center mb-6">
+<h1 class="text-xl font-bold uppercase tracking-widest text-primary mb-1">Jane Doe</h1>
+<p class="text-gray-500">Palo Alto, CA | jane.doe@stanford.edu | (555) 012-3456</p>
+</div>
+<div class="space-y-4">
+<section>
+<h2 class="font-bold border-b border-primary text-primary uppercase text-[11px] mb-2">Education</h2>
+<div class="flex justify-between font-bold mb-0.5">
+<span>Stanford University</span>
+<span>Sep 2020 – Present</span>
+</div>
+<div class="flex justify-between italic mb-1">
+<span>Bachelor of Science in Computer Science</span>
+<span>GPA: 3.92/4.0</span>
+</div>
+<p class="leading-relaxed">Relevant coursework: Data Structures, Algorithms, Machine Learning, Artificial Intelligence, Database Systems.</p>
+</section>
+<section>
+<h2 class="font-bold border-b border-primary text-primary uppercase text-[11px] mb-2">Research Experience</h2>
+<div class="flex justify-between font-bold mb-0.5">
+<span>Undergraduate Researcher</span>
+<span>Jan 2023 – Present</span>
+</div>
+<div class="flex justify-between italic mb-1">
+<span>Stanford AI Lab (SAIL)</span>
+<span>Advisor: Dr. Sarah Chen</span>
+</div>
+<ul class="list-disc ml-4 space-y-1">
+<li>Investigating model compression techniques for deep learning models targeting mobile hardware.</li>
+<li>Implementing pruning and quantization strategies in PyTorch to optimize inference speed.</li>
+<li>Collaborating with a team of 4 PhD students to publish findings in CVPR 2024.</li>
+</ul>
+</section>
+<section>
+<h2 class="font-bold border-b border-primary text-primary uppercase text-[11px] mb-2">Technical Skills</h2>
+<p><span class="font-bold">Languages:</span> Python, C++, Java, JavaScript, SQL, LaTeX</p>
+<p><span class="font-bold">Frameworks:</span> PyTorch, TensorFlow, Scikit-learn, React, Node.js</p>
+<p><span class="font-bold">Tools:</span> Git, Docker, AWS, Google Cloud Platform</p>
+</section>
+<section>
+<h2 class="font-bold border-b border-primary text-primary uppercase text-[11px] mb-2">Awards &amp; Honors</h2>
+<div class="flex justify-between">
+<span>Dean's List (All Quarters)</span>
+<span>2020 – 2023</span>
+</div>
+<div class="flex justify-between">
+<span>National Merit Scholar</span>
+<span>2020</span>
+</div>
+</section>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer (Shared Component) -->
+<footer class="mt-auto w-full py-12 px-gutter flex flex-col md:flex-row justify-between items-center bg-primary text-on-primary">
+<div class="mb-6 md:mb-0">
+<span class="font-h3-desktop text-h3-desktop font-bold">UniGuide AI</span>
+<p class="mt-2 text-primary-fixed-dim opacity-80 font-body-md">© 2024 UniGuide AI. Academic Excellence Redefined.</p>
+</div>
+<div class="flex gap-8">
+<a class="text-primary-fixed-dim opacity-80 hover:text-secondary-fixed transition-colors font-body-md" href="#">Privacy Policy</a>
+<a class="text-primary-fixed-dim opacity-80 hover:text-secondary-fixed transition-colors font-body-md" href="#">Terms of Service</a>
+<a class="text-primary-fixed-dim opacity-80 hover:text-secondary-fixed transition-colors font-body-md" href="#">Contact Us</a>
+</div>
+</footer>
+</main>
+</body></html>

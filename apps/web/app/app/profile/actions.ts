@@ -20,6 +20,7 @@ const optionalNumber = z.preprocess((v) => (v === "" || v == null ? null : Numbe
 const optionalString = z.preprocess((v) => (v === "" || v == null ? null : String(v).trim()), z.string().max(60).nullable());
 
 const Profile = z.object({
+  display_name: optionalString,
   home_qualification: z.enum(Object.keys(QUALIFICATIONS) as [string, ...string[]]).nullable(),
   grade_value: optionalNumber,
   grade_text: optionalString,
@@ -45,6 +46,7 @@ export async function saveProfile(_prev: FormState, form: FormData): Promise<For
   const orNull = (k: string) => form.get(k) || null;
   const weight = (k: string) => Math.min(10, Math.max(0, Number(form.get(`weight_${k}`) ?? 5))) / 10;
   const parsed = Profile.safeParse({
+    display_name: orNull("display_name"),
     home_qualification: orNull("home_qualification"),
     grade_value: form.get("grade_value"),
     grade_text: form.get("grade_text"),

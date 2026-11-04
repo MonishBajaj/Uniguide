@@ -35,10 +35,10 @@ export default async function AllSteps({ searchParams }: PageProps<"/app/steps">
   const stageName = j.stages[String(result.stage) as keyof typeof j.stages].name;
 
   return (
-    <div className="grid gap-8">
+    <div className="grid gap-8 max-w-4xl mx-auto">
       <header className="grid gap-2">
-        <h1 className="text-4xl font-semibold">{j.steps.title}</h1>
-        <p className="text-lg text-muted">
+        <h1 className="text-3xl sm:text-4xl font-serif font-bold text-primary">{j.steps.title}</h1>
+        <p className="text-base text-muted">
           {result.steps.length ? j.steps.summary(result.steps.length) : j.steps.none} {j.home.summary(result.stage, stageName)}
         </p>
       </header>
@@ -49,9 +49,14 @@ export default async function AllSteps({ searchParams }: PageProps<"/app/steps">
         if (!steps.length) return null;
         return (
           <section key={band} id={band} aria-labelledby={`${band}-title`} className="grid scroll-mt-24 gap-4">
-            <h2 id={`${band}-title`} className="text-2xl font-semibold">
-              {j.bands[band]} <span className="text-base font-normal text-muted">({steps.length})</span>
-            </h2>
+            <div className="flex items-center gap-2 border-b border-border/70 pb-2">
+              <h2 id={`${band}-title`} className="font-serif text-2xl font-bold text-primary">
+                {j.bands[band]}
+              </h2>
+              <span className="text-xs font-mono font-semibold text-muted bg-surface-2 px-2.5 py-0.5 rounded-full">
+                {steps.length}
+              </span>
+            </div>
             {steps.map((step) => (
               <StepCard key={step.id} step={step} t={j} from="/app/steps" timezone={dueTimezone(step.dueAt, input)} />
             ))}
@@ -60,15 +65,15 @@ export default async function AllSteps({ searchParams }: PageProps<"/app/steps">
       })}
 
       {result.hidden.length ? (
-        <details className="rounded-2xl border border-dashed border-border p-5">
-          <summary className="cursor-pointer font-semibold">{j.steps.hiddenTitle(result.hidden.length)}</summary>
+        <details className="rounded-xl border border-dashed border-border bg-surface p-6 ambient-shadow">
+          <summary className="cursor-pointer font-serif font-bold text-base text-primary">{j.steps.hiddenTitle(result.hidden.length)}</summary>
           <ul className="mt-4 grid gap-3">
             {result.hidden.map((h) => (
-              <li key={h.id} className="flex flex-wrap items-center justify-between gap-3">
+              <li key={h.id} className="flex flex-wrap items-center justify-between gap-3 border-b border-border/40 pb-2 last:border-b-0">
                 <span>
-                  {h.title}
+                  <strong className="text-sm text-foreground">{h.title}</strong>
                   {h.application ? <span className="text-sm text-muted"> · {h.application.label}</span> : null}{" "}
-                  <span className="text-sm text-muted">· {h.state === "snoozed" && h.until ? j.steps.until(formatDate(h.until)) : j.steps.dismissedLabel}</span>
+                  <span className="text-xs text-muted">· {h.state === "snoozed" && h.until ? j.steps.until(formatDate(h.until)) : j.steps.dismissedLabel}</span>
                 </span>
                 <form action={restoreStep.bind(null, h.id)}>
                   <input type="hidden" name="from" value="/app/steps" />

@@ -1,0 +1,10 @@
+institution: "The University of Sydney"
+country: AU
+official_domain: sydney.edu.au
+indexes:
+  - url: https://www.sydney.edu.au/handbooks/arts/coursework.html
+    kind: programs
+  - url: https://www.sydney.edu.au/handbooks/science/coursework.html
+    kind: programs
+  - url: https://www.sydney.edu.au/handbooks/medicine-health/coursework.html
+    kind: programs

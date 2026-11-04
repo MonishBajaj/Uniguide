@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Application Tracker | Sage Admissions</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&amp;family=Plus+Jakarta+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind Config Verbatim -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-variant": "#e1e3e4",
+                    "on-tertiary": "#ffffff",
+                    "tertiary-container": "#003628",
+                    "surface-bright": "#f8f9fa",
+                    "inverse-primary": "#adc6ff",
+                    "on-error": "#ffffff",
+                    "surface": "#f8f9fa",
+                    "on-primary-fixed-variant": "#2c4676",
+                    "on-secondary-fixed": "#3e0500",
+                    "surface-container": "#edeeef",
+                    "surface-container-high": "#e7e8e9",
+                    "secondary-container": "#fe694a",
+                    "surface-container-highest": "#e1e3e4",
+                    "secondary": "#af3017",
+                    "secondary-fixed": "#ffdad3",
+                    "surface-tint": "#455e90",
+                    "on-surface-variant": "#44474f",
+                    "on-secondary": "#ffffff",
+                    "tertiary-fixed-dim": "#84d6b9",
+                    "tertiary-fixed": "#a0f3d4",
+                    "primary-container": "#0f2d5c",
+                    "on-primary-fixed": "#001a41",
+                    "background": "#f8f9fa",
+                    "error-container": "#ffdad6",
+                    "surface-container-lowest": "#ffffff",
+                    "on-tertiary-container": "#53a58a",
+                    "tertiary": "#001f16",
+                    "on-tertiary-fixed-variant": "#00513e",
+                    "on-secondary-container": "#650d00",
+                    "surface-container-low": "#f3f4f5",
+                    "outline-variant": "#c4c6d0",
+                    "primary-fixed-dim": "#adc6ff",
+                    "surface-dim": "#d9dadb",
+                    "on-surface": "#191c1d",
+                    "error": "#ba1a1a",
+                    "outline": "#747780",
+                    "on-secondary-fixed-variant": "#8d1701",
+                    "on-tertiary-fixed": "#002117",
+                    "on-background": "#191c1d",
+                    "on-primary": "#ffffff",
+                    "on-error-container": "#93000a",
+                    "primary-fixed": "#d8e2ff",
+                    "on-primary-container": "#7d96cb",
+                    "primary": "#00183d",
+                    "secondary-fixed-dim": "#ffb4a4",
+                    "inverse-surface": "#2e3132",
+                    "inverse-on-surface": "#f0f1f2"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "section-gap-md": "48px",
+                    "gutter": "24px",
+                    "section-gap-lg": "80px",
+                    "margin-mobile": "16px",
+                    "max-width": "1200px",
+                    "stack-gap": "16px"
+            },
+            "fontFamily": {
+                    "h1-desktop": ["Playfair Display"],
+                    "label-sm": ["Plus Jakarta Sans"],
+                    "h1-mobile": ["Playfair Display"],
+                    "h2-desktop": ["Playfair Display"],
+                    "h3-desktop": ["Playfair Display"],
+                    "body-lg": ["Plus Jakarta Sans"],
+                    "button-text": ["Plus Jakarta Sans"],
+                    "body-md": ["Plus Jakarta Sans"]
+            },
+            "fontSize": {
+                    "h1-desktop": ["48px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "label-sm": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                    "h1-mobile": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                    "h2-desktop": ["36px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                    "h3-desktop": ["24px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "button-text": ["16px", {"lineHeight": "1", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .kanban-column {
+            min-height: calc(100vh - 200px);
+        }
+        .premium-shadow {
+            box-shadow: 0 8px 24px rgba(0, 24, 61, 0.06);
+        }
+    </style>
+</head>
+<body class="text-on-surface">
+<!-- TopNavBar Shell -->
+<header class="bg-surface-container-lowest dark:bg-surface-dim shadow-sm docked full-width top-0 z-50 fixed w-full">
+<div class="flex justify-between items-center w-full px-gutter h-16 max-w-[1200px] mx-auto">
+<div class="flex items-center gap-8">
+<span class="font-h3-desktop text-h3-desktop font-bold text-primary dark:text-primary-fixed">Sage Admissions</span>
+<nav class="hidden md:flex gap-6 items-center">
+<a class="font-body-md text-body-md text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-low transition-colors px-3 py-2 rounded-lg" href="#">AI Counselor</a>
+<a class="font-body-md text-body-md text-primary dark:text-inverse-primary border-b-2 border-primary px-3 py-2" href="#">Applications</a>
+<a class="font-body-md text-body-md text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-low transition-colors px-3 py-2 rounded-lg" href="#">University Match</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary dark:text-inverse-primary cursor-pointer transition-transform active:scale-95" data-icon="notifications">notifications</span>
+<span class="material-symbols-outlined text-primary dark:text-inverse-primary cursor-pointer transition-transform active:scale-95" data-icon="settings">settings</span>
+<div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center overflow-hidden">
+<img alt="Student avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAjMcplByVw8VIWAZM3icRJNdXP1armTJxhPwAvCk3f8TVN46LBFTirAYY1AH7gSMzcDrWV9ccc3dfp8XsCineQ96WA-tWbNh4vID5GBzltBQoseNJms-wjAL8OzcIqwz4RoK17NX64CuPoz79IvydsohITC0wKXAS-8blxCnp445CivookoLOU65_eHl80GXK9AqstPb64Ggi4fwKQ50r-iV13INrHdi0I7s51qOGMdBXnyr-E0m123XpN43ku4e4j40cKVShx0uNQ"/>
+</div>
+</div>
+</div>
+</header>
+<main class="pt-24 pb-12 max-w-[1200px] mx-auto px-gutter">
+<!-- Header Section -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-6">
+<div>
+<h1 class="font-h1-desktop text-h1-desktop text-primary">Application Tracker</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant mt-2">Manage and track your journey to world-class education.</p>
+</div>
+<button class="bg-secondary text-white px-6 py-3 rounded-full font-button-text text-button-text flex items-center gap-2 hover:opacity-90 transition-all active:scale-95">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+                Submit Application
+            </button>
+</div>
+<!-- Kanban Board -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 overflow-x-auto">
+<!-- Column: To Do -->
+<div class="flex flex-col gap-4">
+<div class="flex items-center justify-between px-2">
+<h2 class="font-h3-desktop text-[18px] text-primary flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-outline"></span>
+                        To Do
+                    </h2>
+<span class="bg-surface-container px-2 py-0.5 rounded text-label-sm font-label-sm text-on-surface-variant">2</span>
+</div>
+<div class="kanban-column flex flex-col gap-4">
+<!-- Card 1 -->
+<div class="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant premium-shadow hover:border-primary transition-all cursor-pointer group">
+<div class="flex justify-between items-start mb-3">
+<span class="bg-primary-fixed-dim text-on-primary-fixed text-[12px] font-bold px-2 py-1 rounded">QS #8</span>
+<span class="material-symbols-outlined text-outline group-hover:text-primary" data-icon="more_vert">more_vert</span>
+</div>
+<h3 class="font-h3-desktop text-[18px] text-primary mb-1">University College London</h3>
+<p class="text-label-sm font-label-sm text-on-surface-variant mb-4">MSc Data Science</p>
+<div class="space-y-3 mb-4">
+<div class="flex items-center gap-2 text-label-sm text-on-surface">
+<span class="material-symbols-outlined text-[18px] text-outline" data-icon="check_box_outline_blank">check_box_outline_blank</span>
+<span>Request LOR</span>
+</div>
+<div class="flex items-center gap-2 text-label-sm text-on-surface">
+<span class="material-symbols-outlined text-[18px] text-outline" data-icon="check_box_outline_blank">check_box_outline_blank</span>
+<span>Draft SOP</span>
+</div>
+</div>
+<div class="pt-4 border-t border-outline-variant">
+<div class="flex justify-between items-center mb-1">
+<span class="text-[12px] font-bold text-on-surface-variant">Progress</span>
+<span class="text-[12px] font-bold text-primary">0%</span>
+</div>
+<div class="w-full bg-surface-container rounded-full h-1.5">
+<div class="bg-primary h-1.5 rounded-full" style="width: 0%"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Column: In Progress -->
+<div class="flex flex-col gap-4">
+<div class="flex items-center justify-between px-2">
+<h2 class="font-h3-desktop text-[18px] text-primary flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+                        In Progress
+                    </h2>
+<span class="bg-surface-container px-2 py-0.5 rounded text-label-sm font-label-sm text-on-surface-variant">1</span>
+</div>
+<div class="kanban-column flex flex-col gap-4">
+<!-- Card 2 -->
+<div class="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant premium-shadow hover:border-primary transition-all cursor-pointer group">
+<div class="flex justify-between items-start mb-3">
+<span class="bg-primary-fixed-dim text-on-primary-fixed text-[12px] font-bold px-2 py-1 rounded">QS #14</span>
+<span class="material-symbols-outlined text-outline group-hover:text-primary" data-icon="more_vert">more_vert</span>
+</div>
+<h3 class="font-h3-desktop text-[18px] text-primary mb-1">University of Melbourne</h3>
+<p class="text-label-sm font-label-sm text-on-surface-variant mb-4">Master of IT</p>
+<div class="space-y-3 mb-4">
+<div class="flex items-center gap-2 text-label-sm text-on-surface">
+<span class="material-symbols-outlined text-[18px] text-primary" data-icon="check_box">check_box</span>
+<span class="line-through text-on-surface-variant">Submit IELTS</span>
+</div>
+<div class="flex items-center gap-2 text-label-sm text-on-surface">
+<span class="material-symbols-outlined text-[18px] text-outline" data-icon="check_box_outline_blank">check_box_outline_blank</span>
+<span>Translation of Transcripts</span>
+</div>
+</div>
+<div class="pt-4 border-t border-outline-variant">
+<div class="flex justify-between items-center mb-1">
+<span class="text-[12px] font-bold text-on-surface-variant">Progress</span>
+<span class="text-[12px] font-bold text-primary">65%</span>
+</div>
+<div class="w-full bg-surface-container rounded-full h-1.5">
+<div class="bg-primary h-1.5 rounded-full" style="width: 65%"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Column: Under Review -->
+<div class="flex flex-col gap-4">
+<div class="flex items-center justify-between px-2">
+<h2 class="font-h3-desktop text-[18px] text-primary flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+                        Under Review
+                    </h2>
+<span class="bg-surface-container px-2 py-0.5 rounded text-label-sm font-label-sm text-on-surface-variant">1</span>
+</div>
+<div class="kanban-column flex flex-col gap-4">
+<!-- AI Insight Panel Style Card -->
+<div class="bg-surface-container-lowest p-5 rounded-xl border-2 border-secondary-fixed premium-shadow hover:border-secondary transition-all cursor-pointer relative overflow-hidden">
+<div class="absolute top-0 right-0 p-1 bg-secondary-fixed text-secondary text-[10px] font-bold rounded-bl-lg">AI VERIFIED</div>
+<div class="flex justify-between items-start mb-3">
+<span class="bg-primary-fixed-dim text-on-primary-fixed text-[12px] font-bold px-2 py-1 rounded">QS #3</span>
+<span class="material-symbols-outlined text-outline" data-icon="more_vert">more_vert</span>
+</div>
+<h3 class="font-h3-desktop text-[18px] text-primary mb-1">Stanford University</h3>
+<p class="text-label-sm font-label-sm text-on-surface-variant mb-4">MS Computer Science</p>
+<div class="bg-surface-container-low p-3 rounded-lg mb-4">
+<p class="text-[12px] italic text-on-surface-variant flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-secondary" data-icon="auto_awesome" data-weight="fill">auto_awesome</span>
+                                Interview invite expected in 12 days based on past trends.
+                            </p>
+</div>
+<div class="pt-4 border-t border-outline-variant">
+<div class="flex justify-between items-center mb-1">
+<span class="text-[12px] font-bold text-on-surface-variant">Progress</span>
+<span class="text-[12px] font-bold text-primary">90%</span>
+</div>
+<div class="w-full bg-surface-container rounded-full h-1.5">
+<div class="bg-secondary h-1.5 rounded-full" style="width: 90%"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Column: Accepted -->
+<div class="flex flex-col gap-4">
+<div class="flex items-center justify-between px-2">
+<h2 class="font-h3-desktop text-[18px] text-primary flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-on-tertiary-container"></span>
+                        Accepted
+                    </h2>
+<span class="bg-surface-container px-2 py-0.5 rounded text-label-sm font-label-sm text-on-surface-variant">1</span>
+</div>
+<div class="kanban-column flex flex-col gap-4">
+<!-- Card 4 -->
+<div class="bg-tertiary-container p-5 rounded-xl border border-tertiary premium-shadow hover:opacity-95 transition-all cursor-pointer group">
+<div class="flex justify-between items-start mb-3">
+<span class="bg-tertiary-fixed text-on-tertiary-fixed text-[12px] font-bold px-2 py-1 rounded">QS #22</span>
+<span class="material-symbols-outlined text-on-tertiary-container" data-icon="celebration">celebration</span>
+</div>
+<h3 class="font-h3-desktop text-[18px] text-on-tertiary mb-1">University of Edinburgh</h3>
+<p class="text-label-sm font-label-sm text-tertiary-fixed-dim mb-4">MSc AI &amp; Robotics</p>
+<div class="flex flex-col items-center py-4 text-center">
+<div class="w-16 h-16 rounded-full bg-tertiary-fixed flex items-center justify-center mb-3">
+<span class="material-symbols-outlined text-[32px] text-tertiary" data-icon="check_circle">check_circle</span>
+</div>
+<p class="text-on-tertiary font-bold">Unconditional Offer</p>
+<p class="text-[12px] text-tertiary-fixed-dim">Received: Oct 12, 2023</p>
+</div>
+<div class="pt-4 border-t border-on-tertiary-fixed-variant">
+<div class="flex justify-between items-center mb-1">
+<span class="text-[12px] font-bold text-tertiary-fixed-dim">Progress</span>
+<span class="text-[12px] font-bold text-on-tertiary">100%</span>
+</div>
+<div class="w-full bg-tertiary rounded-full h-1.5">
+<div class="bg-on-tertiary-container h-1.5 rounded-full" style="width: 100%"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Featured Resource / Bottom Section -->
+<section class="mt-section-gap-lg grid grid-cols-1 lg:grid-cols-3 gap-8">
+<div class="lg:col-span-2 bg-surface-container-low p-8 rounded-2xl flex flex-col md:flex-row gap-8 items-center border border-outline-variant">
+<div class="w-full md:w-1/3 aspect-[4/3] rounded-xl overflow-hidden relative">
+<img class="w-full h-full object-cover" data-alt="A prestigious, high-end university campus during the golden hour, featuring historic stone architecture and lush green manicured lawns. The lighting is warm and cinematic, suggesting a quiet academic heritage. In the foreground, a modern glass library building contrasts the heritage architecture, embodying the brand's balance of tradition and future-tech. The overall feel is elite, serene, and intellectually stimulating." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCYQGN2POVOcfBr0ul8KYpVC-c7nx8xIgBVzvTdUXUdrFqJTcDCOiNsG2fwSPPa0OGBDVavE_6OQhFlpb7g_SS2Y4zPqhjT8_d76bAELArYA2Zs5CfpRO3O7hwGuAr-po7mVrcaEapNfME7KXwzYxYS4Jul1ZxnW4_zhodtT6AbgKlt4kvtXI6lmnXZbtxD36FPjmGXSJv3umvGJ9bmqBJiKM5eOluIp_QLQhOXmJ9YBMXnS3ZEnCKnWZ3-IPqBp5mrCggWBqyERTWr"/>
+</div>
+<div class="flex-1">
+<span class="bg-secondary-fixed text-on-secondary-fixed-variant text-label-sm font-label-sm px-3 py-1 rounded-full mb-4 inline-block">Recommended for You</span>
+<h2 class="font-h2-desktop text-h2-desktop text-primary mb-4">Optimizing your Personal Statement</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mb-6">Our AI counselor analyzed 5,000 successful Stanford applications. Here's how to structure your intro.</p>
+<button class="border-2 border-primary text-primary px-6 py-2 rounded-full font-button-text hover:bg-primary hover:text-white transition-all">Read Guide</button>
+</div>
+</div>
+<div class="bg-primary text-white p-8 rounded-2xl flex flex-col justify-between border border-primary">
+<div>
+<h3 class="font-h3-desktop text-h3-desktop mb-4">Need help with your LORs?</h3>
+<p class="font-body-md text-on-primary-container mb-6 opacity-80">Connect with an expert consultant to review your recommendation letters before submission.</p>
+</div>
+<div class="flex -space-x-3 mb-6">
+<img alt="Expert 1" class="w-10 h-10 rounded-full border-2 border-primary" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAs5ImeIJYL7cZX5YoIJPnWSmcw8QyY5SCt09gsQTXOceWyDaoa5gLEq6AYExhaSKLPmHuVZeSVPxLko8paHpqm1cSJP5vOlSHUBZ093IWa37radvHO6VAwsSIpJ6ByQnh2AO7JnmnD-_v7xnyv_I2LFw1sOTA48_UPS0f8z35gs2snFtFKpHAZ9dCAPpMWvwcpb-KFcUPBOE8n6iUTzBf2c5neNMzIBXE-oh1vXzoPYgp2313zaZVPAb1zrKLse6RYVKDDXG7Yaxjg"/>
+<img alt="Expert 2" class="w-10 h-10 rounded-full border-2 border-primary" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCzYumPJb765XB19GPnOAru78xoPnAk19IIB4eIL5n79qeTleB0qbW8n9jNywG-e6QW1_1ejvkALO-eyrYh446gL-yYYenMOmETMwHI_t6RmYkROd8dKH81IINZmrID8Kj99gKtMzhWLd91uzQkQzN86BOjnIkyizZq0ElN5FlWFjyZXP_Jpci_1gKcLeSPsfAI18grvGF48rgItoI6jHC4H7Z2eKRYQNiL6e8Xsh-vYykf6Si-ri3PLJYhhXu7-y_LfFc5Lbf48HCV"/>
+<img alt="Expert 3" class="w-10 h-10 rounded-full border-2 border-primary" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBxY1BQt2kXm3knHgVj3kNOF6CBcxaZwaePQtP0IR9jIrEmarcwVZVsSegGBtMrPbUXLvrrIsN3WgMGmkKsVNOVSjJ3W1Dci6yVn-AnuRrN9OgYj8Dd4H4Twh6TVjAv1Wp2LNOec30be3D48ZFhspYT_IVq30xarCCiRejruR57CnB9pNqHYKdfLlen70oakIXoe2JzvGBHjAF3Qjkz8MkeEVpdn28oHGplhXSuV33jpC8AVofGq9bBXhs6w_KvBLTYQ7-HiKYmPFbs"/>
+<div class="w-10 h-10 rounded-full bg-on-primary-fixed-variant border-2 border-primary flex items-center justify-center text-[12px] font-bold">+12</div>
+</div>
+<button class="bg-white text-primary px-6 py-3 rounded-full font-button-text text-center hover:bg-surface-bright transition-all">Book Consultation</button>
+</div>
+</section>
+</main>
+<!-- SideNavBar (Hidden on Mobile) -->
+<aside class="hidden xl:flex flex-col h-full py-8 px-4 fixed left-0 top-0 h-screen w-64 bg-surface-container dark:bg-surface-container-high border-r border-outline-variant z-[60]">
+<div class="mb-10 px-4">
+<span class="font-h3-desktop text-h3-desktop text-primary dark:text-primary-fixed font-bold">Sage AI</span>
+<div class="flex items-center gap-3 mt-4">
+<div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center text-white">
+<span class="material-symbols-outlined" data-icon="chat_spark" data-weight="fill">chat_spark</span>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-primary font-bold">Counselor Sage</p>
+<p class="text-[12px] text-on-surface-variant">AI Admissions Expert</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-highest transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="chat_spark">chat_spark</span>
+<span class="font-label-sm text-label-sm">AI Counselor</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-primary font-bold border-r-4 border-primary bg-surface-container-highest transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="assignment">assignment</span>
+<span class="font-label-sm text-label-sm">Applications</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-highest transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="account_balance">account_balance</span>
+<span class="font-label-sm text-label-sm">University Match</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-highest transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-label-sm text-label-sm">My Profile</span>
+</a>
+</nav>
+<div class="px-4 mt-auto pt-8 border-t border-outline-variant">
+<button class="w-full bg-secondary text-white py-3 rounded-full font-button-text flex items-center justify-center gap-2 transition-all active:scale-95">
+                Submit Application
+            </button>
+</div>
+</aside>
+<!-- Mobile Bottom Navigation -->
+<nav class="md:hidden fixed bottom-0 left-0 right-0 bg-surface-container-lowest border-t border-outline-variant flex justify-around items-center h-16 z-50">
+<a class="flex flex-col items-center gap-1 text-on-surface-variant" href="#">
+<span class="material-symbols-outlined" data-icon="chat_spark">chat_spark</span>
+<span class="text-[10px] font-bold">Counselor</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-primary" href="#">
+<span class="material-symbols-outlined" data-icon="assignment">assignment</span>
+<span class="text-[10px] font-bold">Apps</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-on-surface-variant" href="#">
+<span class="material-symbols-outlined" data-icon="account_balance">account_balance</span>
+<span class="text-[10px] font-bold">Match</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-on-surface-variant" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="text-[10px] font-bold">Profile</span>
+</a>
+</nav>
+</body></html>

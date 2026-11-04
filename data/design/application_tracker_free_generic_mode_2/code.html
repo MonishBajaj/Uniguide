@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sage Admissions - Application Tracker</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-fixed": "#3e0500",
+                        "on-tertiary-container": "#53a58a",
+                        "on-primary-fixed-variant": "#2c4676",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-bright": "#f8f9fa",
+                        "secondary": "#af3017",
+                        "surface-tint": "#455e90",
+                        "surface": "#f8f9fa",
+                        "primary-container": "#0f2d5c",
+                        "outline-variant": "#c4c6d0",
+                        "surface-container": "#edeeef",
+                        "on-tertiary-fixed": "#002117",
+                        "primary-fixed-dim": "#adc6ff",
+                        "on-secondary-container": "#650d00",
+                        "secondary-container": "#fe694a",
+                        "outline": "#747780",
+                        "tertiary-fixed-dim": "#84d6b9",
+                        "inverse-surface": "#2e3132",
+                        "error": "#ba1a1a",
+                        "surface-dim": "#d9dadb",
+                        "primary-fixed": "#d8e2ff",
+                        "tertiary-container": "#003628",
+                        "secondary-fixed": "#ffdad3",
+                        "on-background": "#191c1d",
+                        "surface-container-high": "#e7e8e9",
+                        "surface-variant": "#e1e3e4",
+                        "inverse-primary": "#adc6ff",
+                        "on-primary-fixed": "#001a41",
+                        "background": "#f8f9fa",
+                        "surface-container-low": "#f3f4f5",
+                        "inverse-on-surface": "#f0f1f2",
+                        "primary": "#00183d",
+                        "on-surface-variant": "#44474f",
+                        "on-tertiary-fixed-variant": "#00513e",
+                        "tertiary": "#001f16",
+                        "on-secondary-fixed-variant": "#8d1701",
+                        "on-primary-container": "#7d96cb",
+                        "on-secondary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "on-error": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "margin-mobile": "16px",
+                        "section-gap-lg": "80px",
+                        "stack-gap": "16px",
+                        "section-gap-md": "48px",
+                        "max-width": "1200px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "button-text": ["Plus Jakarta Sans"],
+                        "body-md": ["Plus Jakarta Sans"],
+                        "h1-desktop": ["Playfair Display"],
+                        "h3-desktop": ["Playfair Display"],
+                        "h2-desktop": ["Playfair Display"],
+                        "h1-mobile": ["Playfair Display"],
+                        "label-sm": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "button-text": ["16px", {"lineHeight": "1", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "h1-desktop": ["48px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                        "h3-desktop": ["24px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                        "h2-desktop": ["36px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                        "h1-mobile": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                        "label-sm": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .kanban-scrollbar::-webkit-scrollbar {
+            height: 8px;
+        }
+        .kanban-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .kanban-scrollbar::-webkit-scrollbar-thumb {
+            background: #e1e3e4;
+            border-radius: 4px;
+        }
+        .kanban-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #c4c6d0;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body-md overflow-hidden">
+<!-- Sidebar Navigation -->
+<aside class="fixed left-0 top-0 h-full w-64 flex flex-col py-6 border-r border-outline-variant z-50 bg-primary">
+<div class="px-6 mb-8">
+<h1 class="font-h3-desktop text-h3-desktop font-bold leading-tight text-white">Sage Admissions</h1>
+<p class="text-label-sm font-label-sm text-white/70">Elite University Bridge</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="transition-all duration-200 rounded-lg mx-2 my-1 flex items-center px-4 py-3 text-white/70 hover:bg-white/10 hover:text-white" href="#">
+<span class="material-symbols-outlined mr-3">dashboard</span>
+<span class="font-label-sm text-label-sm">Dashboard</span>
+</a>
+<a class="transition-all duration-200 rounded-lg mx-2 my-1 flex items-center px-4 py-3 text-white/70 hover:bg-white/10 hover:text-white" href="#">
+<span class="material-symbols-outlined mr-3">smart_toy</span>
+<span class="font-label-sm text-label-sm">AI Counselor</span>
+</a>
+<a class="bg-secondary-container text-on-secondary-container rounded-lg mx-2 my-1 flex items-center px-4 py-3 translate-x-1" href="#">
+<span class="material-symbols-outlined mr-3">assignment_turned_in</span>
+<span class="font-label-sm text-label-sm">My Applications</span>
+</a>
+<a class="transition-all duration-200 rounded-lg mx-2 my-1 flex items-center px-4 py-3 text-white/70 hover:bg-white/10 hover:text-white" href="#">
+<span class="material-symbols-outlined mr-3">school</span>
+<span class="font-label-sm text-label-sm">Uni Matches</span>
+</a>
+<a class="transition-all duration-200 rounded-lg mx-2 my-1 flex items-center px-4 py-3 text-white/70 hover:bg-white/10 hover:text-white" href="#">
+<span class="material-symbols-outlined mr-3">description</span>
+<span class="font-label-sm text-label-sm">Documents</span>
+</a>
+</nav>
+<div class="mt-auto px-6 space-y-4">
+<!-- Sidebar Note for Free Users -->
+<div class="bg-white/10 rounded-lg p-3 border border-white/20">
+<p class="text-[11px] text-white/80 font-medium leading-tight">
+<span class="inline-block mb-1">🔒 TRACK SELECTION:</span><br/>
+                Upgrade to assign applications to a specific track.
+            </p>
+</div>
+<button class="w-full bg-secondary text-white font-button-text text-button-text py-3 rounded-full hover:opacity-90 transition-opacity">
+            Start New Application
+        </button>
+<div class="pt-4 border-t border-white/10">
+<a class="flex items-center py-2 hover:text-white transition-colors text-white/70" href="#">
+<span class="material-symbols-outlined mr-3 text-sm">help</span>
+<span class="text-label-sm">Help Center</span>
+</a>
+<a class="flex items-center py-2 hover:text-white transition-colors text-white/70" href="#">
+<span class="material-symbols-outlined mr-3 text-sm">logout</span>
+<span class="text-label-sm">Sign Out</span>
+</a>
+</div>
+</div>
+</aside>
+<main class="ml-64 h-screen flex flex-col relative overflow-hidden bg-[#F7F6F2]">
+<!-- Sticky Top Bar -->
+<header class="sticky top-0 bg-white border-b border-outline-variant z-40 px-8 py-3 flex items-center justify-between">
+<div class="flex items-center space-x-3">
+<div class="flex items-center space-x-2">
+<h2 class="font-h3-desktop text-h3-desktop text-primary font-bold">My Applications</h2>
+<span class="bg-surface-container text-on-surface-variant px-3 py-1 rounded-full text-label-sm">(8 schools)</span>
+</div>
+<div class="flex items-center space-x-2 border-l border-outline-variant pl-4">
+<span class="bg-surface-container-highest text-on-surface-variant px-3 py-1 rounded-full text-[12px] font-bold flex items-center">
+<span class="material-symbols-outlined text-[14px] mr-1">lock</span> Generic Mode
+                </span>
+<a class="text-secondary font-label-sm text-label-sm hover:underline" href="#">
+                    Upgrade to create Application Tracks →
+                </a>
+</div>
+</div>
+<div class="flex items-center bg-surface-container-low p-1 rounded-full border border-outline-variant/30">
+<button class="bg-secondary-container text-white px-6 py-2 rounded-full font-label-sm text-label-sm">Kanban</button>
+<button class="text-on-surface-variant px-6 py-2 rounded-full font-label-sm text-label-sm hover:bg-surface-container transition-colors">Calendar</button>
+<button class="text-on-surface-variant px-6 py-2 rounded-full font-label-sm text-label-sm hover:bg-surface-container transition-colors">List</button>
+</div>
+<button class="bg-secondary text-white px-6 py-2 rounded-full flex items-center space-x-2 font-button-text text-button-text hover:opacity-90 shadow-sm transition-all">
+<span class="material-symbols-outlined text-lg">add</span>
+<span>Add School</span>
+</button>
+</header>
+<!-- Alert Ribbon -->
+<div class="bg-[#FFF4E5] border-b border-[#FFE7C4] px-8 py-2.5 flex items-center justify-center space-x-2 text-on-secondary-fixed text-label-sm">
+<span class="material-symbols-outlined text-amber-600 text-xl" style="font-variation-settings: 'FILL' 1;">warning</span>
+<p>
+<span class="font-bold">Cornell</span> deadline in 6 days · 
+            <span class="font-bold">Harvard</span> deadline in 12 days — 
+            <a class="underline hover:text-secondary ml-1" href="#">View details →</a>
+</p>
+</div>
+<!-- Kanban Board Area -->
+<div class="flex-1 overflow-x-auto p-8 kanban-scrollbar">
+<div class="flex space-x-3 h-full min-w-max">
+<!-- Column 1: Researching -->
+<div class="w-[280px] flex flex-col space-y-4">
+<div class="flex items-center space-x-2 px-2">
+<span class="w-2.5 h-2.5 rounded-full bg-primary"></span>
+<h3 class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Researching</h3>
+<span class="text-outline text-label-sm">2</span>
+</div>
+<div class="flex flex-col space-y-3">
+<div class="bg-white p-4 rounded-lg border border-outline-variant shadow-sm hover:shadow-lg transition-all cursor-pointer group">
+<div class="flex items-start justify-between mb-3">
+<img alt="Stanford" class="w-10 h-10 rounded-md object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDy9Pp-CrRNSl48QcAGay4VSkP8XFQ5xCLw5ZDQuuDk1k-f4jw4yaVX4T6CvtNYrnTKwTJhtjifBjnxXGP9p5ZiXBq5fHpuKjKdgTDiXTTUITIaV1WLqNVDNA1RpU5ctQ-SMtuu_ZExwZpnFyahPmjA9WyTgv6opC5uxcj7Viv8AKuWu8bymDmBGgbZqB_tDNQ5JxvAK_hoBIvw5UypVizB7dQXFzUvabyVNmHJyM8SDWRk81mj-YJ39ay_3IyX1UavIIMIcTRsd1O1"/>
+<div class="flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-outline text-lg hover:text-primary">edit</span>
+<span class="material-symbols-outlined text-outline text-lg hover:text-primary">link</span>
+</div>
+</div>
+<h4 class="font-bold text-primary mb-0.5">Stanford University</h4>
+<p class="text-on-surface-variant text-label-sm mb-4">MS in Computer Science</p>
+<div class="flex items-center justify-between">
+<span class="bg-[#E5E7EB] text-outline px-2 py-0.5 rounded text-[11px] font-bold">JAN 05</span>
+<div class="flex items-center text-outline text-[11px] font-medium">
+<span class="w-2 h-2 rounded-full bg-outline mr-1.5"></span> FEE PENDING
+                            </div>
+</div>
+</div>
+<div class="bg-white p-4 rounded-lg border border-outline-variant shadow-sm hover:shadow-lg transition-all cursor-pointer group">
+<div class="flex items-start justify-between mb-3">
+<img alt="MIT" class="w-10 h-10 rounded-md object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB6dxw0fW5h1O4nNKhMTVRT0D8neZvY_hA2TUmBb95544SCbHn73jMy99r2mo6VwGtF-SE1RKKaUmrTN7Xoe2-uVmxBI--X7P0ij_kMkkP97NBeDfMlbFKAWfjdUL01WYxAVOTAZ_8wX-pp-mcbDFBViwaBnJrdYDH-NcEORG1bE-94LHPWHg7BvsKcdDC7bB-lRD5u1en5BIhDrYJRyfimMbSpKWAHZQtA30rENcb5_z0PRrpxL4G7t_zSyYgLnC1h9lpQtVdM3S3-"/>
+<span class="material-symbols-outlined text-outline text-lg group-hover:opacity-100 opacity-0">more_vert</span>
+</div>
+<h4 class="font-bold text-primary mb-0.5">MIT</h4>
+<p class="text-on-surface-variant text-label-sm mb-4">Master of Engineering</p>
+<div class="flex items-center justify-between">
+<span class="bg-green-100 text-green-700 px-2 py-0.5 rounded text-[11px] font-bold uppercase">SAFE</span>
+<div class="flex space-x-1">
+<span class="material-symbols-outlined text-outline text-sm">checklist</span>
+<span class="text-outline text-[11px]">2/8</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Column 2: Preparing -->
+<div class="w-[280px] flex flex-col space-y-4">
+<div class="flex items-center space-x-2 px-2">
+<span class="w-2.5 h-2.5 rounded-full bg-[#3B82F6]"></span>
+<h3 class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Preparing</h3>
+<span class="text-outline text-label-sm">3</span>
+</div>
+<div class="flex flex-col space-y-3">
+<div class="bg-white p-4 rounded-lg border-2 border-red-500 shadow-md ring-4 ring-red-500/10 cursor-pointer">
+<div class="flex items-start justify-between mb-3">
+<img alt="Cornell" class="w-10 h-10 rounded-md object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCE2NoaM6P0fInOBy_ArYusxhivSo6GB224K6oJHZyKkhIO6Vg7xhKEDkRuIZek8RLx-y9gPZIqjgyxTsxzXgw4gEHKjW5uB1H24MgS_-UYHnNC0ljdoFqfnfgIvBCV1HopiIFO8bY-1nIypJZlLIT2J4gDcn8GrpHkWkqr7pzK7Sx6zBpLHc1Of3Gu9vrCn57d0bhLdulGEx13E05rxq-iEgwoEfPRNmtCbA88BEj45_1Bbm-WhGDWOpOjJ8IzqJoO_Nc-G03-C32p"/>
+<span class="bg-red-600 text-white px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-tighter">Overdue Docs</span>
+</div>
+<h4 class="font-bold text-primary mb-0.5">Cornell University</h4>
+<p class="text-on-surface-variant text-label-sm mb-3">MBA - Emerging Markets</p>
+<div class="w-full bg-surface-container-highest h-1.5 rounded-full mb-3">
+<div class="bg-red-500 h-1.5 rounded-full w-[33%]"></div>
+</div>
+<div class="flex items-center justify-between">
+<span class="bg-red-100 text-red-600 px-2 py-0.5 rounded text-[11px] font-bold">DEC 01</span>
+<span class="text-on-surface-variant text-[11px]">3/9 documents</span>
+</div>
+</div>
+<div class="bg-white p-4 rounded-lg border border-outline-variant shadow-sm hover:shadow-lg transition-all cursor-pointer">
+<div class="flex items-start justify-between mb-3">
+<img alt="Harvard" class="w-10 h-10 rounded-md object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBpFUa1TwZI46EFldKm-7PsYb66phvvyFFlEwAIdj3R2wT78hG60VGbVPBCpW9KCR7MuPfsYvuDjOZTGHtDW23qISmqZ8POYDOJK9qd46czn8VPs7z_AK5g8zd5wPUuS5s_1nZEz1K4WDSOTey9DM0Pgb0PoXJw30XKOw8ZpV3aCHNpsNBtBPhrfoJV6J8RIv0KHwJgotNGfGFeIC6LEwHxNKhx2aSTtA4xGrWL8tgVtL7_LPx_uZgNO_53xyZnwsKA7cTQEfeGHZk3"/>
+</div>
+<h4 class="font-bold text-primary mb-0.5">Harvard University</h4>
+<p class="text-on-surface-variant text-label-sm mb-3">Public Policy (MPP)</p>
+<div class="w-full bg-surface-container-highest h-1.5 rounded-full mb-3">
+<div class="bg-on-tertiary-container h-1.5 rounded-full w-[88%]"></div>
+</div>
+<div class="flex items-center justify-between">
+<span class="bg-amber-100 text-amber-700 px-2 py-0.5 rounded text-[11px] font-bold">DEC 15</span>
+<span class="text-on-tertiary-container text-[11px] font-bold">8/9 docs</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Column 3: Submitted -->
+<div class="w-[280px] flex flex-col space-y-4">
+<div class="flex items-center space-x-2 px-2">
+<span class="w-2.5 h-2.5 rounded-full bg-on-tertiary-container"></span>
+<h3 class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Submitted</h3>
+<span class="text-outline text-label-sm">1</span>
+</div>
+<div class="bg-white p-4 rounded-lg border border-outline-variant shadow-sm hover:shadow-lg transition-all cursor-pointer opacity-75">
+<div class="flex items-start justify-between mb-3">
+<img alt="UPenn" class="w-10 h-10 rounded-md object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDJfQ4ZltkF0i7SjNKnUftxKVZG4RyKtQ8jRdkLjyAYl0oP3Y6JDcPyz6pYEyPcsKOfqg8fDpsEim3XXwbwAMA6jDSs5theO-VsA9Y_MiXQ0UtnipUf049dx2T_WhfLLjOmXNVRtFiMpdui0MsKK9FJ1pRcu0wtvGQK2-YYk1hy_643TudOFPeYHDzRAyb2ctWEQxtTlVH7Q9_XIzg_XLVFcMPpy-9EBXNUE1cNnKQDFZ9C020nhMlPYAJspK4KMODUkPcr0Sb4pcBj"/>
+<span class="material-symbols-outlined text-green-600">check_circle</span>
+</div>
+<h4 class="font-bold text-primary mb-0.5">UPenn</h4>
+<p class="text-on-surface-variant text-label-sm mb-4">Finance (Wharton)</p>
+<div class="flex items-center justify-between">
+<span class="text-on-tertiary-container font-bold text-[11px]">SUBMITTED NOV 10</span>
+<div class="flex items-center text-on-tertiary-container text-[11px] font-medium">
+<span class="w-2 h-2 rounded-full bg-green-500 mr-1.5"></span> PAID
+                        </div>
+</div>
+</div>
+</div>
+<!-- Column 4: Decision Pending -->
+<div class="w-[280px] flex flex-col space-y-4">
+<div class="flex items-center space-x-2 px-2">
+<span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+<h3 class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Decision Pending</h3>
+<span class="text-outline text-label-sm">1</span>
+</div>
+<div class="bg-white p-4 rounded-lg border border-outline-variant shadow-sm hover:shadow-lg transition-all cursor-pointer">
+<div class="flex items-start justify-between mb-3">
+<img alt="Columbia" class="w-10 h-10 rounded-md object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA8u5eDS_GerzVl0ZzAnuRnYwIofL9jeMm9ZDnMUgTw6aRcfRQWkyC2x6XcJqY0YCH-IHYPcNasGyPozJq70BrMChfJDoLBQRolLdfknYruoGa4gz1OHhIp_VEhaxeMKzN0Kh8RYNVXy37Bk7sMl_LKOjMCFw592T3x07XiMVZpXuATCOhR0BBn_eLZHMeMGcdkn7KUIgEyp-13NORDQDtxurkD8xxBIBl-e-0BLEy2hsIYCRB-1hkcDAVkpNV12c20oMnM-Mciq9EZ"/>
+<span class="material-symbols-outlined text-amber-500">hourglass_top</span>
+</div>
+<h4 class="font-bold text-primary mb-0.5">Columbia University</h4>
+<p class="text-on-surface-variant text-label-sm mb-4">MS in Data Science</p>
+<p class="text-amber-700 bg-amber-50 text-[11px] font-bold p-2 rounded text-center">EXPECTED BY MARCH 15</p>
+</div>
+</div>
+<!-- Column 5: Accepted -->
+<div class="w-[280px] flex flex-col space-y-4">
+<div class="flex items-center space-x-2 px-2">
+<span class="w-2.5 h-2.5 rounded-full bg-green-500"></span>
+<h3 class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Accepted</h3>
+<span class="text-outline text-label-sm">1</span>
+</div>
+<div class="bg-white p-4 rounded-lg border-l-4 border-l-green-500 border border-outline-variant shadow-md hover:shadow-lg transition-all cursor-pointer relative overflow-hidden">
+<div class="absolute -right-6 -top-6 w-20 h-20 bg-green-500/10 rounded-full"></div>
+<div class="flex items-start justify-between mb-3">
+<img alt="Berkeley" class="w-10 h-10 rounded-md object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCY8ALPzjyokGmvft3VpTrsx-VDgjuwXV696ci2cDH1q5Awf2cX4uidh1AVt013Iye4iCYpIhaI-32IDjLiBA7hAlJzwIJmq4SVHBstNaaeRtgttcbyDLUdeXDt7UFgUjms9ViyKpzOswIWIzGyZhPSrieiO7tiGXMezlJOJ8KYz0a0pSGNJuHbuAJzLveZNkhEIaiWywfow2tkCaBd6b34L0R0cmWqFVk4wV3aPsCTqfOTwEkrjPRnkBweBVO18Amhq4DqP3vt0FOE"/>
+<span class="bg-green-600 text-white px-2 py-0.5 rounded-full text-[10px] font-bold flex items-center">
+                            Accepted <span class="material-symbols-outlined text-[12px] ml-1">check</span>
+</span>
+</div>
+<h4 class="font-bold text-primary mb-0.5">UC Berkeley</h4>
+<p class="text-on-surface-variant text-label-sm mb-4">PhD in Physics</p>
+<button class="w-full bg-primary text-white text-[11px] py-1.5 rounded font-bold hover:bg-secondary transition-colors">VIEW OFFER LETTER</button>
+</div>
+</div>
+<!-- Column 6: Rejected -->
+<div class="w-[280px] flex flex-col space-y-4">
+<div class="flex items-center space-x-2 px-2">
+<span class="w-2.5 h-2.5 rounded-full bg-red-500"></span>
+<h3 class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Rejected</h3>
+<span class="text-outline text-label-sm">0</span>
+</div>
+<div class="h-32 rounded-lg border-2 border-dashed border-outline-variant/50 flex flex-col items-center justify-center text-outline-variant p-4 text-center">
+<span class="material-symbols-outlined mb-2">sentiment_satisfied</span>
+<p class="text-[11px]">No rejections yet!</p>
+</div>
+</div>
+<!-- Column 7: Enrolled -->
+<div class="w-[280px] flex flex-col space-y-4">
+<div class="flex items-center space-x-2 px-2">
+<span class="w-2.5 h-2.5 rounded-full bg-purple-500"></span>
+<h3 class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Enrolled</h3>
+<span class="text-outline text-label-sm">0</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Detail Drawer (Right Sidebar) -->
+<aside class="fixed right-0 top-0 h-full w-[380px] bg-white shadow-2xl border-l border-outline-variant z-50 flex flex-col transform translate-x-0 transition-transform">
+<header class="p-6 border-b border-outline-variant flex flex-col space-y-4">
+<div class="flex items-center justify-between">
+<img alt="Harvard" class="w-14 h-14 rounded-lg object-contain shadow-sm border border-outline-variant/30" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAP9yfYcSFKz9sOiuOOAifsNcLKmnilUb4IZFAP55dWTAjoyf0Nnk65sZYKwOH06V-MFRffkQmYpy3p_xj1BTFWa4_iOxrZAsMp18uOuHBLhQL2uNy--oidIcHWhdsv_0cUDw8piqb0y1fvRvYvkqTCmVh4ZdmZowS0pasx_gNWf5ArjaoHVnC_Y37Fj2ker_uHw2CdBWrCk_26rveFnT4bG_mJqKzOX1rmrYEv4rVwwPfeZxPhLwFPbgcJ5O21p7Lg0s9z8SKBgrgM"/>
+<button class="text-outline hover:text-primary">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<div>
+<h2 class="font-h2-desktop text-[24px] text-primary">Harvard University</h2>
+<p class="text-on-surface-variant">Public Policy (MPP) • Fall 2024</p>
+</div>
+<div class="flex bg-surface-container p-1 rounded-lg">
+<button class="flex-1 text-center py-2 bg-white rounded shadow-sm text-label-sm font-bold text-primary">Checklist</button>
+<button class="flex-1 text-center py-2 text-label-sm text-on-surface-variant hover:text-primary transition-colors">Notes</button>
+<button class="flex-1 text-center py-2 text-label-sm text-on-surface-variant hover:text-primary transition-colors">Reminders</button>
+</div>
+</header>
+<div class="flex-1 overflow-y-auto p-6 space-y-6">
+<div class="space-y-4">
+<div class="flex items-center justify-between">
+<h3 class="font-bold text-primary">Requirement Checklist</h3>
+<span class="text-on-tertiary-container text-label-sm font-bold">8/9 Complete</span>
+</div>
+<div class="w-full bg-surface-container h-2.5 rounded-full">
+<div class="bg-on-tertiary-container h-2.5 rounded-full w-[88%]"></div>
+</div>
+</div>
+<ul class="space-y-4">
+<li class="flex items-start space-x-3 group">
+<div class="mt-1 w-5 h-5 rounded border-2 border-on-tertiary-container bg-on-tertiary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-[16px] font-bold">check</span>
+</div>
+<div class="flex-1 border-b border-outline-variant/30 pb-3">
+<p class="text-primary font-medium text-body-md line-through opacity-50">Transcripts - Official</p>
+<span class="text-[11px] text-on-tertiary-container uppercase font-bold">Verified Nov 12</span>
+</div>
+</li>
+<li class="flex items-start space-x-3 group">
+<div class="mt-1 w-5 h-5 rounded border-2 border-on-tertiary-container bg-on-tertiary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-[16px] font-bold">check</span>
+</div>
+<div class="flex-1 border-b border-outline-variant/30 pb-3">
+<p class="text-primary font-medium text-body-md line-through opacity-50">GRE Scores</p>
+<span class="text-[11px] text-on-tertiary-container uppercase font-bold">Score: 334</span>
+</div>
+</li>
+<li class="flex items-start space-x-3 group">
+<div class="mt-1 w-5 h-5 rounded border-2 border-on-tertiary-container bg-on-tertiary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-[16px] font-bold">check</span>
+</div>
+<div class="flex-1 border-b border-outline-variant/30 pb-3">
+<p class="text-primary font-medium text-body-md line-through opacity-50">Letter of Recommendation (3)</p>
+<span class="text-[11px] text-on-tertiary-container uppercase font-bold">All received</span>
+</div>
+</li>
+<li class="flex items-start space-x-3 group">
+<div class="mt-1 w-5 h-5 rounded-md border-2 border-secondary bg-white"></div>
+<div class="flex-1 pb-3">
+<p class="text-primary font-bold text-body-md">Statement of Purpose</p>
+<span class="text-[11px] text-secondary uppercase font-bold">Action Required: Final Draft</span>
+<div class="mt-3 p-3 bg-secondary/5 rounded-lg border border-secondary/20">
+<p class="text-[12px] text-secondary font-medium leading-relaxed italic">"Focus on your leadership experience in the UN simulation." - AI Counselor Tip</p>
+</div>
+</div>
+</li>
+</ul>
+</div>
+<footer class="p-6 border-t border-outline-variant bg-surface-bright">
+<button class="w-full bg-secondary text-white font-bold py-4 rounded-full flex items-center justify-center space-x-2 shadow-lg hover:opacity-90 transition-all group">
+<span>Start Writing SOP</span>
+<span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+</footer>
+</aside>
+</main>
+</body></html>

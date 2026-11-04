@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Booking Confirmation | GlobalPath AI</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&amp;family=Plus+Jakarta+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "primary-fixed": "#d8e2ff",
+                      "tertiary-container": "#003628",
+                      "surface-tint": "#455e90",
+                      "tertiary-fixed-dim": "#84d6b9",
+                      "on-secondary-fixed": "#3e0500",
+                      "error": "#ba1a1a",
+                      "surface-container-low": "#f3f4f5",
+                      "outline-variant": "#c4c6d0",
+                      "surface-dim": "#d9dadb",
+                      "surface": "#f8f9fa",
+                      "on-secondary-container": "#650d00",
+                      "surface-variant": "#e1e3e4",
+                      "secondary-fixed-dim": "#ffb4a4",
+                      "primary-fixed-dim": "#adc6ff",
+                      "surface-bright": "#f8f9fa",
+                      "outline": "#747780",
+                      "on-secondary-fixed-variant": "#8d1701",
+                      "on-primary-fixed": "#001a41",
+                      "surface-container": "#edeeef",
+                      "surface-container-highest": "#e1e3e4",
+                      "surface-container-high": "#e7e8e9",
+                      "on-tertiary": "#ffffff",
+                      "surface-container-lowest": "#ffffff",
+                      "inverse-surface": "#2e3132",
+                      "on-primary-container": "#7d96cb",
+                      "on-background": "#191c1d",
+                      "on-tertiary-fixed-variant": "#00513e",
+                      "on-error": "#ffffff",
+                      "on-secondary": "#ffffff",
+                      "inverse-primary": "#adc6ff",
+                      "background": "#f8f9fa",
+                      "primary": "#00183d",
+                      "on-tertiary-fixed": "#002117",
+                      "on-tertiary-container": "#53a58a",
+                      "error-container": "#ffdad6",
+                      "on-error-container": "#93000a",
+                      "tertiary-fixed": "#a0f3d4",
+                      "tertiary": "#001f16",
+                      "secondary": "#af3017",
+                      "on-surface": "#191c1d",
+                      "on-surface-variant": "#44474f",
+                      "primary-container": "#0f2d5c",
+                      "secondary-container": "#fe694a",
+                      "on-primary-fixed-variant": "#2c4676",
+                      "on-primary": "#ffffff",
+                      "secondary-fixed": "#ffdad3",
+                      "inverse-on-surface": "#f0f1f2"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "margin-mobile": "16px",
+                      "stack-gap": "16px",
+                      "gutter": "24px",
+                      "max-width": "1200px",
+                      "section-gap-md": "48px",
+                      "section-gap-lg": "80px"
+              },
+              "fontFamily": {
+                      "button-text": ["Plus Jakarta Sans"],
+                      "h3-desktop": ["Playfair Display"],
+                      "body-lg": ["Plus Jakarta Sans"],
+                      "label-sm": ["Plus Jakarta Sans"],
+                      "h1-desktop": ["Playfair Display"],
+                      "h2-desktop": ["Playfair Display"],
+                      "h1-mobile": ["Playfair Display"],
+                      "body-md": ["Plus Jakarta Sans"]
+              },
+              "fontSize": {
+                      "button-text": ["16px", {"lineHeight": "1", "fontWeight": "600"}],
+                      "h3-desktop": ["24px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                      "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                      "label-sm": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                      "h1-desktop": ["48px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                      "h2-desktop": ["36px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                      "h1-mobile": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                      "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}]
+              }
+            },
+          },
+        }
+    </script>
+</head>
+<body class="bg-surface text-on-surface font-body-md selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- TopNavBar Shell -->
+<header class="fixed top-0 w-full z-50 bg-surface dark:bg-inverse-surface border-b border-outline-variant dark:border-outline px-gutter h-16">
+<div class="max-w-max-width mx-auto h-full flex justify-between items-center">
+<div class="flex items-center gap-8">
+<span class="font-h2-desktop text-h3-desktop text-primary dark:text-primary-fixed">GlobalPath AI</span>
+<nav class="hidden md:flex gap-6 items-center">
+<a class="text-on-surface-variant dark:text-surface-variant font-label-sm text-label-sm hover:text-primary transition-colors" href="#">Dashboard</a>
+<a class="text-on-surface-variant dark:text-surface-variant font-label-sm text-label-sm hover:text-primary transition-colors" href="#">Universities</a>
+<a class="text-on-surface-variant dark:text-surface-variant font-label-sm text-label-sm hover:text-primary transition-colors" href="#">Mentorship</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="hidden md:flex items-center gap-2 text-on-surface-variant px-3 py-1.5 rounded-full bg-surface-container-low border border-outline-variant">
+<span class="material-symbols-outlined text-[18px]">search</span>
+<span class="font-label-sm text-label-sm">Search Mentors...</span>
+</div>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">notifications</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">settings</button>
+<div class="w-8 h-8 rounded-full overflow-hidden bg-surface-container-highest">
+<img alt="User profile" class="w-full h-full object-cover" data-alt="A professional headshot of a young woman with a warm, confident smile, set against a soft-focus office background. The lighting is bright and airy, reflecting a professional and high-end corporate aesthetic with clean white and navy blue tones that align with a premium educational platform." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB1TqyybBSCFzFLUAlvOBuB-XXEmuzCq3ZND16UxsXROwS_g7YAK63mSLHk-tTgUsigPT5oAgi6JIj2J364ER5qYTCY2xJbjMN1cEJ6noNcEko9n73QiouQ1CWJUYCqnZ3fRuH6R9QzFd72jcdpq5P2OZWIc30D4K9oUuaNv_ifxvRbHbp9AO_pB2jO6sMAnhaeWkNqTwoS1stNbi3-4dlCHZ6erjeEdzgn_q7R-kkWKcpLonPXGWERojF8A9IeVdwP2PBGVmgSIWZ0"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="pt-16 min-h-screen flex items-center justify-center py-section-gap-lg px-margin-mobile">
+<div class="max-w-[800px] w-full flex flex-col items-center">
+<!-- Success Header -->
+<div class="text-center mb-section-gap-md">
+<div class="inline-flex items-center justify-center w-20 h-20 bg-tertiary-fixed rounded-full mb-6">
+<span class="material-symbols-outlined text-on-tertiary-fixed text-[40px]" data-weight="fill">check_circle</span>
+</div>
+<h1 class="font-h1-desktop text-h1-mobile md:text-h1-desktop text-primary mb-4">Session booked! ✓</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-[500px]">Your admission strategy session is confirmed. We've sent a calendar invite and session details to your email.</p>
+</div>
+<!-- Details Card (Asymmetric Layout/Bento Style) -->
+<div class="w-full grid grid-cols-1 md:grid-cols-12 gap-6 mb-section-gap-md">
+<!-- Counselor Profile & Link -->
+<div class="md:col-span-7 bg-surface-container-lowest border border-outline-variant p-8 rounded-xl flex flex-col justify-between shadow-[0_8px_24px_rgba(0,24,61,0.06)]">
+<div class="flex gap-6 items-start mb-8">
+<div class="w-24 h-24 rounded-lg overflow-hidden flex-shrink-0">
+<img alt="Counselor Profile" class="w-full h-full object-cover" data-alt="A portrait of a distinguished male academic counselor with graying hair and glasses, wearing a tailored navy blue suit. He is standing in a modern university library with blurred mahogany bookshelves in the background. The lighting is professional and warm, conveying authority, wisdom, and a prestigious academic heritage." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDYRTX02SGsHaE4BFLc6phOTCZzt8OVI4pDOv6wnI1Jr2lUqvpDK23DL7Oe6q08BtuGMPmYpHIceft08Ghm9QgWCwZFCMjBb8pdlZlZKZ3YnY5kX5kFQdZzhfPQDby_Ptqrsu51qMtEXlIJem46cRzEKXvg5s0tmfzIh3HDlkvx8p-b8HgfVy7RKcKbwViccsgzVx4eGw5l7EtChC7FE08Md6BDU6MsDkLH2C-8Mjm7tpAw3JlbwdsbrjhLfTmAACw6FZZsEGtlHLWO"/>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-secondary uppercase tracking-widest mb-2 block">Assigned Mentor</span>
+<h3 class="font-h3-desktop text-h3-desktop text-primary mb-1">Dr. Robert Chen</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Senior Admissions Strategist • Ivy League Specialist</p>
+</div>
+</div>
+<div class="bg-surface-container border border-outline-variant rounded-lg p-4 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary">videocam</span>
+<span class="font-label-sm text-label-sm text-on-surface">meet.google.com/xyz-abc-123</span>
+</div>
+<button class="text-primary hover:text-secondary font-button-text text-button-text flex items-center gap-1 transition-colors">
+                            Copy Link
+                            <span class="material-symbols-outlined text-[18px]">content_copy</span>
+</button>
+</div>
+</div>
+<!-- Date & Time Info -->
+<div class="md:col-span-5 flex flex-col gap-6">
+<div class="bg-primary p-8 rounded-xl text-on-primary shadow-[0_8px_24px_rgba(0,24,61,0.12)] flex-1">
+<span class="material-symbols-outlined text-primary-fixed mb-4 text-[32px]">calendar_month</span>
+<div class="mb-4">
+<p class="font-label-sm text-label-sm text-primary-fixed opacity-80 uppercase tracking-widest">Date</p>
+<p class="font-h3-desktop text-h3-desktop">October 24, 2024</p>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-primary-fixed opacity-80 uppercase tracking-widest">Time</p>
+<p class="font-h3-desktop text-h3-desktop">10:30 AM – 11:30 AM</p>
+<p class="font-label-sm text-label-sm text-primary-fixed opacity-60">Eastern Standard Time (EST)</p>
+</div>
+</div>
+</div>
+</div>
+<!-- CTAs -->
+<div class="flex flex-col sm:flex-row gap-4 w-full justify-center">
+<button class="px-8 py-4 bg-primary text-on-primary rounded-full font-button-text text-button-text flex items-center justify-center gap-2 hover:opacity-90 transition-all shadow-[0_4px_12px_rgba(0,24,61,0.15)]">
+<span class="material-symbols-outlined">event</span>
+                    Add to Google Calendar
+                </button>
+<button class="px-8 py-4 border-2 border-primary text-primary rounded-full font-button-text text-button-text flex items-center justify-center gap-2 hover:bg-primary-fixed/20 transition-all">
+<span class="material-symbols-outlined">calendar_today</span>
+                    Add to Apple Calendar
+                </button>
+</div>
+<div class="mt-section-gap-md text-center">
+<a class="text-on-surface-variant hover:text-primary transition-colors flex items-center gap-2 justify-center font-label-sm text-label-sm" href="#">
+<span class="material-symbols-outlined text-[18px]">arrow_back</span>
+                    Back to Dashboard
+                </a>
+</div>
+</div>
+</main>
+<!-- Footer Shell -->
+<footer class="w-full py-8 px-gutter flex flex-col md:flex-row justify-between items-center border-t border-outline-variant dark:border-outline bg-surface-container-lowest dark:bg-surface-dim">
+<div class="mb-4 md:mb-0">
+<span class="font-h3-desktop text-h3-desktop text-primary">GlobalPath AI</span>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-1 opacity-90">© 2024 GlobalPath AI Admissions. All rights reserved.</p>
+</div>
+<div class="flex gap-8">
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-secondary transition-colors" href="#">Privacy Policy</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-secondary transition-colors" href="#">Terms of Service</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-secondary transition-colors" href="#">Help Center</a>
+</div>
+</footer>
+</body></html>

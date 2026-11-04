@@ -9,6 +9,7 @@ import { readDisplay } from "@/lib/display-server";
 import { getUser } from "@/lib/supabase/server";
 import { COUNTRIES, LEVELS, countryName, label } from "@/lib/format";
 import type { Enums } from "@uniguide/db-types";
+import { Search, SlidersHorizontal } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Courses",
@@ -58,71 +59,91 @@ export default async function Courses({ searchParams }: PageProps<"/courses">) {
   };
 
   return (
-    <div className="mx-auto max-w-5xl px-6 py-16">
-      <h1 className="text-4xl font-semibold">Courses</h1>
-      <p className="mt-3 max-w-[680px] text-muted">
-        Every country and level is searchable. Each course shows how deeply it has been checked: listed from a register,
-        extracted from official pages, or verified by a person.
-      </p>
+    <div className="mx-auto max-w-[1200px] px-6 py-12">
+      <div className="mb-8">
+        <h1 className="text-3xl sm:text-4xl font-serif font-bold text-primary">Explore Courses & Universities</h1>
+        <p className="mt-2 max-w-2xl text-muted text-base leading-relaxed">
+          Search accredited degrees across 40+ countries. Every course shows its verification status, intake deadlines, and direct links to official sources.
+        </p>
+      </div>
 
-      <form className="mt-8 grid gap-3 rounded-2xl border border-border bg-surface p-4 sm:grid-cols-[1fr_180px_200px_auto]" role="search">
-        <label className="sr-only" htmlFor="q">Search</label>
-        <input id="q" name="q" defaultValue={q} placeholder="Subject, course or university" className="field" />
-        <label className="sr-only" htmlFor="level">Level</label>
-        <select id="level" name="level" defaultValue={level ?? ""} className="field">
-          <option value="">Any level</option>
-          {LEVELS.map((l) => <option key={l} value={l}>{label(l)}</option>)}
-        </select>
-        <label className="sr-only" htmlFor="country">Country</label>
-        <select id="country" name="country" defaultValue={country ?? ""} className="field">
-          <option value="">Any country</option>
-          {Object.keys(COUNTRIES).map((c) => <option key={c} value={c}>{countryName(c)}</option>)}
-        </select>
-        <button className="btn btn-primary">Search</button>
-        <fieldset className="flex flex-wrap items-center gap-x-6 gap-y-3 text-sm sm:col-span-4">
+      <form className="grid gap-4 rounded-xl border border-border bg-surface p-5 sm:p-6 ambient-shadow" role="search">
+        <div className="grid gap-3 sm:grid-cols-[1fr_180px_200px_auto]">
+          <div className="relative">
+            <label className="sr-only" htmlFor="q">Search</label>
+            <input
+              id="q"
+              name="q"
+              defaultValue={q}
+              placeholder="Subject, course or university (e.g. Computer Science, MIT)"
+              className="field pl-10"
+            />
+            <Search className="h-4 w-4 text-muted absolute left-3.5 top-1/2 -translate-y-1/2" />
+          </div>
+
+          <label className="sr-only" htmlFor="level">Level</label>
+          <select id="level" name="level" defaultValue={level ?? ""} className="field">
+            <option value="">Any level</option>
+            {LEVELS.map((l) => <option key={l} value={l}>{label(l)}</option>)}
+          </select>
+
+          <label className="sr-only" htmlFor="country">Country</label>
+          <select id="country" name="country" defaultValue={country ?? ""} className="field">
+            <option value="">Any country</option>
+            {Object.keys(COUNTRIES).map((c) => <option key={c} value={c}>{countryName(c)}</option>)}
+          </select>
+
+          <button className="btn btn-coral-bright whitespace-nowrap shadow-sm min-h-[42px]">
+            Search Courses
+          </button>
+        </div>
+
+        <fieldset className="flex flex-wrap items-center gap-x-6 gap-y-3 text-xs sm:text-sm text-muted pt-3 border-t border-border/60">
           <legend className="sr-only">More filters</legend>
-          <label className="flex items-center gap-2">
-            <input type="checkbox" name="open" value="1" defaultChecked={open} className="accent-[var(--accent)]" />
+          <label className="flex items-center gap-2 cursor-pointer font-medium text-foreground">
+            <input type="checkbox" name="open" value="1" defaultChecked={open} className="accent-primary h-4 w-4 rounded" />
             Application deadline still open
           </label>
           <span className="flex flex-wrap items-center gap-2">
-            <label htmlFor="max">Published yearly tuition up to</label>
-            <input id="max" name="max" type="number" min="1" step="any" defaultValue={maxTuition ?? ""} className="field py-1" style={{ width: "8rem" }} />
+            <label htmlFor="max" className="text-muted">Published yearly tuition up to</label>
+            <input id="max" name="max" type="number" min="1" step="any" defaultValue={maxTuition ?? ""} className="field py-1 text-xs" style={{ width: "8rem" }} />
             <label className="sr-only" htmlFor="cur">Currency</label>
-            <select id="cur" name="cur" defaultValue={currency} className="field py-1" style={{ width: "6rem" }}>
+            <select id="cur" name="cur" defaultValue={currency} className="field py-1 text-xs" style={{ width: "6rem" }}>
               {CURRENCIES.map((c) => <option key={c} value={c}>{c}</option>)}
             </select>
           </span>
         </fieldset>
       </form>
+
       {open || maxTuition ? (
-        <p className="mt-3 text-sm text-muted">
+        <p className="mt-3 text-xs text-muted">
           Filters use the current intake&apos;s published facts. Courses whose deadline or yearly tuition is not published yet are hidden while a filter is on
           {maxTuition ? "; fees in other currencies are compared at the latest stored exchange rate" : ""}.
         </p>
       ) : null}
 
       {error ? (
-        <p role="alert" className="mt-8 text-conflicting">Search failed. Please try again.</p>
+        <p role="alert" className="mt-8 text-sm font-semibold text-conflicting bg-conflicting/10 p-4 rounded-xl">Search failed. Please try again.</p>
       ) : results.length === 0 ? (
-        <div className="mt-8 rounded-2xl border border-border bg-surface p-8">
-          <h2 className="text-xl font-semibold">No courses match yet</h2>
-          <p className="mt-2 text-muted">
+        <div className="mt-8 rounded-xl border border-border bg-surface p-8 ambient-shadow text-center py-12">
+          <h2 className="text-xl font-serif font-bold text-primary">No courses match yet</h2>
+          <p className="mt-2 text-muted max-w-md mx-auto text-sm leading-relaxed">
             Try a broader subject or another country. We add countries in waves based on demand;{" "}
-            <Link href="/#join" className="underline underline-offset-2">tell us where you are headed</Link>.
+            <Link href="/#join" className="font-semibold text-primary underline underline-offset-2">tell us where you are headed</Link>.
           </p>
         </div>
       ) : (
-        <div className="mt-8 grid gap-4 md:grid-cols-2">
+        <div className="mt-8 grid gap-6 md:grid-cols-2">
           {results.map((card) => (
             <ProgramCard key={card.id} card={card} signedIn={Boolean(user)} deadline={cardDeadline(cycles.get(card.id!)?.deadlines)} />
           ))}
         </div>
       )}
 
-      <nav aria-label="Pages" className="mt-8 flex justify-between">
+      <nav aria-label="Pages" className="mt-10 flex justify-between items-center">
         {page > 1 ? <Link href={pageHref(page - 1)} className="btn btn-secondary btn-sm">Previous</Link> : <span />}
-        {hasMore ? <Link href={pageHref(page + 1)} className="btn btn-secondary btn-sm">Next</Link> : null}
+        <span className="text-xs text-muted font-medium">Page {page}</span>
+        {hasMore ? <Link href={pageHref(page + 1)} className="btn btn-secondary btn-sm">Next</Link> : <span />}
       </nav>
     </div>
   );

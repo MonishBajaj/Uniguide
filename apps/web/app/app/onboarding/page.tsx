@@ -41,51 +41,51 @@ export default async function OnboardingPage({ searchParams }: PageProps<"/app/o
       <p className="font-mono text-xs text-muted">{o.stepOf(screen)}</p>
 
       {screen === 1 ? (
-        <section aria-labelledby="how" className="grid gap-6">
-          <header className="grid gap-2">
-            <h1 id="how" className="text-4xl font-semibold">{o.howTitle}</h1>
-            <p className="text-lg text-muted">{o.howIntro}</p>
+        <section aria-labelledby="how" className="rounded-xl border border-border bg-surface p-6 sm:p-8 ambient-shadow grid gap-6">
+          <header className="grid gap-2 border-b border-border/60 pb-5">
+            <h1 id="how" className="font-serif text-3xl sm:text-4xl font-bold text-primary">{o.howTitle}</h1>
+            <p className="text-sm text-muted leading-relaxed max-w-2xl">{o.howIntro}</p>
           </header>
           <ul className="grid gap-3">
             {(["listed", "extracted", "verified"] as const).map((tier) => (
-              <li key={tier} className="grid gap-1 rounded-2xl border border-border bg-surface p-4 sm:grid-cols-[8rem_1fr] sm:items-baseline">
-                <span className={`font-semibold ${TIER_TONE[tier]}`}>{o.tiers[tier].name}</span>
-                <span>{o.tiers[tier].text}</span>
+              <li key={tier} className="grid gap-2 rounded-xl border border-border/60 bg-surface-2/40 p-5 sm:grid-cols-[9rem_1fr] sm:items-baseline">
+                <span className={`font-serif font-bold text-base ${TIER_TONE[tier]}`}>{o.tiers[tier].name}</span>
+                <span className="text-sm text-foreground/80 leading-relaxed">{o.tiers[tier].text}</span>
               </li>
             ))}
           </ul>
-          <div className="flex flex-wrap items-center gap-3">
-            <Link href="/app/onboarding?screen=2" className="btn btn-primary min-h-11">{o.next}</Link>
+          <div className="flex flex-wrap items-center gap-3 pt-4 border-t border-border/60">
+            <Link href="/app/onboarding?screen=2" className="btn btn-primary">{o.next}</Link>
             {skip}
           </div>
         </section>
       ) : null}
 
       {screen === 2 ? (
-        <section className="grid gap-6">
+        <section className="rounded-xl border border-border bg-surface p-6 sm:p-8 ambient-shadow grid gap-6">
           <form action={saveEntryPath} className="grid gap-6">
-            <fieldset className="grid gap-3">
-              <legend className="mb-2 grid gap-2">
-                <span className="text-4xl font-semibold">{o.whereTitle}</span>
-                <span className="text-lg text-muted">{o.whereIntro}</span>
+            <fieldset className="grid gap-4">
+              <legend className="mb-4 grid gap-2 border-b border-border/60 pb-5">
+                <span className="font-serif text-3xl sm:text-4xl font-bold text-primary">{o.whereTitle}</span>
+                <span className="text-sm text-muted leading-relaxed">{o.whereIntro}</span>
               </legend>
               {ENTRY_PATHS.map((path) => (
                 <label
                   key={path}
-                  className="flex min-h-11 cursor-pointer gap-3 rounded-2xl border border-border bg-surface p-4 has-[:checked]:border-accent has-[:checked]:ring-1 has-[:checked]:ring-accent"
+                  className="flex min-h-12 cursor-pointer gap-4 rounded-xl border border-border bg-surface-2/30 p-5 transition-all hover:bg-surface-2/60 has-[:checked]:border-secondary has-[:checked]:bg-secondary/5 has-[:checked]:shadow-xs"
                 >
-                  <input type="radio" name="entry_path" value={path} defaultChecked={profile.entry_path === path} required className="mt-1 accent-[var(--accent)]" />
-                  <span className="grid">
-                    <span className="font-semibold">{o.answers[path].label}</span>
-                    <span className="text-sm text-muted">{o.answers[path].hint}</span>
+                  <input type="radio" name="entry_path" value={path} defaultChecked={profile.entry_path === path} required className="mt-1 accent-primary" />
+                  <span className="grid gap-0.5">
+                    <span className="font-serif font-bold text-base text-primary">{o.answers[path].label}</span>
+                    <span className="text-xs text-muted">{o.answers[path].hint}</span>
                   </span>
                 </label>
               ))}
             </fieldset>
             {params.missing ? <p role="alert" className="text-sm text-conflicting">{o.chooseOne}</p> : null}
-            <div className="flex flex-wrap items-center gap-3">
-              <Link href="/app/onboarding?screen=1" className="btn btn-secondary min-h-11">{o.back}</Link>
-              <button className="btn btn-primary min-h-11">{o.next}</button>
+            <div className="flex flex-wrap items-center gap-3 pt-4 border-t border-border/60">
+              <Link href="/app/onboarding?screen=1" className="btn btn-secondary">{o.back}</Link>
+              <button className="btn btn-primary">{o.next}</button>
             </div>
           </form>
           {skip}
@@ -93,23 +93,23 @@ export default async function OnboardingPage({ searchParams }: PageProps<"/app/o
       ) : null}
 
       {screen === 3 ? (
-        <section aria-labelledby="short-profile" className="grid gap-6">
-          <header className="grid gap-2">
-            <h1 id="short-profile" className="text-4xl font-semibold">{o.profileTitle}</h1>
-            <p className="text-lg text-muted">{o.profileIntro}</p>
+        <section aria-labelledby="short-profile" className="rounded-xl border border-border bg-surface p-6 sm:p-8 ambient-shadow grid gap-6">
+          <header className="grid gap-2 border-b border-border/60 pb-5">
+            <h1 id="short-profile" className="font-serif text-3xl sm:text-4xl font-bold text-primary">{o.profileTitle}</h1>
+            <p className="text-sm text-muted leading-relaxed max-w-2xl">{o.profileIntro}</p>
           </header>
           {chat ? (
             <>
               <OnboardingChat />
               <FindUniversitiesButton />
-              <Link href="/app/onboarding?screen=3" className="font-semibold text-accent underline underline-offset-2">{o.back}</Link>
+              <Link href="/app/onboarding?screen=3" className="font-semibold text-secondary underline underline-offset-2 hover:text-primary">{o.back}</Link>
             </>
           ) : (
             <>
               {ai ? (
-                <p className="text-sm">
+                <p className="text-sm bg-surface-2/60 p-4 rounded-xl border border-border/60">
                   {o.chat}{" "}
-                  <Link href="/app/onboarding?screen=3&chat=1" className="font-semibold text-accent underline underline-offset-2">{o.chatLink}</Link>
+                  <Link href="/app/onboarding?screen=3&chat=1" className="font-bold text-secondary underline underline-offset-2 hover:text-primary">{o.chatLink}</Link>
                 </p>
               ) : null}
               <ShortProfile
@@ -135,7 +135,7 @@ export default async function OnboardingPage({ searchParams }: PageProps<"/app/o
                   intake_year: profile.intake_year != null ? String(profile.intake_year) : "",
                 }}
               />
-              <Link href="/app/onboarding?screen=2" className="justify-self-start font-semibold text-accent underline underline-offset-2">{o.back}</Link>
+              <Link href="/app/onboarding?screen=2" className="justify-self-start font-semibold text-secondary underline underline-offset-2 hover:text-primary">{o.back}</Link>
             </>
           )}
         </section>

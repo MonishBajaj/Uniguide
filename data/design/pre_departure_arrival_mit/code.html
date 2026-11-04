@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Pre-Departure &amp; Arrival | AdmitPremium</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-lowest": "#ffffff",
+                        "on-error": "#ffffff",
+                        "tertiary-fixed-dim": "#84d6b9",
+                        "surface-container-high": "#e7e8e9",
+                        "primary-fixed-dim": "#adc6ff",
+                        "surface-tint": "#455e90",
+                        "secondary": "#af3017",
+                        "error": "#ba1a1a",
+                        "on-secondary-container": "#650d00",
+                        "tertiary-container": "#003628",
+                        "outline": "#747780",
+                        "on-surface-variant": "#44474f",
+                        "on-secondary-fixed": "#3e0500",
+                        "on-primary-container": "#7d96cb",
+                        "on-tertiary-fixed-variant": "#00513e",
+                        "on-background": "#191c1d",
+                        "surface-dim": "#d9dadb",
+                        "inverse-surface": "#2e3132",
+                        "on-tertiary": "#ffffff",
+                        "primary-container": "#0f2d5c",
+                        "on-primary-fixed-variant": "#2c4676",
+                        "surface-bright": "#f8f9fa",
+                        "inverse-primary": "#adc6ff",
+                        "on-primary": "#ffffff",
+                        "secondary-container": "#fe694a",
+                        "outline-variant": "#c4c6d0",
+                        "surface-variant": "#e1e3e4",
+                        "secondary-fixed": "#ffdad3",
+                        "tertiary": "#001f16",
+                        "error-container": "#ffdad6",
+                        "on-surface": "#191c1d",
+                        "on-error-container": "#93000a",
+                        "primary": "#00183d",
+                        "surface": "#f8f9fa",
+                        "on-primary-fixed": "#001a41",
+                        "primary-fixed": "#d8e2ff",
+                        "inverse-on-surface": "#f0f1f2",
+                        "surface-container-highest": "#e1e3e4",
+                        "tertiary-fixed": "#a0f3d4",
+                        "surface-container-low": "#f3f4f5",
+                        "background": "#f8f9fa",
+                        "on-tertiary-fixed": "#002117",
+                        "surface-container": "#edeeef",
+                        "secondary-fixed-dim": "#ffb4a4",
+                        "on-tertiary-container": "#53a58a",
+                        "on-secondary": "#ffffff",
+                        "on-secondary-fixed-variant": "#8d1701"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-gap": "16px",
+                        "section-gap-lg": "80px",
+                        "max-width": "1200px",
+                        "margin-mobile": "16px",
+                        "section-gap-md": "48px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Plus Jakarta Sans"],
+                        "h3-desktop": ["Playfair Display"],
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "label-sm": ["Plus Jakarta Sans"],
+                        "h1-desktop": ["Playfair Display"],
+                        "h2-desktop": ["Playfair Display"],
+                        "h1-mobile": ["Playfair Display"],
+                        "button-text": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "h3-desktop": ["24px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "label-sm": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                        "h1-desktop": ["48px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                        "h2-desktop": ["36px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                        "h1-mobile": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                        "button-text": ["16px", {"lineHeight": "1", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .task-checked {
+            text-decoration: line-through;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md">
+<!-- TopNavBar -->
+<header class="fixed top-0 w-full z-50 bg-surface-container-lowest dark:bg-surface-dim border-b border-outline-variant dark:border-outline shadow-sm dark:shadow-none">
+<div class="flex justify-between items-center max-w-7xl mx-auto px-margin-mobile md:px-gutter h-16">
+<div class="font-h2-desktop text-h3-desktop font-bold text-primary dark:text-primary-fixed">AdmitPremium</div>
+<nav class="hidden md:flex gap-8 items-center">
+<a class="text-on-surface-variant dark:text-outline-variant font-medium hover:text-secondary dark:hover:text-secondary-fixed-dim transition-colors" href="#">Dashboard</a>
+<a class="text-on-surface-variant dark:text-outline-variant font-medium hover:text-secondary dark:hover:text-secondary-fixed-dim transition-colors" href="#">Universities</a>
+<a class="text-on-surface-variant dark:text-outline-variant font-medium hover:text-secondary dark:hover:text-secondary-fixed-dim transition-colors" href="#">Applications</a>
+<a class="text-on-surface-variant dark:text-outline-variant font-medium hover:text-secondary dark:hover:text-secondary-fixed-dim transition-colors" href="#">Mentorship</a>
+<button class="bg-primary text-on-primary px-6 py-2 rounded-full font-button-text hover:bg-primary-container transition-all">Apply Now</button>
+</nav>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer">search</span>
+<div class="w-10 h-10 rounded-full overflow-hidden border border-outline-variant">
+<img alt="Student Profile Avatar" class="w-full h-full object-cover" data-alt="A close-up professional portrait of a smiling young adult student with a warm, approachable expression. The lighting is soft and natural, typical of a high-end campus setting. The background is a gently blurred academic building with classical stone architecture, maintaining a prestigious and modern light-mode aesthetic consistent with the AdmitPremium brand." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDb3KQgyJFhAAzCsYRSCuhSZHhbenlGGzq4Zs8E-773VHoZIJRMFwCJ62vCgrHTqm1dDqOjfBiTmNvHuz2f3ZEpF3y2vkbEkqcf0TRjhiOTNxx8pyhDahM3cpR2QCwM16n4GLFwJs_-0rK03zv3Rkd9_xTb84QIN5DP6xgPn2qeI1eUG-Jp9hMgDIdS2gWVQimE5ZWV6gfpcd3yZRrUNBNFlZMridKXZXHBEQ6pwaCIcZWsDYCIa-yYFoaXP9yzZCPeBTrbbsxtPsVx"/>
+</div>
+</div>
+</div>
+</header>
+<div class="flex pt-16 min-h-screen">
+<!-- SideNavBar -->
+<aside class="h-screen w-64 fixed left-0 top-16 bg-surface-container-low dark:bg-surface-container-highest border-r border-outline-variant hidden md:flex flex-col py-stack-gap shadow-md">
+<div class="px-6 mb-8">
+<h3 class="font-h3-desktop text-h3-desktop text-primary dark:text-primary-fixed">Student Tools</h3>
+<p class="text-on-surface-variant text-label-sm font-label-sm">Management Suite</p>
+</div>
+<nav class="flex-1 space-y-2">
+<a class="flex items-center gap-3 py-3 px-4 text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-high mx-2 rounded-lg transition-all active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined">verified_user</span>
+<span class="font-label-sm">Visa Center</span>
+</a>
+<a class="flex items-center gap-3 py-3 px-4 bg-primary-container text-on-primary-container dark:bg-primary-fixed-dim dark:text-on-primary-fixed-variant rounded-lg mx-2 transition-all" href="#">
+<span class="material-symbols-outlined">flight_takeoff</span>
+<span class="font-label-sm">Pre-Departure</span>
+</a>
+<a class="flex items-center gap-3 py-3 px-4 text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-high mx-2 rounded-lg transition-all active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined">psychology</span>
+<span class="font-label-sm">AI Counselor</span>
+</a>
+<a class="flex items-center gap-3 py-3 px-4 text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-high mx-2 rounded-lg transition-all active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined">forum</span>
+<span class="font-label-sm">Community</span>
+</a>
+</nav>
+<div class="px-4 mt-auto mb-20">
+<button class="w-full py-3 bg-secondary text-on-secondary rounded-full font-button-text hover:opacity-90 transition-all">Start New Application</button>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 md:ml-64 px-margin-mobile md:px-gutter lg:px-section-gap-md py-stack-gap max-w-7xl mx-auto">
+<!-- SECTION 1: Pre-Departure Timeline -->
+<section class="mb-section-gap-md mt-8">
+<div class="flex flex-col md:flex-row justify-between items-end mb-6 gap-4">
+<div>
+<h2 class="font-h2-desktop text-h2-desktop text-primary mb-2">Your Pre-Departure Checklist</h2>
+<div class="flex items-center gap-4">
+<div class="w-64 h-2 bg-surface-container-high rounded-full overflow-hidden">
+<div class="w-1/2 h-full bg-tertiary-fixed-dim"></div>
+</div>
+<span class="text-label-sm text-on-surface-variant">14 / 28 tasks complete</span>
+</div>
+</div>
+<button class="text-primary font-label-sm hover:underline">Mark all ✓</button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+<!-- Column 1 -->
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant shadow-sm">
+<h4 class="font-bold text-primary mb-4 border-b border-outline-variant pb-2">3 Months Before</h4>
+<ul class="space-y-4">
+<li class="flex items-start gap-3 task-checked">
+<span class="material-symbols-outlined text-tertiary-fixed-dim" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="text-body-md">Apply for student visa</span>
+</li>
+<li class="flex items-start gap-3 task-checked">
+<span class="material-symbols-outlined text-tertiary-fixed-dim" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="text-body-md">Book flights</span>
+</li>
+</ul>
+</div>
+<!-- Column 2 -->
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant shadow-sm">
+<h4 class="font-bold text-primary mb-4 border-b border-outline-variant pb-2">2 Months Before</h4>
+<ul class="space-y-4">
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-outline">radio_button_unchecked</span>
+<span class="text-body-md">Arrange airport transfer</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-outline">radio_button_unchecked</span>
+<span class="text-body-md">Register for orientation</span>
+</li>
+</ul>
+</div>
+<!-- Column 3 -->
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant shadow-sm">
+<h4 class="font-bold text-primary mb-4 border-b border-outline-variant pb-2">1 Month Before</h4>
+<ul class="space-y-4">
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-outline">radio_button_unchecked</span>
+<span class="text-body-md">Purchase SIM card</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-outline">radio_button_unchecked</span>
+<span class="text-body-md">Open bank account</span>
+</li>
+</ul>
+</div>
+<!-- Column 4 -->
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant shadow-sm">
+<h4 class="font-bold text-primary mb-4 border-b border-outline-variant pb-2">1 Week Before</h4>
+<ul class="space-y-4">
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-outline">radio_button_unchecked</span>
+<span class="text-body-md">Pack essentials</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-outline">radio_button_unchecked</span>
+<span class="text-body-md">Confirm accommodation</span>
+</li>
+</ul>
+</div>
+</div>
+</section>
+<!-- SECTION 2: Airport to Campus -->
+<section class="mb-section-gap-md bg-surface-bright p-8 rounded-xl">
+<div class="mb-8">
+<h2 class="font-h2-desktop text-h2-desktop text-primary">Getting to MIT from Boston Logan Airport</h2>
+<p class="text-on-surface-variant">Cambridge, MA · ~20 minutes from Logan</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+<div class="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant hover:shadow-lg transition-shadow">
+<div class="flex justify-between items-center mb-3">
+<span class="material-symbols-outlined text-primary">directions_car</span>
+<span class="font-bold text-primary">$35–50</span>
+</div>
+<h5 class="font-bold mb-1">Uber / Lyft</h5>
+<p class="text-label-sm text-on-surface-variant mb-4">Fast, convenient door-to-door</p>
+<button class="w-full py-2 bg-primary text-on-primary rounded-lg text-label-sm font-button-text">Book in app</button>
+</div>
+<div class="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant hover:shadow-lg transition-shadow">
+<div class="flex justify-between items-center mb-3">
+<span class="material-symbols-outlined text-primary">subway</span>
+<span class="font-bold text-primary">$2.40</span>
+</div>
+<h5 class="font-bold mb-1">Red Line T</h5>
+<p class="text-label-sm text-on-surface-variant mb-4">Takes ~40 min incl. walk</p>
+<button class="w-full py-2 text-primary border border-primary rounded-lg text-label-sm font-button-text">View route →</button>
+</div>
+<div class="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant hover:shadow-lg transition-shadow">
+<div class="flex justify-between items-center mb-3">
+<span class="material-symbols-outlined text-primary">airport_shuttle</span>
+<span class="font-bold text-tertiary-fixed-dim">Free</span>
+</div>
+<h5 class="font-bold mb-1">MIT Shuttle</h5>
+<p class="text-label-sm text-on-surface-variant mb-4">University-run schedule</p>
+<button class="w-full py-2 text-primary border border-primary rounded-lg text-label-sm font-button-text">Schedule →</button>
+</div>
+<div class="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant hover:shadow-lg transition-shadow">
+<div class="flex justify-between items-center mb-3">
+<span class="material-symbols-outlined text-primary">local_taxi</span>
+<span class="font-bold text-primary">$55–70</span>
+</div>
+<h5 class="font-bold mb-1">Taxi</h5>
+<p class="text-label-sm text-on-surface-variant mb-4">Reliable, metered at curb</p>
+<button class="w-full py-2 text-primary border border-primary rounded-lg text-label-sm font-button-text">Find Stand</button>
+</div>
+</div>
+<div class="bg-white border-l-4 border-secondary p-6 rounded-r-xl shadow-sm">
+<div class="flex gap-4">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">tips_and_updates</span>
+<div>
+<h4 class="font-bold text-primary mb-1">First 24 Hours Strategy</h4>
+<p class="text-body-md text-on-surface-variant">Prioritize dorm check-in at the Atlas Center before 5 PM. Keep your I-20 and passport handy. In case of late arrival, contact the MIT Police emergency line: +1 (617) 253-1212.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 3: Find Your Classmates -->
+<section class="mb-section-gap-md">
+<div class="mb-6">
+<h2 class="font-h2-desktop text-h2-desktop text-primary">12 UniGuide students are also starting at MIT this Fall 2026 🎓</h2>
+<p class="text-label-sm text-outline flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">lock</span>
+                        Personal details and photos are hidden until mutual connection.
+                    </p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Student 1 -->
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant text-center">
+<div class="w-16 h-16 bg-primary-fixed text-primary font-bold text-h3-desktop rounded-full flex items-center justify-center mx-auto mb-4">RK</div>
+<h5 class="font-bold">CS Student · India 🇮🇳</h5>
+<p class="text-label-sm text-on-surface-variant mb-4">Starting Fall 2026</p>
+<div class="bg-surface-container-low py-2 px-3 rounded-lg text-label-sm mb-6">Looking for: Housing Partner</div>
+<button class="w-full py-3 bg-secondary text-on-secondary rounded-full font-button-text hover:opacity-90">Connect</button>
+</div>
+<!-- Student 2 -->
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant text-center">
+<div class="w-16 h-16 bg-secondary-fixed text-secondary font-bold text-h3-desktop rounded-full flex items-center justify-center mx-auto mb-4">AM</div>
+<h5 class="font-bold">MBA Student · China 🇨🇳</h5>
+<p class="text-label-sm text-on-surface-variant mb-4">Starting Fall 2026</p>
+<div class="bg-surface-container-low py-2 px-3 rounded-lg text-label-sm mb-6">Looking for: Study Group</div>
+<button class="w-full py-3 bg-secondary text-on-secondary rounded-full font-button-text hover:opacity-90">Connect</button>
+</div>
+<!-- Student 3 -->
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant text-center">
+<div class="w-16 h-16 bg-tertiary-fixed text-on-tertiary-fixed-variant font-bold text-h3-desktop rounded-full flex items-center justify-center mx-auto mb-4">SJ</div>
+<h5 class="font-bold">BioEng Student · S. Korea 🇰🇷</h5>
+<p class="text-label-sm text-on-surface-variant mb-4">Starting Fall 2026</p>
+<div class="bg-surface-container-low py-2 px-3 rounded-lg text-label-sm mb-6">Looking for: Airport Buddy</div>
+<button class="w-full py-3 bg-secondary text-on-secondary rounded-full font-button-text hover:opacity-90">Connect</button>
+</div>
+</div>
+</section>
+<!-- SECTION 4: Banking Setup -->
+<section class="mb-section-gap-lg">
+<h2 class="font-h2-desktop text-h2-desktop text-primary mb-6">Setting Up Your Finances</h2>
+<div class="flex gap-4 border-b border-outline-variant mb-8 overflow-x-auto">
+<button class="px-6 py-3 border-b-2 border-secondary text-primary font-bold">USA</button>
+<button class="px-6 py-3 text-on-surface-variant hover:text-primary transition-colors">UK</button>
+<button class="px-6 py-3 text-on-surface-variant hover:text-primary transition-colors">Canada</button>
+<button class="px-6 py-3 text-on-surface-variant hover:text-primary transition-colors">Germany</button>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<div class="lg:col-span-1">
+<div class="bg-white border-2 border-tertiary-fixed-dim p-6 rounded-xl h-full">
+<div class="flex items-center gap-3 mb-4">
+<span class="material-symbols-outlined text-tertiary-fixed-dim">account_balance</span>
+<h4 class="font-bold text-primary">Recommended Banks</h4>
+</div>
+<p class="text-body-md text-on-surface-variant mb-6">Chase and Bank of America have the most accessible branches near the MIT campus.</p>
+<h5 class="font-bold text-label-sm uppercase tracking-wider text-outline mb-3">Documents Needed:</h5>
+<ul class="space-y-3">
+<li class="flex items-center gap-3 text-body-md">
+<span class="material-symbols-outlined text-tertiary-fixed-dim text-sm" style="font-variation-settings: 'FILL' 1;">check</span>
+                                    Valid Passport
+                                </li>
+<li class="flex items-center gap-3 text-body-md">
+<span class="material-symbols-outlined text-tertiary-fixed-dim text-sm" style="font-variation-settings: 'FILL' 1;">check</span>
+                                    Original I-20 Form
+                                </li>
+<li class="flex items-center gap-3 text-body-md">
+<span class="material-symbols-outlined text-tertiary-fixed-dim text-sm" style="font-variation-settings: 'FILL' 1;">check</span>
+                                    MIT Acceptance Letter
+                                </li>
+</ul>
+</div>
+</div>
+<div class="lg:col-span-2">
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm">
+<div class="p-6 border-b border-outline-variant">
+<h4 class="font-bold text-primary">International Money Transfers</h4>
+</div>
+<table class="w-full text-left">
+<thead class="bg-surface-container-low text-label-sm font-bold text-outline">
+<tr>
+<th class="px-6 py-3">Provider</th>
+<th class="px-6 py-3">Speed</th>
+<th class="px-6 py-3">Typical Fee</th>
+<th class="px-6 py-3">Exchange Rate</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<tr>
+<td class="px-6 py-4 flex items-center gap-2">
+<span class="font-bold text-primary">Wise</span>
+<span class="bg-tertiary-fixed text-on-tertiary-fixed-variant text-[10px] px-2 py-0.5 rounded-full font-bold uppercase">Best Rate</span>
+</td>
+<td class="px-6 py-4 text-body-md">1–2 Days</td>
+<td class="px-6 py-4 text-body-md">$5–15</td>
+<td class="px-6 py-4 text-body-md">Mid-market</td>
+</tr>
+<tr>
+<td class="px-6 py-4 font-bold text-primary">Remitly</td>
+<td class="px-6 py-4 text-body-md">Instant / 3 Days</td>
+<td class="px-6 py-4 text-body-md">$3–10</td>
+<td class="px-6 py-4 text-body-md">Slight markup</td>
+</tr>
+<tr>
+<td class="px-6 py-4 font-bold text-primary">Bank Wire</td>
+<td class="px-6 py-4 text-body-md">3–5 Days</td>
+<td class="px-6 py-4 text-body-md">$30–50</td>
+<td class="px-6 py-4 text-body-md">3–5% markup</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+</main>
+</div>
+<!-- Footer -->
+<footer class="w-full relative bottom-0 bg-primary dark:bg-primary-container text-on-primary dark:text-on-primary-container">
+<div class="flex flex-col md:flex-row justify-between items-center px-margin-mobile md:px-section-gap-md py-8 mt-auto max-w-7xl mx-auto">
+<div class="font-h3-desktop text-h3-desktop text-surface-container-lowest mb-4 md:mb-0">AdmitPremium</div>
+<div class="flex flex-col md:flex-row items-center gap-6 font-label-sm text-label-sm">
+<span class="text-on-primary/80 dark:text-on-primary-container/80">© 2024 AdmitPremium Global Education. All rights reserved.</span>
+<div class="flex gap-6">
+<a class="text-on-primary/80 hover:text-secondary-fixed transition-colors" href="#">Privacy Policy</a>
+<a class="text-on-primary/80 hover:text-secondary-fixed transition-colors" href="#">Terms of Service</a>
+<a class="text-on-primary/80 hover:text-secondary-fixed transition-colors" href="#">Contact Support</a>
+</div>
+</div>
+</div>
+</footer>
+</body></html>

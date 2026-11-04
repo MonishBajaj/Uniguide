@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>EduInsight Pro | Analytics &amp; Intelligence Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&amp;family=Plus+Jakarta+Sans:wght@400;600;700&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-tint": "#455e90",
+                      "on-tertiary": "#ffffff",
+                      "on-primary-fixed-variant": "#2c4676",
+                      "on-surface-variant": "#44474f",
+                      "on-error": "#ffffff",
+                      "background": "#f8f9fa",
+                      "on-secondary-fixed-variant": "#8d1701",
+                      "secondary-fixed": "#ffdad3",
+                      "secondary-fixed-dim": "#ffb4a4",
+                      "surface": "#f8f9fa",
+                      "tertiary-container": "#003628",
+                      "surface-container": "#edeeef",
+                      "error": "#ba1a1a",
+                      "tertiary-fixed": "#a0f3d4",
+                      "secondary-container": "#fe694a",
+                      "primary-fixed-dim": "#adc6ff",
+                      "inverse-on-surface": "#f0f1f2",
+                      "surface-dim": "#d9dadb",
+                      "on-tertiary-fixed": "#002117",
+                      "on-primary-container": "#7d96cb",
+                      "on-tertiary-fixed-variant": "#00513e",
+                      "on-secondary-fixed": "#3e0500",
+                      "primary": "#00183d",
+                      "primary-fixed": "#d8e2ff",
+                      "on-surface": "#191c1d",
+                      "inverse-surface": "#2e3132",
+                      "inverse-primary": "#adc6ff",
+                      "tertiary-fixed-dim": "#84d6b9",
+                      "on-secondary": "#ffffff",
+                      "surface-bright": "#f8f9fa",
+                      "on-error-container": "#93000a",
+                      "surface-container-low": "#f3f4f5",
+                      "on-primary": "#ffffff",
+                      "secondary": "#af3017",
+                      "outline": "#747780",
+                      "on-secondary-container": "#650d00",
+                      "surface-variant": "#e1e3e4",
+                      "surface-container-lowest": "#ffffff",
+                      "surface-container-highest": "#e1e3e4",
+                      "surface-container-high": "#e7e8e9",
+                      "error-container": "#ffdad6",
+                      "tertiary": "#001f16",
+                      "primary-container": "#0f2d5c",
+                      "on-background": "#191c1d",
+                      "on-tertiary-container": "#53a58a",
+                      "on-primary-fixed": "#001a41",
+                      "outline-variant": "#c4c6d0"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "stack-gap": "16px",
+                      "section-gap-lg": "80px",
+                      "gutter": "24px",
+                      "margin-mobile": "16px",
+                      "section-gap-md": "48px",
+                      "max-width": "1200px"
+              },
+              "fontFamily": {
+                      "label-sm": ["Plus Jakarta Sans"],
+                      "h3-desktop": ["Playfair Display"],
+                      "h1-desktop": ["Playfair Display"],
+                      "body-md": ["Plus Jakarta Sans"],
+                      "body-lg": ["Plus Jakarta Sans"],
+                      "button-text": ["Plus Jakarta Sans"],
+                      "h2-desktop": ["Playfair Display"],
+                      "h1-mobile": ["Playfair Display"]
+              },
+              "fontSize": {
+                      "label-sm": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                      "h3-desktop": ["24px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                      "h1-desktop": ["48px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                      "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                      "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                      "button-text": ["16px", {"lineHeight": "1", "fontWeight": "600"}],
+                      "h2-desktop": ["36px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                      "h1-mobile": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .premium-blur {
+            filter: blur(8px);
+            pointer-events: none;
+            user-select: none;
+        }
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 24px;
+        }
+        .ambient-shadow {
+            box-shadow: 0 8px 24px rgba(0, 24, 61, 0.06);
+        }
+        .chart-bar {
+            transition: width 1s ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body-md overflow-x-hidden">
+<!-- Side Navigation -->
+<aside class="flex flex-col h-screen py-6 h-full w-64 fixed left-0 top-0 border-r border-outline-variant bg-surface-container-lowest dark:bg-surface-container-low z-50">
+<div class="px-6 mb-8">
+<h1 class="text-h3-desktop font-h3-desktop font-bold text-primary dark:text-primary-fixed">EduInsight Pro</h1>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Admissions Analytics</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="text-on-surface-variant dark:text-outline-variant flex items-center px-4 py-3 gap-3 hover:bg-surface-container dark:hover:bg-surface-container-high transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-sm text-label-sm">Dashboard</span>
+</a>
+<a class="text-on-surface-variant dark:text-outline-variant flex items-center px-4 py-3 gap-3 hover:bg-surface-container dark:hover:bg-surface-container-high transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">school</span>
+<span class="font-label-sm text-label-sm">Admissions</span>
+</a>
+<a class="text-on-surface-variant dark:text-outline-variant flex items-center px-4 py-3 gap-3 hover:bg-surface-container dark:hover:bg-surface-container-high transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">work</span>
+<span class="font-label-sm text-label-sm">Career Tracks</span>
+</a>
+<a class="text-primary dark:text-primary-fixed font-bold border-r-4 border-secondary flex items-center px-4 py-3 gap-3 bg-surface-container/50" href="#">
+<span class="material-symbols-outlined">psychology</span>
+<span class="font-label-sm text-label-sm">AI Insights</span>
+</a>
+<a class="text-on-surface-variant dark:text-outline-variant flex items-center px-4 py-3 gap-3 hover:bg-surface-container dark:hover:bg-surface-container-high transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">insights</span>
+<span class="font-label-sm text-label-sm">Strategy</span>
+</a>
+<a class="text-on-surface-variant dark:text-outline-variant flex items-center px-4 py-3 gap-3 hover:bg-surface-container dark:hover:bg-surface-container-high transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-sm text-label-sm">Settings</span>
+</a>
+</nav>
+<div class="px-4 mt-auto space-y-2">
+<button class="w-full bg-secondary text-on-secondary py-3 px-4 rounded-full font-button-text text-button-text hover:opacity-90 active:scale-[0.98] transition-all">
+                Upgrade to Premium
+            </button>
+<div class="pt-4 border-t border-outline-variant">
+<a class="text-on-surface-variant flex items-center px-4 py-2 gap-3 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="font-label-sm text-label-sm">Support</span>
+</a>
+<a class="text-on-surface-variant flex items-center px-4 py-2 gap-3 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-label-sm text-label-sm">Logout</span>
+</a>
+</div>
+</div>
+</aside>
+<!-- Top App Bar -->
+<header class="fixed top-0 right-0 w-[calc(100%-16rem)] z-40 bg-surface/80 backdrop-blur-md border-b border-outline-variant flex justify-between items-center h-16 px-gutter">
+<div class="flex items-center gap-4">
+<h2 class="font-h3-desktop text-h3-desktop text-primary">Analytics &amp; Intelligence</h2>
+</div>
+<div class="flex items-center gap-6">
+<div class="relative hidden lg:block">
+<input class="bg-surface-container-low border-none rounded-full px-6 py-2 w-64 focus:ring-2 focus:ring-primary text-body-md" placeholder="Search analytics..." type="text"/>
+</div>
+<div class="flex items-center gap-4 text-on-surface-variant">
+<span class="material-symbols-outlined cursor-pointer hover:text-primary">notifications</span>
+<span class="material-symbols-outlined cursor-pointer hover:text-primary">history</span>
+<div class="flex items-center gap-2 cursor-pointer group">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">account_circle</span>
+<span class="font-label-sm text-label-sm group-hover:text-primary transition-colors">Admin Profile</span>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="ml-64 pt-24 pb-20 px-gutter max-w-max-width mx-auto">
+<!-- Top Metric Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-section-gap-md">
+<!-- Card 1 -->
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant ambient-shadow relative overflow-hidden group">
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined text-secondary text-3xl">school</span>
+<span class="material-symbols-outlined text-on-tertiary-container text-sm font-bold flex items-center">arrow_upward</span>
+</div>
+<h3 class="text-4xl font-bold text-secondary mb-1">32</h3>
+<p class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">universities matched</p>
+<div class="absolute bottom-0 left-0 w-full h-1 bg-secondary/10 group-hover:bg-secondary transition-colors"></div>
+</div>
+<!-- Card 2 -->
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant ambient-shadow relative overflow-hidden group">
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined text-on-tertiary-container text-3xl">analytics</span>
+<span class="material-symbols-outlined text-on-tertiary-container text-sm font-bold flex items-center">arrow_upward</span>
+</div>
+<h3 class="text-4xl font-bold text-on-tertiary-container mb-1">34%</h3>
+<p class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">avg admission probability</p>
+<div class="absolute bottom-0 left-0 w-full h-1 bg-tertiary-container/10 group-hover:bg-tertiary-container transition-colors"></div>
+</div>
+<!-- Card 3 -->
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant ambient-shadow relative overflow-hidden group">
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined text-primary text-3xl">account_balance</span>
+<span class="font-label-sm text-label-sm bg-primary-fixed px-2 py-1 rounded">Rank #1</span>
+</div>
+<h3 class="text-2xl font-bold text-primary mb-1">Georgia Tech</h3>
+<p class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">best ROI school</p>
+<div class="absolute bottom-0 left-0 w-full h-1 bg-primary/10 group-hover:bg-primary transition-colors"></div>
+</div>
+<!-- Card 4 -->
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant ambient-shadow relative overflow-hidden group">
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined text-primary text-3xl">payments</span>
+<span class="material-symbols-outlined text-on-tertiary-container text-sm font-bold flex items-center">arrow_upward</span>
+</div>
+<h3 class="text-4xl font-bold text-primary mb-1">$340K</h3>
+<p class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">scholarships found</p>
+<div class="absolute bottom-0 left-0 w-full h-1 bg-primary/10 group-hover:bg-primary transition-colors"></div>
+</div>
+</div>
+<!-- Section 1: Admission Probability -->
+<section class="mb-section-gap-md">
+<div class="bg-surface-container-lowest p-8 rounded-xl border border-outline-variant ambient-shadow">
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+<div>
+<h2 class="font-h2-desktop text-h2-desktop text-primary mb-2">Your Admission Probability</h2>
+<p class="font-body-md text-on-surface-variant">Based on your profile compared to 47 similar admitted students</p>
+</div>
+<div class="bg-surface-container px-4 py-2 rounded-lg flex items-center gap-2">
+<span class="material-symbols-outlined text-on-tertiary-container" style="font-variation-settings: 'FILL' 1;">verified</span>
+<span class="font-label-sm text-label-sm">Confidence Level: High (94%)</span>
+</div>
+</div>
+<div class="space-y-6 max-w-4xl">
+<!-- MIT -->
+<div class="space-y-2">
+<div class="flex justify-between text-label-sm font-label-sm">
+<span>MIT</span>
+<span class="text-error">8%</span>
+</div>
+<div class="h-3 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-error rounded-full" style="width: 8%"></div>
+</div>
+</div>
+<!-- Stanford -->
+<div class="space-y-2">
+<div class="flex justify-between text-label-sm font-label-sm">
+<span>Stanford</span>
+<span class="text-error">11%</span>
+</div>
+<div class="h-3 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-error rounded-full" style="width: 11%"></div>
+</div>
+</div>
+<!-- Carnegie Mellon -->
+<div class="space-y-2">
+<div class="flex justify-between text-label-sm font-label-sm">
+<span>Carnegie Mellon</span>
+<span class="text-secondary">31%</span>
+</div>
+<div class="h-3 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-secondary-container rounded-full" style="width: 31%"></div>
+</div>
+</div>
+<!-- Georgia Tech -->
+<div class="relative space-y-2 group">
+<div class="flex justify-between text-label-sm font-label-sm">
+<span class="font-bold text-primary">Georgia Tech</span>
+<span class="text-on-tertiary-container">58%</span>
+</div>
+<div class="h-3 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-on-tertiary-container rounded-full" style="width: 58%"></div>
+</div>
+<!-- Tooltip -->
+<div class="absolute left-[60%] -top-12 z-10 w-64 p-3 bg-primary text-on-primary rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+<p class="text-xs">Your GRE 315 puts you in the 43rd percentile for this school.</p>
+<div class="absolute -bottom-1 left-4 w-2 h-2 bg-primary rotate-45"></div>
+</div>
+</div>
+<!-- UT Austin -->
+<div class="space-y-2">
+<div class="flex justify-between text-label-sm font-label-sm">
+<span>UT Austin</span>
+<span class="text-on-tertiary-container">71%</span>
+</div>
+<div class="h-3 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-on-tertiary-container rounded-full" style="width: 71%"></div>
+</div>
+</div>
+<!-- UMass Amherst -->
+<div class="space-y-2">
+<div class="flex justify-between text-label-sm font-label-sm">
+<span>UMass Amherst</span>
+<span class="text-on-tertiary-container">84%</span>
+</div>
+<div class="h-3 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-on-tertiary-container rounded-full" style="width: 84%"></div>
+</div>
+</div>
+</div>
+<div class="mt-8 pt-6 border-t border-outline-variant flex items-center gap-2 text-on-surface-variant italic font-label-sm">
+<span class="material-symbols-outlined text-sm">info</span>
+<span>Confidence Note: Calculations verified against 47 anonymized successful profiles from 2023-2024 cycle.</span>
+</div>
+</div>
+</section>
+<!-- Blurred Sections for Premium -->
+<div class="relative">
+<!-- Premium Overlay -->
+<div class="absolute inset-0 z-20 flex items-center justify-center pointer-events-none px-4">
+<div class="bg-surface-container-lowest/90 backdrop-blur-md p-8 md:p-12 rounded-2xl border-2 border-secondary ambient-shadow text-center max-w-lg pointer-events-auto">
+<span class="material-symbols-outlined text-secondary text-5xl mb-4" style="font-variation-settings: 'FILL' 1;">workspace_premium</span>
+<h2 class="font-h2-desktop text-h2-desktop text-primary mb-4">Unlock Full Analytics</h2>
+<p class="font-body-md text-on-surface-variant mb-6">Gain access to the full suite of AI-driven intelligence for your graduate application journey.</p>
+<ul class="text-left space-y-3 mb-8 px-6">
+<li class="flex items-center gap-3">
+<span class="material-symbols-outlined text-on-tertiary-container">check_circle</span>
+<span class="font-label-sm">AI Strategy Insights &amp; Risk Analysis</span>
+</li>
+<li class="flex items-center gap-3">
+<span class="material-symbols-outlined text-on-tertiary-container">check_circle</span>
+<span class="font-label-sm">Career Path Mapping &amp; Salary Projections</span>
+</li>
+<li class="flex items-center gap-3">
+<span class="material-symbols-outlined text-on-tertiary-container">check_circle</span>
+<span class="font-label-sm">Global Market Trends &amp; Intelligence</span>
+</li>
+</ul>
+<div class="mb-8">
+<span class="text-4xl font-bold text-primary">$19</span>
+<span class="text-on-surface-variant">/month</span>
+</div>
+<button class="w-full bg-secondary text-on-secondary py-4 rounded-full font-bold hover:opacity-95 transition-all shadow-lg shadow-secondary/20">
+                        Upgrade Now
+                    </button>
+<p class="mt-4 text-xs text-on-surface-variant">Cancel anytime. 7-day money-back guarantee.</p>
+</div>
+</div>
+<!-- Gated Content Section -->
+<div class="premium-blur space-y-section-gap-md">
+<!-- Section 2: Application Strategy -->
+<section class="bg-surface-container-lowest p-8 rounded-xl border border-outline-variant ambient-shadow">
+<div class="flex items-center gap-3 mb-8">
+<span class="material-symbols-outlined text-primary text-3xl">psychology</span>
+<h2 class="font-h2-desktop text-h3-desktop text-primary">Strategy Insights</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<!-- Alert 1 -->
+<div class="p-5 rounded-xl border border-secondary-fixed bg-secondary-fixed/5 flex flex-col justify-between">
+<div>
+<div class="flex items-center gap-2 text-secondary mb-3">
+<span class="material-symbols-outlined">warning</span>
+<span class="font-bold">Risk Assessment</span>
+</div>
+<p class="text-body-md text-on-surface mb-4">You have 7 Reach schools but only 1 Safe — this is high risk. Consider adding 2 more Safe schools.</p>
+</div>
+<a class="text-secondary font-bold flex items-center gap-1 group" href="#">
+                                Act on This <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</a>
+</div>
+<!-- Alert 2 -->
+<div class="p-5 rounded-xl border border-secondary-fixed bg-secondary-fixed/5 flex flex-col justify-between">
+<div>
+<div class="flex items-center gap-2 text-secondary mb-3">
+<span class="material-symbols-outlined">schedule</span>
+<span class="font-bold">Timeline Conflict</span>
+</div>
+<p class="text-body-md text-on-surface mb-4">3 schools share a Dec 15 deadline — can you prepare 3 complete applications simultaneously?</p>
+</div>
+<a class="text-secondary font-bold flex items-center gap-1 group" href="#">
+                                Act on This <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</a>
+</div>
+<!-- Insight 1 -->
+<div class="p-5 rounded-xl border border-primary-fixed bg-primary-fixed/5 flex flex-col justify-between">
+<div>
+<div class="flex items-center gap-2 text-primary mb-3">
+<span class="material-symbols-outlined">lightbulb</span>
+<span class="font-bold">Funding Opportunity</span>
+</div>
+<p class="text-body-md text-on-surface mb-4">You have no schools with strong RA funding. Adding University of Michigan could significantly reduce your cost.</p>
+</div>
+<a class="text-secondary font-bold flex items-center gap-1 group" href="#">
+                                Act on This <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</a>
+</div>
+</div>
+</section>
+<!-- Section 3: Career Outcome Predictor -->
+<section class="bg-surface-container-lowest p-8 rounded-xl border border-outline-variant ambient-shadow">
+<h2 class="font-h3-desktop text-h3-desktop text-primary mb-8">Career Outcomes — MS CS at Top-50 School</h2>
+<div class="relative py-12 px-8 bg-surface-container-low rounded-xl flex items-center justify-between gap-4">
+<div class="z-10 flex flex-col items-center gap-2">
+<div class="w-16 h-16 rounded-full bg-primary flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined">school</span>
+</div>
+<span class="font-label-sm text-center">Graduation</span>
+</div>
+<div class="flex-1 h-1 bg-outline-variant relative">
+<div class="absolute inset-0 bg-gradient-to-r from-primary via-on-tertiary-container to-secondary"></div>
+</div>
+<div class="z-10 flex flex-col items-center gap-2 group cursor-help">
+<div class="w-16 h-16 rounded-full bg-on-tertiary-container flex items-center justify-center text-on-tertiary">
+<span class="material-symbols-outlined">work</span>
+</div>
+<span class="font-label-sm text-center">Job Titles</span>
+<div class="absolute -top-12 opacity-0 group-hover:opacity-100 bg-primary text-on-primary p-2 rounded text-xs transition-opacity">
+                                ML Engineer: avg $155K, 8% of graduates
+                            </div>
+</div>
+<div class="flex-1 h-1 bg-outline-variant"></div>
+<div class="z-10 flex flex-col items-center gap-2">
+<div class="w-16 h-16 rounded-full bg-on-tertiary-container flex items-center justify-center text-on-tertiary">
+<span class="material-symbols-outlined">business</span>
+</div>
+<span class="font-label-sm text-center">Top Employers</span>
+</div>
+<div class="flex-1 h-1 bg-outline-variant"></div>
+<div class="z-10 flex flex-col items-center gap-2">
+<div class="w-20 h-20 rounded-full bg-secondary flex flex-col items-center justify-center text-on-secondary">
+<span class="text-xs">SALARY</span>
+<span class="font-bold text-lg">$185K</span>
+</div>
+<span class="font-label-sm text-center">Target Range</span>
+</div>
+</div>
+</section>
+<!-- Section 4: Market Intelligence -->
+<section class="bg-surface-container-lowest p-8 rounded-xl border border-outline-variant ambient-shadow mb-12">
+<h2 class="font-h3-desktop text-h3-desktop text-primary mb-6">Market Intelligence</h2>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<div class="lg:col-span-2">
+<div class="p-6 bg-surface-container-low rounded-xl h-64 flex flex-col justify-end">
+<div class="flex items-center justify-between mb-4">
+<h3 class="font-bold">Applications to Canadian universities</h3>
+<span class="text-on-tertiary-container flex items-center font-bold">
+<span class="material-symbols-outlined">trending_up</span> 35%
+                                    </span>
+</div>
+<!-- Mock Line Chart -->
+<div class="h-40 w-full flex items-end gap-1">
+<div class="flex-1 bg-primary/20 h-[30%] rounded-t"></div>
+<div class="flex-1 bg-primary/20 h-[35%] rounded-t"></div>
+<div class="flex-1 bg-primary/20 h-[40%] rounded-t"></div>
+<div class="flex-1 bg-primary/20 h-[38%] rounded-t"></div>
+<div class="flex-1 bg-primary/20 h-[45%] rounded-t"></div>
+<div class="flex-1 bg-primary/20 h-[55%] rounded-t"></div>
+<div class="flex-1 bg-primary/20 h-[50%] rounded-t"></div>
+<div class="flex-1 bg-primary/20 h-[60%] rounded-t"></div>
+<div class="flex-1 bg-primary/20 h-[75%] rounded-t"></div>
+<div class="flex-1 bg-primary/20 h-[85%] rounded-t"></div>
+<div class="flex-1 bg-primary/20 h-[92%] rounded-t"></div>
+<div class="flex-1 bg-secondary h-full rounded-t"></div>
+</div>
+<div class="flex justify-between text-[10px] mt-2 text-on-surface-variant uppercase font-bold">
+<span>Jan 24</span>
+<span>Jun 24</span>
+<span>Dec 24</span>
+</div>
+</div>
+</div>
+<div class="space-y-4">
+<div class="p-4 bg-surface-container rounded-lg">
+<p class="text-xs text-on-surface-variant uppercase tracking-tighter mb-1">Avg GRE for top-50 CS</p>
+<p class="font-bold text-xl text-primary">322</p>
+</div>
+<div class="p-4 bg-surface-container rounded-lg">
+<p class="text-xs text-on-surface-variant uppercase tracking-tighter mb-1">Most popular program</p>
+<p class="font-bold text-xl text-primary">MS in CS</p>
+</div>
+<div class="p-4 bg-surface-container rounded-lg">
+<p class="text-xs text-on-surface-variant uppercase tracking-tighter mb-1">Most waived fee</p>
+<p class="font-bold text-xl text-primary">UT Austin</p>
+</div>
+<div class="p-4 bg-secondary-fixed/20 rounded-lg border border-secondary-fixed">
+<p class="text-xs text-secondary uppercase tracking-tighter mb-1">Deadline trend</p>
+<p class="font-bold text-xl text-secondary">Earlier than 2024</p>
+</div>
+</div>
+</div>
+</section>
+</div>
+</div>
+</main>
+<!-- Footer Space -->
+<div class="h-20 ml-64"></div>
+</body></html>

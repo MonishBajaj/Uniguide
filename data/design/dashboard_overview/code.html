@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sage Admissions Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&amp;family=Plus+Jakarta+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-variant": "#e1e3e4",
+                      "on-tertiary": "#ffffff",
+                      "tertiary-container": "#003628",
+                      "surface-bright": "#f8f9fa",
+                      "inverse-primary": "#adc6ff",
+                      "on-error": "#ffffff",
+                      "surface": "#f8f9fa",
+                      "on-primary-fixed-variant": "#2c4676",
+                      "on-secondary-fixed": "#3e0500",
+                      "surface-container": "#edeeef",
+                      "surface-container-high": "#e7e8e9",
+                      "secondary-container": "#fe694a",
+                      "surface-container-highest": "#e1e3e4",
+                      "secondary": "#af3017",
+                      "secondary-fixed": "#ffdad3",
+                      "surface-tint": "#455e90",
+                      "on-surface-variant": "#44474f",
+                      "on-secondary": "#ffffff",
+                      "tertiary-fixed-dim": "#84d6b9",
+                      "tertiary-fixed": "#a0f3d4",
+                      "primary-container": "#0f2d5c",
+                      "on-primary-fixed": "#001a41",
+                      "background": "#f8f9fa",
+                      "error-container": "#ffdad6",
+                      "surface-container-lowest": "#ffffff",
+                      "on-tertiary-container": "#53a58a",
+                      "tertiary": "#001f16",
+                      "on-tertiary-fixed-variant": "#00513e",
+                      "on-secondary-container": "#650d00",
+                      "surface-container-low": "#f3f4f5",
+                      "outline-variant": "#c4c6d0",
+                      "primary-fixed-dim": "#adc6ff",
+                      "surface-dim": "#d9dadb",
+                      "on-surface": "#191c1d",
+                      "error": "#ba1a1a",
+                      "outline": "#747780",
+                      "on-secondary-fixed-variant": "#8d1701",
+                      "on-tertiary-fixed": "#002117",
+                      "on-background": "#191c1d",
+                      "on-primary": "#ffffff",
+                      "on-error-container": "#93000a",
+                      "primary-fixed": "#d8e2ff",
+                      "on-primary-container": "#7d96cb",
+                      "primary": "#00183d",
+                      "secondary-fixed-dim": "#ffb4a4",
+                      "inverse-surface": "#2e3132",
+                      "inverse-on-surface": "#f0f1f2"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "section-gap-md": "48px",
+                      "gutter": "24px",
+                      "section-gap-lg": "80px",
+                      "margin-mobile": "16px",
+                      "max-width": "1200px",
+                      "stack-gap": "16px"
+              },
+              "fontFamily": {
+                      "h1-desktop": ["Playfair Display"],
+                      "label-sm": ["Plus Jakarta Sans"],
+                      "h1-mobile": ["Playfair Display"],
+                      "h2-desktop": ["Playfair Display"],
+                      "h3-desktop": ["Playfair Display"],
+                      "body-lg": ["Plus Jakarta Sans"],
+                      "button-text": ["Plus Jakarta Sans"],
+                      "body-md": ["Plus Jakarta Sans"]
+              },
+              "fontSize": {
+                      "h1-desktop": ["48px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                      "label-sm": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                      "h1-mobile": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                      "h2-desktop": ["36px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                      "h3-desktop": ["24px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                      "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                      "button-text": ["16px", {"lineHeight": "1", "fontWeight": "600"}],
+                      "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #f8f9fa;
+        }
+    </style>
+</head>
+<body class="font-body-md text-on-surface">
+<!-- SideNavBar Shell -->
+<aside class="fixed left-0 top-0 h-screen w-64 bg-surface-container dark:bg-surface-container-high border-r border-outline-variant flex flex-col h-full py-8 px-4 z-[60]">
+<div class="mb-12 px-2 flex items-center gap-3">
+<div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined">school</span>
+</div>
+<div>
+<h2 class="font-h3-desktop text-h3-desktop text-primary leading-tight">Counselor Sage</h2>
+<p class="font-label-sm text-label-sm text-on-surface-variant">AI Admissions Expert</p>
+</div>
+</div>
+<nav class="flex-1 space-y-2">
+<a class="flex items-center gap-4 px-4 py-3 text-primary dark:text-inverse-primary font-bold border-r-4 border-primary bg-surface-container-highest duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="chat_spark">chat_spark</span>
+<span class="font-label-sm">AI Counselor</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-highest transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="assignment">assignment</span>
+<span class="font-label-sm">Applications</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-highest transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="account_balance">account_balance</span>
+<span class="font-label-sm">University Match</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-highest transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-label-sm">My Profile</span>
+</a>
+</nav>
+<div class="mt-auto">
+<button class="w-full bg-secondary text-on-secondary rounded-full py-3 px-6 font-button-text hover:brightness-110 transition-all cursor-pointer active:scale-95">
+                Submit Application
+            </button>
+</div>
+</aside>
+<!-- TopNavBar Shell -->
+<header class="fixed top-0 right-0 left-64 h-16 bg-surface-container-lowest dark:bg-surface-dim shadow-sm z-50">
+<div class="flex justify-between items-center w-full px-gutter h-16 max-w-[1200px] mx-auto">
+<div class="flex items-center gap-4">
+<div class="relative group">
+<span class="absolute inset-y-0 left-3 flex items-center text-outline">
+<span class="material-symbols-outlined text-[20px]">search</span>
+</span>
+<input class="pl-10 pr-4 py-1.5 bg-surface-container-low border-none rounded-full w-64 text-body-md focus:ring-2 focus:ring-primary transition-all" placeholder="Search resources..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary transition-colors">notifications</span>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary transition-colors">settings</span>
+</div>
+<div class="h-8 w-[1px] bg-outline-variant"></div>
+<div class="flex items-center gap-3 cursor-pointer group">
+<img alt="Student avatar" class="w-9 h-9 rounded-full object-cover border-2 border-transparent group-hover:border-primary transition-all" data-alt="A close-up professional portrait of a confident male student with a warm smile, set against a blurred academic library background. The lighting is soft and natural, emphasizing a high-end corporate minimalist aesthetic with a clean, light-mode feel. The composition is centered, highlighting the student's approachable yet ambitious personality within a prestigious educational context." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDE30PjnlkHHyCyJ6yJVjJfvQcULciRMmF7Agxy1Fz0N3ntQJ1aAHg6U6IvwylCQgIyA2iwa71tLhf523Z-aNZvs-ZERF3R1u5dMcAd_qqm5qukf0RZTvnyWD6qvWOBtuEqYKm6fBrMwC_KA71LazuHNy5JT9Bhew_iQwA_VQVrPKEIsGGtduWGG2eZNJQi1Xi0k1GNFkb3dKwvSk9rZFUJknmVj0dvaV6IjWufDFvGHkYVDJOCbdvPdJsvtQyvImb5rUnHcuqxd62t"/>
+<span class="font-label-sm text-primary font-bold">Alex Johnson</span>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-64 pt-24 px-gutter pb-section-gap-lg max-w-[1200px] mx-auto">
+<!-- Welcome Header -->
+<section class="mb-10">
+<h1 class="font-h1-desktop text-h1-desktop text-primary mb-2">Welcome back, Alex</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Your journey to Stanford is on track. You have 3 tasks to complete today.</p>
+</section>
+<!-- Bento Grid Dashboard -->
+<div class="grid grid-cols-12 gap-6">
+<!-- Application Progress (Large Card) -->
+<div class="col-span-8 bg-surface-container-lowest p-8 rounded-xl border border-outline-variant shadow-sm flex flex-col justify-between min-h-[320px]">
+<div>
+<div class="flex justify-between items-start mb-6">
+<h3 class="font-h3-desktop text-h3-desktop text-primary">Application Progress</h3>
+<span class="bg-primary-container text-on-primary-container px-3 py-1 rounded-full text-label-sm">3 Universities in Progress</span>
+</div>
+<div class="space-y-6">
+<!-- University Item -->
+<div class="space-y-2">
+<div class="flex justify-between text-label-sm font-bold">
+<span>Stanford University</span>
+<span>85%</span>
+</div>
+<div class="w-full bg-surface-container-high h-2 rounded-full overflow-hidden">
+<div class="bg-primary h-full rounded-full" style="width: 85%"></div>
+</div>
+</div>
+<!-- University Item -->
+<div class="space-y-2">
+<div class="flex justify-between text-label-sm font-bold">
+<span>MIT</span>
+<span>45%</span>
+</div>
+<div class="w-full bg-surface-container-high h-2 rounded-full overflow-hidden">
+<div class="bg-primary h-full rounded-full" style="width: 45%"></div>
+</div>
+</div>
+<!-- University Item -->
+<div class="space-y-2">
+<div class="flex justify-between text-label-sm font-bold">
+<span>Columbia University</span>
+<span>15%</span>
+</div>
+<div class="w-full bg-surface-container-high h-2 rounded-full overflow-hidden">
+<div class="bg-primary h-full rounded-full" style="width: 15%"></div>
+</div>
+</div>
+</div>
+</div>
+<button class="mt-8 text-primary font-button-text flex items-center gap-2 hover:translate-x-1 transition-transform w-fit">
+                    View All Applications <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</div>
+<!-- Next Deadline (Compact Highlight) -->
+<div class="col-span-4 bg-primary text-on-primary p-8 rounded-xl border border-primary shadow-sm flex flex-col">
+<div class="mb-auto">
+<span class="material-symbols-outlined text-[32px] mb-4">event_upcoming</span>
+<h4 class="font-h3-desktop text-h3-desktop mb-1">Next Deadline</h4>
+<p class="text-on-primary-container font-label-sm mb-6">Stanford University - Early Action</p>
+</div>
+<div class="flex items-baseline gap-2">
+<span class="text-[64px] font-h1-desktop leading-none">12</span>
+<span class="text-h3-desktop font-h2-desktop">days left</span>
+</div>
+<button class="mt-8 w-full bg-surface-container-lowest text-primary py-3 rounded-full font-button-text hover:bg-surface-bright transition-colors">
+                    Complete Essay
+                </button>
+</div>
+<!-- AI Quick Chat Widget -->
+<div class="col-span-5 bg-surface-container-lowest p-8 rounded-xl border border-outline-variant shadow-sm border-l-4 border-l-secondary-container">
+<div class="flex items-center gap-3 mb-6">
+<div class="w-10 h-10 bg-secondary-container/10 rounded-full flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined" data-weight="fill">chat_spark</span>
+</div>
+<h3 class="font-h3-desktop text-h3-desktop text-primary">Quick Chat</h3>
+</div>
+<div class="bg-surface-container-low p-4 rounded-lg mb-4 text-body-md text-on-surface-variant italic">
+                    "Hi Alex! Based on your profile, I recommend focusing on your 'Extra-curriculars' section for Stanford. Want some tips?"
+                </div>
+<div class="relative">
+<input class="w-full border-outline-variant rounded-xl py-3 px-4 text-body-md focus:ring-primary focus:border-primary" placeholder="Ask Sage AI anything..." type="text"/>
+<button class="absolute right-2 top-2 p-1.5 bg-primary text-on-primary rounded-lg">
+<span class="material-symbols-outlined text-[20px]">send</span>
+</button>
+</div>
+</div>
+<!-- Recent Activity / Task List -->
+<div class="col-span-7 bg-surface-container-lowest p-8 rounded-xl border border-outline-variant shadow-sm">
+<h3 class="font-h3-desktop text-h3-desktop text-primary mb-6">Upcoming Tasks</h3>
+<div class="space-y-4">
+<div class="flex items-center gap-4 p-3 hover:bg-surface-container-low rounded-lg transition-colors cursor-pointer group">
+<div class="w-12 h-12 rounded-full border-2 border-outline-variant flex items-center justify-center group-hover:border-primary transition-colors">
+<span class="material-symbols-outlined text-outline group-hover:text-primary">check</span>
+</div>
+<div class="flex-1">
+<p class="font-bold text-primary">Finalize Personal Statement</p>
+<p class="text-label-sm text-on-surface-variant">Due in 2 days • MIT</p>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+</div>
+<div class="flex items-center gap-4 p-3 hover:bg-surface-container-low rounded-lg transition-colors cursor-pointer group">
+<div class="w-12 h-12 rounded-full border-2 border-outline-variant flex items-center justify-center group-hover:border-primary transition-colors">
+<span class="material-symbols-outlined text-outline group-hover:text-primary">check</span>
+</div>
+<div class="flex-1">
+<p class="font-bold text-primary">Request Recommendation Letter</p>
+<p class="text-label-sm text-on-surface-variant">Due in 5 days • All Universities</p>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+</div>
+</div>
+</div>
+<!-- University Card (Visual Insight) -->
+<div class="col-span-4 bg-white rounded-xl overflow-hidden border border-outline-variant shadow-sm hover:shadow-lg transition-all group">
+<div class="h-40 overflow-hidden relative">
+<img alt="Stanford University Campus" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A cinematic, wide-angle shot of the iconic Stanford University campus architecture under a golden hour sun. The scene features the historical sandstone buildings and the Hoover Tower in the distance, bathed in warm, amber light. The aesthetic is prestigious and academic, utilizing a high-contrast corporate style that emphasizes stability and heritage. The overall mood is inspiring and serene." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBrLOZlUUWQvkhVKNLGduiJI1zkwFXy4wmKj2n6GuMIy2j7bPL--9eUtAxv4rap4wpdI4Z52r3e1cmLEG9NXuwrZn4XXBOnB_PzzA51zHqoEJAbAnNH2qv4vZDJLilip5qBpl0m6YZzr7hrOgwmqMNEPO0TDc2GDRIYEdacq-fLxE1FehfKaR_ka0x2OQcYVMhCukBYbkuolLZu4LR7_YRubzTYgfnijIcfR_-e_21UnLZT4L5viE6G59kwr82iMT2Ze3enkmFYlizq"/>
+<div class="absolute top-3 left-3">
+<span class="bg-white/90 backdrop-blur-md text-primary px-3 py-1 rounded-full text-label-sm font-bold shadow-sm">Dream School</span>
+</div>
+</div>
+<div class="p-6">
+<h4 class="font-h3-desktop text-primary mb-1">Stanford University</h4>
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-tertiary-fixed-dim text-[18px]">verified</span>
+<span class="text-label-sm text-on-tertiary-container font-bold">92% Match for you</span>
+</div>
+<p class="text-body-md text-on-surface-variant mb-6">Known for its proximity to Silicon Valley and world-class engineering programs.</p>
+<button class="w-full border border-primary text-primary py-2 rounded-full font-button-text hover:bg-primary hover:text-on-primary transition-all">
+                        View Details
+                    </button>
+</div>
+</div>
+<!-- University Card (Visual Insight) -->
+<div class="col-span-4 bg-white rounded-xl overflow-hidden border border-outline-variant shadow-sm hover:shadow-lg transition-all group">
+<div class="h-40 overflow-hidden relative">
+<img alt="Academic Excellence" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A minimalist, bright architectural shot of a modern university library interior with clean lines and large windows allowing natural light to flood the space. The color palette is composed of soft whites, light woods, and deep navy accents. The atmosphere is quiet, intellectual, and high-end, perfectly reflecting a premium academic environment designed for deep focus and success." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAu7uiFsrTvIkcg0ulhFSyQ5y3mnRfUCyE8Ac2LBjrMp5lfZDJ_lsAG3TfWC3Tisox4c72HeL-5atZ9OzzUH1Wn7LpP63xBVQWXU5V4FgizZSj5sNdbnFtpMbZK02BtNG1qJhI4bn73hYv92vRRxrEWkr7nulKjQ0HoqCPok0JCyZlJ-omebIbQxIx3Y2I7DABmG9T9IHYcrN6hfqWybgzwnF7C3Tc82_APIw_Cd4i55ugsVkm120IocSc88B8DuRuI7o7khmNUC9xK"/>
+<div class="absolute top-3 left-3">
+<span class="bg-white/90 backdrop-blur-md text-primary px-3 py-1 rounded-full text-label-sm font-bold shadow-sm">Target</span>
+</div>
+</div>
+<div class="p-6">
+<h4 class="font-h3-desktop text-primary mb-1">MIT</h4>
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-tertiary-fixed-dim text-[18px]">verified</span>
+<span class="text-label-sm text-on-tertiary-container font-bold">88% Match for you</span>
+</div>
+<p class="text-body-md text-on-surface-variant mb-6">Leading the world in innovation, technology, and advanced scientific research.</p>
+<button class="w-full border border-primary text-primary py-2 rounded-full font-button-text hover:bg-primary hover:text-on-primary transition-all">
+                        View Details
+                    </button>
+</div>
+</div>
+<!-- Progress Insight Chip -->
+<div class="col-span-4 bg-tertiary-fixed text-on-tertiary-fixed p-8 rounded-xl border border-tertiary flex flex-col justify-center items-center text-center">
+<div class="w-16 h-16 bg-on-tertiary-fixed-variant/10 rounded-full flex items-center justify-center mb-4">
+<span class="material-symbols-outlined text-[32px]">psychology</span>
+</div>
+<h4 class="font-h3-desktop text-h3-desktop mb-2">Scholarship Alert</h4>
+<p class="text-body-md mb-6">Sage AI found 4 new scholarships matching your extracurricular profile.</p>
+<button class="font-button-text underline underline-offset-4 hover:text-primary transition-colors">
+                    Review Opportunities
+                </button>
+</div>
+</div>
+</main>
+<!-- FAB Suppression Applied (As per UX Goal for Dashboard Profile Context) -->
+</body></html>

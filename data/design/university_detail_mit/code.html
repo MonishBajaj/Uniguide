@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&amp;family=Playfair+Display:wght@600;700&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-surface": "#2e3132",
+                        "secondary": "#af3017",
+                        "background": "#f8f9fa",
+                        "on-tertiary": "#ffffff",
+                        "outline-variant": "#c4c6d0",
+                        "primary-container": "#0f2d5c",
+                        "inverse-on-surface": "#f0f1f2",
+                        "tertiary-fixed": "#a0f3d4",
+                        "on-tertiary-fixed-variant": "#00513e",
+                        "on-primary-fixed": "#001a41",
+                        "tertiary-container": "#003628",
+                        "surface": "#f8f9fa",
+                        "on-error": "#ffffff",
+                        "surface-tint": "#455e90",
+                        "on-surface": "#191c1d",
+                        "on-primary": "#ffffff",
+                        "on-tertiary-fixed": "#002117",
+                        "primary-fixed-dim": "#adc6ff",
+                        "error": "#ba1a1a",
+                        "inverse-primary": "#adc6ff",
+                        "tertiary": "#001f16",
+                        "secondary-fixed": "#ffdad3",
+                        "surface-container": "#edeeef",
+                        "surface-dim": "#d9dadb",
+                        "surface-container-low": "#f3f4f5",
+                        "on-background": "#191c1d",
+                        "on-error-container": "#93000a",
+                        "on-primary-container": "#7d96cb",
+                        "secondary-container": "#fe694a",
+                        "on-primary-fixed-variant": "#2c4676",
+                        "surface-variant": "#e1e3e4",
+                        "on-secondary-fixed-variant": "#8d1701",
+                        "on-secondary-fixed": "#3e0500",
+                        "on-tertiary-container": "#53a58a",
+                        "outline": "#747780",
+                        "surface-container-high": "#e7e8e9",
+                        "surface-bright": "#f8f9fa",
+                        "secondary-fixed-dim": "#ffb4a4",
+                        "tertiary-fixed-dim": "#84d6b9",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-highest": "#e1e3e4",
+                        "primary-fixed": "#d8e2ff",
+                        "on-secondary-container": "#650d00",
+                        "error-container": "#ffdad6",
+                        "on-surface-variant": "#44474f",
+                        "primary": "#00183d",
+                        "on-secondary": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "section-gap-lg": "80px",
+                        "max-width": "1200px",
+                        "margin-mobile": "16px",
+                        "gutter": "24px",
+                        "stack-gap": "16px",
+                        "section-gap-md": "48px"
+                    },
+                    "fontFamily": {
+                        "label-sm": ["Plus Jakarta Sans"],
+                        "button-text": ["Plus Jakarta Sans"],
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "h3-desktop": ["Playfair Display"],
+                        "h1-mobile": ["Playfair Display"],
+                        "h1-desktop": ["Playfair Display"],
+                        "body-md": ["Plus Jakarta Sans"],
+                        "h2-desktop": ["Playfair Display"]
+                    },
+                    "fontSize": {
+                        "label-sm": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                        "button-text": ["16px", {"lineHeight": "1", "fontWeight": "600"}],
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "h3-desktop": ["24px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                        "h1-mobile": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                        "h1-desktop": ["48px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                        "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "h2-desktop": ["36px", {"lineHeight": "1.3", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md">
+<!-- TopNavBar -->
+<header class="bg-surface-bright dark:bg-surface-dim shadow-sm docked full-width top-0 z-50">
+<div class="flex justify-between items-center h-20 px-gutter max-w-max-width mx-auto w-full">
+<div class="font-h2-desktop text-h2-desktop font-bold text-primary dark:text-primary-fixed-dim">UniGuide AI</div>
+<nav class="hidden md:flex gap-8 items-center">
+<a class="font-label-sm text-label-sm text-primary dark:text-primary-fixed-dim border-b-2 border-secondary-container py-1" href="#">Programs</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant dark:text-on-surface-variant hover:text-secondary-container transition-colors duration-200" href="#">Scholarships</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant dark:text-on-surface-variant hover:text-secondary-container transition-colors duration-200" href="#">Mentors</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant dark:text-on-surface-variant hover:text-secondary-container transition-colors duration-200" href="#">About</a>
+</nav>
+<div class="flex gap-4">
+<button class="px-6 py-2 rounded-full font-button-text text-button-text text-primary">Login</button>
+<button class="px-6 py-2 rounded-full bg-primary text-on-primary font-button-text text-button-text hover:opacity-80 transition-all">Apply Now</button>
+</div>
+</div>
+</header>
+<main class="max-w-max-width mx-auto px-gutter md:px-0">
+<!-- Hero Section -->
+<section class="relative h-[320px] w-full mt-4 overflow-hidden rounded-xl bg-primary">
+<img class="w-full h-full object-cover" data-alt="An expansive aerial view of the Massachusetts Institute of Technology campus along the Charles River at dusk. The iconic Great Dome is illuminated under a soft indigo sky, reflecting a prestigious academic atmosphere. High-end architectural details and lush green spaces are visible with professional, wide-angle photography style. The lighting is dramatic yet clear, emphasizing the mix of historical and modern research facilities in a prestigious university setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAes0UKYv6LkuildIvX_SJuyleKoHHRU29HYXm3wh9_DsSHpxLLST6-_V49YvAuL5giOZUKk7Tpq-Ws8NLAZVwapikoV9l970-Q3ku1pE6vzaPS4ypJOef0t2INcRZQx4eE33WSkvS8ZyDBNefi1JbStjnjf_6pyNoQ9i1YSH8NwqG1KUVEdKIRTXK0l0OfjE3K5d483D4SSB_HTdMthLLNa_o1F6rHSiLAla-eUDVxijecZ4Pe3ti0U3V9gIATBjOY8Zyql3vM0Ays"/>
+<!-- Dark Bottom Overlay -->
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+<!-- Top Left: Breadcrumb -->
+<div class="absolute top-6 left-6 flex items-center gap-2 text-white/90 font-label-sm text-label-sm cursor-pointer hover:text-white">
+<span class="material-symbols-outlined text-sm">arrow_back</span>
+                Back to College Matching
+            </div>
+<!-- Top Right: Badges -->
+<div class="absolute top-6 right-6 flex gap-3 items-center">
+<div class="bg-secondary-container text-on-secondary px-4 py-1 rounded-full font-label-sm text-label-sm shadow-lg">91% match</div>
+<div class="bg-primary-container text-on-primary-container px-4 py-1 rounded-full font-label-sm text-label-sm border border-outline-variant shadow-lg">REACH</div>
+<button class="w-10 h-10 rounded-full glass-panel flex items-center justify-center text-white hover:bg-white hover:text-secondary transition-colors">
+<span class="material-symbols-outlined" data-weight="fill">favorite</span>
+</button>
+</div>
+<!-- Bottom Left: Brand Info -->
+<div class="absolute bottom-8 left-8 flex items-center gap-6">
+<div class="w-20 h-20 rounded-full bg-white flex items-center justify-center p-2 shadow-xl">
+<img alt="MIT Logo" class="w-12 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDJoVIV9pAgYpKWsVSnbVUd4Q12tUqgavxEElyijgFyj50PRM0U9fR5E0M-DeV1eSeFsuzeml0U3xpHqkm2LBemVP8CAHYCv0UwIGI2xt3VRQkDd3kjKlomo8OH9U0V1_4RsLoS_JwyYA4_bn_TNZyFMFXrK0hpVrtVTy-eVkOXGbU3mE0Xcr_xPdkCln1O8TmbHv8UQqAFmG31uVoKUSOFYiukn6aOLx5PZQ6mfvkkpgXvIp_MzAGAZFBgFZDrDdEOsOljfYUNknBQ"/>
+</div>
+<div class="text-white">
+<h1 class="font-h1-mobile text-h1-mobile md:font-h2-desktop md:text-h2-desktop font-bold leading-tight">Massachusetts Institute of Technology</h1>
+<p class="font-body-md text-body-md opacity-90 flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">location_on</span>
+                        Cambridge, MA · USA
+                    </p>
+</div>
+</div>
+</section>
+<!-- Sticky Nav -->
+<nav class="sticky top-20 z-40 bg-surface-bright/95 backdrop-blur-md border-b border-outline-variant/30 flex gap-8 py-4 mt-8 mb-10 overflow-x-auto no-scrollbar">
+<a class="font-label-sm text-label-sm text-primary border-b-2 border-secondary-container whitespace-nowrap" href="#overview">Overview</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary whitespace-nowrap" href="#programs">Programs</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary whitespace-nowrap" href="#cost">Cost &amp; Aid</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary whitespace-nowrap" href="#campus">Campus Life</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary whitespace-nowrap" href="#outcomes">Career Outcomes</a>
+</nav>
+<!-- Two Column Content -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter items-start pb-section-gap-lg">
+<!-- LEFT COLUMN -->
+<div class="lg:col-span-8 space-y-12">
+<!-- Rankings Widget -->
+<section>
+<h2 class="font-h3-desktop text-h3-desktop mb-6 text-primary">Global Rankings</h2>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+<div class="p-6 bg-white rounded-xl border border-outline-variant/30 shadow-sm hover:shadow-md transition-shadow text-center">
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-2">QS World</p>
+<p class="font-h2-desktop text-h2-desktop text-secondary font-bold">#1</p>
+</div>
+<div class="p-6 bg-white rounded-xl border border-outline-variant/30 shadow-sm hover:shadow-md transition-shadow text-center">
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-2">THE Ranking</p>
+<p class="font-h2-desktop text-h2-desktop text-primary font-bold">#2</p>
+</div>
+<div class="p-6 bg-white rounded-xl border border-outline-variant/30 shadow-sm hover:shadow-md transition-shadow text-center">
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-2">US News</p>
+<p class="font-h2-desktop text-h2-desktop text-primary font-bold">#3</p>
+</div>
+<div class="p-6 bg-white rounded-xl border border-outline-variant/30 shadow-sm hover:shadow-md transition-shadow text-center">
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-2">Shanghai</p>
+<p class="font-h2-desktop text-h2-desktop text-primary font-bold">#1</p>
+</div>
+</div>
+</section>
+<!-- Admissions Stats -->
+<section>
+<h2 class="font-h3-desktop text-h3-desktop mb-6 text-primary">Admissions Overview</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="p-5 flex items-center gap-4 bg-white border border-outline-variant rounded-xl">
+<div class="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">how_to_reg</span>
+</div>
+<div>
+<p class="font-h3-desktop text-h3-desktop text-primary">4%</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Acceptance Rate</p>
+</div>
+</div>
+<div class="p-5 flex items-center gap-4 bg-white border border-outline-variant rounded-xl">
+<div class="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">grade</span>
+</div>
+<div>
+<p class="font-h3-desktop text-h3-desktop text-primary">3.9</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Average GPA</p>
+</div>
+</div>
+<div class="p-5 flex items-center gap-4 bg-white border border-outline-variant rounded-xl">
+<div class="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">psychology</span>
+</div>
+<div>
+<p class="font-h3-desktop text-h3-desktop text-primary">336</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Avg. GRE Score</p>
+</div>
+</div>
+<div class="p-5 flex items-center gap-4 bg-white border border-outline-variant rounded-xl">
+<div class="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">groups</span>
+</div>
+<div>
+<p class="font-h3-desktop text-h3-desktop text-primary">2,200</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Class Size</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Highlights -->
+<section>
+<h2 class="font-h3-desktop text-h3-desktop mb-6 text-primary">Key Highlights</h2>
+<div class="flex flex-wrap gap-3">
+<div class="px-5 py-3 rounded-xl bg-tertiary-fixed text-on-tertiary-fixed-variant font-label-sm text-label-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">payments</span> RA Funding Available
+                        </div>
+<div class="px-5 py-3 rounded-xl bg-primary-fixed text-on-primary-fixed-variant font-label-sm text-label-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">rocket_launch</span> STEM OPT Extension
+                        </div>
+<div class="px-5 py-3 rounded-xl bg-secondary-fixed text-on-secondary-fixed-variant font-label-sm text-label-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">check_circle</span> Application Fee Waiver
+                        </div>
+<div class="px-5 py-3 rounded-xl bg-surface-container-high text-on-surface font-label-sm text-label-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">block</span> GRE Not Required
+                        </div>
+</div>
+</section>
+<!-- About -->
+<section class="prose max-w-none">
+<h2 class="font-h3-desktop text-h3-desktop mb-4 text-primary">About MIT</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant leading-relaxed">
+                        The Massachusetts Institute of Technology (MIT) is a world-renowned private research university located in Cambridge, Massachusetts. Since its founding in 1861, MIT has played a pivotal role in the development of modern science, engineering, mathematics, and technology.
+                    </p>
+<p class="font-body-md text-body-md text-on-surface-variant mt-4 leading-relaxed">
+                        Known for its rigorous academic culture and "Mens et Manus" (Mind and Hand) philosophy, MIT encourages students to bridge the gap between theoretical knowledge and practical application. The campus is home to pioneering labs in artificial intelligence, biotechnology, and clean energy, fostering an environment where innovation is the standard.
+                    </p>
+</section>
+</div>
+<!-- RIGHT COLUMN (Sticky Sidebar) -->
+<aside class="lg:col-span-4 sticky top-24">
+<div class="bg-white rounded-2xl border border-outline-variant p-6 shadow-sm space-y-6">
+<div class="flex justify-between items-start">
+<div>
+<span class="bg-secondary-container text-on-secondary text-[12px] px-2 py-0.5 rounded font-bold uppercase tracking-wider">High Match</span>
+<h3 class="font-h3-desktop text-h3-desktop text-primary mt-1">91% Match</h3>
+</div>
+<span class="bg-primary text-white text-[12px] px-3 py-1 rounded-full font-bold">REACH</span>
+</div>
+<div class="space-y-3">
+<button class="w-full py-4 bg-secondary-container text-on-secondary rounded-full font-button-text text-button-text hover:opacity-90 transition-all shadow-md">
+                            Add to Tracker
+                        </button>
+<button class="w-full py-4 border-2 border-secondary-container text-secondary rounded-full font-button-text text-button-text hover:bg-secondary-container/5 transition-all">
+                            Add to Shortlist
+                        </button>
+</div>
+<div class="bg-error-container/30 p-4 rounded-xl border border-error/20">
+<p class="text-error font-label-sm text-label-sm flex items-center gap-2 mb-1">
+<span class="material-symbols-outlined text-[18px]">timer</span>
+                            Regular Deadline
+                        </p>
+<p class="font-h3-desktop text-h3-desktop text-on-error-container font-bold">Dec 15, 2025</p>
+<p class="text-on-error-container/70 text-[12px] font-bold">Countdown: 242 Days left</p>
+</div>
+<div class="border-t border-outline-variant/30 pt-6 space-y-4">
+<div class="flex justify-between text-[14px]">
+<span class="text-on-surface-variant">Acceptance Rate</span>
+<span class="font-bold text-primary">4.0%</span>
+</div>
+<div class="flex justify-between text-[14px]">
+<span class="text-on-surface-variant">Min. GPA</span>
+<span class="font-bold text-primary">3.9</span>
+</div>
+<div class="flex justify-between text-[14px]">
+<span class="text-on-surface-variant">Min. GRE</span>
+<span class="font-bold text-primary">325+</span>
+</div>
+</div>
+<div class="pt-4">
+<h4 class="font-label-sm text-label-sm text-on-surface-variant mb-4 uppercase tracking-widest">Similar Schools</h4>
+<div class="space-y-3">
+<a class="flex items-center gap-3 p-2 hover:bg-surface-container rounded-lg transition-colors" href="#">
+<div class="w-8 h-8 rounded bg-primary/10 flex items-center justify-center font-bold text-primary text-[10px]">STAN</div>
+<span class="font-label-sm text-label-sm text-primary">Stanford University</span>
+<span class="ml-auto material-symbols-outlined text-on-surface-variant text-sm">chevron_right</span>
+</a>
+<a class="flex items-center gap-3 p-2 hover:bg-surface-container rounded-lg transition-colors" href="#">
+<div class="w-8 h-8 rounded bg-primary/10 flex items-center justify-center font-bold text-primary text-[10px]">CMU</div>
+<span class="font-label-sm text-label-sm text-primary">Carnegie Mellon</span>
+<span class="ml-auto material-symbols-outlined text-on-surface-variant text-sm">chevron_right</span>
+</a>
+<a class="flex items-center gap-3 p-2 hover:bg-surface-container rounded-lg transition-colors" href="#">
+<div class="w-8 h-8 rounded bg-primary/10 flex items-center justify-center font-bold text-primary text-[10px]">CAL</div>
+<span class="font-label-sm text-label-sm text-primary">UC Berkeley</span>
+<span class="ml-auto material-symbols-outlined text-on-surface-variant text-sm">chevron_right</span>
+</a>
+</div>
+</div>
+</div>
+</aside>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-lowest dark:bg-surface-dim border-t border-outline-variant mt-section-gap-lg">
+<div class="w-full py-8 px-gutter flex flex-col md:flex-row justify-between items-center max-w-max-width mx-auto">
+<div class="font-h3-desktop text-h3-desktop text-primary mb-4 md:mb-0">UniGuide AI</div>
+<div class="flex gap-6 mb-4 md:mb-0">
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-secondary" href="#">Privacy Policy</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-secondary" href="#">Terms of Service</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-secondary" href="#">Cookie Policy</a>
+</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant">© 2024 UniGuide AI. All rights reserved.</div>
+</div>
+</footer>
+<!-- Floating Action Button -->
+<button class="fixed bottom-8 right-8 w-16 h-16 bg-secondary-container text-on-secondary rounded-full shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-50 group">
+<span class="material-symbols-outlined text-3xl" data-weight="fill">psychology</span>
+<span class="absolute right-20 bg-primary text-white px-4 py-2 rounded-lg text-sm opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-xl">Ask Sage AI</span>
+</button>
+</body></html>

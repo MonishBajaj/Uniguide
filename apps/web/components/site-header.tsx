@@ -12,6 +12,7 @@ import { PATH_HEADER } from "@/lib/request-path";
 import { StudentHeader } from "./journey/student-header";
 import { ModeSwitcher } from "./mode-switcher";
 import { NavLinks } from "./nav-links";
+import { GraduationCap } from "lucide-react";
 
 export async function SiteHeader() {
   const { supabase, user } = await getUser();
@@ -54,6 +55,8 @@ export async function SiteHeader() {
   const links = [
     { href: "/courses", label: t.nav.courses },
     { href: "/requirements", label: t.nav.requirements },
+    { href: "/visas", label: t.footer.visas },
+    { href: "/compare/countries", label: "Compare" },
     ...(mode === "parent" ? [{ href: "/parent", label: t.nav.myChild }] : []),
     ...(user && mode !== "parent"
       ? [
@@ -73,32 +76,48 @@ export async function SiteHeader() {
   ];
 
   return (
-    <header className="sticky top-3 z-40 flex justify-center px-4 pt-3 print:hidden">
-      <nav
-        aria-label="Main"
-        className="flex max-w-full items-center gap-4 rounded-2xl border border-border bg-surface/80 px-4 py-2 backdrop-blur-md"
-      >
-        <Link href="/" className="text-base font-semibold whitespace-nowrap">
-          Uniguide
-        </Link>
-        <div className="min-w-0 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          <NavLinks links={links} />
-        </div>
-        <Link href="/accessibility" className="btn btn-secondary btn-sm whitespace-nowrap">
-          {t.nav.display}
-        </Link>
-        {DEMO_SWITCHER ? (
-          <ModeSwitcher mode={mode} />
-        ) : user ? (
-          <form action="/auth/signout" method="post">
-            <button className="btn btn-secondary btn-sm whitespace-nowrap">{t.nav.signOut}</button>
-          </form>
-        ) : (
-          <Link href="/login" className="btn btn-secondary btn-sm whitespace-nowrap">
-            {t.nav.signIn}
+    <header className="sticky top-0 z-50 w-full border-b border-border/70 bg-surface/90 backdrop-blur-md transition-all print:hidden">
+      <div className="mx-auto flex h-16 max-w-[1200px] items-center justify-between px-6">
+        <div className="flex items-center gap-6">
+          <Link href="/" className="flex items-center gap-2.5 group">
+            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-white shadow-sm transition-transform group-hover:scale-105">
+              <GraduationCap className="h-5 w-5" />
+            </span>
+            <span className="font-serif text-xl font-bold tracking-tight text-primary">
+              UniGuide AI
+            </span>
           </Link>
-        )}
-      </nav>
+          <nav aria-label="Main" className="hidden lg:flex items-center gap-1 text-sm font-medium">
+            <NavLinks links={links} />
+          </nav>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <Link
+            href="/accessibility"
+            className="hidden sm:inline-flex rounded-full border border-border px-3 py-1.5 text-xs font-semibold text-muted hover:border-primary/40 hover:text-foreground transition-colors"
+          >
+            {t.nav.display}
+          </Link>
+
+          {DEMO_SWITCHER ? (
+            <ModeSwitcher mode={mode} />
+          ) : user ? (
+            <form action="/auth/signout" method="post">
+              <button className="btn btn-secondary btn-sm whitespace-nowrap">{t.nav.signOut}</button>
+            </form>
+          ) : (
+            <div className="flex items-center gap-2">
+              <Link href="/login" className="btn btn-secondary btn-sm whitespace-nowrap">
+                {t.nav.signIn}
+              </Link>
+              <Link href="/signup" className="btn btn-coral-bright btn-sm whitespace-nowrap shadow-sm">
+                Get Started Free
+              </Link>
+            </div>
+          )}
+        </div>
+      </div>
     </header>
   );
 }
