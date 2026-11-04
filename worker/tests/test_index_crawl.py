@@ -121,7 +121,9 @@ def test_quoted_on_site_courses_are_created_published(
 
 
 def _fields(operator: Connection, ix: dict[str, Any]) -> dict[str, str | None]:
-    rows = operator.execute("select title, isced_f from programs where institution_id = %s", (ix["institution"],)).fetchall()
+    rows = operator.execute(
+        "select title, isced_f from programs where institution_id = %s", (ix["institution"],)
+    ).fetchall()
     return {r["title"]: r["isced_f"] for r in rows}
 
 

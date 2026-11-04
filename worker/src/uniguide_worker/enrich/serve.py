@@ -276,8 +276,15 @@ def run_candidates(
                     reason = "No model is set up to look for this university's course list."
                 else:
                     found = discover(
-                        conn, fetcher, lister, cand["institution_id"], cand["official_domain"], fields, levels,
-                        deadline=time.monotonic() + DISCOVERY_SECONDS, heartbeat=lambda: _heartbeat(conn, job_id),
+                        conn,
+                        fetcher,
+                        lister,
+                        cand["institution_id"],
+                        cand["official_domain"],
+                        fields,
+                        levels,
+                        deadline=time.monotonic() + DISCOVERY_SECONDS,
+                        heartbeat=lambda: _heartbeat(conn, job_id),
                     )
                     courses = real_courses(conn, cand["institution_id"], fields, levels, COURSES_PER_UNIVERSITY)
                     if not courses:

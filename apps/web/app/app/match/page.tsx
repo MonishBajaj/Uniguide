@@ -156,11 +156,11 @@ export default async function MatchPage({ searchParams }: PageProps<"/app/match"
         ) : null}
       </header>
 
-      {goals.length ? (
-        <section aria-labelledby="score-goals">
-          <ScoreGoals rows={goals} />
-        </section>
-      ) : null}
+      <section id="score-goals" aria-labelledby="score-goals-title" className="grid gap-3 scroll-mt-24">
+        <h2 id="score-goals-title" className="font-serif text-xl font-bold text-primary">{all.journey.panels.scoreGoalsTitle}</h2>
+        <p className="text-sm text-muted">{all.journey.panels.scoreGoalsIntro}</p>
+        <ScoreGoals rows={goals} />
+      </section>
 
       {feasible.length === 0 ? (
         <div className="rounded-xl border border-border bg-surface p-8 ambient-shadow text-center py-12">

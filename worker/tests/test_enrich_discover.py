@@ -4,24 +4,25 @@ from __future__ import annotations
 
 import uuid
 from collections.abc import Iterator
-from typing import Any
+from typing import Any, cast
 
 import pytest
 
 from uniguide_worker.db import Connection
 from uniguide_worker.enrich.discover import MIN_ACCEPTED, discover, find_index_page, real_courses
-from uniguide_worker.fetch.fetcher import FetchRefused, FetchResult, content_hash
+from uniguide_worker.fetch.fetcher import Fetcher, FetchRefused, FetchResult, content_hash
 from uniguide_worker.index.lister import CourseListRun, ListedCourse
 from uniguide_worker.index.seed import seed_urls
 
 
-class SiteFetcher:
+class SiteFetcher(Fetcher):
     """A fake website: url -> (page text, links). Unknown urls are 404; urls in `refused` raise FetchRefused."""
 
     def __init__(
         self, pages: dict[str, tuple[str, tuple[tuple[str, str], ...]]], refused: set[str] | None = None
     ) -> None:
-        self.pages, self.refused, self.calls = pages, refused or set(), []
+        self.pages, self.refused = pages, refused or set()
+        self.calls: list[str] = []
 
     def fetch(self, url: str, etag: str | None = None, last_modified: str | None = None) -> FetchResult:
         self.calls.append(url)
@@ -37,7 +38,8 @@ class MapLister:
     """Answers per page url; records which pages it was asked about."""
 
     def __init__(self, by_url: dict[str, list[ListedCourse]] | None = None, error: Exception | None = None) -> None:
-        self.by_url, self.error, self.asked = by_url or {}, error, []
+        self.by_url, self.error = by_url or {}, error
+        self.asked: list[str] = []
 
     def list_courses(self, url: str, page_text: str, links: tuple[tuple[str, str], ...]) -> CourseListRun:
         self.asked.append(url)
@@ -80,7 +82,8 @@ def add_program(site: dict[str, Any], title: str, **kw: Any) -> uuid.UUID:
         .fetchone()
     )
     site["operator"].commit()
-    return row["id"]  # type: ignore[index]
+    assert row is not None
+    return cast(uuid.UUID, row["id"])
 
 
 def course_pages(domain: str, titles: list[str]) -> tuple[str, tuple[tuple[str, str], ...], list[ListedCourse]]:

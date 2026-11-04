@@ -688,10 +688,10 @@ export default async function ProfilePage({ searchParams }: PageProps<"/app/prof
             </section>
 
             {/* Test Scores Manager */}
-            <section id="test-scores-section" aria-labelledby="tests-heading" className="rounded-xl border border-[#e1e3e4] bg-white p-6 sm:p-8 shadow-xs grid gap-5">
+            <section id="test-scores-section" aria-labelledby="scores-section" className="rounded-xl border border-[#e1e3e4] bg-white p-6 sm:p-8 shadow-xs grid gap-5">
               <div className="flex items-center gap-2 border-b border-[#e1e3e4] pb-3">
                 <Award className="h-5 w-5 text-secondary" />
-                <h2 id="tests-heading" className="font-serif text-xl font-bold text-primary">Official Test Scores</h2>
+                <h2 id="scores-section" className="font-serif text-xl font-bold text-primary scroll-mt-24">Official Test Scores</h2>
               </div>
               <p className="text-xs text-[#747780]">
                 Add your taken test scores (GRE, GMAT, TOEFL, IELTS). Matching compares them directly against verified course minimums.

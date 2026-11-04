@@ -243,6 +243,7 @@ export default async function OffersPage({ searchParams }: PageProps<"/app/offer
               ) : null}
             </div>
 
+            <h2 id="matrix" className="font-serif text-xl font-bold text-primary scroll-mt-24">{t.matrix}</h2>
             <DecisionMatrix
               offers={rows.map(({ app, course }) => ({ id: app.id, title: course.title }))}
               initialCriteria={(matrix?.criteria as typeof DEFAULT_CRITERIA | undefined)?.length ? (matrix!.criteria as typeof DEFAULT_CRITERIA) : DEFAULT_CRITERIA}

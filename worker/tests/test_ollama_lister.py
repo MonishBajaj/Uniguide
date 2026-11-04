@@ -169,7 +169,13 @@ def test_a_repaired_title_reaches_the_caller_with_its_quote_unchanged() -> None:
 def test_a_listed_field_survives_the_title_repair() -> None:
     reply = CourseList(
         courses=[
-            ListedCourse(title="Master of Science in Robotics", level="master", url="https://u.example/r", quote="Robotics", field="07")
+            ListedCourse(
+                title="Master of Science in Robotics",
+                level="master",
+                url="https://u.example/r",
+                quote="Robotics",
+                field="07",
+            )
         ]
     )
     handler = httpx.MockTransport(lambda request: httpx.Response(200, json=_reply(reply.model_dump_json())))

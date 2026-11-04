@@ -6,15 +6,17 @@ import itertools
 import json
 import uuid
 from collections.abc import Iterator
-from typing import Any
+from typing import Any, cast
 
 import pytest
 
 from uniguide_worker.db import Connection
 from uniguide_worker.enrich import serve as serve_mod
+from uniguide_worker.enrich.discover import real_courses
 from uniguide_worker.enrich.serve import run_candidates, run_job
 from uniguide_worker.extract.extractor import ExtractionRun
 from uniguide_worker.extract.prompt import PROMPT_VERSION
+from uniguide_worker.fetch.fetcher import Fetcher
 from uniguide_worker.index.lister import ListedCourse
 
 from .test_enrich_discover import MapLister, SiteFetcher
@@ -83,7 +85,9 @@ def university(ctx: dict[str, Any], courses: int, kind: str = "complete", field:
     return inst["id"]  # type: ignore[no-any-return]
 
 
-def make_job(ctx: dict[str, Any], institutions: list[uuid.UUID], snapshot: dict[str, Any] | None = None, **cols: int) -> Any:
+def make_job(
+    ctx: dict[str, Any], institutions: list[uuid.UUID], snapshot: dict[str, Any] | None = None, **cols: int
+) -> Any:
     op: Connection = ctx["op"]
     job = op.execute(
         "insert into enrichment_jobs (user_id, profile_snapshot, max_tries, status, heartbeat_at) "
@@ -109,15 +113,18 @@ def loop(worker: Connection, job: Any, **kw: Any) -> None:
 
 
 def job_row(ctx: dict[str, Any], job: Any) -> dict[str, Any]:
-    row = ctx["op"].execute("select * from enrichment_jobs where id = %s", (job,)).fetchone()
+    op: Connection = ctx["op"]
+    row = op.execute("select * from enrichment_jobs where id = %s", (job,)).fetchone()
     assert row is not None
     return row
 
 
 def candidates(ctx: dict[str, Any], job: Any) -> list[tuple[str, int]]:
-    rows = ctx["op"].execute(
-        "select status, courses from enrichment_candidates where job_id = %s order by position", (job,)
-    ).fetchall()
+    rows = (
+        ctx["op"]
+        .execute("select status, courses from enrichment_candidates where job_id = %s order by position", (job,))
+        .fetchall()
+    )
     return [(r["status"], r["courses"]) for r in rows]
 
 
@@ -126,7 +133,9 @@ def item_statuses(ctx: dict[str, Any], job: Any) -> list[str]:
     return sorted(r["status"] for r in rows)
 
 
-def test_the_loop_stops_at_ten_complete_courses_from_several_universities(worker: Connection, ctx: dict[str, Any]) -> None:
+def test_the_loop_stops_at_ten_complete_courses_from_several_universities(
+    worker: Connection, ctx: dict[str, Any]
+) -> None:
     job = make_job(ctx, [university(ctx, 3) for _ in range(8)])
     loop(worker, job)
     row = job_row(ctx, job)
@@ -142,7 +151,11 @@ def test_a_university_with_only_incomplete_courses_is_skipped_and_the_next_one_t
     loop(worker, job)
     assert candidates(ctx, job) == [("skipped", 0), ("kept", 1)]
     assert item_statuses(ctx, job) == ["extracted", "incomplete", "incomplete"]
-    reason = ctx["op"].execute("select reason from enrichment_candidates where job_id = %s and position = 1", (job,)).fetchone()
+    reason = (
+        ctx["op"]
+        .execute("select reason from enrichment_candidates where job_id = %s and position = 1", (job,))
+        .fetchone()
+    )
     assert reason is not None and "missing" in reason["reason"]
     assert (job_row(ctx, job)["tried"], job_row(ctx, job)["kept"]) == (2, 1)
 
@@ -163,7 +176,9 @@ def test_a_job_where_every_university_is_skipped_still_finishes(worker: Connecti
     assert [s for s, _ in candidates(ctx, job)] == ["skipped", "skipped"]
 
 
-def test_a_university_whose_discovery_fails_is_skipped_and_the_next_one_tried(worker: Connection, ctx: dict[str, Any]) -> None:
+def test_a_university_whose_discovery_fails_is_skipped_and_the_next_one_tried(
+    worker: Connection, ctx: dict[str, Any]
+) -> None:
     job = make_job(ctx, [university(ctx, 0), university(ctx, 1)])
     loop(worker, job, fetcher=CoursePagesFetcher({}), lister=MapLister(error=TimeoutError("model timed out")))
     assert [s for s, _ in candidates(ctx, job)] == ["skipped", "kept"]
@@ -174,7 +189,7 @@ def test_an_unexpected_error_for_one_university_skips_only_that_one(
     worker: Connection, ctx: dict[str, Any], monkeypatch: pytest.MonkeyPatch
 ) -> None:
     job = make_job(ctx, [university(ctx, 1), university(ctx, 1)])
-    real = serve_mod.real_courses
+    real = real_courses
     calls = itertools.count()
 
     def flaky(*args: Any, **kwargs: Any) -> Any:
@@ -185,7 +200,11 @@ def test_an_unexpected_error_for_one_university_skips_only_that_one(
     monkeypatch.setattr(serve_mod, "real_courses", flaky)
     loop(worker, job)
     assert [s for s, _ in candidates(ctx, job)] == ["skipped", "kept"]
-    reason = ctx["op"].execute("select reason from enrichment_candidates where job_id = %s and position = 1", (job,)).fetchone()
+    reason = (
+        ctx["op"]
+        .execute("select reason from enrichment_candidates where job_id = %s and position = 1", (job,))
+        .fetchone()
+    )
     assert reason is not None and "ValueError" in reason["reason"]
 
 
@@ -215,7 +234,9 @@ def test_at_most_three_courses_of_one_university_are_read(worker: Connection, ct
     assert candidates(ctx, job) == [("kept", 3)] and len(item_statuses(ctx, job)) == 3
 
 
-def test_courses_already_in_the_catalogue_are_used_without_asking_the_model(worker: Connection, ctx: dict[str, Any]) -> None:
+def test_courses_already_in_the_catalogue_are_used_without_asking_the_model(
+    worker: Connection, ctx: dict[str, Any]
+) -> None:
     job = make_job(ctx, [university(ctx, 2)])
     lister = MapLister()
     loop(worker, job, lister=lister)
@@ -236,13 +257,26 @@ def test_a_course_in_another_field_is_not_used(worker: Connection, ctx: dict[str
 
 def test_run_job_hands_a_job_with_candidates_to_the_loop(worker: Connection, ctx: dict[str, Any]) -> None:
     job = make_job(ctx, [university(ctx, 1)])
-    run_job(worker, PageFetcher(), UrlExtractor(), None, job, fresh_days=7, lister=MapLister(), sleep=lambda _s: None)
+    run_job(
+        worker,
+        cast(Fetcher, PageFetcher()),
+        UrlExtractor(),
+        None,
+        job,
+        fresh_days=7,
+        lister=MapLister(),
+        sleep=lambda _s: None,
+    )
     assert candidates(ctx, job) == [("kept", 1)] and job_row(ctx, job)["status"] == "done"
 
 
 def test_discovery_finds_courses_for_a_university_with_none(worker: Connection, ctx: dict[str, Any]) -> None:
     inst = university(ctx, 0)
-    d = ctx["op"].execute("select official_domain from institutions where id = %s", (inst,)).fetchone()["official_domain"]
+    d = (
+        ctx["op"]
+        .execute("select official_domain from institutions where id = %s", (inst,))
+        .fetchone()["official_domain"]
+    )
     titles = [f"Program {n}" for n in range(5)]
     links = tuple((t, f"https://www.{d}/programs/{i}") for i, t in enumerate(titles))
     listed = [ListedCourse(title=t, level="master", url=u, quote=t, field="06") for t, u in links]

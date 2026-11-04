@@ -27,7 +27,9 @@ def feed(day: str = "2099-01-03") -> str:
 # The tests use days in 2099: they are never counted with the real rates a local database holds, and as the newest
 # rates they are the ones fx_convert uses (the tests run in a transaction that is rolled back).
 def stored(conn: Connection) -> dict[tuple[str, str], tuple[Decimal, date]]:
-    rows = conn.execute("select base, quote, rate, as_of from fx_rates where source like 'ECB%' and extract(year from as_of) = 2099").fetchall()
+    rows = conn.execute(
+        "select base, quote, rate, as_of from fx_rates where source like 'ECB%' and extract(year from as_of) = 2099"
+    ).fetchall()
     return {(r["base"], r["quote"]): (r["rate"], r["as_of"]) for r in rows}
 
 
@@ -47,7 +49,14 @@ def test_pairs_are_stored_once_per_currency_pair_in_alphabetical_order() -> None
     _, rates = fx_rates.parse_ecb(feed())
     pairs, missing = fx_rates.build_pairs(rates, ["EUR", "USD", "GBP", "AUD"])
     assert missing == []
-    assert set(pairs) == {("AUD", "EUR"), ("AUD", "GBP"), ("AUD", "USD"), ("EUR", "GBP"), ("EUR", "USD"), ("GBP", "USD")}
+    assert set(pairs) == {
+        ("AUD", "EUR"),
+        ("AUD", "GBP"),
+        ("AUD", "USD"),
+        ("EUR", "GBP"),
+        ("EUR", "USD"),
+        ("GBP", "USD"),
+    }
     assert pairs[("EUR", "USD")] == Decimal("1.25")
     assert pairs[("AUD", "EUR")] == Decimal(1) / Decimal("1.6")  # 1 AUD in euros
     assert pairs[("GBP", "USD")] == Decimal("1.25") / Decimal("0.8")  # 1 GBP in dollars, crossed through the euro
@@ -77,5 +86,7 @@ def test_running_twice_on_one_day_leaves_one_row_per_pair(worker: Connection) ->
 def test_a_new_day_adds_rows_and_keeps_the_old_ones(worker: Connection) -> None:
     fx_rates.run(worker, xml=feed("2099-01-02"), currencies=["EUR", "USD"])
     fx_rates.run(worker, xml=feed("2099-01-03"), currencies=["EUR", "USD"])
-    count = worker.execute("select count(*) as n from fx_rates where source like 'ECB%' and base = 'EUR' and extract(year from as_of) = 2099").fetchone()
+    count = worker.execute(
+        "select count(*) as n from fx_rates where source like 'ECB%' and base = 'EUR' and extract(year from as_of) = 2099"
+    ).fetchone()
     assert count is not None and count["n"] == 2

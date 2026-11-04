@@ -67,7 +67,7 @@ p, li, dd {
 
 /* Subtle academic grid pattern for hero and prominent feature sections */
 .hero-grid {
-  background-image: 
+  background-image:
     linear-gradient(to right, rgba(0, 24, 61, 0.04) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(0, 24, 61, 0.04) 1px, transparent 1px);
   background-size: 40px 40px;
@@ -107,12 +107,12 @@ p, li, dd {
   outline-offset: 2px;
 }
 .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-.btn-primary { 
-  background: var(--primary); 
-  color: var(--accent-foreground); 
+.btn-primary {
+  background: var(--primary);
+  color: var(--accent-foreground);
 }
-.btn-primary:hover:not(:disabled) { 
-  background: var(--primary-container); 
+.btn-primary:hover:not(:disabled) {
+  background: var(--primary-container);
 }
 .btn-coral {
   background: var(--secondary);
@@ -128,24 +128,24 @@ p, li, dd {
 .btn-coral-bright:hover:not(:disabled) {
   background: var(--secondary);
 }
-.btn-secondary { 
-  background: var(--surface); 
-  color: var(--foreground); 
-  border: 1px solid var(--border); 
+.btn-secondary {
+  background: var(--surface);
+  color: var(--foreground);
+  border: 1px solid var(--border);
 }
-.btn-secondary:hover:not(:disabled) { 
-  background: var(--surface-2); 
+.btn-secondary:hover:not(:disabled) {
+  background: var(--surface-2);
 }
 /* Toggle links (board/table, tracks): the selected one. Plain CSS here outranks Tailwind variants. */
-.btn-secondary[aria-current="page"], .btn-secondary[aria-pressed="true"] { 
-  background: var(--selected); 
+.btn-secondary[aria-current="page"], .btn-secondary[aria-pressed="true"] {
+  background: var(--selected);
   color: var(--primary);
   border-color: #adc6ff;
 }
-.btn-sm { 
-  font-size: 0.8125rem; 
-  line-height: 1.25rem; 
-  padding: 6px 14px; 
+.btn-sm {
+  font-size: 0.8125rem;
+  line-height: 1.25rem;
+  padding: 6px 14px;
 }
 .btn-lg {
   font-size: 1.0625rem;
